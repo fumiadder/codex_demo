@@ -19,6 +19,8 @@ node --check public/app.js
 
 浏览器与容器验证详情见 `VERIFICATION.md`。可重复浏览器检查需要开发环境额外提供 Playwright 与 Chromium，生产运行不依赖它们。
 
+免费公网测试采用 Render Free Web Service，新加坡区域，配置见 `render.yaml` 与 `DEPLOY-FREE.md`。它保留真实后端与空间权限，但免费文件系统可能在休眠或重启后清空，只用于测试数据。`WORKSPACE_TEST_MODE=1` 会在登录页和工作台显示测试环境提示。
+
 ## 国内云部署
 
 可使用阿里云、腾讯云等提供的 Linux 云服务器。准备一个域名并将 DNS A 记录解析到服务器；按所选国内云厂商要求完成备案。开放 TCP 80、443；应用端口 8000 仅在 Docker 内部使用。此仓库不包含或创建云账号、付费资源、域名和备案。

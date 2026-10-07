@@ -1,0 +1,18 @@
+{
+  "provider": "render",
+  "serviceId": "srv-db32fonavr4c739idbg0",
+  "deployId": "dep-db32fpnavr4c739idef0",
+  "url": "https://zhixu-free-test.onrender.com",
+  "dashboardUrl": "https://dashboard.render.com/web/srv-db32fonavr4c739idbg0",
+  "repository": "https://github.com/fumiadder/codex_demo",
+  "branch": "deploy/zhixu-free-test",
+  "applicationCommit": "3d4bb527f95407b6591c19e449e929dcc06f3307",
+  "status": "live",
+  "deployedAt": "2026-10-07T11:07:58Z",
+  "plan": "free",
+  "region": "singapore",
+  "autoDeploy": false,
+  "storagePersistence": "ephemeral",
+  "publicVerification": "pending",
+  "mainlandReachability": "not independently tested"
+}

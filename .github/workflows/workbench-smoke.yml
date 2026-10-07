@@ -1,0 +1,29 @@
+name: Workbench public deployment check
+
+on:
+  push:
+    branches: [deploy/zhixu-free-test]
+    paths:
+      - .github/workflows/workbench-smoke.yml
+      - workbench/scripts/public_deploy_qa.py
+
+permissions:
+  contents: read
+
+jobs:
+  public-check:
+    # Standard Linux runners are free for public repositories. Never run this
+    # check automatically if the repository becomes private.
+    if: github.event.repository.private == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Read deployment test script
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Check HTTPS and isolated test accounts
+        env:
+          TARGET_URL: https://zhixu-free-test.onrender.com
+          PYTHONUNBUFFERED: "1"
+        run: python3 workbench/scripts/public_deploy_qa.py
