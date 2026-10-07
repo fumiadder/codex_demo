@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#23483d" />
+    <meta
+      name="description"
+      content="知序，让工作与生活各有其所。私有空间、共享协作、媒体记录与加密密码箱。"
+    />
+    <title>知序 · 个人工作台</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <svg
+      class="icon-sprite"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <symbol id="i-grid" viewBox="0 0 24 24">
+        <rect x="3" y="3" width="7" height="7" rx="2" />
+        <rect x="14" y="3" width="7" height="7" rx="2" />
+        <rect x="3" y="14" width="7" height="7" rx="2" />
+        <rect x="14" y="14" width="7" height="7" rx="2" />
+      </symbol>
+      <symbol id="i-check" viewBox="0 0 24 24">
+        <path d="m5 12 4 4L19 6" />
+      </symbol>
+      <symbol id="i-task" viewBox="0 0 24 24">
+        <rect x="4" y="3" width="16" height="18" rx="3" />
+        <path d="m7 9 1.5 1.5L11 8m2 1h4m-10 6 1.5 1.5L11 14m2 1h4" />
+      </symbol>
+      <symbol id="i-note" viewBox="0 0 24 24">
+        <path
+          d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Zm0 0v6h6M8 13h8m-8 4h5"
+        />
+      </symbol>
+      <symbol id="i-folder" viewBox="0 0 24 24">
+        <path
+          d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"
+        />
+      </symbol>
+      <symbol id="i-lock" viewBox="0 0 24 24">
+        <rect x="5" y="10" width="14" height="11" rx="3" />
+        <path d="M8 10V7a4 4 0 0 1 8 0v3m-4 5v2" />
+      </symbol>
+      <symbol id="i-users" viewBox="0 0 24 24">
+        <circle cx="9" cy="8" r="3" />
+        <path
+          d="M3 20v-2a6 6 0 0 1 12 0v2m2-15a3 3 0 0 1 0 6m1 3a5 5 0 0 1 3 4v2"
+        />
+      </symbol>
+      <symbol id="i-puzzle" viewBox="0 0 24 24">
+        <path
+          d="M9 3h6v4a3 3 0 1 1 0 6v8H9v-4a3 3 0 1 1-6 0V9h6V7a2 2 0 1 1 0-4Z"
+        />
+      </symbol>
+      <symbol id="i-search" viewBox="0 0 24 24">
+        <circle cx="10.5" cy="10.5" r="6.5" />
+        <path d="m16 16 5 5" />
+      </symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24">
+        <path d="M12 5v14M5 12h14" />
+      </symbol>
+      <symbol id="i-arrow" viewBox="0 0 24 24">
+        <path d="M5 12h14m-5-5 5 5-5 5" />
+      </symbol>
+      <symbol id="i-chevron" viewBox="0 0 24 24">
+        <path d="m7 10 5 5 5-5" />
+      </symbol>
+      <symbol id="i-sun" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="4" />
+        <path
+          d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"
+        />
+      </symbol>
+      <symbol id="i-briefcase" viewBox="0 0 24 24">
+        <rect x="3" y="7" width="18" height="14" rx="3" />
+        <path
+          d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12a26 26 0 0 0 18 0m-9 0v3"
+        />
+      </symbol>
+      <symbol id="i-leaf" viewBox="0 0 24 24">
+        <path d="M20 3C7 2 2 7 4 15c2 8 17 7 16-12ZM4 21 15 10" />
+      </symbol>
+      <symbol id="i-mic" viewBox="0 0 24 24">
+        <rect x="8" y="2" width="8" height="13" rx="4" />
+        <path d="M5 11v1a7 7 0 0 0 14 0v-1m-7 8v3m-4 0h8" />
+      </symbol>
+      <symbol id="i-upload" viewBox="0 0 24 24">
+        <path
+          d="M12 16V3m-5 5 5-5 5 5M4 15v5a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-5"
+        />
+      </symbol>
+      <symbol id="i-image" viewBox="0 0 24 24">
+        <rect x="3" y="3" width="18" height="18" rx="3" />
+        <circle cx="8" cy="8" r="1.5" />
+        <path d="m3 17 5-5 4 4 4-7 5 6" />
+      </symbol>
+      <symbol id="i-play" viewBox="0 0 24 24">
+        <path d="m8 5 11 7-11 7Z" />
+      </symbol>
+      <symbol id="i-close" viewBox="0 0 24 24">
+        <path d="m6 6 12 12M18 6 6 18" />
+      </symbol>
+      <symbol id="i-more" viewBox="0 0 24 24">
+        <circle cx="5" cy="12" r="1" />
+        <circle cx="12" cy="12" r="1" />
+        <circle cx="19" cy="12" r="1" />
+      </symbol>
+      <symbol id="i-shield" viewBox="0 0 24 24">
+        <path d="m12 2 9 4v6c0 5-9 10-9 10S3 17 3 12V6Zm-4 10 3 3 5-6" />
+      </symbol>
+      <symbol id="i-logout" viewBox="0 0 24 24">
+        <path d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4m5-5 5-5-5-5m-7 5h13" />
+      </symbol>
+      <symbol id="i-trash" viewBox="0 0 24 24">
+        <path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7" />
+      </symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 7v5l3 2" />
+      </symbol>
+      <symbol id="i-cloud" viewBox="0 0 24 24">
+        <path d="M7 19a5 5 0 0 1-.7-10A6 6 0 0 1 18 7a6 6 0 0 1 0 12Z" />
+      </symbol>
+      <symbol id="i-settings" viewBox="0 0 24 24">
+        <path
+          d="m10 2-.8 3-2.5 1.4-3-.7L1.8 9l2.2 2.3v2.8L1.8 16l1.9 3.3 3-.7L9.2 20l.8 3h4l.8-3 2.5-1.4 3 .7 1.9-3.3-2.2-2.2v-2.9L22.2 9l-1.9-3.3-3 .7L14.8 5l-.8-3Z"
+        />
+        <circle cx="12" cy="12" r="3" />
+      </symbol>
+    </svg>
+
+    <div
+      id="test-environment-banner"
+      class="environment-banner"
+      role="status"
+      aria-live="polite"
+      hidden
+    ></div>
+
+    <section id="auth-screen" class="auth-screen" hidden>
+      <div class="auth-story">
+        <a class="brand auth-brand" href="/" aria-label="知序首页"
+          ><span class="brand-mark">知</span
+          ><span>知序<span class="brand-dot">.</span></span></a
+        >
+        <div class="auth-story-content">
+          <span class="eyebrow light">让每件重要的事，各有其所</span>
+          <h1>每一面生活，<br />都有自己的<span>空间。</span></h1>
+          <p>把工作、灵感与日常，安放在一起。<br />从此，重要的事井然有序。</p>
+          <div class="auth-preview">
+            <div class="preview-top">
+              <span class="preview-dot"></span><span class="preview-dot"></span
+              ><span class="preview-dot"></span><span>我的一天</span>
+            </div>
+            <div class="preview-row">
+              <span class="preview-check">✓</span
+              ><span>为下一段旅程，留一点时间</span
+              ><span class="preview-tag">生活</span>
+            </div>
+            <div class="preview-row">
+              <span class="preview-check empty"></span
+              ><span>把今天的好想法记录下来</span
+              ><span class="preview-tag">灵感</span>
+            </div>
+            <div class="preview-mini">
+              <span>工作，各有其所</span><span>生活，自在有序 ↗</span>
+            </div>
+          </div>
+        </div>
+        <div class="auth-foot">
+          <span>属于你的数字栖息地</span><span>你的内容，由你决定谁能看见</span>
+        </div>
+        <div class="auth-orbit" aria-hidden="true"></div>
+      </div>
+      <div class="auth-form-side">
+        <div class="auth-form-wrap">
+          <div class="auth-mobile-brand brand">
+            <span class="brand-mark">知</span><span>知序.</span>
+          </div>
+          <span class="eyebrow">知序 · 个人工作台</span>
+          <h2 id="auth-title">欢迎回来</h2>
+          <p id="auth-subtitle" class="muted">
+            进入你的空间，继续今天的好进展。
+          </p>
+          <form id="auth-form">
+            <label id="name-label" hidden
+              >你的名字<input
+                id="auth-name"
+                autocomplete="name"
+                maxlength="80"
+                placeholder="怎么称呼你"
+            /></label>
+            <label
+              >邮箱地址<input
+                id="auth-email"
+                type="email"
+                autocomplete="email"
+                required
+                placeholder="you@example.com"
+            /></label>
+            <label
+              >密码<input
+                id="auth-password"
+                type="password"
+                autocomplete="current-password"
+                minlength="10"
+                maxlength="200"
+                required
+                placeholder="至少 10 位字符"
+            /></label>
+            <p id="auth-error" class="form-error" role="alert"></p>
+            <button id="auth-submit" class="button primary full" type="submit">
+              进入工作台 <svg class="icon"><use href="#i-arrow" /></svg>
+            </button>
+          </form>
+          <p class="auth-switch">
+            <span id="auth-switch-text">还没有自己的空间？</span
+            ><button id="auth-toggle" class="text-button">创建账户</button>
+          </p>
+          <div class="auth-divider"><span>先认识一下知序</span></div>
+          <button id="demo-button" class="button secondary full">
+            体验演示 <svg class="icon"><use href="#i-arrow" /></svg>
+          </button>
+          <p class="auth-note">
+            演示使用本地样例，不会保存至云端。<br />密码箱在浏览器内加密，密码不会发送到服务器。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div id="app-shell" class="app-shell" hidden>
+      <aside class="sidebar" id="sidebar">
+        <a class="brand" href="#overview"
+          ><span class="brand-mark">知</span
+          ><span>知序<span class="brand-dot">.</span></span
+          ><span class="brand-caption">工作与生活的私人空间</span></a
+        >
+        <button id="space-switcher" class="space-switcher">
+          <span class="space-avatar">我</span
+          ><span
+            ><strong id="current-space-name">我的空间</strong
+            ><small id="current-space-role">私人空间</small></span
+          ><svg class="icon small"><use href="#i-chevron" /></svg>
+        </button>
+        <div class="nav-label">我的工作台</div>
+        <nav class="main-nav" aria-label="主导航">
+          <button class="nav-item active" data-view="overview">
+            <svg class="icon"><use href="#i-grid" /></svg><span>总览</span
+            ><span class="nav-shortcut">⌘ 1</span>
+          </button>
+          <button class="nav-item" data-view="tasks">
+            <svg class="icon"><use href="#i-task" /></svg><span>待办事项</span
+            ><span id="nav-task-count" class="nav-count">0</span>
+          </button>
+          <button class="nav-item" data-view="notes">
+            <svg class="icon"><use href="#i-note" /></svg
+            ><span>灵感与笔记</span>
+          </button>
+          <button class="nav-item" data-view="media">
+            <svg class="icon"><use href="#i-folder" /></svg
+            ><span>媒体资料库</span>
+          </button>
+          <button class="nav-item" data-view="vault">
+            <svg class="icon"><use href="#i-lock" /></svg><span>私密密码箱</span
+            ><span class="tiny-dot"></span>
+          </button>
+        </nav>
+        <div class="nav-label second">连接与拓展</div>
+        <nav class="main-nav" aria-label="空间导航">
+          <button class="nav-item" data-view="spaces">
+            <svg class="icon"><use href="#i-users" /></svg
+            ><span>空间与协作</span>
+          </button>
+          <button class="nav-item" data-view="modules">
+            <svg class="icon"><use href="#i-puzzle" /></svg><span>模块库</span
+            ><span class="new-pill">NEW</span>
+          </button>
+        </nav>
+        <div class="sidebar-bottom">
+          <div class="sidebar-prompt">
+            <div class="prompt-icon">✧</div>
+            <strong>你的工作台，慢慢长大</strong>
+            <p>用当下需要的功能，<br />构建属于自己的节奏。</p>
+            <button class="text-button" data-go="modules">
+              探索模块 <span>↗</span>
+            </button>
+          </div>
+          <button id="profile-button" class="profile-button">
+            <span id="user-avatar" class="user-avatar">知</span
+            ><span class="profile-info"
+              ><strong id="user-name">访客</strong
+              ><small id="user-status">个人账户</small></span
+            ><svg class="icon small"><use href="#i-more" /></svg>
+          </button>
+        </div>
+      </aside>
+
+      <div class="workspace-body">
+        <header class="topbar">
+          <button
+            id="mobile-menu"
+            class="icon-button mobile-menu"
+            aria-label="展开导航"
+          >
+            <svg class="icon"><use href="#i-grid" /></svg>
+          </button>
+          <div class="area-segment" role="group" aria-label="工作与生活">
+            <button class="active" data-area="work">
+              <svg class="icon small"><use href="#i-briefcase" /></svg
+              >工作</button
+            ><button data-area="life">
+              <svg class="icon small"><use href="#i-leaf" /></svg>生活
+            </button>
+          </div>
+          <span class="topbar-separator"></span
+          ><span class="topbar-description" id="topbar-description"
+            >专注当下，把想法变成进展</span
+          >
+          <div class="topbar-actions">
+            <div id="sync-status" class="sync-status">
+              <span></span>正在连接空间
+            </div>
+            <button id="search-button" class="search-button">
+              <svg class="icon small"><use href="#i-search" /></svg
+              ><span>搜索空间</span><kbd>⌘ K</kbd></button
+            ><button id="new-button" class="button primary compact">
+              <svg class="icon small"><use href="#i-plus" /></svg>新建
+            </button>
+          </div>
+        </header>
+        <div id="demo-banner" class="demo-banner" hidden>
+          <span
+            ><strong>演示空间</strong> ·
+            正在体验本地样例，修改不会保存至云端。</span
+          ><button id="demo-exit" class="text-button">创建自己的空间 ↗</button>
+        </div>
+        <main id="main-content" class="main-content" tabindex="-1">
+          <div class="page-heading">
+            <div>
+              <div class="eyebrow" id="page-eyebrow">知序 · 个人工作台</div>
+              <h1 id="page-title">今天，也从容一点。</h1>
+              <p id="page-description">让每个想法有去处，让每一步都算数。</p>
+            </div>
+            <div class="date-display">
+              <svg class="icon sun-icon"><use href="#i-sun" /></svg>
+              <div>
+                <strong id="today-date"></strong
+                ><span id="today-weekday"></span>
+              </div>
+            </div>
+          </div>
+          <div id="view-content"></div>
+        </main>
+        <footer class="workspace-footer">
+          <span>知序 · 让工作与生活各有其所</span
+          ><span id="footer-space">你的私人空间</span>
+        </footer>
+      </div>
+    </div>
+
+    <dialog id="modal" class="modal">
+      <div class="modal-header">
+        <div>
+          <span id="modal-eyebrow" class="eyebrow"></span>
+          <h2 id="modal-title"></h2>
+        </div>
+        <button id="modal-close" class="icon-button" aria-label="关闭窗口">
+          <svg class="icon"><use href="#i-close" /></svg>
+        </button>
+      </div>
+      <div id="modal-body"></div>
+    </dialog>
+    <div
+      id="toast-region"
+      class="toast-region"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
+    <input
+      id="file-input"
+      type="file"
+      multiple
+      hidden
+      accept="image/*,video/*,audio/*,application/pdf,text/plain"
+    />
+  </body>
+</html>

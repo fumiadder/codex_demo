@@ -1,0 +1,28 @@
+# 部署到已有 GitHub 仓库 fumiadder/codex_demo 的 workbench/ 子目录。
+# 免费测试版：不创建数据库、磁盘、付费实例或定时任务。
+services:
+  - type: web
+    name: zhixu-workbench-test
+    runtime: python
+    plan: free
+    region: singapore
+    rootDir: workbench
+    buildCommand: python -m py_compile server.py
+    startCommand: python server.py
+    healthCheckPath: /api/health
+    autoDeployTrigger: "off"
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.11"
+      - key: HOST
+        value: "0.0.0.0"
+      - key: DATA_DIR
+        value: /tmp/zhixu-test-data
+      - key: TRUST_PROXY
+        value: "1"
+      - key: WORKSPACE_TEST_MODE
+        value: "1"
+      - key: MAX_SPACE_STORAGE_BYTES
+        value: "52428800"
+      - key: MAX_TOTAL_STORAGE_BYTES
+        value: "268435456"

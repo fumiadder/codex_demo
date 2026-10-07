@@ -1,0 +1,12 @@
+Source: https://github.com/vercel-labs/skills/blob/main/skills/find-skills/SKILL.md
+Fetched by: GitHub read-only connector
+Retrieved: 2026-10-07 (Asia/Shanghai)
+Upstream modified: 2026-07-10T20:54:38Z
+Repository: https://github.com/vercel-labs/skills
+Repository stars at retrieval: 33313
+Popularity source: https://www.skills.sh/
+Leaderboard metric: All Time installs (not Trending or Hot)
+Rank at retrieval: 1
+Installs displayed at retrieval: 3.7M
+Installation scope: Project-local skill source; no installer or executable script was run.
+

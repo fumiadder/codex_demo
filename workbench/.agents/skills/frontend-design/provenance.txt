@@ -1,0 +1,12 @@
+Source: https://github.com/anthropics/skills/blob/main/skills/frontend-design/SKILL.md
+Fetched by: GitHub read-only connector
+Retrieved: 2026-10-07 (Asia/Shanghai)
+Upstream modified: 2026-09-03T16:37:13Z
+Repository: https://github.com/anthropics/skills
+Repository stars at retrieval: 179984
+Popularity source: https://www.skills.sh/
+Leaderboard metric: All Time installs (not Trending or Hot)
+Rank at retrieval: 7
+Installs displayed at retrieval: 958.5K
+Installation scope: Project-local skill source; no installer or executable script was run.
+
