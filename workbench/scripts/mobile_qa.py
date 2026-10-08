@@ -74,6 +74,7 @@ def account_boundaries(page, context, base, email_a):
     other.locator("#auth-password").fill("QA-only-mobile-2026")
     other.locator("#auth-submit").click()
     expect(other.locator("#app-shell")).to_be_visible()
+    expect(other.locator("#view-content")).to_contain_text("添加第一件待办")
     other.locator("#new-button").click()
     other.locator("#modal").get_by_role("button", name="灵感笔记", exact=False).click()
     other.get_by_label("标题", exact=True).fill("B_PRIVATE_NOTE")
@@ -102,6 +103,7 @@ def account_boundaries(page, context, base, email_a):
     expect(other.locator("#auth-screen")).to_be_visible()
     login_form(other, email_b)
     expect(other.locator("#app-shell")).to_be_visible()
+    expect(other.locator("#view-content")).to_contain_text("B_PRIVATE_NOTE")
     expect(page.locator("#auth-screen")).to_be_visible()
     login_form(page, email_b)
     expect(page.locator("#view-content")).to_contain_text("B_PRIVATE_NOTE")
@@ -131,8 +133,24 @@ def checks(base):
         page.locator("#auth-email").fill(email_a)
         page.locator("#auth-password").fill("QA-only-mobile-2026")
         assert float(page.locator("#auth-email").evaluate("el => parseFloat(getComputedStyle(el).fontSize)")) >= 16
+        slow_spaces_checked = []
+        def pause_initial_spaces(route):
+            # Keep the real request paused while observing the intermediate
+            # user-visible state, then release it to the actual HTTP server.
+            expect(page.locator("#app-shell")).to_be_visible()
+            expect(page.locator("#new-button")).to_be_disabled()
+            expect(page.locator("#mobile-new")).to_be_disabled()
+            slow_spaces_checked.append(True)
+            route.continue_()
+        page.route("**/api/spaces", pause_initial_spaces)
         page.locator("#auth-submit").click()
         expect(page.locator("#app-shell")).to_be_visible()
+        expect(page.locator("#view-content")).to_contain_text("添加第一件待办")
+        expect(page.locator("#new-button")).to_be_enabled()
+        expect(page.locator("#mobile-new")).to_be_enabled()
+        assert slow_spaces_checked == [True]
+        page.unroute("**/api/spaces", pause_initial_spaces)
+        report("空间列表真实请求暂缓时两个新建按钮禁用，加载完成后才可新建")
         expect(page.locator("#mobile-navigation")).to_be_visible()
         no_overflow(page)
         report("320px 窄屏真实注册，输入字体与底部导航可用")
@@ -190,6 +208,7 @@ def checks(base):
         page.locator('[data-view="bedtime"]').click()
         expect(page).to_have_url(re.compile(r"/bedtime\.html\?space="))
         expect(page.locator("#bedtime-app")).to_be_visible()
+        expect(page.locator(".story-card").first).to_be_visible()
         report("桌面导航保留，晚安故事从同一账号空间打开")
         assert not errors, errors
         browser.close()

@@ -629,6 +629,8 @@ async function enterApp() {
   state.items = [];
   state.spaces = [];
   state.space = null;
+  $("#new-button").disabled = true;
+  $("#mobile-new").disabled = true;
   if (state.demo)
     state.spaces = [
       { id: "demo-personal", name: "我的空间", role: "owner", member_count: 1 },
