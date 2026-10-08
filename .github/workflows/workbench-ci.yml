@@ -60,6 +60,16 @@ jobs:
         env:
           PYTHONUNBUFFERED: '1'
         run: python scripts/bedtime_browser_qa.py
+      - name: Check life category and safe sign-in return links
+        working-directory: workbench
+        env:
+          PYTHONUNBUFFERED: '1'
+        run: python scripts/life_entry_browser_qa.py
+      - name: Check desktop stories and voice upload links
+        working-directory: workbench
+        env:
+          PYTHONUNBUFFERED: '1'
+        run: python scripts/desktop_story_qa.py
       - name: Validate production Compose
         working-directory: workbench
         env:

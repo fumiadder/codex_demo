@@ -3776,3 +3776,171 @@ form label + label {
     padding-top: 14px;
   }
 }
+
+/* A quiet life entry leads to the shared desktop and phone story reader. */
+.life-bedtime-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  padding: 26px 32px;
+  margin-bottom: 26px;
+  border: 1px solid #dce6ec;
+  border-radius: 18px;
+  background: linear-gradient(115deg, #eaf2f8 0%, #f6f7f3 72%, #f9f5eb 100%);
+  color: #405a70;
+  overflow: hidden;
+}
+.life-bedtime-copy {
+  min-width: 0;
+}
+.life-bedtime-copy h2 {
+  margin: 0 0 6px;
+  color: #405a70;
+  font-size: 24px;
+  font-weight: 550;
+  letter-spacing: 0.5px;
+}
+.life-bedtime-copy > p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.8;
+}
+.life-bedtime-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0 12px;
+}
+.life-bedtime-actions .button {
+  min-height: 44px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-size: 14px;
+}
+.bedtime-entry-read {
+  background: #607d93;
+  color: #fff;
+}
+.bedtime-entry-read:hover {
+  background: #506e85;
+}
+.bedtime-entry-voice {
+  border: 1px solid #aabcc9;
+  color: #405a70;
+  background: #ffffff70;
+}
+.bedtime-entry-voice:hover {
+  background: #fff;
+}
+.life-bedtime-copy > .life-bedtime-caption {
+  font-size: 12px;
+  color: #607589;
+  max-width: 44em;
+}
+.life-bedtime-illustration {
+  position: relative;
+  width: 142px;
+  height: 126px;
+  flex-shrink: 0;
+}
+.life-bedtime-moon {
+  position: absolute;
+  width: 68px;
+  height: 68px;
+  top: 8px;
+  left: 28px;
+  border-radius: 50%;
+  background: #e8d8ae;
+}
+.life-bedtime-moon::after {
+  content: "";
+  position: absolute;
+  width: 59px;
+  height: 59px;
+  top: -7px;
+  right: -12px;
+  border-radius: 50%;
+  background: #f6f6ef;
+}
+.life-bedtime-star {
+  position: absolute;
+  top: 13px;
+  right: 4px;
+  color: #a0afbe;
+  font-size: 18px;
+}
+.life-bedtime-illustration > .icon {
+  position: absolute;
+  width: 105px;
+  height: 74px;
+  left: 24px;
+  bottom: 0;
+  fill: #f8fafc;
+  stroke: #a8bbcd;
+  stroke-width: 0.9;
+}
+.module-category-heading {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 16px;
+  color: #607589;
+}
+.module-category-heading h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 500;
+}
+@media (max-width: 760px), (orientation: landscape) and (max-height: 500px) and (max-width: 1024px) {
+  .life-bedtime-entry {
+    padding: 22px 20px;
+    gap: 10px;
+    position: relative;
+    align-items: flex-start;
+  }
+  .life-bedtime-copy {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+  }
+  .life-bedtime-copy h2 {
+    font-size: 22px;
+    padding-right: 64px;
+  }
+  .life-bedtime-copy > p {
+    font-size: 13px;
+    max-width: 26em;
+  }
+  .life-bedtime-copy > .life-bedtime-caption {
+    font-size: 12px;
+  }
+  .life-bedtime-illustration {
+    position: absolute;
+    top: 8px;
+    right: 9px;
+    width: 70px;
+    height: 62px;
+    opacity: 0.8;
+  }
+  .life-bedtime-moon {
+    width: 35px;
+    height: 35px;
+    left: 12px;
+  }
+  .life-bedtime-moon::after {
+    width: 30px;
+    height: 30px;
+    right: -6px;
+    top: -4px;
+  }
+  .life-bedtime-star {
+    font-size: 12px;
+    right: 0;
+  }
+  .life-bedtime-illustration > .icon {
+    width: 52px;
+    height: 37px;
+    left: 13px;
+  }
+}

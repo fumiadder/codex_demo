@@ -205,6 +205,8 @@ def checks(base):
         assert not page.locator("#sidebar").evaluate("el => el.inert")
         no_overflow(page)
         account_boundaries(page, context, base, email_a)
+        page.locator('[data-area="life"]').click()
+        expect(page.locator("#life-navigation")).to_be_visible()
         page.locator('[data-view="bedtime"]').click()
         expect(page).to_have_url(re.compile(r"/bedtime\.html\?space="))
         expect(page.locator("#bedtime-app")).to_be_visible()

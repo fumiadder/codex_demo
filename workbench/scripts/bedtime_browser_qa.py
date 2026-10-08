@@ -109,7 +109,7 @@ def checks(origin):
         no_overflow(page)
         page.locator("#open-voices").click()
         expect(page.locator("#clone-status")).to_contain_text("尚未连接")
-        expect(page.locator("#voice-file")).to_be_disabled()
+        expect(page.locator("#voice-file")).to_be_enabled()
         expect(page.locator("#clone-submit")).to_be_disabled()
         page.locator("#close-voices").click()
         expect(page.locator("#web-search")).to_be_disabled()

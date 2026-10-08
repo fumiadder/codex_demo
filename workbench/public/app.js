@@ -4,12 +4,15 @@ const $ = (selector, context = document) => context.querySelector(selector);
 const $$ = (selector, context = document) => [
   ...context.querySelectorAll(selector),
 ];
+function requestedArea() {
+  return new URLSearchParams(location.search).get("area") === "life" ? "life" : "work";
+}
 const state = {
   user: null,
   spaces: [],
   space: null,
   items: [],
-  area: "work",
+  area: requestedArea(),
   view: "overview",
   demo: false,
   testMode: false,
@@ -57,6 +60,37 @@ const descriptions = {
 const roleNames = { owner: "所有者", editor: "编辑者", viewer: "只读成员" };
 const kindNames = { task: "待办", note: "笔记", media: "媒体" };
 const fieldKeys = ["kind", "area", "title", "body", "status", "meta"];
+// Only return to the bedtime module after sign-in. Rebuild the URL so a
+// copied link cannot turn this auth page into an external redirect.
+function allowedBedtimeReturn(raw) {
+  if (typeof raw !== "string" || !raw.startsWith("/") || raw.includes("\\")) return "";
+  try {
+    const target = new URL(raw, location.origin);
+    if (target.origin !== location.origin || target.pathname !== "/bedtime.html") return "";
+    const query = new URLSearchParams();
+    const space = target.searchParams.get("space");
+    if (space && /^[A-Za-z0-9_-]{1,128}$/.test(space)) query.set("space", space);
+    if (target.searchParams.get("panel") === "voices") query.set("panel", "voices");
+    const search = query.toString();
+    return "/bedtime.html" + (search ? `?${search}` : "");
+  } catch { return ""; }
+}
+let authReturnPath = allowedBedtimeReturn(new URLSearchParams(location.search).get("next"));
+function updateAuthReturnNote() {
+  const note = $("#auth-return-note");
+  note.hidden = !authReturnPath;
+  note.textContent = authReturnPath.includes("panel=voices")
+    ? "登录后继续上传你的声音，音色档案保存在你自己的空间。"
+    : "登录后继续打开生活专区的晚安故事。";
+}
+function finishAuthReturn() {
+  if (state.demo || !state.user || !authReturnPath) return false;
+  const target = allowedBedtimeReturn(authReturnPath);
+  authReturnPath = "";
+  if (!target) return false;
+  location.replace(target);
+  return true;
+}
 let modalCleanup = null;
 let modalReturnFocus = null;
 let drawerReturnFocus = null;
@@ -667,7 +701,7 @@ async function enterApp() {
     return;
   }
   const preferred =
-    state.spaces.find((s) => s.id === sessionStorage.getItem("zhixu-space")) ||
+    state.spaces.find((s) => s.id === sessionStorage.getItem(`zhixu:space:${state.user.id}`)) ||
     state.spaces[0];
   await switchSpace(preferred.id);
 }
@@ -684,12 +718,22 @@ function bedtimeBoundary(kind, spaceId = state.space?.id) {
     }));
   } catch { /* Account cleanup does not depend on available browser storage. */ }
 }
-function openBedtime() {
-  if (state.demo) {
-    toast("晚安故事使用真实账号与空间，请先登录或创建账户。");
+function bedtimePath(panel = "", includeSpace = true) {
+  const query = new URLSearchParams();
+  if (includeSpace && !state.demo && state.space) query.set("space", state.space.id);
+  if (panel === "voices") query.set("panel", panel);
+  const search = query.toString();
+  return "/bedtime.html" + (search ? `?${search}` : "");
+}
+function openBedtime(panel = "") {
+  if (state.demo || !state.user) {
+    authReturnPath = bedtimePath(panel, false);
+    history.replaceState(null, "", `/?next=${encodeURIComponent(authReturnPath)}`);
+    showAuth();
+    updateAuthReturnNote();
     return;
   }
-  if (state.space) location.href = `/bedtime.html?space=${encodeURIComponent(state.space.id)}`;
+  if (state.space) location.href = bedtimePath(panel);
 }
 function showAuth() {
   bedtimeBoundary("logout");
@@ -732,6 +776,8 @@ function showAuth() {
   $("#auth-screen").hidden = false;
   $("#app-shell").hidden = true;
   document.body.classList.remove("life-area");
+  $("#life-navigation").hidden = true;
+  updateAuthReturnNote();
 }
 window.addEventListener("storage", (event) => {
   if (event.key !== "zhixu:session-event" || !event.newValue ||
@@ -757,7 +803,7 @@ async function switchSpace(id) {
   state.vault.loading = false;
   state.vault.spaceId = id;
   state.items = [];
-  sessionStorage.setItem("zhixu-space", id);
+  sessionStorage.setItem(`zhixu:space:${state.user.id}`, id);
   $("#current-space-name").textContent = space.name;
   $("#current-space-role").textContent =
     `${space.member_count > 1 ? "共享空间" : "独立空间"} · ${roleNames[space.role] || "成员"}`;
@@ -813,6 +859,7 @@ function setArea(area) {
 }
 function render() {
   document.body.classList.toggle("life-area", state.area === "life");
+  $("#life-navigation").hidden = state.area !== "life";
   $$(".nav-item, [data-mobile-view]").forEach((b) => {
     const view = b.dataset.view || b.dataset.mobileView;
     b.classList.toggle("active", view === state.view);
@@ -894,6 +941,7 @@ function sectionHeading(title, subtitle, view) {
   return heading;
 }
 function renderOverview(content) {
+  if (state.area === "life") renderBedtimeEntry(content);
   const tasks = currentItems("task"),
     notes = currentItems("note"),
     media = currentItems("media");
@@ -1097,6 +1145,32 @@ function renderOverview(content) {
   spaceSummary.append(art);
   lower.append(spaceSummary);
   content.append(lower);
+}
+function renderBedtimeEntry(content) {
+  const entry = el("section", "life-bedtime-entry");
+  entry.setAttribute("aria-labelledby", "life-bedtime-title");
+  const illustration = el("div", "life-bedtime-illustration");
+  illustration.setAttribute("aria-hidden", "true");
+  illustration.append(el("span", "life-bedtime-moon"), el("span", "life-bedtime-star", "✦"), svg("cloud"));
+  const copy = el("div", "life-bedtime-copy");
+  const title = el("h2", "", "晚安故事");
+  title.id = "life-bedtime-title";
+  copy.append(title, el("p", "", "选一篇故事，听熟悉的声音，让今天轻轻落下。"));
+  const actions = el("div", "life-bedtime-actions");
+  for (const [label, panel, cls] of [["看故事", "", "button bedtime-entry-read"], ["上传我的声音", "voices", "button bedtime-entry-voice"]]) {
+    const link = el("a", cls, label);
+    link.href = bedtimePath(panel);
+    if (state.demo) link.addEventListener("click", (event) => {
+      event.preventDefault();
+      openBedtime(panel);
+    });
+    actions.append(link);
+  }
+  copy.append(actions, el("p", "life-bedtime-caption", state.demo
+    ? "登录自己的账户后，可上传声音与保存故事。"
+    : "电脑与手机都能打开。上传声音后，在同一篇故事里切换朗读音色。"));
+  entry.append(copy, illustration);
+  content.append(entry);
 }
 function taskRow(item) {
   const row = el("div", `task-row${item.status === "done" ? " done" : ""}`);
@@ -1414,13 +1488,6 @@ function renderSpaces(content) {
 function renderModules(content) {
   const modules = [
     [
-      "cloud",
-      "晚安故事",
-      "独立寻找故事，切换朗读声音，收藏文本与轻声入眠。",
-      "bedtime",
-      true,
-    ],
-    [
       "task",
       "待办事项",
       "把需要推进的事情记下来，完成后留下进展。",
@@ -1463,6 +1530,12 @@ function renderModules(content) {
       false,
     ],
   ];
+  if (state.area === "life") {
+    const heading = el("div", "module-category-heading");
+    heading.append(svg("leaf"), el("h2", "", "生活功能"));
+    content.append(heading);
+    renderBedtimeEntry(content);
+  }
   const grid = el("div", "module-grid");
   modules.forEach(([iconName, title, text, view, enabled]) => {
     const card = el("section", "card module-card");
@@ -2931,7 +3004,8 @@ $("#auth-form").addEventListener("submit", async (event) => {
     $("#auth-password").value = "";
     $("#auth-invitation").value = "";
     state.view = "overview";
-    state.area = "work";
+    state.area = requestedArea();
+    if (finishAuthReturn()) return;
     await enterApp();
   } catch (err) {
     if (submission === state.authRequest)
@@ -3106,11 +3180,13 @@ async function init() {
   syncDrawerLayout();
   updateVisualViewport();
   updateDate();
+  updateAuthReturnNote();
   await loadConfiguration();
   try {
     const result = await api("/api/me");
     state.user = result.user;
     state.demo = false;
+    if (finishAuthReturn()) return;
     await enterApp();
   } catch (err) {
     showAuth();

@@ -11,10 +11,12 @@
     chunks: [], chunkIndex: 0, currentChar: 0, startedAt: 0,
     elapsed: 0, deadline: 0, urls: new Set(), voiceFile: null,
     cloneBusy: false, disposed: false, speechStartTimeout: null,
+    voiceSampleEpoch: 0, voicePreviewURL: null,
   };
   let audioContext = null, speechGain = null, noiseGain = null, noiseSource = null;
   let toastTimeout = null, voicePoll = null;
   const themeMedia = window.matchMedia("(prefers-color-scheme: dark)");
+  const desktopMedia = window.matchMedia("(min-width: 1024px)");
   const namespace = () => `zhixu:bedtime:stories:${state.user?.id}:${state.space?.id}`;
   const writable = () => !!state.space && state.space.role !== "viewer";
   const prefix = () => `/api/spaces/${encodeURIComponent(state.space.id)}/bedtime`;
@@ -59,6 +61,30 @@
     try {
       localStorage.setItem("zhixu:session-event", JSON.stringify({ kind, userId: state.user?.id, spaceId: oldSpace, at: Date.now() }));
     } catch { /* Storage unavailable does not prevent stopping this page. */ }
+  }
+  function loginReturnURL() {
+    const params = new URLSearchParams();
+    const current = new URLSearchParams(location.search);
+    if (current.get("panel") === "voices") params.set("panel", "voices");
+    const space = current.get("space");
+    if (space && /^[A-Za-z0-9_-]{1,128}$/.test(space)) params.set("space", space);
+    const query = params.toString();
+    const path = `/bedtime.html${query ? `?${query}` : ""}`;
+    return `/?next=${encodeURIComponent(path)}`;
+  }
+  async function shareVoiceLink(resultId) {
+    const url = `${location.origin}/bedtime.html?panel=voices`;
+    try {
+      await navigator.clipboard.writeText(url);
+      $(resultId).hidden = true;
+      toast("音色上传链接已复制。打开链接后登录自己的账号即可选择录音。");
+    } catch {
+      const link = node("a", "", url);
+      link.href = url;
+      $(resultId).replaceChildren(node("span", "", "可复制这个链接："), link);
+      $(resultId).hidden = false;
+      toast("浏览器暂不支持自动复制，可选中显示的链接复制。");
+    }
   }
   function applyTheme() {
     const preference = safeStorage("zhixu:bedtime:theme") || "auto";
@@ -110,6 +136,7 @@
       const member = result.spaces?.find((space) => space.id === state.space.id);
       if (!member) { expireSession("这个空间的访问权限已结束，请返回工作台。"); return false; }
       state.space.role = member.role;
+      configureCapabilities();
       return true;
     } catch (error) {
       if (error.name !== "AbortError") expireSession("暂时无法确认空间访问权限，请返回工作台重新打开。");
@@ -135,7 +162,7 @@
     const wrap = node("div");
     wrap.append(node("p", "", message));
     const link = node("a", "", "返回工作台登录");
-    link.href = "/";
+    link.href = loginReturnURL();
     wrap.append(link);
     $("loading-screen").append(wrap);
     state.selected = null; state.voices = []; state.favorites = []; state.history = [];
@@ -232,6 +259,7 @@
       $("reader-text").replaceChildren();
       story.text.split(/\n+/).filter(Boolean).forEach((line) => $("reader-text").append(node("p", "", line)));
       $("reader").hidden = false;
+      $("reader-placeholder").hidden = true;
       $("playing-title").textContent = story.title;
       $("play-toggle").disabled = false;
       $("play-status").textContent = "选好声音，再轻轻点播放";
@@ -239,7 +267,7 @@
       updateFavoriteButton();
       renderLibrary();
       updateProgress();
-      $("reader").scrollIntoView({ block: "start", behavior: "instant" });
+      if (!desktopMedia.matches) $("reader").scrollIntoView({ block: "start", behavior: "instant" });
     } catch (error) { if (error.name !== "AbortError" && !state.disposed) toast(error.message); }
   }
   function updateFavoriteButton() {
@@ -341,14 +369,18 @@
   function configureCapabilities() {
     const clone = state.config?.voiceClone?.enabled && writable();
     $("web-search").disabled = !state.config?.webSearch?.enabled;
-    $("clone-entry-note").textContent = clone ? "上传 10–30 秒人声，创建专属声音" : "设备声音可用 · 专属音色服务待连接";
-    const reason = !writable() ? "当前空间为只读。你可以用设备声音听故事；创建音色需要编辑权限。" : !state.config?.voiceClone?.enabled ? "专属音色服务尚未连接。管理员配置服务后，可上传 10–30 秒人声；现在可以选择设备声音朗读。" : `已配置云端音色服务${state.config.voiceClone.provider ? `：${state.config.voiceClone.provider}` : ""}。素材仅提交给配置的服务，用于创建你的个人音色。`;
+    $("clone-entry-note").textContent = clone ? "上传 10–30 秒人声，创建专属声音" : "可先选择录音试听 · 专属音色服务待连接";
+    const reason = !writable() ? "当前空间为只读。可以在本机试听录音、用设备声音听故事；创建音色需要编辑权限。" : !state.config?.voiceClone?.enabled ? "专属音色服务尚未连接。可以先选择录音在本机试听；素材不会提交到云端。管理员连接服务后，才能创建音色并联网朗读故事。" : `已配置云端音色服务${state.config.voiceClone.provider ? `：${state.config.voiceClone.provider}` : ""}。素材仅在你确认创建时提交给配置的服务，用于创建你的个人音色。`;
     $("clone-status").textContent = reason;
-    for (const id of ["voice-name", "voice-file", "voice-consent", "clone-submit"]) $(id).disabled = !clone;
+    $("voice-name").disabled = state.disposed;
+    $("voice-file").disabled = state.disposed;
+    $("voice-consent").disabled = !clone;
+    updateCloneSubmit();
     if (!state.config?.webSearch?.enabled) $("web-search").title = "管理员配置联网搜索服务后启用";
     $("search-source-note").textContent = state.config?.webSearch?.enabled ? "原创故事库 · 可切换联网" : "原创故事库 · 联网服务待连接";
   }
   function openVoices() {
+    if (state.disposed || $("voice-dialog").open) return;
     document.body.classList.add("dialog-open");
     $("voice-dialog").showModal();
     $("close-voices").focus({ preventScroll: true });
@@ -356,7 +388,26 @@
   function closeVoices() {
     $("voice-dialog").close();
     document.body.classList.remove("dialog-open");
-    $("voice-file").value = ""; state.voiceFile = null;
+    clearVoiceSample();
+    $("voice-name").value = "";
+    $("voice-consent").checked = false;
+    $("clone-error").textContent = "";
+    updateCloneSubmit();
+  }
+  function updateCloneSubmit() {
+    $("clone-submit").disabled = state.disposed || state.cloneBusy || !state.config?.voiceClone?.enabled || !writable() || !state.voiceFile || !$("voice-consent").checked;
+  }
+  function clearVoiceSample(resetFile = true) {
+    ++state.voiceSampleEpoch;
+    const player = $("voice-sample-player");
+    player.pause();
+    player.removeAttribute("src");
+    player.load();
+    if (state.voicePreviewURL) URL.revokeObjectURL(state.voicePreviewURL);
+    state.voicePreviewURL = null;
+    state.voiceFile = null;
+    if (resetFile) $("voice-file").value = "";
+    $("sample-preview").hidden = true;
     $("audio-duration-note").textContent = "清晰自然说话，无音乐、无其他人声。";
   }
   async function decodeVoiceFile(file) {
@@ -369,9 +420,12 @@
     try { buffer = await context.decodeAudioData(await file.arrayBuffer()); }
     catch { throw new Error("声音无法解码，请上传 WAV、MP3 或 M4A 人声音频。"); }
     finally { await context.close(); }
-    if (buffer.duration < 10 || buffer.duration > 30) throw new Error(`这段声音约 ${buffer.duration.toFixed(1)} 秒，请上传 10–30 秒人声。`);
     const sampleRate = 24000;
-    const offline = new OfflineAudioContext(1, Math.ceil(buffer.duration * sampleRate), sampleRate);
+    // Decoders can resample a 10-second WAV into 440999 frames at 44.1 kHz.
+    // Validate the exact PCM frame count we will submit, not that tiny drift.
+    const frames = Math.ceil(buffer.duration * sampleRate);
+    if (frames < 10 * sampleRate || frames > 30 * sampleRate) throw new Error(`这段声音约 ${buffer.duration.toFixed(1)} 秒，请上传 10–30 秒人声。`);
+    const offline = new OfflineAudioContext(1, frames, sampleRate);
     const source = offline.createBufferSource(); source.buffer = buffer; source.connect(offline.destination); source.start();
     const rendered = await offline.startRendering();
     const pcm = rendered.getChannelData(0);
@@ -382,7 +436,7 @@
     let binary = "";
     const bytes = new Uint8Array(wav);
     for (let i = 0; i < bytes.length; i += 8192) binary += String.fromCharCode(...bytes.subarray(i, i + 8192));
-    return { base64: btoa(binary), duration: buffer.duration };
+    return { base64: btoa(binary), duration: frames / sampleRate, blob: new Blob([wav], { type: "audio/wav" }) };
   }
   async function createClone(event) {
     event.preventDefault();
@@ -390,6 +444,7 @@
     if (!$("voice-consent").checked) return;
     state.cloneBusy = true;
     const epoch = state.spaceEpoch;
+    const sampleEpoch = state.voiceSampleEpoch;
     $("clone-submit").disabled = true;
     $("clone-submit").textContent = "正在创建声音…";
     $("clone-error").textContent = "";
@@ -400,15 +455,20 @@
       if (epoch !== state.spaceEpoch) return;
       const result = await api("/voices", "POST", { name: $("voice-name").value.trim(), audioBase64: voiceFile.base64, mimeType: "audio/wav", consent: true });
       if (epoch !== state.spaceEpoch || state.disposed) return;
-      $("voice-name").value = ""; $("voice-file").value = ""; $("voice-consent").checked = false; state.voiceFile = null;
       await refreshVoices();
-      toast(result.voice?.state === "ready" ? "专属音色已创建，可以用来读故事了" : "声音已提交，状态会在音色列表更新");
+      if (epoch !== state.spaceEpoch || state.disposed || sampleEpoch !== state.voiceSampleEpoch) return;
+      $("voice-name").value = ""; $("voice-consent").checked = false; clearVoiceSample();
+      if (result.voice?.state === "ready" && state.voices.some((voice) => voice.id === result.voice.id)) {
+        $("voice-selector").value = result.voice.id;
+        switchVoice(); closeVoices();
+        toast(state.selected ? "专属音色已创建并选中，点播放即可朗读当前故事" : "专属音色已创建并选中，选择一篇故事即可播放");
+      } else toast("声音已提交，状态会在音色列表更新");
       clearInterval(voicePoll);
       if (state.voices.some((v) => ["processing", "pending"].includes(v.state))) voicePoll = setInterval(() => refreshVoices().catch(() => {}), 8000);
     } catch (error) { if (error.name !== "AbortError" && !state.disposed) $("clone-error").textContent = error.message; }
     finally {
       state.cloneBusy = false;
-      $("clone-submit").disabled = !state.config?.voiceClone?.enabled || !writable();
+      updateCloneSubmit();
       $("clone-submit").textContent = "创建专属音色";
     }
   }
@@ -672,9 +732,11 @@
     state.library = "browse";
     state.stories = []; state.favorites = []; state.history = []; state.voices = [];
     $("reader").hidden = true; $("reader-text").replaceChildren();
+    $("reader-placeholder").hidden = false;
     $("playing-title").textContent = "选一个故事，开始今晚的陪伴";
     $("play-toggle").disabled = true;
     $("account-context").textContent = `${state.user.name || "我的账户"}${!writable() ? " · 只读" : ""}`;
+    configureCapabilities(); renderVoices();
     renderLibrary();
     const epoch = state.spaceEpoch;
     const results = await Promise.allSettled([api("/config"), api("/voices"), api("/favorites"), api("/history")]);
@@ -705,14 +767,20 @@
       state.user = result.user;
       const resultSpaces = await jsonRequest("/api/spaces");
       state.spaces = resultSpaces.spaces || [];
-      const preferred = new URLSearchParams(location.search).get("space") || sessionStorage.getItem("zhixu-space");
-      state.space = state.spaces.find((space) => space.id === preferred) || (!preferred ? state.spaces[0] : null);
+      const requestedSpace = new URLSearchParams(location.search).get("space");
+      const preferred = requestedSpace || sessionStorage.getItem(`zhixu:space:${state.user.id}`);
+      const uploadEntry = !requestedSpace && new URLSearchParams(location.search).get("panel") === "voices";
+      state.space = uploadEntry
+        ? state.spaces.find((space) => space.role === "owner" && space.member_count === 1) || state.spaces.find((space) => space.role === "owner") || state.spaces.find((space) => space.role === "editor") || state.spaces[0]
+        : state.spaces.find((space) => space.id === preferred) || (!requestedSpace ? state.spaces[0] : null);
       if (!state.space) { expireSession("当前账号无法访问这个空间，请返回工作台选择自己的空间。"); return; }
       for (const space of state.spaces) { const option = node("option", "", space.name); option.value = space.id; $("space-selector").append(option); }
       $("space-selector").value = state.space.id;
-      sessionStorage.setItem("zhixu-space", state.space.id);
+      sessionStorage.setItem(`zhixu:space:${state.user.id}`, state.space.id);
       $("bedtime-app").hidden = false; $("loading-screen").hidden = true;
+      updatePlayerInset();
       await loadSpace();
+      if (!state.disposed && new URLSearchParams(location.search).get("panel") === "voices") openVoices();
       try {
         const environment = await jsonRequest("/api/config");
         if (environment.testMode || environment.storagePersistence !== "persistent") {
@@ -743,7 +811,7 @@
       catch (error) { toast(error.message); }
     }
   });
-  $("close-reader").addEventListener("click", () => { $("reader").hidden = true; });
+  $("close-reader").addEventListener("click", () => { $("reader").hidden = true; $("reader-placeholder").hidden = false; });
   $("favorite-story").addEventListener("click", toggleFavorite);
   $("cache-story").addEventListener("click", cacheSelectedStory);
   $("download-story").addEventListener("click", downloadStory);
@@ -752,7 +820,9 @@
     try { await navigator.clipboard.writeText(state.selected.text); toast("故事文本已复制"); }
     catch { toast("浏览器暂不支持复制，请下载文本或选中正文复制。"); }
   });
-  for (const id of ["open-voices", "player-voices"]) $(id).addEventListener("click", openVoices);
+  for (const id of ["open-voices", "player-voices", "empty-reader-voices"]) $(id).addEventListener("click", openVoices);
+  $("share-voice-link").addEventListener("click", () => shareVoiceLink("share-link-result"));
+  $("dialog-share-link").addEventListener("click", () => shareVoiceLink("dialog-share-result"));
   $("close-voices").addEventListener("click", closeVoices);
   $("voice-dialog").addEventListener("cancel", (event) => { event.preventDefault(); closeVoices(); });
   $("voice-dialog").addEventListener("click", (event) => {
@@ -761,23 +831,35 @@
     if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) closeVoices();
   });
   $("voice-file").addEventListener("change", async () => {
-    state.voiceFile = null; $("clone-error").textContent = "";
     const file = $("voice-file").files[0];
+    clearVoiceSample(false); $("clone-error").textContent = "";
+    updateCloneSubmit();
     if (!file) return;
     $("audio-duration-note").textContent = "正在检查这段声音…";
     $("clone-submit").disabled = true;
     const epoch = state.spaceEpoch;
+    const sampleEpoch = state.voiceSampleEpoch;
     try {
       const converted = await decodeVoiceFile(file);
-      if (epoch !== state.spaceEpoch || $("voice-file").files[0] !== file || !$("voice-dialog").open) return;
+      if (epoch !== state.spaceEpoch || sampleEpoch !== state.voiceSampleEpoch || state.disposed || $("voice-file").files[0] !== file || !$("voice-dialog").open) return;
       state.voiceFile = converted;
-      $("audio-duration-note").textContent = `约 ${converted.duration.toFixed(1)} 秒 · 将以 24 kHz 单声道人声提交`;
+      state.voicePreviewURL = URL.createObjectURL(converted.blob);
+      $("voice-sample-player").src = state.voicePreviewURL;
+      $("sample-preview").hidden = false;
+      $("audio-duration-note").textContent = `约 ${converted.duration.toFixed(1)} 秒 · 已在本机检查声音`;
+      $("sample-preview-note").textContent = state.config?.voiceClone?.enabled && writable() ? "仅在当前页面试听。确认创建时，才将这段人声交给已配置的音色服务。" : "仅在当前页面试听；云端服务待连接，这段录音不会上传。";
     } catch (error) {
-      if (epoch !== state.spaceEpoch || $("voice-file").files[0] !== file) return;
+      if (epoch !== state.spaceEpoch || sampleEpoch !== state.voiceSampleEpoch || state.disposed || $("voice-file").files[0] !== file) return;
       $("clone-error").textContent = error.message;
       $("audio-duration-note").textContent = "请选择一段清晰的 10–30 秒人声。";
       $("voice-file").value = "";
-    } finally { $("clone-submit").disabled = !state.config?.voiceClone?.enabled || !writable(); }
+    } finally {
+      if (epoch === state.spaceEpoch && sampleEpoch === state.voiceSampleEpoch && !state.disposed) updateCloneSubmit();
+    }
+  });
+  $("voice-consent").addEventListener("change", updateCloneSubmit);
+  $("voice-sample-player").addEventListener("play", () => {
+    if (state.playing) { stopPlayback(); $("play-status").textContent = "录音试听中，故事已暂停"; }
   });
   $("clone-form").addEventListener("submit", createClone);
   window.speechSynthesis?.addEventListener("voiceschanged", renderVoices);
@@ -803,9 +885,14 @@
   $("noise-volume").addEventListener("input", () => { if (noiseGain && audioContext) noiseGain.gain.setTargetAtTime(noiseVolume(), audioContext.currentTime, 0.1); });
   $("sleep-controls").addEventListener("toggle", () => {
     $("player").classList.toggle("expanded", $("sleep-controls").open);
-    const height = $("player").getBoundingClientRect().height;
-    document.querySelector("main").style.paddingBottom = `${height + 55}px`;
+    updatePlayerInset();
   });
+  function updatePlayerInset() {
+    document.querySelector("main").style.paddingBottom = desktopMedia.matches ? "" : `${$("player").getBoundingClientRect().height + 55}px`;
+  }
+  desktopMedia.addEventListener("change", () => { $("sleep-controls").open = desktopMedia.matches; updatePlayerInset(); });
+  window.addEventListener("resize", updatePlayerInset);
+  $("sleep-controls").open = desktopMedia.matches;
   $("space-selector").addEventListener("change", async () => {
     const oldSpace = state.space.id;
     stopPlayback(true); clearOffline(); signalSessionEvent("spacechange", oldSpace);
@@ -814,7 +901,7 @@
     closeVoices(); clearInterval(voicePoll);
     state.selected = null;
     state.space = state.spaces.find((space) => space.id === $("space-selector").value);
-    sessionStorage.setItem("zhixu-space", state.space.id);
+    sessionStorage.setItem(`zhixu:space:${state.user.id}`, state.space.id);
     history.replaceState(null, "", `/bedtime.html?space=${encodeURIComponent(state.space.id)}`);
     await loadSpace();
   });
@@ -825,7 +912,7 @@
       if (data.kind === "login" && data.userId !== state.user?.id) expireSession("账号已在另一个页面切换，请返回工作台重新打开故事。");
       else if (data.kind === "logout" && data.userId === state.user?.id) expireSession();
       else if (data.kind === "spacechange" && data.userId === state.user?.id && data.spaceId === state.space?.id) {
-        stopPlayback(true); clearOffline();
+        stopPlayback(true); clearOffline(); closeVoices();
         toast("工作台已切换空间，当前声音已停止。请确认需要的空间。");
       }
     } catch { /* Session events are data only. */ }
@@ -849,7 +936,7 @@
   setInterval(() => {
     if (state.user && !state.disposed && navigator.onLine) verifyMembership();
   }, 30000);
-  window.addEventListener("pagehide", () => { stopPlayback(true); clearInterval(voicePoll); });
+  window.addEventListener("pagehide", () => { stopPlayback(true); clearVoiceSample(); clearInterval(voicePoll); });
   setInterval(timerTick, 500);
   setInterval(applyTheme, 60000);
   // No application-wide API, vault, uploaded media, or generated audio cache.

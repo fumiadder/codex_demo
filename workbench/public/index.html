@@ -189,6 +189,7 @@
           <p id="auth-subtitle" class="muted">
             进入你的空间，继续今天的好进展。
           </p>
+          <p id="auth-return-note" class="auth-note" hidden></p>
           <form id="auth-form">
             <label id="name-label" hidden
               >你的名字<input
@@ -295,10 +296,15 @@
             <svg class="icon"><use href="#i-lock" /></svg><span>私密密码箱</span
             ><span class="tiny-dot"></span>
           </button>
-          <button class="nav-item" data-view="bedtime">
-            <svg class="icon"><use href="#i-cloud" /></svg><span>晚安故事</span>
-          </button>
         </nav>
+        <section id="life-navigation" hidden>
+          <div class="nav-label second">生活专区</div>
+          <nav class="main-nav" aria-label="生活功能">
+            <button class="nav-item" data-view="bedtime">
+              <svg class="icon"><use href="#i-cloud" /></svg><span>晚安故事</span>
+            </button>
+          </nav>
+        </section>
         <div class="nav-label second">连接与拓展</div>
         <nav class="main-nav" aria-label="空间导航">
           <button class="nav-item" data-view="spaces">
