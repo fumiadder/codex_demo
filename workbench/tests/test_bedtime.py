@@ -1,0 +1,338 @@
+"""Real HTTP isolation checks; fake providers never call paid external APIs."""
+import base64
+import http.client
+import io
+import json
+import sys
+import tempfile
+import threading
+import time
+import unittest
+import wave
+from types import SimpleNamespace
+from unittest.mock import patch
+from urllib.parse import quote
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import bedtime
+from server import FolioServer
+
+
+def wav(seconds=20, rate=24000):
+    buffer = io.BytesIO()
+    with wave.open(buffer, "wb") as recording:
+        recording.setnchannels(1)
+        recording.setsampwidth(2)
+        recording.setframerate(rate)
+        recording.writeframes(b"\x20\x00" * int(seconds * rate))
+    return buffer.getvalue()
+
+
+class FakeProviders:
+    voice_enabled = False
+    search_enabled = False
+    search_provider = "local"
+
+    def __init__(self):
+        self.enroll_calls = []
+        self.synth_calls = []
+        self.deleted = []
+        self.on_enroll = None
+        self.on_synthesize = None
+        self.failure = False
+
+    def enroll(self, payload, preferred_name):
+        self.enroll_calls.append((payload, preferred_name))
+        if self.failure:
+            raise bedtime.ProviderFailure("供应商暂时不可用")
+        if self.on_enroll:
+            self.on_enroll()
+        return "provider-private-voice-" + str(len(self.enroll_calls)), bedtime.VC_MODEL
+
+    def synthesize(self, text, voice, model):
+        self.synth_calls.append((text, voice, model))
+        if self.on_synthesize:
+            self.on_synthesize()
+        return wav(0.1)
+
+    def delete_voice(self, voice):
+        self.deleted.append(voice)
+
+
+class BedtimeTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.temp = tempfile.TemporaryDirectory()
+        cls.server = FolioServer(("127.0.0.1", 0), data_dir=Path(cls.temp.name) / "data",
+                                 registration_mode="open", storage_persistence="persistent")
+        cls.thread = threading.Thread(target=cls.server.serve_forever, daemon=True)
+        cls.thread.start()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.server.shutdown()
+        cls.server.server_close()
+        cls.thread.join()
+        cls.temp.cleanup()
+
+    def setUp(self):
+        with self.server.db() as conn:
+            # The existing space owner FK intentionally does not cascade.
+            # Remove children in the same order as the main HTTP fixtures.
+            for table in ("vaults", "files", "items", "members", "spaces", "sessions", "users"):
+                conn.execute("DELETE FROM " + table)
+        self.server.rate_events.clear()
+        self.server.bedtime_provider = self.provider = FakeProviders()
+        self.server.max_space_storage = 1024 ** 3
+        self.server.max_total_storage = 10 * 1024 ** 3
+        for path in self.server.bedtime_audio_dir.iterdir():
+            path.unlink()
+        self.owner, self.owner_user, self.space = self.register("owner@example.com")
+        self.editor, self.editor_user, _ = self.register("editor@example.com")
+        self.viewer, self.viewer_user, _ = self.register("viewer@example.com")
+        self.sid = self.space["id"]
+        self.prefix = "/api/spaces/" + self.sid + "/bedtime/"
+        self.request("POST", f"/api/spaces/{self.sid}/members", {"email": "editor@example.com", "role": "editor"}, self.owner)
+        self.request("POST", f"/api/spaces/{self.sid}/members", {"email": "viewer@example.com", "role": "viewer"}, self.owner)
+
+    def request(self, method, path, data=None, cookie=None, headers=None):
+        values = {"X-Requested-With": "Workspace", **(headers or {})}
+        if cookie:
+            values["Cookie"] = cookie
+        raw = None
+        if data is not None:
+            values["Content-Type"] = "application/json"
+            raw = json.dumps(data).encode()
+        connection = http.client.HTTPConnection("127.0.0.1", self.server.server_address[1], timeout=10)
+        connection.request(method, path, body=raw, headers=values)
+        response = connection.getresponse()
+        payload, response_headers, status = response.read(), dict(response.getheaders()), response.status
+        connection.close()
+        if response_headers.get("Content-Type", "").startswith("application/json"):
+            payload = json.loads(payload)
+        return status, payload, response_headers
+
+    def register(self, email):
+        status, result, headers = self.request("POST", "/api/auth/register", {"email": email, "name": "测试用户", "password": "bedtime-password-123"})
+        self.assertEqual(status, 201, result)
+        cookie = headers["Set-Cookie"].split(";")[0]
+        status, spaces, _ = self.request("GET", "/api/spaces", cookie=cookie)
+        self.assertEqual(status, 200)
+        return cookie, result["user"], spaces["spaces"][0]
+
+    def clone_body(self, seconds=20, **fields):
+        return {"name": "我的晚安音色", "mimeType": "audio/wav", "audioBase64": base64.b64encode(wav(seconds)).decode(), "consent": True, **fields}
+
+    def clone(self, cookie=None):
+        self.provider.voice_enabled = True
+        status, body, _ = self.request("POST", self.prefix + "voices", self.clone_body(), cookie or self.owner)
+        self.assertEqual(status, 201, body)
+        return body["voice"]
+
+    def test_authenticated_catalog_contains_real_text_independent_of_voices(self):
+        self.assertEqual(self.request("GET", self.prefix + "search")[0], 401)
+        status, before, _ = self.request("GET", self.prefix + "search?q=" + quote("月亮"), cookie=self.owner)
+        self.assertEqual(status, 200)
+        self.assertTrue(before["stories"])
+        story = before["stories"][0]
+        self.assertGreater(len(story["text"]), 200)
+        self.assertEqual(story["source"]["kind"], "original")
+        self.assertFalse(story["isExcerpt"])
+        self.clone()
+        after = self.request("GET", self.prefix + "search?q=" + quote("月亮"), cookie=self.owner)[1]
+        self.assertEqual(before, after)
+        self.assertEqual(self.request("GET", self.prefix + "stories/" + story["id"], cookie=self.viewer)[1]["story"], story)
+
+    def test_shared_space_favorites_are_private_and_viewer_writes_denied(self):
+        route = self.prefix + "favorites/moon-post-office"
+        self.assertEqual(self.request("PUT", route, {}, self.owner)[0], 200)
+        self.assertEqual(len(self.request("GET", self.prefix + "favorites", cookie=self.owner)[1]["favorites"]), 1)
+        self.assertEqual(self.request("GET", self.prefix + "favorites", cookie=self.editor)[1]["favorites"], [])
+        self.assertEqual(self.request("PUT", route, {}, self.viewer)[0], 403)
+        self.assertEqual(self.request("DELETE", route, cookie=self.editor)[0], 200)
+        self.assertEqual(len(self.request("GET", self.prefix + "favorites", cookie=self.owner)[1]["favorites"]), 1)
+        status, favorite, _ = self.request("PUT", self.prefix + "favorites/imported-1", {"story": {
+            "title": "自己的小故事", "text": "这是用户主动保存的故事文本。", "source": {"kind": "original", "url": "https://example.com/story"},
+        }}, self.editor)
+        self.assertEqual(status, 200)
+        self.assertEqual(favorite["story"]["source"]["kind"], "imported")
+        self.assertEqual(self.request("GET", self.prefix + "stories/imported-1", cookie=self.owner)[0], 404)
+
+    def test_history_private_snapshot_and_validation(self):
+        payload = {"storyId": "moon-post-office", "voiceId": "system:local", "positionSeconds": 12.5}
+        self.assertEqual(self.request("POST", self.prefix + "history", payload, self.owner)[0], 200)
+        self.assertEqual(self.request("POST", self.prefix + "history", payload, self.viewer)[0], 403)
+        self.assertEqual(self.request("GET", self.prefix + "history", cookie=self.editor)[1]["history"], [])
+        self.assertEqual(self.request("POST", self.prefix + "history", {**payload, "positionSeconds": True}, self.owner)[0], 400)
+        history = self.request("GET", self.prefix + "history", cookie=self.owner)[1]["history"]
+        self.assertEqual(history[0]["positionSeconds"], 12.5)
+        self.assertIn("text", history[0]["story"])
+        self.assertEqual(self.request("DELETE", self.prefix + "history", cookie=self.owner)[0], 200)
+        self.assertEqual(self.request("GET", self.prefix + "history", cookie=self.owner)[1]["history"], [])
+
+    def test_config_no_secrets_disabled_cloud_no_provider_calls(self):
+        status, config, headers = self.request("GET", self.prefix + "config", cookie=self.owner)
+        self.assertEqual(status, 200)
+        self.assertFalse(config["webSearch"]["enabled"])
+        self.assertFalse(config["voiceClone"]["enabled"])
+        self.assertEqual(headers["Cache-Control"], "no-store")
+        self.assertNotIn("key", json.dumps(config).lower())
+        self.assertEqual(self.request("GET", self.prefix + "search?q=" + quote("童话") + "&scope=web", cookie=self.owner)[0], 503)
+        self.assertEqual(self.request("POST", self.prefix + "voices", self.clone_body(), self.owner)[0], 503)
+        self.assertEqual(self.request("POST", self.prefix + "synthesize", {"text": "晚安", "voiceId": "cloud:Seren"}, self.owner)[0], 503)
+        self.assertEqual(self.provider.enroll_calls, [])
+        self.assertEqual(self.provider.synth_calls, [])
+
+    def test_actual_wav_duration_and_consent_are_required(self):
+        self.provider.voice_enabled = True
+        for fields in (self.clone_body(consent=False), self.clone_body(seconds=3), self.clone_body(audioBase64="!!!!"), self.clone_body(mimeType="audio/webm")):
+            with self.subTest(fields={k: v for k, v in fields.items() if k != "audioBase64"}):
+                self.assertIn(self.request("POST", self.prefix + "voices", fields, self.owner)[0], (400, 415))
+        self.assertEqual(self.provider.enroll_calls, [])
+        truncated = wav(20)[:100]
+        self.assertEqual(self.request("POST", self.prefix + "voices", self.clone_body(audioBase64=base64.b64encode(truncated).decode()), self.owner)[0], 400)
+
+    def test_large_base64_clone_owner_isolation_and_provider_id_not_exposed(self):
+        voice = self.clone()
+        self.assertEqual(voice["state"], "ready")
+        self.assertEqual(len(self.provider.enroll_calls[0][0]), len(wav(20)))
+        self.assertGreater(len(self.clone_body()["audioBase64"]), 1024 ** 2)
+        listed = self.request("GET", self.prefix + "voices", cookie=self.owner)[1]
+        self.assertNotIn("provider-private-voice", json.dumps(listed))
+        self.assertEqual(self.request("GET", self.prefix + "voices", cookie=self.editor)[1]["voices"], [])
+        self.assertEqual(self.request("POST", self.prefix + "synthesize", {"text": "晚安", "voiceId": voice["id"]}, self.editor)[0], 404)
+        self.assertEqual(self.request("POST", self.prefix + "voices", self.clone_body(), self.viewer)[0], 403)
+
+    def test_synthesize_same_text_with_multiple_voices_private_audio_and_expiry(self):
+        voice = self.clone()
+        text = "同一篇故事文本，与音色选择互相独立。"
+        audio_urls = []
+        for choice in (voice["id"], "cloud:Seren"):
+            status, data, _ = self.request("POST", self.prefix + "synthesize", {"text": text, "voiceId": choice, "speed": 0.8}, self.owner)
+            self.assertEqual(status, 200, data)
+            self.assertTrue(data["audioUrl"].startswith(self.prefix + "audio/"))
+            audio_urls.append(data["audioUrl"])
+        self.assertEqual([call[0] for call in self.provider.synth_calls], [text, text])
+        self.assertEqual(self.provider.synth_calls[0][2], bedtime.VC_MODEL)
+        self.assertEqual(self.provider.synth_calls[1][2], bedtime.SYSTEM_MODEL)
+        status, content, headers = self.request("GET", audio_urls[0], cookie=self.owner)
+        self.assertEqual(status, 200)
+        self.assertEqual(content[:4], b"RIFF")
+        self.assertEqual(headers["Cache-Control"], "private, no-store")
+        self.assertEqual(self.request("GET", audio_urls[0], cookie=self.editor)[0], 404)
+        self.assertEqual(self.request("GET", audio_urls[0])[0], 401)
+        with self.server.db() as conn:
+            conn.execute("UPDATE bedtime_audio SET created_at=0")
+        self.assertEqual(self.request("GET", audio_urls[0], cookie=self.owner)[0], 404)
+        self.assertEqual(self.request("POST", self.prefix + "synthesize", {"text": "x" * 601, "voiceId": voice["id"]}, self.owner)[0], 400)
+
+    def test_revoke_during_provider_call_does_not_save_or_expose_voice(self):
+        self.provider.voice_enabled = True
+        def revoke():
+            with self.server.db() as conn:
+                conn.execute("DELETE FROM members WHERE space_id=? AND user_id=?", (self.sid, self.editor_user["id"]))
+        self.provider.on_enroll = revoke
+        status, _, _ = self.request("POST", self.prefix + "voices", self.clone_body(), self.editor)
+        self.assertEqual(status, 404)
+        self.assertEqual(len(self.provider.deleted), 1)
+        with self.server.db() as conn:
+            self.assertEqual(conn.execute("SELECT count(*) FROM bedtime_voices WHERE user_id=?", (self.editor_user["id"],)).fetchone()[0], 0)
+
+    def test_revoke_during_synthesis_does_not_save_audio(self):
+        self.provider.voice_enabled = True
+        def revoke():
+            with self.server.db() as conn:
+                conn.execute("DELETE FROM members WHERE space_id=? AND user_id=?", (self.sid, self.editor_user["id"]))
+        self.provider.on_synthesize = revoke
+        self.assertEqual(self.request("POST", self.prefix + "synthesize", {"text": "晚安", "voiceId": "cloud:Seren"}, self.editor)[0], 404)
+        self.assertEqual(list(self.server.bedtime_audio_dir.iterdir()), [])
+
+    def test_logout_during_enrollment_and_synthesis_does_not_save_result(self):
+        self.provider.voice_enabled = True
+        def logout():
+            with self.server.db() as conn:
+                conn.execute("DELETE FROM sessions WHERE user_id=?", (self.editor_user["id"],))
+        self.provider.on_enroll = logout
+        self.assertEqual(self.request("POST", self.prefix + "voices", self.clone_body(), self.editor)[0], 401)
+        self.assertEqual(len(self.provider.deleted), 1)
+        with self.server.db() as conn:
+            self.assertEqual(conn.execute("SELECT count(*) FROM bedtime_voices WHERE user_id=?", (self.editor_user["id"],)).fetchone()[0], 0)
+        status, _, headers = self.request("POST", "/api/auth/login", {"email": "editor@example.com", "password": "bedtime-password-123"})
+        self.assertEqual(status, 200)
+        self.editor = headers["Set-Cookie"].split(";")[0]
+        self.provider.on_synthesize = logout
+        self.assertEqual(self.request("POST", self.prefix + "synthesize", {"text": "晚安", "voiceId": "cloud:Seren"}, self.editor)[0], 401)
+        self.assertEqual(list(self.server.bedtime_audio_dir.iterdir()), [])
+
+    def test_thirty_second_wav_boundary_and_server_duration_validation(self):
+        self.assertEqual(bedtime.pcm_sample(wav(10)), 10)
+        self.assertEqual(bedtime.pcm_sample(wav(30)), 30)
+        for sample in (wav(9.99), wav(30.01), wav(20, rate=16000), wav(20)[:44]):
+            with self.assertRaises(ValueError):
+                bedtime.pcm_sample(sample)
+        self.provider.voice_enabled = True
+        status, result, _ = self.request("POST", self.prefix + "voices", self.clone_body(30), self.owner)
+        self.assertEqual(status, 201, result)
+        self.assertEqual(len(self.provider.enroll_calls[0][0]), len(wav(30)))
+
+    def test_official_inline_pcm_is_wrapped_as_wav_without_invented_api_parameter(self):
+        provider = bedtime.HTTPProviders({"DASHSCOPE_API_KEY": "test-secret-not-real"})
+        pcm = b"\x20\x00" * 2400
+        with patch.object(provider, "_json", return_value={"output": {"audio": {"data": base64.b64encode(pcm).decode()}}}) as fake:
+            generated = provider.synthesize("晚安", "Seren", bedtime.SYSTEM_MODEL)
+        self.assertEqual(generated[:4], b"RIFF")
+        with wave.open(io.BytesIO(generated), "rb") as recording:
+            self.assertEqual(recording.getframerate(), 24000)
+            self.assertEqual(recording.getnchannels(), 1)
+            self.assertEqual(recording.getsampwidth(), 2)
+            self.assertEqual(recording.readframes(recording.getnframes()), pcm)
+        self.assertEqual(set(fake.call_args.args[2]["input"]), {"text", "voice", "language_type"})
+
+    def test_synthesis_checks_real_disk_reserve(self):
+        self.provider.voice_enabled = True
+        with patch.object(bedtime.shutil, "disk_usage", return_value=SimpleNamespace(free=100 * 1024 * 1024)):
+            status, _, _ = self.request("POST", self.prefix + "synthesize", {"text": "晚安", "voiceId": "cloud:Seren"}, self.owner)
+        self.assertEqual(status, 507)
+        self.assertEqual(list(self.server.bedtime_audio_dir.iterdir()), [])
+
+    def test_delete_private_voice_deletes_provider_and_cannot_delete_other_user(self):
+        voice = self.clone()
+        self.assertEqual(self.request("DELETE", self.prefix + "voices/" + voice["id"], cookie=self.editor)[0], 404)
+        self.assertEqual(self.request("DELETE", self.prefix + "voices/" + voice["id"], cookie=self.owner)[0], 200)
+        self.assertEqual(len(self.provider.deleted), 1)
+        self.assertEqual(self.request("GET", self.prefix + "voices", cookie=self.owner)[1]["voices"], [])
+
+    def test_provider_failure_is_not_fake_ready_and_clone_retry_is_visible(self):
+        self.provider.voice_enabled = True
+        self.provider.failure = True
+        self.assertEqual(self.request("POST", self.prefix + "voices", self.clone_body(), self.owner)[0], 502)
+        profiles = self.request("GET", self.prefix + "voices", cookie=self.owner)[1]["voices"]
+        self.assertEqual(profiles[0]["state"], "failed")
+        self.assertEqual(self.request("POST", self.prefix + "synthesize", {"text": "晚安", "voiceId": profiles[0]["id"]}, self.owner)[0], 404)
+
+    def test_configurable_search_cannot_target_private_network_and_audio_cannot_redirect(self):
+        for endpoint in ("https://127.0.0.1", "https://localhost", "https://169.254.169.254", "https://example.com", "https://evil.com/a"):
+            provider = bedtime.HTTPProviders({"STORY_SEARCH_PROVIDER": "opensearch", "OPENSEARCH_API_KEY": "secret", "OPENSEARCH_ENDPOINT": endpoint})
+            self.assertFalse(provider.search_enabled, endpoint)
+        for url in ("https://127.0.0.1/a.wav", "https://example.com/a.wav", "https://dashscope-result-bj.oss-cn-beijing.aliyuncs.com.evil.com/a.wav", "https://user@dashscope-result-bj.oss-cn-beijing.aliyuncs.com/a.wav"):
+            with self.assertRaises(bedtime.ProviderFailure):
+                bedtime.result_audio_url(url)
+        self.assertEqual(bedtime.result_audio_url("http://dashscope-result-bj.oss-cn-beijing.aliyuncs.com/a.wav"), "https://dashscope-result-bj.oss-cn-beijing.aliyuncs.com/a.wav")
+        with self.assertRaises(bedtime.ProviderFailure):
+            bedtime.NoRedirect().redirect_request(None, None, 302, "Found", {}, "https://127.0.0.1")
+
+    def test_cloud_concurrency_busy_fails_without_fake_ready(self):
+        self.provider.voice_enabled = True
+        self.server.bedtime_provider_slots.acquire()
+        self.server.bedtime_provider_slots.acquire()
+        try:
+            self.assertEqual(self.request("POST", self.prefix + "voices", self.clone_body(), self.owner)[0], 429)
+            self.assertEqual(self.provider.enroll_calls, [])
+        finally:
+            self.server.bedtime_provider_slots.release()
+            self.server.bedtime_provider_slots.release()
+
+
+if __name__ == "__main__":
+    unittest.main()

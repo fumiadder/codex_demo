@@ -32,6 +32,8 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlsplit
 
+import bedtime
+
 PASSWORD_ITERATIONS = 310_000
 SESSION_SECONDS = 14 * 24 * 60 * 60
 MAX_UPLOAD_BYTES = 25 * 1024 * 1024
@@ -39,6 +41,7 @@ MAX_JSON_BYTES = 1024 * 1024
 ID_RE = r"[a-f0-9]{32}"
 EMAIL_RE = re.compile(r"^[^\s@\x00-\x1f]+@[^\s@\x00-\x1f]+\.[^\s@\x00-\x1f]+$")
 COOKIE_NAME = "folio_session"
+INVITATION_ERROR = "邀请码无效或已过期，请联系工作台管理员获取新的邀请码"
 
 
 def now_iso():
@@ -91,6 +94,12 @@ CREATE TABLE IF NOT EXISTS sessions (
  expires_at INTEGER NOT NULL
 );
 CREATE INDEX IF NOT EXISTS sessions_expiry ON sessions(expires_at);
+CREATE TABLE IF NOT EXISTS registration_invites (
+ token_hash TEXT PRIMARY KEY, email TEXT NOT NULL, expires_at INTEGER NOT NULL,
+ consumed_at INTEGER, bootstrap INTEGER NOT NULL CHECK(bootstrap IN (0,1)),
+ created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS registration_invites_email ON registration_invites(email);
 CREATE TABLE IF NOT EXISTS items (
  id TEXT PRIMARY KEY, space_id TEXT NOT NULL REFERENCES spaces(id) ON DELETE CASCADE,
  kind TEXT NOT NULL CHECK(kind IN ('task','note','media')),
@@ -117,7 +126,14 @@ class FolioServer(ThreadingHTTPServer):
     daemon_threads = True
     allow_reuse_address = True
 
-    def __init__(self, address, data_dir=None, public_dir=None, trust_proxy=None, allowed_origins=None):
+    def __init__(self, address, data_dir=None, public_dir=None, trust_proxy=None, allowed_origins=None,
+                 registration_mode=None, storage_persistence=None):
+        self.registration_mode = os.environ.get("REGISTRATION_MODE", "open") if registration_mode is None else registration_mode
+        if self.registration_mode not in ("open", "invite"):
+            raise ValueError("REGISTRATION_MODE must be open or invite")
+        self.storage_persistence = os.environ.get("STORAGE_PERSISTENCE", "unknown") if storage_persistence is None else storage_persistence
+        if self.storage_persistence not in ("persistent", "ephemeral", "unknown"):
+            raise ValueError("STORAGE_PERSISTENCE must be persistent, ephemeral, or unknown")
         self.data_dir = Path(data_dir or os.environ.get("DATA_DIR", Path(__file__).parent / "data")).resolve()
         self.public_dir = Path(public_dir or Path(__file__).parent / "public").resolve()
         self.test_mode = os.environ.get("WORKSPACE_TEST_MODE", "false").lower() in ("true", "1")
@@ -143,6 +159,7 @@ class FolioServer(ThreadingHTTPServer):
         with self.db() as conn:
             conn.execute("PRAGMA journal_mode=WAL")
             conn.executescript(SCHEMA)
+        bedtime.initialize(self)
         super().__init__(address, FolioHandler)
 
     @contextmanager
@@ -318,6 +335,11 @@ class FolioHandler(BaseHTTPRequestHandler):
         row = conn.execute("SELECT u.id,u.email,u.name,u.created_at FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.token_hash=? AND s.expires_at>?", (token_hash, int(time.time()))).fetchone()
         if not row:
             raise APIError(401, "登录已过期，请重新登录")
+        expected_user = self.headers.get("X-Expected-User")
+        if expected_user is not None and expected_user != row["id"]:
+            # Cookies are shared by tabs. A page opened as A must fail closed
+            # when another tab switches the browser session to B.
+            raise APIError(401, "账号已切换，请重新打开工作台")
         self.token_hash = token_hash
         return dict(row)
 
@@ -438,7 +460,8 @@ class FolioHandler(BaseHTTPRequestHandler):
         if path == "/api/config" and method == "GET":
             self.json_response(200, {
                 "testMode": self.server.test_mode,
-                "storagePersistence": "ephemeral" if self.server.test_mode else "persistent",
+                "storagePersistence": "ephemeral" if self.server.test_mode else self.server.storage_persistence,
+                "registrationMode": self.server.registration_mode,
             })
             return
         if path == "/api/health" and method == "GET":
@@ -455,19 +478,44 @@ class FolioHandler(BaseHTTPRequestHandler):
             self.server.throttle(("register" if register else "login", ip), 8 if register else 30)
             if not register:
                 self.server.throttle(("login-email", email), 12)
+            invitation_hash = None
+            if register:
+                name = self.string(data.get("name", ""), "姓名", 80, True)
+                if self.server.registration_mode == "invite":
+                    code = data.get("invitationCode", "")
+                    if not isinstance(code, str) or not re.fullmatch(r"[A-Za-z0-9_-]{43}", code):
+                        raise APIError(403, INVITATION_ERROR)
+                    invitation_hash = hashlib.sha256(code.encode()).hexdigest()
+                # Derive passwords before acquiring the database writer lock.
+                encoded_password = hash_password(password)
             token = secrets.token_urlsafe(32)
             token_hash = hashlib.sha256(token.encode()).hexdigest()
             with self.server.db() as conn:
                 if register:
-                    name = self.string(data.get("name", ""), "姓名", 80, True)
+                    # Creating the account, personal space, session, and consuming
+                    # its single-use invitation is one serialized transaction.
+                    conn.execute("BEGIN IMMEDIATE")
+                    consumed_at = int(time.time())
+                    if invitation_hash:
+                        invite = conn.execute("SELECT email,expires_at,consumed_at,bootstrap FROM registration_invites WHERE token_hash=?", (invitation_hash,)).fetchone()
+                        if not invite or invite["email"] != email or invite["expires_at"] <= consumed_at or invite["consumed_at"] is not None:
+                            raise APIError(403, INVITATION_ERROR)
+                        # A bootstrap code is valid only for an empty install,
+                        # including when another account was created after it
+                        # was issued. Keep this guard inside the same lock.
+                        if invite["bootstrap"] and conn.execute("SELECT 1 FROM users LIMIT 1").fetchone():
+                            raise APIError(403, INVITATION_ERROR)
                     user_id, space_id, stamp = new_id(), new_id(), now_iso()
-                    encoded_password = hash_password(password)
                     try:
                         conn.execute("INSERT INTO users VALUES (?,?,?,?,?)", (user_id, email, name, encoded_password, stamp))
                     except sqlite3.IntegrityError:
                         raise APIError(409, "该邮箱已注册，请登录或更换邮箱")
                     conn.execute("INSERT INTO spaces VALUES (?,?,?,?)", (space_id, "我的空间", user_id, stamp))
                     conn.execute("INSERT INTO members VALUES (?,?,?)", (space_id, user_id, "owner"))
+                    if invitation_hash:
+                        changed = conn.execute("UPDATE registration_invites SET consumed_at=? WHERE token_hash=? AND consumed_at IS NULL AND expires_at>? AND email=?", (consumed_at, invitation_hash, consumed_at, email)).rowcount
+                        if changed != 1:
+                            raise APIError(403, INVITATION_ERROR)
                     user = {"id": user_id, "email": email, "name": name, "created_at": stamp}
                 else:
                     row = conn.execute("SELECT * FROM users WHERE email=?", (email,)).fetchone()
@@ -478,6 +526,8 @@ class FolioHandler(BaseHTTPRequestHandler):
                 conn.execute("DELETE FROM sessions WHERE expires_at<=?", (int(time.time()),))
                 conn.execute("INSERT INTO sessions VALUES (?,?,?)", (token_hash, user["id"], int(time.time()) + SESSION_SECONDS))
             self.json_response(201 if register else 200, {"user": user}, self.session_cookie(token))
+            return
+        if bedtime.dispatch(self, path, query):
             return
         with self.server.db() as conn:
             user = self.current_user(conn)
@@ -719,8 +769,11 @@ class FolioHandler(BaseHTTPRequestHandler):
     def upload(self, conn, sid, uid):
         filename, mime, payload, area, title = self._prepared_upload
         self.check_item_capacity(conn, sid)
+        bedtime.cleanup_audio(self.server, conn)
         space_bytes = conn.execute("SELECT COALESCE(sum(size),0) FROM files WHERE space_id=?", (sid,)).fetchone()[0]
+        space_bytes += conn.execute("SELECT COALESCE(sum(size),0) FROM bedtime_audio WHERE space_id=?", (sid,)).fetchone()[0]
         total_bytes = conn.execute("SELECT COALESCE(sum(size),0) FROM files").fetchone()[0]
+        total_bytes += conn.execute("SELECT COALESCE(sum(size),0) FROM bedtime_audio").fetchone()[0]
         if space_bytes + len(payload) > self.server.max_space_storage:
             raise APIError(413, "空间存储容量已满，请先删除不需要的文件")
         if total_bytes + len(payload) > self.server.max_total_storage or shutil.disk_usage(self.server.data_dir).free < len(payload) + 100*1024*1024:

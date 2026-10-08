@@ -46,12 +46,20 @@ def run():
                 context.close()
 
                 server.test_mode = False
+                server.storage_persistence = "persistent"
                 normal = browser.new_page()
                 normal.goto(origin, wait_until="networkidle")
                 expect(normal.locator("#auth-screen")).to_be_visible()
                 expect(normal.locator("#test-environment-banner")).to_be_hidden()
                 print("PASS persistent deployment does not show test banner", flush=True)
                 normal.close()
+                server.storage_persistence = "unknown"
+                unknown = browser.new_page()
+                unknown.goto(origin, wait_until="networkidle")
+                expect(unknown.locator("#test-environment-banner")).to_be_visible()
+                expect(unknown.locator("#test-environment-banner")).to_contain_text("确认")
+                print("PASS undeclared storage is not presented as persistent", flush=True)
+                unknown.close()
                 fallback = browser.new_page()
                 fallback.route("**/api/config", lambda route: route.fulfill(status=503, content_type="application/json", body='{"error":"test failure"}'))
                 fallback.goto(origin, wait_until="networkidle")

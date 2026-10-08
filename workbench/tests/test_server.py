@@ -1,7 +1,10 @@
 """Integration tests use real HTTP requests and a disposable SQLite database."""
 import base64
+from concurrent.futures import ThreadPoolExecutor
+from contextlib import redirect_stderr, redirect_stdout
 import hashlib
 import http.client
+import io
 import json
 import sqlite3
 import sys
@@ -10,9 +13,11 @@ import threading
 import time
 import unittest
 from pathlib import Path
+from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from server import COOKIE_NAME, MAX_UPLOAD_BYTES, FolioServer, verify_password
+from server import COOKIE_NAME, INVITATION_ERROR, MAX_UPLOAD_BYTES, FolioServer, verify_password
+from scripts.manage_access import issue_invitation, main as manage_access_main, revoke_invitation
 
 
 class ServerTests(unittest.TestCase):
@@ -22,7 +27,8 @@ class ServerTests(unittest.TestCase):
         cls.public = Path(cls.temp.name) / "public"
         cls.public.mkdir()
         (cls.public / "index.html").write_text("<!doctype html><title>Folio</title>")
-        cls.server = FolioServer(("127.0.0.1", 0), data_dir=Path(cls.temp.name)/"data", public_dir=cls.public)
+        cls.server = FolioServer(("127.0.0.1", 0), data_dir=Path(cls.temp.name)/"data", public_dir=cls.public,
+                                 registration_mode="open", storage_persistence="unknown")
         cls.thread = threading.Thread(target=cls.server.serve_forever, daemon=True)
         cls.thread.start()
         cls.host = "127.0.0.1:%d" % cls.server.server_address[1]
@@ -36,11 +42,13 @@ class ServerTests(unittest.TestCase):
 
     def setUp(self):
         with self.server.db() as conn:
-            for table in ("vaults", "files", "items", "members", "spaces", "sessions", "users"):
+            for table in ("vaults", "files", "items", "members", "spaces", "sessions", "users", "registration_invites"):
                 conn.execute("DELETE FROM " + table)
         self.server.rate_events.clear()
         self.server.trust_proxy = False
         self.server.test_mode = False
+        self.server.registration_mode = "open"
+        self.server.storage_persistence = "unknown"
         self.server.max_space_storage = 1024**3
         self.server.max_total_storage = 10*1024**3
         for path in self.server.upload_dir.iterdir():
@@ -114,12 +122,188 @@ class ServerTests(unittest.TestCase):
     def test_public_config_exposes_only_storage_mode(self):
         status, body, headers = self.request("GET", "/api/config")
         self.assertEqual(status, 200)
-        self.assertEqual(body, {"testMode": False, "storagePersistence": "persistent"})
+        self.assertEqual(body, {"testMode": False, "storagePersistence": "unknown", "registrationMode": "open"})
         self.assertEqual(headers["Cache-Control"], "no-store")
+        self.server.storage_persistence = "persistent"
+        self.server.registration_mode = "invite"
+        with mock.patch.dict("os.environ", {"MODEL_API_KEY": "private-provider-key", "DATA_DIR": "/private/runtime-data"}):
+            self.assertEqual(self.request("GET", "/api/config")[1], {
+                "testMode": False, "storagePersistence": "persistent", "registrationMode": "invite"})
         self.server.test_mode = True
         status, body, _ = self.request("GET", "/api/config")
         self.assertEqual(status, 200)
-        self.assertEqual(body, {"testMode": True, "storagePersistence": "ephemeral"})
+        self.assertEqual(body, {"testMode": True, "storagePersistence": "ephemeral", "registrationMode": "invite"})
+
+    def invitation_fields(self, email="owner@example.com", code=None):
+        fields = {"email": email, "name": "阿舟", "password": "test-password-123"}
+        if code is not None:
+            fields["invitationCode"] = code
+        return fields
+
+    def test_invitation_email_binding_single_use_and_hashed_storage(self):
+        self.server.registration_mode = "invite"
+        issued = issue_invitation(self.server.data_dir, "OWNER@example.com", bootstrap=True)
+        code = issued["invitationCode"]
+        self.assertRegex(code, r"^[A-Za-z0-9_-]{43}$")
+        with self.server.db() as conn:
+            row = conn.execute("SELECT * FROM registration_invites").fetchone()
+            self.assertEqual(row["token_hash"], hashlib.sha256(code.encode()).hexdigest())
+            self.assertNotIn(code, dict(row).values())
+        missing = self.request("POST", "/api/auth/register", self.invitation_fields())
+        unknown = self.request("POST", "/api/auth/register", self.invitation_fields(code="x" * 43))
+        wrong_email = self.request("POST", "/api/auth/register", self.invitation_fields("other@example.com", code))
+        for rejected in (missing, unknown, wrong_email):
+            self.assertEqual(rejected[:2], (403, {"error": INVITATION_ERROR}))
+        accepted = self.request("POST", "/api/auth/register", self.invitation_fields(" Owner@Example.com ", code))
+        self.assertEqual(accepted[0], 201, accepted[1])
+        self.assertEqual(accepted[1]["user"]["email"], "owner@example.com")
+        self.assertNotIn("invitationCode", accepted[1]["user"])
+        self.assertEqual(self.request("POST", "/api/auth/register", self.invitation_fields(code=code))[:2],
+                         (403, {"error": INVITATION_ERROR}))
+        self.assertEqual(self.request("POST", "/api/auth/login", {
+            "email": "owner@example.com", "password": "test-password-123"})[0], 200)
+        with self.server.db() as conn:
+            self.assertEqual(conn.execute("SELECT count(*) FROM users").fetchone()[0], 1)
+            self.assertIsNotNone(conn.execute("SELECT consumed_at FROM registration_invites").fetchone()[0])
+
+    def test_expired_revoked_and_malformed_invitation_codes(self):
+        self.server.registration_mode = "invite"
+        first = issue_invitation(self.server.data_dir, "owner@example.com", bootstrap=True)["invitationCode"]
+        with self.server.db() as conn:
+            conn.execute("UPDATE registration_invites SET expires_at=?", (int(time.time()) - 1,))
+        self.assertEqual(self.request("POST", "/api/auth/register", self.invitation_fields(code=first))[:2],
+                         (403, {"error": INVITATION_ERROR}))
+        second = issue_invitation(self.server.data_dir, "owner@example.com", bootstrap=True)["invitationCode"]
+        self.assertEqual(revoke_invitation(self.server.data_dir, "OWNER@example.com")["revoked"], 2)
+        self.assertEqual(self.request("POST", "/api/auth/register", self.invitation_fields(code=second))[:2],
+                         (403, {"error": INVITATION_ERROR}))
+        for code in (True, 43, [], "short", "!" * 43):
+            with self.subTest(code=code):
+                self.assertEqual(self.request("POST", "/api/auth/register", self.invitation_fields(code=code))[:2],
+                                 (403, {"error": INVITATION_ERROR}))
+        with self.server.db() as conn:
+            self.assertEqual(conn.execute("SELECT count(*) FROM users").fetchone()[0], 0)
+
+    def test_concurrent_invitation_redemption_creates_one_complete_account(self):
+        self.server.registration_mode = "invite"
+        code = issue_invitation(self.server.data_dir, "owner@example.com", bootstrap=True)["invitationCode"]
+        barrier = threading.Barrier(2)
+        def redeem():
+            barrier.wait(timeout=5)
+            return self.request("POST", "/api/auth/register", self.invitation_fields(code=code))
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            responses = [future.result(timeout=10) for future in (executor.submit(redeem), executor.submit(redeem))]
+        self.assertEqual(sorted(result[0] for result in responses), [201, 403])
+        with self.server.db() as conn:
+            for table in ("users", "spaces", "members", "sessions"):
+                self.assertEqual(conn.execute(f"SELECT count(*) FROM {table}").fetchone()[0], 1, table)
+            self.assertIsNotNone(conn.execute("SELECT consumed_at FROM registration_invites").fetchone()[0])
+
+    def test_registration_transaction_rolls_back_invitation_on_session_failure(self):
+        self.server.registration_mode = "invite"
+        code = issue_invitation(self.server.data_dir, "owner@example.com", bootstrap=True)["invitationCode"]
+        with self.server.db() as conn:
+            conn.execute("CREATE TRIGGER reject_test_session BEFORE INSERT ON sessions BEGIN SELECT RAISE(ABORT, 'test session write failure'); END")
+        try:
+            with self.assertLogs(level="ERROR"):
+                self.assertEqual(self.request("POST", "/api/auth/register", self.invitation_fields(code=code))[0], 500)
+            with self.server.db() as conn:
+                for table in ("users", "spaces", "members", "sessions"):
+                    self.assertEqual(conn.execute(f"SELECT count(*) FROM {table}").fetchone()[0], 0)
+                self.assertIsNone(conn.execute("SELECT consumed_at FROM registration_invites").fetchone()[0])
+        finally:
+            with self.server.db() as conn:
+                conn.execute("DROP TRIGGER reject_test_session")
+        self.assertEqual(self.request("POST", "/api/auth/register", self.invitation_fields(code=code))[0], 201)
+
+    def test_bootstrap_redemption_requires_empty_database(self):
+        code = issue_invitation(self.server.data_dir, "owner@example.com", bootstrap=True)["invitationCode"]
+        self.register("other@example.com")
+        self.server.registration_mode = "invite"
+        self.assertEqual(self.request("POST", "/api/auth/register", self.invitation_fields(code=code))[:2],
+                         (403, {"error": INVITATION_ERROR}))
+        with self.server.db() as conn:
+            self.assertEqual(conn.execute("SELECT count(*) FROM users").fetchone()[0], 1)
+            self.assertIsNone(conn.execute("SELECT consumed_at FROM registration_invites").fetchone()[0])
+
+    def test_registration_and_storage_enums_reject_invalid_startup_configuration(self):
+        for mode in ("closed", "INVITE", "", True):
+            with self.subTest(registrationMode=mode), self.assertRaises(ValueError):
+                FolioServer(("127.0.0.1", 0), data_dir=self.server.data_dir, registration_mode=mode)
+        for persistence in ("durable", "PERSISTENT", "", True):
+            with self.subTest(storagePersistence=persistence), self.assertRaises(ValueError):
+                FolioServer(("127.0.0.1", 0), data_dir=self.server.data_dir, storage_persistence=persistence)
+
+    def test_cli_bootstrap_and_invite_guards_and_revoke(self):
+        with self.assertRaises(ValueError):
+            issue_invitation(self.server.data_dir, "colleague@example.com")
+        initial = issue_invitation(self.server.data_dir, "owner@example.com", bootstrap=True)
+        with self.assertRaises(ValueError):
+            issue_invitation(self.server.data_dir, "other@example.com", bootstrap=True)
+        self.assertEqual(revoke_invitation(self.server.data_dir, "owner@example.com")["revoked"], 1)
+        replacement = issue_invitation(self.server.data_dir, "owner@example.com", bootstrap=True)
+        self.assertNotEqual(initial["invitationCode"], replacement["invitationCode"])
+        self.server.registration_mode = "invite"
+        self.assertEqual(self.request("POST", "/api/auth/register", self.invitation_fields(code=replacement["invitationCode"]))[0], 201)
+        with self.assertRaises(ValueError):
+            issue_invitation(self.server.data_dir, "other@example.com", bootstrap=True)
+        with self.assertRaises(ValueError):
+            issue_invitation(self.server.data_dir, "owner@example.com")
+        standard = issue_invitation(self.server.data_dir, "colleague@example.com", ttl_hours=1)
+        with self.assertRaises(ValueError):
+            issue_invitation(self.server.data_dir, "colleague@example.com")
+        self.assertEqual(self.request("POST", "/api/auth/register", self.invitation_fields("colleague@example.com", standard["invitationCode"]))[0], 201)
+        issued = issue_invitation(self.server.data_dir, "new@example.com", ttl_hours=168)
+        self.assertEqual(revoke_invitation(self.server.data_dir, "new@example.com")["revoked"], 1)
+        self.assertEqual(revoke_invitation(self.server.data_dir, "new@example.com")["revoked"], 0)
+        self.assertEqual(self.request("POST", "/api/auth/register", self.invitation_fields("new@example.com", issued["invitationCode"]))[0], 403)
+
+    def test_cli_input_validation_and_failed_bootstrap_has_no_code_output(self):
+        for email in ("bad", "bad\x00@example.com", "long" * 70 + "@example.com", "a@exa\nmple.com"):
+            with self.subTest(email=email), self.assertRaises(ValueError):
+                issue_invitation(self.server.data_dir, email, bootstrap=True)
+        for ttl in (0, -1, 169, True, 1.5):
+            with self.subTest(ttl=ttl), self.assertRaises(ValueError):
+                issue_invitation(self.server.data_dir, "owner@example.com", ttl_hours=ttl, bootstrap=True)
+        self.register()
+        output, errors = io.StringIO(), io.StringIO()
+        with redirect_stdout(output), redirect_stderr(errors):
+            exit_code = manage_access_main(["--data-dir", str(self.server.data_dir), "bootstrap", "--email", "other@example.com", "--json"])
+        self.assertEqual(exit_code, 1)
+        self.assertEqual(output.getvalue(), "")
+        self.assertIn("工作台已有账号", errors.getvalue())
+        with self.server.db() as conn:
+            self.assertEqual(conn.execute("SELECT count(*) FROM registration_invites").fetchone()[0], 0)
+
+    def test_existing_database_survives_additive_invitation_schema_upgrade(self):
+        cookie, user, space = self.register()
+        payload = self.vault()
+        self.assertEqual(self.task(cookie, space["id"])[0], 201)
+        self.assertEqual(self.request("PUT", f'/api/spaces/{space["id"]}/vault', payload, cookie=cookie)[0], 200)
+        with tempfile.TemporaryDirectory() as directory:
+            data_dir = Path(directory) / "data"
+            data_dir.mkdir()
+            legacy = sqlite3.connect(data_dir / "folio.sqlite3")
+            try:
+                with self.server.db() as conn:
+                    conn.backup(legacy)
+                legacy.execute("DROP TABLE registration_invites")
+                legacy.commit()
+            finally:
+                legacy.close()
+            upgraded = FolioServer(("127.0.0.1", 0), data_dir=data_dir, public_dir=self.public,
+                                   registration_mode="invite", storage_persistence="persistent")
+            try:
+                with upgraded.db() as conn:
+                    row = conn.execute("SELECT * FROM users WHERE id=?", (user["id"],)).fetchone()
+                    self.assertEqual(row["email"], "owner@example.com")
+                    self.assertTrue(verify_password("test-password-123", row["password_hash"]))
+                    self.assertEqual(conn.execute("SELECT count(*) FROM spaces").fetchone()[0], 1)
+                    self.assertEqual(conn.execute("SELECT count(*) FROM items").fetchone()[0], 1)
+                    self.assertEqual(json.loads(conn.execute("SELECT payload FROM vaults").fetchone()[0]), payload)
+                    self.assertEqual(conn.execute("SELECT count(*) FROM registration_invites").fetchone()[0], 0)
+            finally:
+                upgraded.server_close()
 
     def test_cross_account_item_write_delete_upload_denied(self):
         a, _, space = self.register()
@@ -354,6 +538,46 @@ class ServerTests(unittest.TestCase):
                 self.assertEqual(json.loads(response.read())["item"]["title"], title)
         finally:
             connection.close()
+
+    def test_media_upload_shares_quota_with_private_story_audio(self):
+        import io
+        import wave
+
+        cookie, user, space = self.register()
+        stream = io.BytesIO()
+        with wave.open(stream, "wb") as audio:
+            audio.setnchannels(1)
+            audio.setsampwidth(2)
+            audio.setframerate(24_000)
+            audio.writeframes(b"\x01\x00" * 24)
+        payload = stream.getvalue()
+        audio_id = "a" * 32
+        audio_path = self.server.bedtime_audio_dir / audio_id
+        audio_path.write_bytes(payload)
+        try:
+            with self.server.db() as conn:
+                conn.execute("INSERT INTO bedtime_audio VALUES (?,?,?,?,?)", (audio_id, space["id"], user["id"], len(payload), int(time.time())))
+            self.server.max_space_storage = len(payload) + 1
+            self.assertEqual(self.upload(cookie, space["id"])[0], 413)
+            self.server.max_space_storage = 1024 ** 3
+            self.server.max_total_storage = len(payload) + 1
+            self.assertEqual(self.upload(cookie, space["id"])[0], 507)
+            self.server.max_total_storage = 10 * 1024 ** 3
+            self.assertEqual(self.upload(cookie, space["id"])[0], 201)
+        finally:
+            audio_path.unlink(missing_ok=True)
+
+    def test_stale_tab_cannot_read_or_write_as_another_session_user(self):
+        owner, owner_user, space = self.register()
+        other, other_user, _ = self.register("second@example.com")
+        sid = space["id"]
+        self.member(owner, sid, "second@example.com", "editor")
+        stale_headers = {"X-Expected-User": owner_user["id"]}
+        self.assertEqual(self.request("GET", f"/api/spaces/{sid}/items", cookie=other, headers=stale_headers)[0], 401)
+        self.assertEqual(self.request("POST", f"/api/spaces/{sid}/items", {"kind": "note", "area": "work", "title": "stale tab"}, cookie=other, headers=stale_headers)[0], 401)
+        current_headers = {"X-Expected-User": other_user["id"]}
+        self.assertEqual(self.request("GET", f"/api/spaces/{sid}/items", cookie=other, headers=current_headers)[0], 200)
+        self.assertEqual(self.request("GET", f"/api/spaces/{sid}/items", cookie=other)[1]["items"], [])
 
     def test_safe_static_paths_and_security_headers(self):
         status, body, headers = self.request("GET", "/")

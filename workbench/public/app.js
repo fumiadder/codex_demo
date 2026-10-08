@@ -14,11 +14,13 @@ const state = {
   demo: false,
   testMode: false,
   storagePersistence: null,
+  registrationMode: null,
   taskFilter: "all",
   mediaFilter: "all",
   register: false,
   request: 0,
   sessionEpoch: 0,
+  authRequest: 0,
   loading: false,
   vault: {
     key: null,
@@ -56,6 +58,78 @@ const roleNames = { owner: "所有者", editor: "编辑者", viewer: "只读成�
 const kindNames = { task: "待办", note: "笔记", media: "媒体" };
 const fieldKeys = ["kind", "area", "title", "body", "status", "meta"];
 let modalCleanup = null;
+let modalReturnFocus = null;
+let drawerReturnFocus = null;
+const mobileLayout = window.matchMedia(
+  "(max-width: 760px), (orientation: landscape) and (max-height: 500px) and (max-width: 1024px)",
+);
+
+function closeDrawer(restoreFocus = true) {
+  const wasOpen = $("#sidebar").classList.contains("open");
+  $("#sidebar").classList.remove("open");
+  document.body.classList.remove("drawer-open");
+  $(".workspace-body").inert = false;
+  $("#drawer-backdrop").hidden = true;
+  for (const id of ["#mobile-menu", "#mobile-more"])
+    $(id).setAttribute("aria-expanded", "false");
+  syncDrawerLayout();
+  if (wasOpen && restoreFocus && drawerReturnFocus?.isConnected)
+    drawerReturnFocus.focus({ preventScroll: true });
+  drawerReturnFocus = null;
+}
+function openDrawer(trigger = $("#mobile-menu")) {
+  if (!mobileLayout.matches || !state.user) return;
+  drawerReturnFocus = trigger;
+  $("#sidebar").classList.add("open");
+  $("#sidebar").inert = false;
+  $("#sidebar").removeAttribute("aria-hidden");
+  $("#sidebar").setAttribute("role", "dialog");
+  $("#sidebar").setAttribute("aria-modal", "true");
+  $("#drawer-backdrop").hidden = false;
+  $(".workspace-body").inert = true;
+  document.body.classList.add("drawer-open");
+  for (const id of ["#mobile-menu", "#mobile-more"])
+    $(id).setAttribute("aria-expanded", "true");
+  $("#drawer-close").focus({ preventScroll: true });
+}
+function syncDrawerLayout() {
+  const drawer = $("#sidebar");
+  const mobileClosed = mobileLayout.matches && !drawer.classList.contains("open");
+  drawer.inert = mobileClosed;
+  if (mobileClosed) drawer.setAttribute("aria-hidden", "true");
+  else drawer.removeAttribute("aria-hidden");
+  if (!mobileLayout.matches || mobileClosed) {
+    drawer.removeAttribute("role");
+    drawer.removeAttribute("aria-modal");
+  }
+}
+function updateVisualViewport() {
+  const viewport = window.visualViewport;
+  document.documentElement.style.setProperty(
+    "--visible-viewport-height",
+    `${Math.round(viewport?.height || window.innerHeight)}px`,
+  );
+  document.documentElement.style.setProperty(
+    "--visual-viewport-top",
+    `${Math.round(viewport?.offsetTop || 0)}px`,
+  );
+  document.body.classList.toggle(
+    "mobile-editing",
+    mobileLayout.matches &&
+      document.activeElement?.matches("input, textarea, select"),
+  );
+}
+function updateRegistrationControls() {
+  const invitationRequired = state.register && state.registrationMode === "invite";
+  $("#invitation-label").hidden = !invitationRequired;
+  $("#auth-invitation").required = invitationRequired;
+  $("#auth-toggle").disabled = state.registrationMode === null;
+  const note = $("#auth-registration-note");
+  note.hidden = state.registrationMode === "open";
+  note.textContent = state.registrationMode === "invite"
+    ? "注册需要管理员提供的邀请码，已有账户可以直接登录。"
+    : "暂时无法确认注册设置，已有账户可以直接登录；刷新页面后可再尝试注册。";
+}
 
 function el(tag, className, text) {
   const node = document.createElement(tag);
@@ -155,11 +229,14 @@ function errorMessage(error) {
   return error?.message || "暂时无法完成，请重试。";
 }
 async function api(path, method = "GET", data) {
+  const expectedUser = state.demo ? null : state.user?.id;
+  const session = state.sessionEpoch;
   const options = {
     method,
     credentials: "same-origin",
     headers: { Accept: "application/json" },
   };
+  if (expectedUser) options.headers["X-Expected-User"] = expectedUser;
   if (method !== "GET") options.headers["X-Requested-With"] = "Workspace";
   if (data instanceof FormData) options.body = data;
   else if (data !== undefined) {
@@ -171,6 +248,10 @@ async function api(path, method = "GET", data) {
     response = await fetch(path, options);
   } catch {
     throw new Error("无法连接工作台服务，请检查网络后重试。");
+  }
+  if (response.status === 401 && expectedUser &&
+      state.user?.id === expectedUser && state.sessionEpoch === session) {
+    showAuth();
   }
   let result;
   try {
@@ -205,26 +286,32 @@ async function loadConfiguration() {
     const config = await response.json();
     if (
       typeof config.testMode !== "boolean" ||
-      !["ephemeral", "persistent"].includes(config.storagePersistence)
+      !["ephemeral", "persistent", "unknown"].includes(config.storagePersistence)
     )
       throw new Error("环境设置格式异常");
     state.testMode = config.testMode;
     state.storagePersistence = config.storagePersistence;
+    state.registrationMode = config.registrationMode === undefined
+      ? "open"
+      : ["open", "invite"].includes(config.registrationMode)
+        ? config.registrationMode
+        : null;
   } catch {
     state.testMode = null;
     state.storagePersistence = null;
+    state.registrationMode = null;
   } finally {
     window.clearTimeout(timeout);
   }
   const banner = $("#test-environment-banner");
-  banner.hidden = state.testMode === false;
+  banner.hidden = state.testMode === false && state.storagePersistence === "persistent";
   document.body.classList.toggle("environment-banner-visible", !banner.hidden);
   if (!banner.hidden) {
     banner.replaceChildren(
       el(
         "strong",
         "",
-        state.testMode ? "免费测试环境" : "环境状态暂未确认",
+        state.testMode ? "免费测试环境" : "存储状态未确认",
       ),
       el(
         "span",
@@ -235,6 +322,7 @@ async function loadConfiguration() {
       ),
     );
   }
+  updateRegistrationControls();
   measureEnvironmentBanner();
 }
 function loading(container) {
@@ -258,18 +346,30 @@ function actionsRow(...buttons) {
   return row;
 }
 function showModal(title, build, eyebrow = "") {
-  closeModal();
+  const active = document.activeElement;
+  const origin = $("#modal").contains(active) ? modalReturnFocus : active;
+  closeModal(false);
+  closeDrawer(false);
+  modalReturnFocus = origin?.closest("#sidebar") && mobileLayout.matches
+    ? $("#mobile-more")
+    : origin;
   $("#modal-title").textContent = title;
   $("#modal-eyebrow").textContent = eyebrow;
   $("#modal-eyebrow").hidden = !eyebrow;
   const body = $("#modal-body");
   body.replaceChildren();
   build(body);
+  updateVisualViewport();
   $("#modal").showModal();
   const focus = $('input:not([type="hidden"]),textarea', body);
-  if (focus) window.setTimeout(() => focus.focus(), 80);
+  if (mobileLayout.matches) $("#modal-close").focus({ preventScroll: true });
+  else if (focus) window.setTimeout(() => {
+    if ($("#modal").open && focus.isConnected) focus.focus();
+  }, 80);
+  document.body.classList.add("modal-open");
 }
-function closeModal() {
+function closeModal(restoreFocus = true) {
+  const wasOpen = $("#modal").open;
   if (modalCleanup) {
     const cleanup = modalCleanup;
     modalCleanup = null;
@@ -277,6 +377,12 @@ function closeModal() {
   }
   if ($("#modal").open) $("#modal").close();
   $("#modal-body").replaceChildren();
+  document.body.classList.remove("modal-open");
+  if (wasOpen && restoreFocus && modalReturnFocus?.isConnected &&
+    !modalReturnFocus.closest("[hidden], [inert]"))
+    modalReturnFocus.focus({ preventScroll: true });
+  modalReturnFocus = null;
+  updateVisualViewport();
 }
 
 function demoItems() {
@@ -563,11 +669,44 @@ async function enterApp() {
     state.spaces[0];
   await switchSpace(preferred.id);
 }
+function bedtimeBoundary(kind, spaceId = state.space?.id) {
+  if (state.demo || !state.user) return;
+  try {
+    const prefix = `zhixu:bedtime:stories:${state.user.id}:`;
+    for (const key of Object.keys(localStorage)) {
+      if (key.startsWith(prefix) && (kind === "logout" || key === prefix + spaceId))
+        localStorage.removeItem(key);
+    }
+    localStorage.setItem("zhixu:session-event", JSON.stringify({
+      kind, userId: state.user.id, spaceId, at: Date.now(),
+    }));
+  } catch { /* Account cleanup does not depend on available browser storage. */ }
+}
+function openBedtime() {
+  if (state.demo) {
+    toast("晚安故事使用真实账号与空间，请先登录或创建账户。");
+    return;
+  }
+  if (state.space) location.href = `/bedtime.html?space=${encodeURIComponent(state.space.id)}`;
+}
 function showAuth() {
+  bedtimeBoundary("logout");
   ++state.sessionEpoch;
+  ++state.authRequest;
   ++state.request;
   closeModal();
+  closeDrawer(false);
+  for (const media of $$("audio, video")) {
+    media.pause();
+    media.removeAttribute("src");
+    media.load();
+  }
+  for (const url of state.objectURLs) URL.revokeObjectURL(url);
+  state.objectURLs.clear();
   lockVault(false);
+  state.demo = false;
+  state.demoStore = {};
+  state.demoVaults = {};
   state.user = null;
   state.space = null;
   state.spaces = [];
@@ -585,15 +724,31 @@ function showAuth() {
   $("#user-status").textContent = "";
   $("#footer-space").textContent = "";
   $("#page-title").textContent = names.overview;
+  $("#auth-password").value = "";
+  $("#auth-invitation").value = "";
+  $("#auth-submit").disabled = false;
   $("#auth-screen").hidden = false;
   $("#app-shell").hidden = true;
   document.body.classList.remove("life-area");
 }
+window.addEventListener("storage", (event) => {
+  if (event.key !== "zhixu:session-event" || !event.newValue ||
+      !state.user || state.demo) return;
+  let boundary;
+  try { boundary = JSON.parse(event.newValue); } catch { return; }
+  if ((boundary.kind === "logout" && boundary.userId === state.user.id) ||
+      (boundary.kind === "login" && boundary.userId !== state.user.id)) {
+    showAuth();
+    toast("登录状态已在另一页面变更，请重新登录。");
+  }
+});
 async function switchSpace(id) {
   const space = state.spaces.find((s) => s.id === id);
   if (!space) return;
+  if (state.space && state.space.id !== id) bedtimeBoundary("spacechange", state.space.id);
   lockVault(false);
   closeModal();
+  closeDrawer(false);
   state.space = space;
   state.vault.payload = undefined;
   state.vault.loaded = false;
@@ -606,6 +761,7 @@ async function switchSpace(id) {
     `${space.member_count > 1 ? "共享空间" : "独立空间"} · ${roleNames[space.role] || "成员"}`;
   $("#footer-space").textContent = `${space.name} · 数据按空间隔离`;
   $("#new-button").disabled = !writable();
+  $("#mobile-new").disabled = !writable();
   await loadItems();
 }
 async function loadItems() {
@@ -634,11 +790,16 @@ async function loadItems() {
   }
 }
 function navigate(view) {
+  if (view === "bedtime") { openBedtime(); return; }
   if (!names[view]) return;
   state.view = view;
   closeModal();
-  $("#sidebar").classList.remove("open");
+  closeDrawer(false);
   render();
+  if (mobileLayout.matches) {
+    window.scrollTo({ top: 0, behavior: "instant" });
+    $("#main-content").focus({ preventScroll: true });
+  }
   if (view === "vault") loadVault();
 }
 function setArea(area) {
@@ -650,11 +811,14 @@ function setArea(area) {
 }
 function render() {
   document.body.classList.toggle("life-area", state.area === "life");
-  $$(".nav-item").forEach((b) => {
-    b.classList.toggle("active", b.dataset.view === state.view);
-    if (b.dataset.view === state.view) b.setAttribute("aria-current", "page");
+  $$(".nav-item, [data-mobile-view]").forEach((b) => {
+    const view = b.dataset.view || b.dataset.mobileView;
+    b.classList.toggle("active", view === state.view);
+    if (view === state.view) b.setAttribute("aria-current", "page");
     else b.removeAttribute("aria-current");
   });
+  $("#mobile-more").classList.toggle("active", !["overview", "tasks", "notes"].includes(state.view));
+  $("#mobile-new").disabled = !writable();
   $$("[data-area]").forEach((b) => {
     b.classList.toggle("active", b.dataset.area === state.area);
     b.setAttribute("aria-pressed", String(b.dataset.area === state.area));
@@ -1247,6 +1411,13 @@ function renderSpaces(content) {
 }
 function renderModules(content) {
   const modules = [
+    [
+      "cloud",
+      "晚安故事",
+      "独立寻找故事，切换朗读声音，收藏文本与轻声入眠。",
+      "bedtime",
+      true,
+    ],
     [
       "task",
       "待办事项",
@@ -2136,7 +2307,7 @@ function renderVault(content) {
     loadVault();
     return;
   }
-  if (state.testMode !== false) {
+  if (state.testMode !== false || state.storagePersistence !== "persistent") {
     const note = el(
       "p",
       "vault-environment-note",
@@ -2704,6 +2875,7 @@ function updateDate() {
     }).format(now) + " · 一天一个小进展";
 }
 $("#auth-toggle").addEventListener("click", () => {
+  if (state.registrationMode === null && !state.register) return;
   state.register = !state.register;
   $("#name-label").hidden = !state.register;
   $("#auth-name").required = state.register;
@@ -2725,9 +2897,11 @@ $("#auth-toggle").addEventListener("click", () => {
     ? "new-password"
     : "current-password";
   $("#auth-error").textContent = "";
+  updateRegistrationControls();
 });
 $("#auth-form").addEventListener("submit", async (event) => {
   event.preventDefault();
+  const submission = ++state.authRequest;
   const submit = $("#auth-submit");
   submit.disabled = true;
   $("#auth-error").textContent = "";
@@ -2736,22 +2910,32 @@ $("#auth-form").addEventListener("submit", async (event) => {
       email: $("#auth-email").value.trim(),
       password: $("#auth-password").value,
     };
-    if (state.register) data.name = $("#auth-name").value.trim();
+    if (state.register) {
+      if (state.registrationMode === null)
+        throw new Error("暂时无法确认注册设置，请刷新页面后重试。");
+      data.name = $("#auth-name").value.trim();
+      if (state.registrationMode === "invite")
+        data.invitationCode = $("#auth-invitation").value.trim();
+    }
     const result = await api(
       `/api/auth/${state.register ? "register" : "login"}`,
       "POST",
       data,
     );
+    if (submission !== state.authRequest) return;
     state.demo = false;
     state.user = result.user;
+    bedtimeBoundary("login");
     $("#auth-password").value = "";
+    $("#auth-invitation").value = "";
     state.view = "overview";
     state.area = "work";
     await enterApp();
   } catch (err) {
-    $("#auth-error").textContent = errorMessage(err);
+    if (submission === state.authRequest)
+      $("#auth-error").textContent = errorMessage(err);
   } finally {
-    submit.disabled = false;
+    if (submission === state.authRequest) submit.disabled = false;
   }
 });
 $("#demo-button").addEventListener("click", enterDemo);
@@ -2774,11 +2958,15 @@ $$("[data-area]").forEach((b) =>
 $$("[data-go]").forEach((b) =>
   b.addEventListener("click", () => navigate(b.dataset.go)),
 );
+$$("[data-mobile-view]").forEach((b) =>
+  b.addEventListener("click", () => navigate(b.dataset.mobileView)),
+);
 $(".sidebar .brand").addEventListener("click", (event) => {
   event.preventDefault();
   navigate("overview");
 });
 $("#new-button").addEventListener("click", showNew);
+$("#mobile-new").addEventListener("click", showNew);
 $("#space-switcher").addEventListener("click", showSpaceSwitcher);
 $("#search-button").addEventListener("click", showSearch);
 $("#profile-button").addEventListener("click", showProfile);
@@ -2799,20 +2987,42 @@ $("#modal").addEventListener("click", (event) => {
       closeModal();
   }
 });
-$("#mobile-menu").addEventListener("click", () =>
-  $("#sidebar").classList.toggle("open"),
-);
+for (const id of ["#mobile-menu", "#mobile-more"])
+  $(id).addEventListener("click", () => {
+    if ($("#sidebar").classList.contains("open")) closeDrawer();
+    else openDrawer($(id));
+  });
+$("#drawer-close").addEventListener("click", () => closeDrawer());
+$("#drawer-backdrop").addEventListener("click", () => closeDrawer());
+mobileLayout.addEventListener("change", () => {
+  closeDrawer(false);
+  updateVisualViewport();
+});
 $("#file-input").addEventListener("change", (event) =>
   uploadFiles([...event.target.files]),
 );
-document.addEventListener("click", (event) => {
-  if (
-    !event.target.closest("#sidebar") &&
-    !event.target.closest("#mobile-menu")
-  )
-    $("#sidebar").classList.remove("open");
-});
 document.addEventListener("keydown", (event) => {
+  if (mobileLayout.matches && $("#sidebar").classList.contains("open")) {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeDrawer();
+      return;
+    }
+    if (event.key === "Tab") {
+      const controls = $$("button:not(:disabled), a[href], [tabindex='0']", $("#sidebar"))
+        .filter((node) => node.getClientRects().length);
+      const first = controls[0], last = controls.at(-1);
+      if (!$("#sidebar").contains(document.activeElement) ||
+        (event.shiftKey && document.activeElement === first)) {
+        event.preventDefault();
+        (event.shiftKey ? last : first)?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first?.focus();
+      }
+      return;
+    }
+  }
   if (
     (event.metaKey || event.ctrlKey) &&
     event.key.toLowerCase() === "k" &&
@@ -2873,12 +3083,26 @@ window.setInterval(() => {
     lockVault();
 }, 15000);
 window.setInterval(updateDate, 60000);
+window.addEventListener("resize", updateVisualViewport);
+window.visualViewport?.addEventListener("resize", updateVisualViewport);
+window.visualViewport?.addEventListener("scroll", updateVisualViewport);
+document.addEventListener("focusin", updateVisualViewport);
+document.addEventListener("focusout", () => window.setTimeout(updateVisualViewport, 0));
+$("#modal").addEventListener("focusin", (event) => {
+  if (mobileLayout.matches && event.target.matches("input, textarea, select"))
+    window.setTimeout(() => {
+      if ($("#modal").open && event.target.isConnected)
+        event.target.scrollIntoView({ block: "nearest", behavior: "instant" });
+    }, 180);
+});
 window.addEventListener("resize", measureEnvironmentBanner);
 if (globalThis.ResizeObserver)
   new ResizeObserver(measureEnvironmentBanner).observe(
     $("#test-environment-banner"),
   );
 async function init() {
+  syncDrawerLayout();
+  updateVisualViewport();
   updateDate();
   await loadConfiguration();
   try {

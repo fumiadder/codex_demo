@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content" />
+    <meta name="theme-color" content="#e8eff4" />
+    <meta name="description" content="知序晚安故事：独立寻找故事，用熟悉的声音陪你入眠。" />
+    <title>晚安故事 · 知序</title>
+    <link rel="stylesheet" href="/bedtime.css" />
+    <script src="/bedtime.js" defer></script>
+  </head>
+  <body>
+    <div id="environment-note" class="environment-note" hidden></div>
+    <div id="loading-screen" class="loading-screen" role="status">正在打开晚安故事…</div>
+    <div id="bedtime-app" hidden>
+      <header class="topbar">
+        <a class="back-link" href="/" aria-label="返回知序工作台"><span aria-hidden="true">‹</span> 知序</a>
+        <span class="wordmark">晚安故事</span>
+        <button id="theme-toggle" class="icon-button" type="button" aria-label="护眼模式：自动">☾</button>
+      </header>
+      <main>
+        <div class="space-context">
+          <label for="space-selector" class="visually-hidden">当前空间</label>
+          <select id="space-selector" aria-label="当前空间"></select>
+          <span id="account-context"></span>
+        </div>
+        <section class="welcome" aria-labelledby="welcome-title">
+          <div><p class="welcome-small">把今天，轻轻放下</p><h1 id="welcome-title">今晚，听个好故事。</h1><p>让熟悉的声音，陪你慢慢入眠。</p></div>
+          <svg class="moon-scene" viewBox="0 0 180 160" aria-hidden="true">
+            <circle class="moon-glow" cx="111" cy="62" r="48" />
+            <path class="moon" d="M130 27a38 38 0 1 0 23 57 33 33 0 0 1-23-57Z" />
+            <path class="cloud" d="M42 124h94a13 13 0 0 0-10-22 21 21 0 0 0-39-8 16 16 0 0 0-26 10 10 10 0 0 0-19 20Z" />
+            <path class="book-left" d="M64 126q20-5 39 4v20q-19-9-39-4Z" />
+            <path class="book-right" d="M103 130q17-10 37-7v20q-20-3-37 7Z" />
+            <path class="book-lines" d="m73 132 21 3m-21 2 21 3m17-3 21-7m-21 13 21-7" />
+            <path class="stars" d="m44 43 2 5 5 2-5 2-2 5-2-5-5-2 5-2Zm102 65 1 4 4 1-4 1-1 4-1-4-4-1 4-1ZM71 18l1 3 3 1-3 1-1 3-1-3-3-1 3-1Z" />
+            <circle class="stars" cx="158" cy="44" r="2" /><circle class="stars" cx="55" cy="81" r="2" />
+          </svg>
+        </section>
+        <form id="story-search" class="search-bar" role="search">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6" /><path d="m15 15 5 5" /></svg>
+          <input id="search-input" type="search" autocomplete="off" enterkeyhint="search" aria-label="寻找睡前故事" placeholder="搜童话、月亮、治愈小故事…" maxlength="100" />
+          <button type="submit" aria-label="搜索故事">搜索</button>
+        </form>
+        <div class="search-options"><span id="search-source-note">知序原创故事库</span><label><input id="web-search" type="checkbox" disabled /> 联网检索</label></div>
+        <nav id="category-tabs" class="category-tabs" aria-label="故事分类"></nav>
+        <button id="open-voices" class="voice-entry" type="button">
+          <span class="voice-entry-icon" aria-hidden="true">♫</span><span><strong>用熟悉的声音，说晚安</strong><small id="clone-entry-note">上传一小段声音，创建专属音色</small></span><span class="entry-arrow" aria-hidden="true">›</span>
+        </button>
+        <nav id="library-tabs" class="library-tabs" aria-label="故事列表"><button type="button" data-library="browse" aria-pressed="true">发现故事</button><button type="button" data-library="favorites" aria-pressed="false">收藏</button><button type="button" data-library="history" aria-pressed="false">听过</button><button type="button" data-library="offline" aria-pressed="false">离线</button></nav>
+        <div class="section-heading"><h2 id="list-heading">给今晚的故事</h2><button id="clear-list" class="quiet-button" type="button" hidden></button></div>
+        <p id="list-status" class="status-text" role="status" aria-live="polite"></p>
+        <section id="story-list" class="story-list" aria-label="故事结果"></section>
+        <section id="reader" class="reader" aria-labelledby="reader-title" hidden>
+          <div class="reader-top"><span id="reader-source" class="source-label"></span><button id="close-reader" class="icon-button" type="button" aria-label="收起故事">×</button></div>
+          <h2 id="reader-title"></h2><div id="reader-text" class="reader-text"></div>
+          <div class="reader-actions"><button id="favorite-story" type="button">♡ 收藏</button><button id="copy-story" type="button">复制文本</button><button id="download-story" type="button">下载文本</button><button id="cache-story" type="button">保存离线</button></div>
+          <p class="reader-note">故事和音色独立选择。切换声音时，会保留这篇故事。</p>
+        </section>
+        <p class="page-footnote">安静听故事，也给自己一点安静。<br />收藏、音色与播放记录仅属于当前账号和空间。</p>
+      </main>
+      <aside id="player" class="player" aria-label="故事播放器">
+        <div class="player-current"><span class="player-moon" aria-hidden="true">☾</span><div><strong id="playing-title">选一个故事，开始今晚的陪伴</strong><small id="play-status" role="status" aria-live="polite">故事文本与朗读声音自由搭配</small></div><button id="play-toggle" class="play-button" type="button" aria-label="开始朗读" disabled>▶</button></div>
+        <div class="voice-picker"><label for="voice-selector">朗读声音</label><select id="voice-selector"><option value="system:default">设备默认声音</option></select><button id="player-voices" class="quiet-button" type="button">我的音色</button></div>
+        <div class="play-progress"><span id="elapsed-time">0:00</span><progress id="story-progress" max="1" value="0" aria-label="朗读进度"></progress><span id="duration-time">—</span></div>
+        <details id="sleep-controls" class="sleep-controls"><summary><span>语速 · 定时 · 白噪音</span><span id="timer-summary">睡眠工具</span></summary><div class="sleep-settings">
+          <label>朗读语速<select id="speech-rate"><option value="0.7">0.7 倍</option><option value="0.85">0.85 倍</option><option value="1" selected>1 倍</option><option value="1.15">1.15 倍</option><option value="1.3">1.3 倍</option></select></label>
+          <label>定时关闭<select id="sleep-timer"><option value="0">不定时</option><option value="5">5 分钟</option><option value="15">15 分钟</option><option value="30">30 分钟</option><option value="60">60 分钟</option></select></label>
+          <label>背景白噪音<select id="noise-kind"><option value="none">安静</option><option value="rain">雨声</option><option value="fire">篝火</option><option value="stream">溪流</option></select></label>
+          <label>朗读音量<input id="speech-volume" type="range" min="0" max="1" step="0.05" value="0.8" /></label>
+          <label>白噪音音量<input id="noise-volume" type="range" min="0" max="0.3" step="0.01" value="0.06" /></label>
+          <label class="fade-label"><input id="fade-volume" type="checkbox" checked /> 最后一分钟轻轻降音</label>
+        </div><p id="playback-limits" class="settings-note">白噪音为设备合成声音。系统朗读降音在下一小段生效；手机锁屏或切到后台后，播放与定时会受浏览器限制，返回时会核对截止时间。</p></details>
+      </aside>
+      <dialog id="voice-dialog" aria-labelledby="voice-title"><div class="dialog-top"><h2 id="voice-title">我的晚安声音</h2><button id="close-voices" class="icon-button" type="button" aria-label="关闭音色专区">×</button></div>
+        <p class="dialog-note">一小段熟悉的声音，陪伴很多个夜晚。音色档案仅对你在当前空间可见。</p>
+        <div id="voice-library" class="voice-library"></div><p id="clone-status" class="capability-note" role="status"></p>
+        <form id="clone-form"><label>音色名字<input id="voice-name" type="text" maxlength="60" placeholder="例如：我的轻声晚安" required /></label><label class="upload-label">上传 10–30 秒人声<input id="voice-file" type="file" accept="audio/*,.wav,.mp3,.m4a,.webm,.ogg" required /><span id="audio-duration-note">清晰自然说话，无音乐、无其他人声。</span></label><label class="consent-label"><input id="voice-consent" type="checkbox" required /> 我确认这是本人的声音，或已获得声音本人授权，并同意交给配置的音色服务处理。</label><p id="clone-error" class="error-text" role="alert"></p><button id="clone-submit" class="primary-button" type="submit">创建专属音色</button></form>
+      </dialog>
+    </div>
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  </body>
+</html>

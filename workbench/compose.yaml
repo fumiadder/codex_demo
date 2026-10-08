@@ -1,42 +1,77 @@
+name: ${COMPOSE_PROJECT_NAME:-zhixu}
 services:
   app:
-    build: .
+    image: ${APP_IMAGE:-zhixu-app:local}
+    build:
+      context: .
+      args:
+        SOURCE_SHA: ${SOURCE_SHA:-local}
+        SCHEMA_HASH: ${SCHEMA_HASH:-unknown}
+    pull_policy: never
     restart: unless-stopped
+    init: true
+    labels:
+      io.zhixu.managed: "true"
     environment:
       PORT: "8000"
       DATA_DIR: /data
       TRUST_PROXY: "1"
+      REGISTRATION_MODE: invite
+      STORAGE_PERSISTENCE: persistent
+      WORKSPACE_TEST_MODE: "0"
+      # Provider keys only exist on the server; empty defaults disable cloud AI.
+      DASHSCOPE_API_KEY: ${DASHSCOPE_API_KEY:-}
+      STORY_SEARCH_PROVIDER: ${STORY_SEARCH_PROVIDER:-local}
+      OPENSEARCH_API_KEY: ${OPENSEARCH_API_KEY:-}
+      OPENSEARCH_ENDPOINT: ${OPENSEARCH_ENDPOINT:-}
+      OPENSEARCH_WORKSPACE: ${OPENSEARCH_WORKSPACE:-default}
+      TAVILY_API_KEY: ${TAVILY_API_KEY:-}
+      MAX_SPACE_STORAGE_BYTES: ${MAX_SPACE_STORAGE_BYTES:-1073741824}
+      MAX_TOTAL_STORAGE_BYTES: ${MAX_TOTAL_STORAGE_BYTES:-10737418240}
     volumes:
       - workspace_data:/data
-    expose:
-      - "8000"
+    expose: ["8000"]
+    read_only: true
+    tmpfs: ["/tmp:rw,noexec,nosuid,size=32m"]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 512m
+    cpus: "1.0"
+    pids_limit: 128
+    stop_grace_period: 30s
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}
     healthcheck:
-      test:
-        [
-          "CMD",
-          "python",
-          "-c",
-          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=4)",
-        ]
-      interval: 30s
-      timeout: 5s
-      retries: 3
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=3)"]
+      interval: 10s
+      timeout: 4s
+      start_period: 5s
+      retries: 5
   gateway:
     image: ${CADDY_IMAGE:-caddy:2-alpine}
     restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
+    ports: ["80:80", "443:443"]
     environment:
-      WORKSPACE_DOMAIN: ${WORKSPACE_DOMAIN:?请在.env设置已解析到服务器的域名}
+      WORKSPACE_DOMAIN: ${WORKSPACE_DOMAIN:?请在服务器shared/.env设置域名}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config
+    mem_limit: 256m
+    cpus: "0.5"
+    pids_limit: 128
+    security_opt: ["no-new-privileges:true"]
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}
     depends_on:
       app:
         condition: service_healthy
 volumes:
   workspace_data:
+    name: ${WORKSPACE_DATA_VOLUME:-${COMPOSE_PROJECT_NAME:-zhixu}_data}
   caddy_data:
+    name: ${COMPOSE_PROJECT_NAME:-zhixu}_caddy_data
   caddy_config:
+    name: ${COMPOSE_PROJECT_NAME:-zhixu}_caddy_config

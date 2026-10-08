@@ -1,0 +1,75 @@
+name: Workbench CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: workbench-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    if: github.event.repository.private == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Check server authorization and bedtime APIs
+        working-directory: workbench
+        run: python -m unittest discover -s tests -v
+      - name: Check browser JavaScript and release scripts
+        working-directory: workbench
+        run: |
+          node --check public/app.js
+          node --check public/bedtime.js
+          python -m compileall -q server.py scripts
+          python -m py_compile bedtime.py
+          bash -n scripts/ops_common.sh scripts/deploy.sh scripts/backup.sh scripts/restore.sh
+      - name: Install pinned browser QA tools
+        run: |
+          python -m pip install --disable-pip-version-check playwright==1.62.0
+          python -m playwright install --with-deps chromium
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as playwright:
+              executable = playwright.chromium.executable_path
+              if not Path(executable).is_file():
+                  raise SystemExit('Playwright Chromium executable is unavailable')
+          with open(os.environ['GITHUB_ENV'], 'a') as output:
+              output.write('QA_CHROMIUM=' + executable + '\n')
+          PY
+      - name: Check mobile layout and cross-tab account privacy
+        working-directory: workbench
+        env:
+          PYTHONUNBUFFERED: '1'
+        run: python scripts/mobile_qa.py
+      - name: Check bedtime browser interactions and account boundaries
+        working-directory: workbench
+        env:
+          PYTHONUNBUFFERED: '1'
+        run: python scripts/bedtime_browser_qa.py
+      - name: Validate production Compose
+        working-directory: workbench
+        env:
+          WORKSPACE_DOMAIN: workbench.example.com
+        run: docker compose config -q
+      - name: Build code-only release
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+        run: python workbench/scripts/package_release.py --sha "$SOURCE_SHA" --output "$RUNNER_TEMP/workbench.tar.gz"
+      - name: Record validation result
+        run: |
+          echo '### CI 验证通过' >> "$GITHUB_STEP_SUMMARY"
+          echo '本任务仅验证源码与部署配置，没有修改公网服务。' >> "$GITHUB_STEP_SUMMARY"

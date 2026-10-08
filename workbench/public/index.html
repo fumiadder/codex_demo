@@ -2,7 +2,10 @@
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content"
+    />
     <meta name="theme-color" content="#23483d" />
     <meta
       name="description"
@@ -199,6 +202,10 @@
                 id="auth-email"
                 type="email"
                 autocomplete="email"
+                inputmode="email"
+                autocapitalize="none"
+                spellcheck="false"
+                enterkeyhint="next"
                 required
                 placeholder="you@example.com"
             /></label>
@@ -209,8 +216,19 @@
                 autocomplete="current-password"
                 minlength="10"
                 maxlength="200"
+                enterkeyhint="go"
                 required
                 placeholder="至少 10 位字符"
+            /></label>
+            <label id="invitation-label" hidden
+              >邀请码<input
+                id="auth-invitation"
+                autocomplete="off"
+                autocapitalize="none"
+                spellcheck="false"
+                maxlength="200"
+                placeholder="输入管理员提供的邀请码"
+                enterkeyhint="go"
             /></label>
             <p id="auth-error" class="form-error" role="alert"></p>
             <button id="auth-submit" class="button primary full" type="submit">
@@ -221,6 +239,7 @@
             <span id="auth-switch-text">还没有自己的空间？</span
             ><button id="auth-toggle" class="text-button">创建账户</button>
           </p>
+          <p id="auth-registration-note" class="auth-note" hidden></p>
           <div class="auth-divider"><span>先认识一下知序</span></div>
           <button id="demo-button" class="button secondary full">
             体验演示 <svg class="icon"><use href="#i-arrow" /></svg>
@@ -233,12 +252,20 @@
     </section>
 
     <div id="app-shell" class="app-shell" hidden>
-      <aside class="sidebar" id="sidebar">
+      <aside class="sidebar" id="sidebar" aria-label="空间与功能导航">
         <a class="brand" href="#overview"
           ><span class="brand-mark">知</span
           ><span>知序<span class="brand-dot">.</span></span
           ><span class="brand-caption">工作与生活的私人空间</span></a
         >
+        <button
+          id="drawer-close"
+          class="icon-button drawer-close"
+          type="button"
+          aria-label="关闭导航"
+        >
+          <svg class="icon"><use href="#i-close" /></svg>
+        </button>
         <button id="space-switcher" class="space-switcher">
           <span class="space-avatar">我</span
           ><span
@@ -267,6 +294,9 @@
           <button class="nav-item" data-view="vault">
             <svg class="icon"><use href="#i-lock" /></svg><span>私密密码箱</span
             ><span class="tiny-dot"></span>
+          </button>
+          <button class="nav-item" data-view="bedtime">
+            <svg class="icon"><use href="#i-cloud" /></svg><span>晚安故事</span>
           </button>
         </nav>
         <div class="nav-label second">连接与拓展</div>
@@ -298,6 +328,14 @@
           </button>
         </div>
       </aside>
+      <button
+        id="drawer-backdrop"
+        class="drawer-backdrop"
+        type="button"
+        aria-label="关闭导航遮罩"
+        tabindex="-1"
+        hidden
+      ></button>
 
       <div class="workspace-body">
         <header class="topbar">
@@ -305,6 +343,8 @@
             id="mobile-menu"
             class="icon-button mobile-menu"
             aria-label="展开导航"
+            aria-controls="sidebar"
+            aria-expanded="false"
           >
             <svg class="icon"><use href="#i-grid" /></svg>
           </button>
@@ -359,10 +399,27 @@
           <span>知序 · 让工作与生活各有其所</span
           ><span id="footer-space">你的私人空间</span>
         </footer>
+        <nav id="mobile-navigation" class="mobile-navigation" aria-label="常用功能">
+          <button type="button" data-mobile-view="overview" class="mobile-nav-item active">
+            <svg class="icon"><use href="#i-grid" /></svg><span>总览</span>
+          </button>
+          <button type="button" data-mobile-view="tasks" class="mobile-nav-item">
+            <svg class="icon"><use href="#i-task" /></svg><span>待办</span>
+          </button>
+          <button type="button" id="mobile-new" class="mobile-nav-item mobile-nav-create" aria-label="新建记录">
+            <span class="mobile-create-icon"><svg class="icon"><use href="#i-plus" /></svg></span><span>新建</span>
+          </button>
+          <button type="button" data-mobile-view="notes" class="mobile-nav-item">
+            <svg class="icon"><use href="#i-note" /></svg><span>笔记</span>
+          </button>
+          <button type="button" id="mobile-more" class="mobile-nav-item" aria-controls="sidebar" aria-expanded="false" aria-label="更多功能，展开导航">
+            <svg class="icon"><use href="#i-more" /></svg><span>更多</span>
+          </button>
+        </nav>
       </div>
     </div>
 
-    <dialog id="modal" class="modal">
+    <dialog id="modal" class="modal" aria-labelledby="modal-title">
       <div class="modal-header">
         <div>
           <span id="modal-eyebrow" class="eyebrow"></span>
