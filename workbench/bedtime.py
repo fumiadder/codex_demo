@@ -58,6 +58,21 @@ VC_MODEL = "qwen3-tts-vc-2026-01-22"
 SYSTEM_MODEL = "qwen3-tts-flash"
 ENROLLMENT_URL = "https://dashscope.aliyuncs.com/api/v1/services/audio/tts/customization"
 SYNTHESIS_URL = "https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation"
+GENERATION_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
+GENERATION_MODEL = "qwen-plus"
+STORY_CATEGORIES = ["儿童睡前", "治愈温柔", "小动物", "公主冒险", "成长勇气", "亲情暖心"]
+GENERATION_ENUMS = {
+    "ageGroup": ["3-6", "7-10"], "category": STORY_CATEGORIES,
+    "durationMinutes": [1, 5], "style": ["healing", "fantasy", "realistic"],
+    "protagonist": ["cat", "rabbit", "child"],
+}
+GENERATION_DEFAULTS = {"ageGroup": "3-6", "category": "儿童睡前", "durationMinutes": 1,
+                       "style": "healing", "protagonist": "rabbit", "moral": True,
+                       "blockScary": True, "interactive": False}
+SLEEP_ENDING = "今天的故事就轻轻停在这里。把肩膀放松，盖好柔软的被子。还没做完的小事可以留给明天。愿你带着安心慢慢休息，晚安。"
+# These are conservative checks on known words, not a guarantee of content safety.
+SCARY_TERMS = re.compile(r"恐怖|惊恐|惊吓|尖叫|鬼魂|幽灵|妖怪|怪物|尸体|鲜血|流血|杀死|谋杀|追杀|绑架|伤害|虐待|噩梦|惩罚|死亡|永远离开")
+ACTIVE_TEXT = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]|https?://|www\.|<[^>]*>|```", re.I)
 MAX_STORY_CHARACTERS = 20_000
 MAX_SAMPLE_BYTES = 1_500_000
 MAX_VOICE_JSON_BYTES = 2_500_000
@@ -177,6 +192,10 @@ class HTTPProviders:
         return bool(self.voice_key)
 
     @property
+    def generation_enabled(self):
+        return bool(self.voice_key)
+
+    @property
     def search_enabled(self):
         return bool(self.search_key and self.search_url)
 
@@ -221,6 +240,51 @@ class HTTPProviders:
         self._json(ENROLLMENT_URL, self.voice_key, {
             "model": "qwen-voice-enrollment", "input": {"action": "delete", "voice": voice},
         })
+
+    def generate(self, parameters):
+        """Fixed compatible API; only validated enum parameters enter the prompt."""
+        if not self.generation_enabled:
+            raise ProviderFailure("AI 故事生成尚未配置")
+        minimum, maximum = (150, 250) if parameters["durationMinutes"] == 1 else (1001, 1250)
+        protagonist = {"cat": "小猫", "rabbit": "小兔子", "child": "小朋友"}[parameters["protagonist"]]
+        style = {"healing": "温柔治愈", "fantasy": "轻柔奇幻", "realistic": "温暖写实"}[parameters["style"]]
+        body_minimum, body_maximum = minimum - len(SLEEP_ENDING) - 2, maximum - len(SLEEP_ENDING) - 2
+        system = (
+            "你创作原创中文儿童睡前故事。只输出一个JSON对象，字段只有title、paragraphs、questions。"
+            "title是简短标题；paragraphs是纯文本正文段落数组，不含结尾；questions是"
+            "{afterParagraph:从0开始的段落索引,question:温和问题}数组。不要Markdown、链接、HTML或版权作品改写。"
+            "故事始终低刺激，情节平缓，不含暴力、危险模仿、隐私索取、诊断或治疗承诺，不使用大声惊叹和竞赛。"
+            "没有逃亡、紧急任务或吊人胃口的结局，不催促孩子立即睡着。"
+            "不要自己写安抚结尾；系统会在最后追加固定温和结尾。"
+        )
+        request_text = (
+            f"年龄{parameters['ageGroup']}岁；分类{parameters['category']}；风格{style}；主角{protagonist}。"
+            f"正文所有段落总字符数在{body_minimum}至{body_maximum}之间，"
+            f"分成{'3至5' if parameters['durationMinutes'] == 1 else '8至12'}段，每段连贯自然。"
+            + ("以陪伴和小行动轻轻表达道理，不训诫。" if parameters["moral"] else "不加入道理总结或说教。")
+            + ("屏蔽所有恐怖、惊吓、鬼怪、受伤和被抛弃情节。" if parameters["blockScary"] else "保持温和，仍然避免血腥暴力及高刺激场景。")
+            + ("可在中间加入1至2个不需要回答的温和想象问题，不能出现在最后一段；不要记忆测验和对错评分。"
+               if parameters["interactive"] else "questions必须为空数组，不加入互动提问。")
+        )
+        response = self._json(GENERATION_URL, self.voice_key, {
+            "model": GENERATION_MODEL,
+            "messages": [{"role": "system", "content": system}, {"role": "user", "content": request_text}],
+            "response_format": {"type": "json_object"}, "temperature": 0.7,
+            "max_tokens": 900 if parameters["durationMinutes"] == 1 else 2600,
+        })
+        choices = response.get("choices")
+        if not isinstance(choices, list) or len(choices) != 1 or not isinstance(choices[0], dict):
+            raise ProviderFailure("提供商没有返回完整故事")
+        choice = choices[0]
+        message = choice.get("message")
+        content = message.get("content") if isinstance(message, dict) else None
+        if choice.get("finish_reason") != "stop" or not isinstance(content, str) or len(content) > 10_000:
+            raise ProviderFailure("故事生成未完成，请稍后重试")
+        try:
+            story = json.loads(content)
+        except (ValueError, RecursionError):
+            raise ProviderFailure("提供商返回的故事格式无效，请重试") from None
+        return story
 
     def synthesize(self, text, voice, model):
         data = self._json(SYNTHESIS_URL, self.voice_key, {
@@ -317,6 +381,13 @@ def initialize(server, provider=None):
     server.bedtime_stories = {}
     for entry in entries:
         entry["source"] = {"kind": "original", "label": "知序原创故事"}
+        # A fixed quiet ending is part of the real readable text, never a
+        # separate fake generation result. Existing story identifiers survive.
+        if not entry["text"].endswith(SLEEP_ENDING):
+            entry["text"] = entry["text"].rstrip() + "\n\n" + SLEEP_ENDING
+        entry["ending"] = SLEEP_ENDING
+        entry["paragraphs"] = story_paragraphs(entry["text"], SLEEP_ENDING)
+        entry["questions"] = []
         entry["readMinutes"] = max(1, math.ceil(len(entry["text"]) / 250))
         entry["fullText"] = True
         entry["isExcerpt"] = False
@@ -334,7 +405,7 @@ def fail(handler, status, message):
 
 def provider_call(handler, function, *args):
     if not handler.server.bedtime_provider_slots.acquire(blocking=False):
-        fail(handler, 429, "云端声音服务繁忙，请稍后重试")
+        fail(handler, 429, "云端服务繁忙，请稍后重试")
     try:
         return function(*args)
     except ProviderFailure as exc:
@@ -372,6 +443,77 @@ def voice_json(row):
             "createdAt": row["created_at"], "provider": "dashscope", "kind": "clone"}
 
 
+def generation_parameters(handler, data):
+    allowed = set(GENERATION_DEFAULTS)
+    if not isinstance(data, dict) or set(data) - allowed:
+        fail(handler, 400, "故事生成参数无效")
+    values = {**GENERATION_DEFAULTS, **data}
+    for key, choices in GENERATION_ENUMS.items():
+        value = values[key]
+        if type(value) is not type(choices[0]) or value not in choices:
+            fail(handler, 400, "故事生成参数无效：" + key)
+    for key in ("moral", "blockScary", "interactive"):
+        if type(values[key]) is not bool:
+            fail(handler, 400, "故事生成参数须为布尔值：" + key)
+    return values
+
+
+def story_paragraphs(text, ending=""):
+    body = text[:-len(ending)].rstrip() if ending and text.endswith(ending) else text
+    return [part.strip() for part in re.split(r"\n\s*\n", body) if part.strip()]
+
+
+def generated_story(raw, parameters):
+    """Untrusted provider output becomes a bounded, plain-text story only."""
+    error = "生成故事的格式或长度不符合睡前设置，请重新生成"
+    if not isinstance(raw, dict) or set(raw) != {"title", "paragraphs", "questions"}:
+        raise ProviderFailure(error)
+    title, paragraphs, questions = raw["title"], raw["paragraphs"], raw["questions"]
+    if not isinstance(title, str) or not 1 <= len(title.strip()) <= 80 or re.search(r"[\r\n]", title):
+        raise ProviderFailure(error)
+    if not isinstance(paragraphs, list) or not 2 <= len(paragraphs) <= 16:
+        raise ProviderFailure(error)
+    if any(not isinstance(part, str) or not 10 <= len(part.strip()) <= 400 or "\n" in part or "\r" in part
+           or SLEEP_ENDING in part for part in paragraphs):
+        raise ProviderFailure(error)
+    paragraphs = [part.strip() for part in paragraphs]
+    if not isinstance(questions, list) or len(questions) > 2 or (questions and not parameters["interactive"]):
+        raise ProviderFailure(error)
+    clean_questions = []
+    for item in questions:
+        if not isinstance(item, dict) or set(item) != {"afterParagraph", "question"}:
+            raise ProviderFailure(error)
+        index, question = item["afterParagraph"], item["question"]
+        if (type(index) is not int or not 0 <= index < len(paragraphs) - 1
+                or not isinstance(question, str) or not 4 <= len(question.strip()) <= 80
+                or re.search(r"[\r\n!！]|限时|抢答|答错|答对|马上回答|必须回答|记住|比赛|挑战", question)):
+            raise ProviderFailure("互动问题不符合温和睡前设置，请重新生成")
+        if any(previous["afterParagraph"] == index for previous in clean_questions):
+            raise ProviderFailure(error)
+        clean_questions.append({"afterParagraph": index, "question": question.strip()})
+    clean_questions.sort(key=lambda question: question["afterParagraph"])
+    title = title.strip()
+    text = "\n\n".join([*paragraphs, SLEEP_ENDING])
+    minimum, maximum = (150, 250) if parameters["durationMinutes"] == 1 else (1001, 1250)
+    if not minimum <= len(text) <= maximum:
+        raise ProviderFailure(error)
+    all_text = "\n".join([title, text, *(item["question"] for item in clean_questions)])
+    if ACTIVE_TEXT.search(all_text):
+        raise ProviderFailure("生成故事包含不支持的内容格式，请重新生成")
+    if parameters["blockScary"] and SCARY_TERMS.search(all_text):
+        raise ProviderFailure("生成故事未通过温和内容检查，请重新生成")
+    return {
+        "id": "generated-" + uuid.uuid4().hex, "title": title, "text": text,
+        "category": parameters["category"],
+        "tags": [parameters["category"], parameters["ageGroup"] + "岁", str(parameters["durationMinutes"]) + "分钟", "AI 生成"],
+        "readMinutes": max(1, math.ceil(len(text) / 250)), "paragraphs": paragraphs,
+        "questions": clean_questions, "ending": SLEEP_ENDING,
+        "generationParameters": dict(parameters), "fullText": True, "isExcerpt": False,
+        "source": {"kind": "generated", "label": "百炼 AI 生成故事",
+                   "note": "生成内容可先预览；温和内容检查并非绝对保证。时长按约250字/分钟估算，实际随语速变化。"},
+    }
+
+
 def story_input(handler, data, story_id):
     if not isinstance(data, dict):
         fail(handler, 400, "请提供故事文本")
@@ -386,6 +528,24 @@ def story_input(handler, data, story_id):
               "fullText": True, "isExcerpt": True, "source": {"kind": "imported", "label": "用户保存的文本，请确认使用权"}}
     if url:
         result["source"]["url"] = url
+    ending = data.get("ending", "")
+    if not isinstance(ending, str) or len(ending) > 500 or (ending and not text.endswith(ending)):
+        fail(handler, 400, "故事结尾与正文不一致")
+    result["ending"] = ending
+    result["paragraphs"] = story_paragraphs(text, ending)
+    questions = data.get("questions", [])
+    if not isinstance(questions, list) or len(questions) > 2:
+        fail(handler, 400, "故事互动问题无效")
+    result["questions"] = []
+    for question in questions:
+        if (not isinstance(question, dict) or set(question) != {"afterParagraph", "question"}
+                or type(question["afterParagraph"]) is not int
+                or not 0 <= question["afterParagraph"] < len(result["paragraphs"]) - 1):
+            fail(handler, 400, "故事互动问题无效")
+        result["questions"].append({"afterParagraph": question["afterParagraph"],
+                                    "question": handler.string(question["question"], "互动问题", 80, True)})
+    if "generationParameters" in data:
+        result["generationParameters"] = generation_parameters(handler, data["generationParameters"])
     return result
 
 
@@ -401,16 +561,20 @@ def saved_story(handler, conn, sid, uid, story_id, data=None):
     fail(handler, 404, "故事不存在，请先保存故事文本")
 
 
-def local_search(server, keyword, category):
+def local_search(server, keyword, category, duration=None, age_group=None):
     # Every result is a real, complete original text, independent of voices.
     aliases = {"童话": "儿童", "成人": "治愈", "成人治愈短篇": "治愈", "哄睡": "晚安", "古风小故事": "古风", "晚安小故事": "晚安"}
     category = aliases.get(category, category)
     words = [part for part in re.split(r"[\s,，、]+", keyword.casefold()) if part]
     selected = []
     for story in server.bedtime_stories.values():
-        if category not in ("", "全部") and story["category"] != category:
+        if category not in ("", "全部") and story["category"] != category and category not in story.get("categoryTags", []):
             continue
-        haystack = " ".join([story["title"], story["category"], *story["tags"], story["text"]]).casefold()
+        if duration is not None and story["readMinutes"] != duration:
+            continue
+        if age_group and age_group not in story.get("ageGroups", []):
+            continue
+        haystack = " ".join([story["title"], story["category"], *story["tags"], *story.get("categoryTags", []), story["text"]]).casefold()
         score = sum(3 if word in " ".join([story["title"], *story["tags"]]) else 1 for word in words if word in haystack)
         if words and not score:
             # Chinese partial-word matching remains useful without an external
@@ -449,11 +613,37 @@ def dispatch(handler, path, query):
         provider = server.bedtime_provider
         if route == "config" and method == "GET":
             result = {"systemSpeech": True,
+                      "storyGeneration": {"enabled": bool(getattr(provider, "generation_enabled", False)),
+                                          "provider": "dashscope", "model": GENERATION_MODEL,
+                                          "ageGroups": GENERATION_ENUMS["ageGroup"], "categories": STORY_CATEGORIES,
+                                          "durationMinutes": GENERATION_ENUMS["durationMinutes"],
+                                          "styles": GENERATION_ENUMS["style"], "protagonists": GENERATION_ENUMS["protagonist"]},
                       "webSearch": {"enabled": provider.search_enabled, "provider": provider.search_provider},
                       "voiceClone": {"enabled": provider.voice_enabled, "provider": "dashscope", "sampleRate": 24000,
                                      "minimumSeconds": 10, "maximumSeconds": 30},
                       "synthesis": {"enabled": provider.voice_enabled, "provider": "dashscope", "maxCharacters": 600,
                                     "systemVoices": SYSTEM_VOICES if provider.voice_enabled else []}}
+        elif route == "generate" and method == "POST":
+            parameters = generation_parameters(handler, data)
+            if not getattr(provider, "generation_enabled", False):
+                fail(handler, 503, "AI 故事生成尚未连接，请联系管理员配置服务端百炼密钥；可先阅读原创故事库")
+            # Limits are per account across spaces; changing a space does not
+            # reset usage. Shared provider slots cap total voice/generation work.
+            server.throttle(("bedtime-generate-hour", uid), 10, 3600)
+            server.throttle(("bedtime-generate-day", uid), 20, 86400)
+            # The personalized request/result is not stored automatically, and
+            # a slow provider must not hold the SQLite writer transaction.
+            conn.commit()
+            raw_story = provider_call(handler, provider.generate, parameters)
+            try:
+                story = generated_story(raw_story, parameters)
+            except ProviderFailure as exc:
+                fail(handler, 502, str(exc))
+            with server.db() as check:
+                handler.current_user(check)
+                handler.membership(check, sid, uid, write=True)
+            handler.json_response(200, {"story": story})
+            return True
         elif route == "search" and method == "GET":
             keyword = handler.string(query.get("q", [""])[0], "搜索词", 100)
             category = handler.string(query.get("category", ["全部"])[0], "分类", 30)
@@ -461,7 +651,11 @@ def dispatch(handler, path, query):
             if scope not in ("local", "web"):
                 fail(handler, 400, "搜索范围无效")
             if scope == "local":
-                result = {"stories": local_search(server, keyword, category), "scope": scope, "query": keyword}
+                duration_raw = query.get("durationMinutes", [""])[0]
+                age_group = query.get("ageGroup", [""])[0]
+                if duration_raw not in ("", "1", "5") or age_group not in ("", "3-6", "7-10"):
+                    fail(handler, 400, "故事时长或年龄筛选无效")
+                result = {"stories": local_search(server, keyword, category, int(duration_raw) if duration_raw else None, age_group), "scope": scope, "query": keyword}
             else:
                 if not keyword:
                     fail(handler, 400, "请输入搜索词")

@@ -44,7 +44,7 @@ with tempfile.TemporaryDirectory(prefix='zhixu-life-qa-') as data:
             expect(page.locator('#view-content .module-category-heading')).to_contain_text('生活功能')
             expect(page.locator('#view-content .life-bedtime-entry')).to_be_visible()
             page.locator('[data-view="overview"]').click()
-            expect(page.locator('#life-bedtime-title')).to_have_text('晚安故事')
+            expect(page.locator('#life-bedtime-title')).to_have_text('睡前小故事')
             uid=page.evaluate('state.user.id'); sid=page.evaluate('state.space.id')
             voice_link=page.get_by_role('link',name='上传我的声音',exact=True)
             assert parse_qs(urlsplit(voice_link.get_attribute('href')).query)=={'space':[sid],'panel':['voices']}
@@ -69,7 +69,7 @@ with tempfile.TemporaryDirectory(prefix='zhixu-life-qa-') as data:
             expect(page.locator('.back-link')).to_have_attribute('href','/?area=life')
             page.locator('.back-link').click()
             expect(page.locator('#life-navigation')).to_be_visible()
-            expect(page.locator('#life-bedtime-title')).to_have_text('晚安故事')
+            expect(page.locator('#life-bedtime-title')).to_have_text('睡前小故事')
             for area in ['work','Life','life-extra']:
                 page.goto(base+'/?area='+area,wait_until='networkidle')
                 expect(page.locator('#life-navigation')).not_to_be_visible()
@@ -97,7 +97,7 @@ with tempfile.TemporaryDirectory(prefix='zhixu-life-qa-') as data:
             life_signup.goto(base+'/?area=life',wait_until='networkidle')
             email_b=register(life_signup)
             expect(life_signup.locator('#life-navigation')).to_be_visible()
-            expect(life_signup.locator('#life-bedtime-title')).to_have_text('晚安故事')
+            expect(life_signup.locator('#life-bedtime-title')).to_have_text('睡前小故事')
             uid_b=life_signup.evaluate('state.user.id');sid_b=life_signup.evaluate('state.space.id')
             assert life_signup.evaluate('(uid) => sessionStorage.getItem(`zhixu:space:${uid}`)',uid_b)==sid_b
             response=context.request.post(base+f'/api/spaces/{sid}/members',data={'email':email_b,'role':'viewer'},headers={'X-Requested-With':'Workspace','Origin':base})
@@ -105,7 +105,7 @@ with tempfile.TemporaryDirectory(prefix='zhixu-life-qa-') as data:
             life_signup.evaluate('(sid) => sessionStorage.setItem("zhixu-space",sid)',sid)
             life_signup.goto(base+'/?area=life',wait_until='networkidle')
             expect(life_signup.locator('#life-navigation')).to_be_visible()
-            expect(life_signup.locator('#life-bedtime-title')).to_have_text('晚安故事')
+            expect(life_signup.locator('#life-bedtime-title')).to_have_text('睡前小故事')
             assert life_signup.evaluate('state.space.id')==sid_b
             assert life_signup.evaluate('sessionStorage.getItem("zhixu-space")')==sid
             print('PASS registration retains life or prioritizes safe next; uid-scoped space ignores legacy A context even when B is a viewer there',flush=True)

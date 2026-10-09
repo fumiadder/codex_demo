@@ -70,6 +70,11 @@ jobs:
         env:
           PYTHONUNBUFFERED: '1'
         run: python scripts/desktop_story_qa.py
+      - name: Check warm story generation, reading and sleep controls
+        working-directory: workbench
+        env:
+          PYTHONUNBUFFERED: '1'
+        run: python scripts/warm_story_qa.py
       - name: Validate production Compose
         working-directory: workbench
         env:

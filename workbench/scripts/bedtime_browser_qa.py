@@ -132,7 +132,7 @@ def checks(origin):
         expect(page.locator("html")).to_have_attribute("data-theme","night")
         page.wait_for_timeout(350)
         card_color = page.locator(".story-card").first.evaluate("el => getComputedStyle(el).backgroundColor")
-        assert card_color.startswith("rgba(44, 61, 71,"), card_color
+        assert card_color.startswith("rgba(207, 198, 181,"), card_color
         page.screenshot(path=str(ROOT / "artifacts" / "bedtime-night.png"), full_page=False, animations="disabled")
         report("320–430px 手机、横屏与桌面无溢出，柔和日间/夜间界面实际截图")
 
@@ -174,6 +174,9 @@ def checks(origin):
         expect(page.locator("#play-toggle")).to_have_attribute("aria-label","开始朗读")
         assert page.evaluate("window.__qaAudio.stops > 0")
         assert page.evaluate("!navigator.mediaSession || navigator.mediaSession.metadata === null")
+        expect(page.locator("#sleep-overlay")).to_be_visible()
+        page.locator("#wake-sleep").click()
+        expect(page.locator("#sleep-overlay")).not_to_be_visible()
         page.locator("#sleep-controls summary").click()
         report("真实 WebAudio 白噪音启动/停止；截止时间到达后朗读、噪音与锁屏元信息清理")
 

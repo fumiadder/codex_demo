@@ -31,6 +31,7 @@ def wav(seconds=20, rate=24000):
 
 class FakeProviders:
     voice_enabled = False
+    generation_enabled = False
     search_enabled = False
     search_provider = "local"
 
@@ -40,6 +41,9 @@ class FakeProviders:
         self.deleted = []
         self.on_enroll = None
         self.on_synthesize = None
+        self.on_generate = None
+        self.generate_calls = []
+        self.generated_output = None
         self.failure = False
 
     def enroll(self, payload, preferred_name):
@@ -58,6 +62,23 @@ class FakeProviders:
 
     def delete_voice(self, voice):
         self.deleted.append(voice)
+
+    def generate(self, parameters):
+        # Explicit test fixture, never a real AI or external network request.
+        self.generate_calls.append(dict(parameters))
+        if self.failure:
+            raise bedtime.ProviderFailure("供应商暂时不可用")
+        if self.on_generate:
+            self.on_generate()
+        if self.generated_output is not None:
+            return self.generated_output
+        short = ["小兔子在窗边看着柔和的月光。它把今天捡来的小叶子放在床头，摸了摸柔软的被角，听见妈妈在隔壁轻轻整理书本。",
+                 "它想起朋友留给自己的座位，觉得心里暖暖的。窗外的树叶慢慢摇动，小兔子合上书，安心地靠在枕头上，让今天的小事轻轻留在明天。"]
+        paragraphs = short if parameters["durationMinutes"] == 1 else [
+            "小兔子和妈妈慢慢坐在窗边，听远处小溪轻轻流动。" + "它把一片小叶子夹进书里，想起朋友温柔的笑容，觉得今晚的月色很柔和。" * 5
+            for _ in range(6)]
+        questions = [{"afterParagraph": 0, "question": "也许可以想一想，你喜欢哪种柔和的云朵颜色？不用回答。"}] if parameters["interactive"] else []
+        return {"title": "QA 测试故事，不是实际 AI 生成", "paragraphs": paragraphs, "questions": questions}
 
 
 class BedtimeTests(unittest.TestCase):
@@ -176,6 +197,7 @@ class BedtimeTests(unittest.TestCase):
         self.assertEqual(status, 200)
         self.assertFalse(config["webSearch"]["enabled"])
         self.assertFalse(config["voiceClone"]["enabled"])
+        self.assertFalse(config["storyGeneration"]["enabled"])
         self.assertEqual(headers["Cache-Control"], "no-store")
         self.assertNotIn("key", json.dumps(config).lower())
         self.assertEqual(self.request("GET", self.prefix + "search?q=" + quote("童话") + "&scope=web", cookie=self.owner)[0], 503)
@@ -183,6 +205,158 @@ class BedtimeTests(unittest.TestCase):
         self.assertEqual(self.request("POST", self.prefix + "synthesize", {"text": "晚安", "voiceId": "cloud:Seren"}, self.owner)[0], 503)
         self.assertEqual(self.provider.enroll_calls, [])
         self.assertEqual(self.provider.synth_calls, [])
+        self.assertEqual(self.request("POST", self.prefix + "generate", {}, self.owner)[0], 503)
+        self.assertEqual(self.provider.generate_calls, [])
+
+    def test_personalized_generation_no_automatic_storage_and_private_explicit_snapshot(self):
+        self.provider.generation_enabled = True
+        parameters = {"ageGroup": "7-10", "category": "成长勇气", "durationMinutes": 1,
+                      "style": "healing", "moral": True, "blockScary": True,
+                      "protagonist": "rabbit", "interactive": True}
+        status, payload, headers = self.request("POST", self.prefix + "generate", parameters, self.owner)
+        self.assertEqual(status, 200, payload)
+        self.assertEqual(headers["Cache-Control"], "no-store")
+        story = payload["story"]
+        self.assertEqual(story["source"]["kind"], "generated")
+        self.assertEqual(story["generationParameters"], parameters)
+        self.assertEqual(story["readMinutes"], 1)
+        self.assertEqual(story["ending"], bedtime.SLEEP_ENDING)
+        self.assertEqual(story["text"], "\n\n".join([*story["paragraphs"], story["ending"]]))
+        self.assertEqual(story["questions"][0]["afterParagraph"], 0)
+        self.assertNotIn(story["id"], self.server.bedtime_stories)
+        self.assertEqual(self.request("GET", self.prefix + "stories/" + story["id"], cookie=self.owner)[0], 404)
+        self.assertEqual(self.request("GET", self.prefix + "favorites", cookie=self.owner)[1]["favorites"], [])
+        self.assertEqual(self.request("GET", self.prefix + "history", cookie=self.owner)[1]["history"], [])
+        saved = self.request("PUT", self.prefix + "favorites/" + story["id"], {"story": story}, self.owner)
+        self.assertEqual(saved[0], 200, saved[1])
+        self.assertEqual(saved[1]["story"]["source"]["kind"], "imported")
+        self.assertEqual(saved[1]["story"]["questions"], story["questions"])
+        self.assertEqual(saved[1]["story"]["paragraphs"], story["paragraphs"])
+        self.assertEqual(saved[1]["story"]["generationParameters"], parameters)
+        self.assertEqual(self.request("GET", self.prefix + "stories/" + story["id"], cookie=self.editor)[0], 404)
+        recorded = self.request("POST", self.prefix + "history", {"storyId": story["id"], "story": story, "voiceId": "system:local"}, self.editor)
+        self.assertEqual(recorded[0], 200, recorded[1])
+        self.assertEqual(self.request("GET", self.prefix + "history", cookie=self.owner)[1]["history"], [])
+
+    def test_generation_parameters_roles_csrf_expected_account_and_long_duration(self):
+        self.provider.generation_enabled = True
+        for cookie, headers, status in ((None, {}, 401), (self.viewer, {}, 403),
+                                        (self.owner, {"X-Requested-With": ""}, 403),
+                                        (self.owner, {"Origin": "https://other.example.com"}, 403),
+                                        (self.owner, {"X-Expected-User": self.editor_user["id"]}, 401)):
+            with self.subTest(status=status, headers=headers):
+                self.assertEqual(self.request("POST", self.prefix + "generate", {}, cookie, headers)[0], status)
+        for parameters in ({"ageGroup": "adult"}, {"category": "高刺激竞技"}, {"durationMinutes": True},
+                           {"durationMinutes": "5"}, {"style": ["healing"]}, {"protagonist": "evil"},
+                           {"moral": 1}, {"blockScary": "false"}, {"interactive": None}, {"prompt": "注入任意文本"}):
+            self.assertEqual(self.request("POST", self.prefix + "generate", parameters, self.owner)[0], 400, parameters)
+        self.assertEqual(self.provider.generate_calls, [])
+        status, payload, _ = self.request("POST", self.prefix + "generate", {"durationMinutes": 5, "category": "亲情暖心"}, self.editor)
+        self.assertEqual(status, 200, payload)
+        self.assertEqual(payload["story"]["readMinutes"], 5)
+        self.assertTrue(payload["story"]["generationParameters"]["blockScary"])
+        self.assertFalse(payload["story"]["generationParameters"]["interactive"])
+
+    def test_generation_rejects_untrusted_external_format_content_and_questions(self):
+        self.provider.generation_enabled = True
+        good = self.provider.generate(dict(bedtime.GENERATION_DEFAULTS))
+        self.provider.generate_calls.clear()
+        invalid = [None, {"title": "标题", "paragraphs": "wrong", "questions": []},
+                   {**good, "paragraphs": ["超长内容" * 3000, good["paragraphs"][1]]},
+                   {**good, "title": "<script>private-output</script>"},
+                   {**good, "paragraphs": ["恐怖怪物" + good["paragraphs"][0], good["paragraphs"][1]]},
+                   {**good, "paragraphs": [good["paragraphs"][0], bedtime.SLEEP_ENDING]},
+                   {**good, "questions": [{"afterParagraph": 1, "question": "这是最后一段的互动问题吗？"}]},
+                   {**good, "questions": [{"afterParagraph": True, "question": "云朵会是什么样的颜色呢？"}]},
+                   {**good, "questions": [{"afterParagraph": 0, "question": "必须回答！赶快抢答！"}]}]
+        for output in invalid:
+            # None is sent through a patched method because FakeProviders uses
+            # None to mean its valid default fixture.
+            with patch.object(self.provider, "generate", return_value=output):
+                status, result, _ = self.request("POST", self.prefix + "generate", {"interactive": True}, self.owner)
+            self.assertEqual(status, 502, output)
+            self.assertNotIn("private-output", json.dumps(result))
+        self.assertEqual(self.request("GET", self.prefix + "favorites", cookie=self.owner)[1]["favorites"], [])
+
+    def test_generation_rechecks_logout_revocation_and_role_after_provider_without_db_lock(self):
+        self.provider.generation_enabled = True
+        def revoke():
+            with self.server.db() as conn:
+                conn.execute("DELETE FROM members WHERE space_id=? AND user_id=?", (self.sid, self.editor_user["id"]))
+        self.provider.on_generate = revoke
+        self.assertEqual(self.request("POST", self.prefix + "generate", {}, self.editor)[0], 404)
+        self.request("POST", f"/api/spaces/{self.sid}/members", {"email": "editor@example.com", "role": "editor"}, self.owner)
+        def demote():
+            with self.server.db() as conn:
+                conn.execute("UPDATE members SET role='viewer' WHERE space_id=? AND user_id=?", (self.sid, self.editor_user["id"]))
+        self.provider.on_generate = demote
+        self.assertEqual(self.request("POST", self.prefix + "generate", {}, self.editor)[0], 403)
+        self.request("POST", f"/api/spaces/{self.sid}/members", {"email": "editor@example.com", "role": "editor"}, self.owner)
+        def logout():
+            with self.server.db() as conn:
+                conn.execute("DELETE FROM sessions WHERE user_id=?", (self.editor_user["id"],))
+        self.provider.on_generate = logout
+        self.assertEqual(self.request("POST", self.prefix + "generate", {}, self.editor)[0], 401)
+        with self.server.db() as conn:
+            self.assertEqual(conn.execute("SELECT count(*) FROM bedtime_favorites").fetchone()[0], 0)
+            self.assertEqual(conn.execute("SELECT count(*) FROM bedtime_history").fetchone()[0], 0)
+
+    def test_generation_account_rate_and_concurrency_limits_do_not_call_provider(self):
+        self.provider.generation_enabled = True
+        uid = self.owner_user["id"]
+        for key, limit in (("bedtime-generate-hour", 10), ("bedtime-generate-day", 20)):
+            self.server.rate_events.clear()
+            self.server.rate_events[(key, uid)] = [time.time()] * limit
+            self.assertEqual(self.request("POST", self.prefix + "generate", {}, self.owner)[0], 429)
+        self.server.rate_events.clear()
+        self.server.bedtime_provider_slots.acquire()
+        self.server.bedtime_provider_slots.acquire()
+        try:
+            self.assertEqual(self.request("POST", self.prefix + "generate", {}, self.owner)[0], 429)
+        finally:
+            self.server.bedtime_provider_slots.release()
+            self.server.bedtime_provider_slots.release()
+        self.assertEqual(self.provider.generate_calls, [])
+        self.provider.failure = True
+        self.assertEqual(self.request("POST", self.prefix + "generate", {}, self.owner)[0], 502)
+
+    def test_official_generation_compatible_request_and_incomplete_output_rejection(self):
+        provider = bedtime.HTTPProviders({"DASHSCOPE_API_KEY": "test-secret-not-real"})
+        self.assertTrue(provider.generation_enabled)
+        raw = self.provider.generate(dict(bedtime.GENERATION_DEFAULTS))
+        completed = {"choices": [{"finish_reason": "stop", "message": {"content": json.dumps(raw)}}]}
+        with patch.object(provider, "_json", return_value=completed) as fake:
+            self.assertEqual(provider.generate(dict(bedtime.GENERATION_DEFAULTS)), raw)
+        url, token, body = fake.call_args.args
+        self.assertEqual(url, "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions")
+        self.assertEqual(token, "test-secret-not-real")
+        self.assertEqual(body["model"], bedtime.GENERATION_MODEL)
+        self.assertEqual(body["response_format"], {"type": "json_object"})
+        self.assertEqual([message["role"] for message in body["messages"]], ["system", "user"])
+        for response in ({"choices": []}, {"choices": [{"finish_reason": "length", "message": {"content": "{}"}}]},
+                         {"choices": [{"finish_reason": "stop", "message": {"content": "not json"}}]}):
+            with patch.object(provider, "_json", return_value=response), self.assertRaises(bedtime.ProviderFailure):
+                provider.generate(dict(bedtime.GENERATION_DEFAULTS))
+
+    def test_original_categories_duration_and_structured_sleep_ending(self):
+        for category in bedtime.STORY_CATEGORIES:
+            status, result, _ = self.request("GET", self.prefix + "search?category=" + quote(category), cookie=self.owner)
+            self.assertEqual(status, 200)
+            self.assertTrue(result["stories"], category)
+            for story in result["stories"]:
+                self.assertEqual(story["source"]["kind"], "original")
+                self.assertEqual(story["text"], "\n\n".join([*story["paragraphs"], story["ending"]]))
+        for duration in (1, 5):
+            result = self.request("GET", self.prefix + "search?durationMinutes=" + str(duration), cookie=self.owner)[1]
+            self.assertTrue(result["stories"])
+            self.assertTrue(all(story["readMinutes"] == duration for story in result["stories"]))
+        for age in ("3-6", "7-10"):
+            result = self.request("GET", self.prefix + "search?ageGroup=" + age, cookie=self.owner)[1]
+            self.assertTrue(result["stories"])
+            self.assertTrue(all(age in story.get("ageGroups", []) for story in result["stories"]))
+            self.assertNotIn("seaside-lamp", [story["id"] for story in result["stories"]])
+        for query in ("durationMinutes=2", "ageGroup=adult"):
+            self.assertEqual(self.request("GET", self.prefix + "search?" + query, cookie=self.owner)[0], 400)
 
     def test_actual_wav_duration_and_consent_are_required(self):
         self.provider.voice_enabled = True

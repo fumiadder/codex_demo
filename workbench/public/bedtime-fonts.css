@@ -1,0 +1,8 @@
+/* Local OFL-1.1 Noto Sans SC derivative; see fonts/FONT-SOURCE.json and license. */
+@font-face {
+  font-family: "Zhixu Sleep Sans";
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url("/fonts/zhixu-sleep-sans-sc-v1.woff2") format("woff2");
+}

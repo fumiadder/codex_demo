@@ -1153,9 +1153,9 @@ function renderBedtimeEntry(content) {
   illustration.setAttribute("aria-hidden", "true");
   illustration.append(el("span", "life-bedtime-moon"), el("span", "life-bedtime-star", "✦"), svg("cloud"));
   const copy = el("div", "life-bedtime-copy");
-  const title = el("h2", "", "晚安故事");
+  const title = el("h2", "", "睡前小故事");
   title.id = "life-bedtime-title";
-  copy.append(title, el("p", "", "选一篇故事，听熟悉的声音，让今天轻轻落下。"));
+  copy.append(title, el("p", "", "选年龄、挑一个喜欢的主角，让故事陪你慢慢入眠。"));
   const actions = el("div", "life-bedtime-actions");
   for (const [label, panel, cls] of [["看故事", "", "button bedtime-entry-read"], ["上传我的声音", "voices", "button bedtime-entry-voice"]]) {
     const link = el("a", cls, label);
@@ -1168,7 +1168,7 @@ function renderBedtimeEntry(content) {
   }
   copy.append(actions, el("p", "life-bedtime-caption", state.demo
     ? "登录自己的账户后，可上传声音与保存故事。"
-    : "电脑与手机都能打开。上传声音后，在同一篇故事里切换朗读音色。"));
+    : "暖光阅读、分段讲解与睡眠定时。故事和声音可以分别选择。"));
   entry.append(copy, illustration);
   content.append(entry);
 }

@@ -3785,10 +3785,10 @@ form label + label {
   gap: 28px;
   padding: 26px 32px;
   margin-bottom: 26px;
-  border: 1px solid #dce6ec;
-  border-radius: 18px;
-  background: linear-gradient(115deg, #eaf2f8 0%, #f6f7f3 72%, #f9f5eb 100%);
-  color: #405a70;
+  border: 1px solid #ebdfcc;
+  border-radius: 24px;
+  background: radial-gradient(ellipse at 20% 20%, #fff6e6, #f8e5dd);
+  color: #4a3f35;
   overflow: hidden;
 }
 .life-bedtime-copy {
@@ -3796,10 +3796,10 @@ form label + label {
 }
 .life-bedtime-copy h2 {
   margin: 0 0 6px;
-  color: #405a70;
+  color: #4a3f35;
   font-size: 24px;
-  font-weight: 550;
-  letter-spacing: 0.5px;
+  font-weight: 500;
+  letter-spacing: 5px;
 }
 .life-bedtime-copy > p {
   margin: 0;
@@ -3819,23 +3819,23 @@ form label + label {
   font-size: 14px;
 }
 .bedtime-entry-read {
-  background: #607d93;
-  color: #fff;
+  background: #ead0c4;
+  color: #4a3f35;
 }
 .bedtime-entry-read:hover {
-  background: #506e85;
+  background: #f0d8cc;
 }
 .bedtime-entry-voice {
-  border: 1px solid #aabcc9;
-  color: #405a70;
-  background: #ffffff70;
+  border: 1px solid #c8d7cf;
+  color: #4a3f35;
+  background: #d8e9e4;
 }
 .bedtime-entry-voice:hover {
-  background: #fff;
+  background: #e2eeea;
 }
 .life-bedtime-copy > .life-bedtime-caption {
   font-size: 12px;
-  color: #607589;
+  color: #786455;
   max-width: 44em;
 }
 .life-bedtime-illustration {
@@ -3861,13 +3861,13 @@ form label + label {
   top: -7px;
   right: -12px;
   border-radius: 50%;
-  background: #f6f6ef;
+  background: #fff0e3;
 }
 .life-bedtime-star {
   position: absolute;
   top: 13px;
   right: 4px;
-  color: #a0afbe;
+  color: #bba18b;
   font-size: 18px;
 }
 .life-bedtime-illustration > .icon {
@@ -3876,8 +3876,8 @@ form label + label {
   height: 74px;
   left: 24px;
   bottom: 0;
-  fill: #f8fafc;
-  stroke: #a8bbcd;
+  fill: #fff6e6;
+  stroke: #c4aa94;
   stroke-width: 0.9;
 }
 .module-category-heading {

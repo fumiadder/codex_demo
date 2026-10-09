@@ -7,16 +7,21 @@
     stories: [], favorites: [], history: [], selected: null,
     library: "browse", category: "全部", scope: "local",
     spaceEpoch: 0, searchEpoch: 0, searchAbort: null, debounce: null,
+    storyEpoch: 0, storyAbort: null,
     audioEpoch: 0, playing: false, utterance: null, audio: null,
     chunks: [], chunkIndex: 0, currentChar: 0, startedAt: 0,
     elapsed: 0, deadline: 0, urls: new Set(), voiceFile: null,
     cloneBusy: false, disposed: false, speechStartTimeout: null,
     voiceSampleEpoch: 0, voicePreviewURL: null,
+    generationEpoch: 0, generationAbort: null, generationBusy: false,
+    paragraphs: [], paragraphIndex: 0, sentenceNodes: [],
+    questionsDone: new Set(), waitingQuestion: null, sleeping: false, sleepFocus: null,
   };
   let audioContext = null, speechGain = null, noiseGain = null, noiseSource = null;
   let toastTimeout = null, voicePoll = null;
   const themeMedia = window.matchMedia("(prefers-color-scheme: dark)");
   const desktopMedia = window.matchMedia("(min-width: 1024px)");
+  const calmEnding = "今晚的故事，就轻轻停在这里。把小手和肩膀慢慢放松，呼吸像云朵一样轻。你已经做得很好了，剩下的事情可以留到明天。愿你被温柔陪伴，安心睡个好觉。晚安。";
   const namespace = () => `zhixu:bedtime:stories:${state.user?.id}:${state.space?.id}`;
   const writable = () => !!state.space && state.space.role !== "viewer";
   const prefix = () => `/api/spaces/${encodeURIComponent(state.space.id)}/bedtime`;
@@ -95,7 +100,7 @@
     $("theme-toggle").setAttribute("aria-label", `护眼模式：${text}`);
     $("theme-toggle").title = `护眼模式：${text}，点击切换`;
     $("theme-toggle").textContent = night ? "☾" : "☼";
-    document.querySelector('meta[name="theme-color"]').content = night ? "#192835" : "#e8eff4";
+    document.querySelector('meta[name="theme-color"]').content = night ? "#ccc5b8" : "#fff6e6";
   }
   async function jsonRequest(url, method = "GET", body, signal) {
     const epoch = state.spaceEpoch;
@@ -146,17 +151,32 @@
   const api = (path, method, body, signal) => jsonRequest(prefix() + path, method, body, signal);
   function expireSession(message = "请先登录知序，再打开晚安故事。") {
     if (state.disposed) return;
+    state.deadline = 0;
+    $("sleep-timer").value = "0";
+    $("timer-summary").textContent = "睡眠工具";
+    leaveSleep(false);
     stopPlayback(true);
+    closeAudioContext();
     clearOffline();
     clearInterval(voicePoll);
     closeVoices();
     state.disposed = true;
     ++state.spaceEpoch;
     state.searchAbort?.abort();
+    state.storyAbort?.abort(); ++state.storyEpoch;
+    cancelGeneration();
     $("bedtime-app").hidden = true;
     $("reader-text").replaceChildren();
     $("story-list").replaceChildren();
     $("voice-library").replaceChildren();
+    $("voice-selector").replaceChildren(node("option", "", "设备默认声音"));
+    $("voice-selector").firstElementChild.value = "system:default";
+    $("space-selector").replaceChildren();
+    for (const id of ["reader-title", "reader-source", "playing-title", "account-context", "story-question-text", "paragraph-position", "share-link-result", "dialog-share-result"]) if ($(id)) $(id).replaceChildren();
+    state.selected = null; state.voices = []; state.favorites = []; state.history = []; state.stories = [];
+    state.paragraphs = []; state.sentenceNodes = []; state.chunks = []; state.questionsDone.clear();
+    state.config = null; state.spaces = []; state.space = null; state.user = null;
+    updateResumeButton();
     $("loading-screen").hidden = false;
     $("loading-screen").replaceChildren();
     const wrap = node("div");
@@ -165,10 +185,83 @@
     link.href = loginReturnURL();
     wrap.append(link);
     $("loading-screen").append(wrap);
-    state.selected = null; state.voices = []; state.favorites = []; state.history = [];
   }
   function listStatus(message) { $("list-status").textContent = message; }
   function minutes(story) { return story.readMinutes || Math.max(1, Math.ceil(story.text.length / 250)); }
+  function storyForReading(story) {
+    let text = story.text.trim();
+    const ending = typeof story.ending === "string" && story.ending.trim() ? story.ending.trim() : calmEnding;
+    if (!text.endsWith(ending)) text += `\n\n${ending}`;
+    const paragraphs = text.split(/\n+/).map((line) => line.trim()).filter(Boolean);
+    let offset = 0;
+    const ranges = paragraphs.map((paragraph) => {
+      const start = text.indexOf(paragraph, offset);
+      offset = start + paragraph.length;
+      return { text: paragraph, start, end: offset };
+    });
+    const originalCount = Math.max(0, paragraphs.length - 1);
+    const supplied = Array.isArray(story.questions) ? story.questions : null;
+    const generated = story.source?.kind === "generated" || !!story.generationParameters;
+    const questions = supplied?.length ? supplied.filter((question) => question && Number.isInteger(question.afterParagraph) && question.afterParagraph >= 0 && question.afterParagraph < originalCount && typeof question.question === "string" && question.question.trim()).map((question) => ({ afterParagraph: question.afterParagraph, question: question.question.trim().slice(0, 300) })) : !generated && originalCount > 1 ? [{ afterParagraph: Math.floor((originalCount - 1) / 2), question: "如果你也在这里，会想把哪一份小小的温暖送给故事里的朋友？可以在心里想一想，也可以直接继续听。" }] : [];
+    return { story: { ...story, text, ending, paragraphs: paragraphs.slice(0, -1), questions }, ranges };
+  }
+  function renderReader() {
+    const reader = $("reader-text");
+    reader.replaceChildren();
+    state.sentenceNodes = [];
+    state.paragraphs.forEach((paragraph, index) => {
+      const p = node("p", "reading-paragraph");
+      p.dataset.paragraph = String(index);
+      chunksFrom(paragraph.text).forEach((chunk) => {
+        const span = node("span", "reading-sentence", chunk.text);
+        const start = paragraph.start + chunk.offset;
+        state.sentenceNodes.push({ node: span, start, end: start + chunk.text.length, paragraph: index });
+        p.append(span);
+      });
+      reader.append(p);
+    });
+    showParagraph(state.paragraphIndex);
+    highlightSentence();
+  }
+  function showParagraph(index) {
+    if (!state.paragraphs.length) return;
+    state.paragraphIndex = Math.max(0, Math.min(state.paragraphs.length - 1, index));
+    const paged = $("paragraph-mode")?.checked !== false;
+    [...$("reader-text").children].forEach((paragraph, position) => { paragraph.hidden = paged && position !== state.paragraphIndex; });
+    if ($("reader-pagination")) $("reader-pagination").hidden = !paged;
+    if ($("paragraph-position")) $("paragraph-position").textContent = `第 ${state.paragraphIndex + 1} / ${state.paragraphs.length} 段${state.paragraphIndex === state.paragraphs.length - 1 ? " · 晚安安抚" : ""}`;
+    if ($("prev-paragraph")) $("prev-paragraph").disabled = state.paragraphIndex === 0;
+    if ($("next-paragraph")) $("next-paragraph").disabled = state.paragraphIndex === state.paragraphs.length - 1;
+  }
+  function highlightSentence() {
+    const waitingSentences = state.waitingQuestion ? state.sentenceNodes.filter((sentence) => sentence.paragraph === state.waitingQuestion.afterParagraph) : [];
+    const current = state.waitingQuestion
+      ? waitingSentences[waitingSentences.length - 1]
+      : state.sentenceNodes.find((sentence) => state.currentChar >= sentence.start && state.currentChar < sentence.end);
+    if (current) showParagraph(current.paragraph);
+    state.sentenceNodes.forEach((sentence) => {
+      const active = sentence === current && (state.playing || state.waitingQuestion);
+      sentence.node.classList.toggle("is-current", !!active);
+      if (active) sentence.node.setAttribute("aria-current", "true");
+      else sentence.node.removeAttribute("aria-current");
+    });
+  }
+  function clearQuestion() {
+    state.waitingQuestion = null;
+    if ($("story-question")) $("story-question").hidden = true;
+    if ($("story-question-text")) $("story-question-text").textContent = "";
+  }
+  function changeParagraph(delta) {
+    if (!state.selected) return;
+    const index = Math.max(0, Math.min(state.paragraphs.length - 1, state.paragraphIndex + delta));
+    stopPlayback(); clearQuestion();
+    state.currentChar = state.paragraphs[index].start;
+    showParagraph(index); updateProgress();
+    $("play-status").textContent = "已换到这一段，轻点朗读继续";
+  }
+  function updateResumeButton() {
+    if ($("resume-last-story")) $("resume-last-story").hidden = !state.history.length;
+  }
   function sourceLabel(story) {
     const label = typeof story.source?.label === "string" ? story.source.label : "故事文本";
     return story.isExcerpt ? `${label} · 文本片段` : label;
@@ -223,6 +316,7 @@
     listStatus(state.scope === "web" ? "正在寻找联网故事文本…" : "正在寻找今晚的故事…");
     try {
       const params = new URLSearchParams({ q: query, category: state.category, scope: state.scope });
+      if ($("library-duration")?.value) params.set("durationMinutes", $("library-duration").value);
       const result = await api(`/search?${params}`, "GET", undefined, abort.signal);
       if (token !== state.searchEpoch || state.disposed) return;
       state.stories = Array.isArray(result.stories) ? result.stories : [];
@@ -244,24 +338,31 @@
   }
   async function openStory(story) {
     const epoch = state.spaceEpoch;
+    const token = ++state.storyEpoch;
+    state.storyAbort?.abort();
+    const abort = new AbortController(); state.storyAbort = abort;
     try {
       if (!story.text) {
-        const result = await api(`/stories/${encodeURIComponent(story.id)}`);
-        if (epoch !== state.spaceEpoch) return;
+        const result = await api(`/stories/${encodeURIComponent(story.id)}`, "GET", undefined, abort.signal);
+        if (epoch !== state.spaceEpoch || token !== state.storyEpoch || state.disposed) return;
         story = result.story;
       }
+      if (epoch !== state.spaceEpoch || token !== state.storyEpoch || state.disposed) return;
       if (!story || typeof story.text !== "string" || !story.text.trim()) throw new Error("这个来源没有提供可朗读的正文，请选择其他故事。");
       stopPlayback(true);
+      const prepared = storyForReading(story);
+      story = prepared.story;
       state.selected = story;
+      state.paragraphs = prepared.ranges;
+      state.paragraphIndex = 0;
       state.currentChar = 0;
       $("reader-title").textContent = story.title;
       $("reader-source").textContent = sourceLabel(story);
-      $("reader-text").replaceChildren();
-      story.text.split(/\n+/).filter(Boolean).forEach((line) => $("reader-text").append(node("p", "", line)));
+      renderReader();
       $("reader").hidden = false;
       $("reader-placeholder").hidden = true;
       $("playing-title").textContent = story.title;
-      $("play-toggle").disabled = false;
+      $("play-toggle").disabled = $("read-aloud-switch")?.checked === false;
       $("play-status").textContent = "选好声音，再轻轻点播放";
       $("favorite-story").disabled = !writable();
       updateFavoriteButton();
@@ -378,6 +479,78 @@
     updateCloneSubmit();
     if (!state.config?.webSearch?.enabled) $("web-search").title = "管理员配置联网搜索服务后启用";
     $("search-source-note").textContent = state.config?.webSearch?.enabled ? "原创故事库 · 可切换联网" : "原创故事库 · 联网服务待连接";
+    configureGeneration();
+  }
+  function configureGeneration() {
+    if (!$("generate-submit")) return;
+    const enabled = !!state.config?.storyGeneration?.enabled && writable() && !state.disposed;
+    $("generate-submit").disabled = !enabled || state.generationBusy;
+    $("generate-submit").textContent = state.generationBusy ? "正在写今晚的故事…" : "生成今晚的故事";
+    $("generation-status").textContent = !writable() ? "当前空间为只读，仍可阅读原创故事。生成故事需要编辑权限。" : !state.config?.storyGeneration?.enabled ? "AI 故事服务待连接。请先从原创故事库选择一篇，年龄与喜好可先调整；这里不会模拟 AI 生成。" : `已连接${state.config.storyGeneration.provider ? ` ${state.config.storyGeneration.provider}` : " AI"}。点击生成后，将按你的选择创作一篇故事。`;
+  }
+  function cancelGeneration() {
+    ++state.generationEpoch;
+    state.generationAbort?.abort();
+    state.generationAbort = null;
+    state.generationBusy = false;
+    if ($("generation-error")) $("generation-error").textContent = "";
+    configureGeneration();
+  }
+  function generatorParameters() {
+    return {
+      ageGroup: $("generate-age").value, category: $("generate-category").value,
+      durationMinutes: Number($("generate-duration").value), style: $("generate-style").value,
+      protagonist: $("generate-protagonist").value, moral: $("generate-moral").checked,
+      blockScary: $("generate-block-scary").checked, interactive: $("generate-interactive").checked,
+    };
+  }
+  function preferenceNamespace() { return state.user ? `zhixu:bedtime:preferences:${state.user.id}` : null; }
+  function saveGeneratorPreferences() {
+    const key = preferenceNamespace();
+    if (!key || !$("story-generator")) return;
+    try { safeStorage(key, JSON.stringify(generatorParameters())); } catch { /* Preferences are optional and never contain story text. */ }
+  }
+  function restoreGeneratorPreferences() {
+    const key = preferenceNamespace();
+    if (!key || !$("story-generator")) return;
+    let preference;
+    try { preference = JSON.parse(safeStorage(key) || "null"); } catch { return; }
+    if (!preference || typeof preference !== "object") return;
+    for (const [id, parameter] of [["generate-age", "ageGroup"], ["generate-category", "category"], ["generate-duration", "durationMinutes"], ["generate-style", "style"], ["generate-protagonist", "protagonist"]]) {
+      const select = $(id);
+      if ([...select.options].some((option) => option.value === String(preference[parameter]))) select.value = String(preference[parameter]);
+    }
+    for (const [id, parameter] of [["generate-moral", "moral"], ["generate-block-scary", "blockScary"], ["generate-interactive", "interactive"]]) if (typeof preference[parameter] === "boolean") $(id).checked = preference[parameter];
+  }
+  async function generateStory(event) {
+    event.preventDefault();
+    if (!state.config?.storyGeneration?.enabled || !writable() || state.generationBusy || state.disposed) return;
+    const abort = new AbortController();
+    state.generationAbort?.abort(); state.generationAbort = abort;
+    const token = ++state.generationEpoch, epoch = state.spaceEpoch;
+    const parameters = generatorParameters();
+    saveGeneratorPreferences();
+    state.generationBusy = true;
+    $("generation-error").textContent = "";
+    configureGeneration();
+    try {
+      const result = await api("/generate", "POST", parameters, abort.signal);
+      if (epoch !== state.spaceEpoch || token !== state.generationEpoch || state.disposed) return;
+      if (!result.story || typeof result.story.id !== "string" || typeof result.story.text !== "string" || !result.story.text.trim()) throw new Error("服务没有返回可阅读的故事，请稍后再试。");
+      state.searchAbort?.abort(); clearTimeout(state.debounce); ++state.searchEpoch;
+      state.library = "browse";
+      state.stories = [result.story, ...state.stories.filter((story) => story.id !== result.story.id)];
+      if ($("interactive-questions")) $("interactive-questions").checked = parameters.interactive;
+      await openStory(result.story);
+      if (epoch !== state.spaceEpoch || token !== state.generationEpoch || state.disposed) return;
+      if (desktopMedia.matches) $("reader").scrollIntoView({ block: "start", behavior: "instant" });
+      listStatus("今晚的故事已生成。文本与音色独立，选择声音后轻点朗读。");
+      toast("故事准备好了，轻点朗读开始陪伴");
+    } catch (error) {
+      if (error.name !== "AbortError" && epoch === state.spaceEpoch && token === state.generationEpoch && !state.disposed) $("generation-error").textContent = error.message;
+    } finally {
+      if (token === state.generationEpoch && epoch === state.spaceEpoch && !state.disposed) { state.generationBusy = false; state.generationAbort = null; configureGeneration(); }
+    }
   }
   function openVoices() {
     if (state.disposed || $("voice-dialog").open) return;
@@ -504,22 +677,36 @@
     if (audioContext.state === "suspended") await audioContext.resume();
     return audioContext;
   }
+  function closeAudioContext() {
+    const context = audioContext;
+    audioContext = null;
+    if (context && context.state !== "closed") context.close().catch(() => {});
+  }
   function stopNoise() {
     try { noiseSource?.stop(); } catch { /* An already ended source is safe. */ }
     noiseSource?.disconnect(); noiseGain?.disconnect(); noiseSource = null; noiseGain = null;
   }
   async function startNoise() {
     stopNoise();
-    if (!state.playing || $("noise-kind").value === "none") return;
+    if ((!state.playing && !state.waitingQuestion) || $("noise-kind").value === "none") return;
     const epoch = state.audioEpoch;
     const context = await ensureAudioContext();
-    if (!context || epoch !== state.audioEpoch || !state.playing) return;
+    if (!context || epoch !== state.audioEpoch || (!state.playing && !state.waitingQuestion)) return;
     const kind = $("noise-kind").value;
-    const length = context.sampleRate * 4;
+    const length = context.sampleRate * (kind === "piano" ? 16 : 4);
     const buffer = context.createBuffer(1, length, context.sampleRate);
     const data = buffer.getChannelData(0);
     let brown = 0;
     for (let i = 0; i < length; i++) {
+      if (kind === "piano") {
+        const seconds = i / context.sampleRate, noteTime = seconds % 4;
+        const frequency = [130.81, 164.81, 196, 146.83][Math.floor(seconds / 4)];
+        const envelope = Math.min(1, noteTime / 0.18) * Math.exp(-noteTime * 1.15);
+        let tone = 0;
+        for (let harmonic = 1; harmonic <= 4; harmonic++) tone += Math.sin(2 * Math.PI * frequency * harmonic * noteTime) * Math.exp(-noteTime * harmonic * 0.28) / (harmonic * harmonic);
+        data[i] = tone * envelope * 0.24;
+        continue;
+      }
       const random = Math.random() * 2 - 1;
       brown = (brown + random * 0.035) / 1.035;
       if (kind === "rain") data[i] = random * 0.24 + brown * 0.5;
@@ -532,29 +719,37 @@
     noiseGain = context.createGain(); noiseGain.gain.value = noiseVolume();
     noiseSource.connect(noiseGain); noiseGain.connect(context.destination); noiseSource.start();
   }
-  function stopPlayback(reset = false) {
+  function stopPlayback(reset = false, keepNoise = false) {
+    if (state.playing && state.startedAt) state.elapsed = (Date.now() - state.startedAt) / 1000;
     ++state.audioEpoch;
     state.playing = false;
+    state.startedAt = 0;
+    document.body.classList.remove("is-reading");
     clearTimeout(state.speechStartTimeout);
     window.speechSynthesis?.cancel(); state.utterance = null;
     if (navigator.mediaSession) { navigator.mediaSession.metadata = null; navigator.mediaSession.playbackState = "none"; }
     if (state.audio) { state.audio.pause(); state.audio.removeAttribute("src"); state.audio.load(); state.audio = null; }
     speechGain?.disconnect(); speechGain = null;
-    stopNoise();
-    if (audioContext && audioContext.state === "running") audioContext.suspend().catch(() => {});
+    if (!keepNoise) stopNoise();
+    if (!keepNoise && audioContext && audioContext.state === "running") audioContext.suspend().catch(() => {});
     for (const url of state.urls) URL.revokeObjectURL(url);
     state.urls.clear();
-    if (reset) { state.currentChar = 0; state.elapsed = 0; state.startedAt = 0; }
+    if (reset) { state.currentChar = 0; state.elapsed = 0; clearQuestion(); state.questionsDone.clear(); }
     $("play-toggle").textContent = "▶";
     $("play-toggle").setAttribute("aria-label", "开始朗读");
+    highlightSentence();
   }
   async function recordHistory(position = 0) {
     if (!state.selected || !writable()) return;
     const story = state.selected;
+    const epoch = state.spaceEpoch, expectedUser = state.user.id;
     try {
       await api("/history", "POST", { story, storyId: story.id, title: story.title, voiceId: $("voice-selector").value, positionSeconds: Math.max(0, Math.round(position)) });
+      if (epoch !== state.spaceEpoch || expectedUser !== state.user?.id || state.disposed) return;
       const result = await api("/history");
+      if (epoch !== state.spaceEpoch || expectedUser !== state.user?.id || state.disposed) return;
       state.history = result.history || [];
+      updateResumeButton();
       if (state.library === "history") renderLibrary();
     } catch { /* Reading remains available if a history update fails. */ }
   }
@@ -563,10 +758,41 @@
     $("play-toggle").setAttribute("aria-label", "暂停朗读");
     $("play-status").textContent = "正在轻声读给你听";
     state.startedAt = Date.now() - state.elapsed * 1000;
+    document.body.classList.add("is-reading");
+    if ($("warm-light")?.checked !== false) document.body.classList.add("warm-light");
+    highlightSentence();
     if (navigator.mediaSession && window.MediaMetadata && state.selected) {
       navigator.mediaSession.metadata = new MediaMetadata({ title: state.selected.title, artist: "知序晚安故事", album: state.space?.name || "" });
       navigator.mediaSession.playbackState = "playing";
     }
+  }
+  function finishChunk(chunk, epoch) {
+    if (epoch !== state.audioEpoch || !state.playing) return;
+    state.currentChar = chunk.offset + chunk.text.length;
+    state.chunkIndex++;
+    updateProgress();
+    const paragraph = state.paragraphs.findIndex((entry) => chunk.offset >= entry.start && chunk.offset < entry.end);
+    const next = state.chunks[state.chunkIndex];
+    const nextParagraph = next ? state.paragraphs.findIndex((entry) => next.offset >= entry.start && next.offset < entry.end) : -1;
+    const question = state.selected?.questions?.find((entry) => entry.afterParagraph === paragraph && !state.questionsDone.has(paragraph));
+    if (question && paragraph !== nextParagraph && $("interactive-questions")?.checked !== false) {
+      state.currentChar = next?.offset ?? state.currentChar;
+      state.waitingQuestion = question;
+      stopPlayback(false, true);
+      $("story-question-text").textContent = question.question;
+      $("story-question").hidden = false;
+      showParagraph(paragraph);
+      $("play-status").textContent = "轻轻想一想，也可以直接继续听";
+      $("continue-question").focus({ preventScroll: true });
+      recordHistory(state.elapsed);
+      return;
+    }
+    playCurrentChunk(epoch).catch((error) => playbackError(error, epoch));
+  }
+  function continueQuestion() {
+    if (state.waitingQuestion) state.questionsDone.add(state.waitingQuestion.afterParagraph);
+    clearQuestion();
+    startPlayback();
   }
   async function playCurrentChunk(epoch) {
     if (epoch !== state.audioEpoch || !state.playing) return;
@@ -581,6 +807,7 @@
       return;
     }
     state.currentChar = chunk.offset;
+    highlightSentence(); updateProgress();
     const voiceId = $("voice-selector").value;
     if (voiceId.startsWith("system:")) {
       if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) throw new Error("当前浏览器没有朗读功能。可以阅读文本，或在支持系统语音的设备打开。");
@@ -603,10 +830,7 @@
         updateProgress();
       };
       utterance.onend = () => {
-        if (epoch !== state.audioEpoch || !state.playing) return;
-        state.currentChar = chunk.offset + chunk.text.length;
-        state.chunkIndex++;
-        playCurrentChunk(epoch).catch((error) => playbackError(error, epoch));
+        finishChunk(chunk, epoch);
       };
       utterance.onerror = (event) => {
         if (epoch !== state.audioEpoch || ["canceled", "interrupted"].includes(event.error)) return;
@@ -658,9 +882,7 @@
       URL.revokeObjectURL(objectURL); state.urls.delete(objectURL);
       if (epoch !== state.audioEpoch || !state.playing) return;
       speechGain?.disconnect(); speechGain = null;
-      state.currentChar = chunk.offset + chunk.text.length;
-      state.chunkIndex++;
-      playCurrentChunk(epoch).catch((error) => playbackError(error, epoch));
+      finishChunk(chunk, epoch);
     };
     audio.onerror = () => playbackError(new Error("声音无法播放，请重试或切换设备声音。"), epoch);
     await audio.play();
@@ -672,12 +894,16 @@
     toast(error.message);
   }
   async function startPlayback() {
-    if (!state.selected || state.disposed) return;
+    if (!state.selected || state.disposed || state.sleeping || $("read-aloud-switch")?.checked === false) return;
     if (state.deadline && Date.now() >= state.deadline) { timerTick(); return; }
+    if (state.waitingQuestion) {
+      state.questionsDone.add(state.waitingQuestion.afterParagraph);
+      clearQuestion();
+    }
     stopPlayback();
     const epoch = state.audioEpoch;
     state.playing = true;
-    if (state.currentChar >= state.selected.text.length) { state.currentChar = 0; state.elapsed = 0; }
+    if (state.currentChar >= state.selected.text.length) { state.currentChar = 0; state.elapsed = 0; state.questionsDone.clear(); }
     state.chunks = chunksFrom(state.selected.text, state.currentChar);
     state.chunkIndex = 0;
     state.startedAt = 0;
@@ -704,6 +930,33 @@
     $("story-progress").value = text.length ? Math.min(1, state.currentChar / text.length) : 0;
     $("elapsed-time").textContent = formatTime(state.elapsed);
     $("duration-time").textContent = text ? `约 ${minutes(state.selected)} 分` : "—";
+    highlightSentence();
+  }
+  function enterSleep() {
+    state.sleeping = true;
+    state.sleepFocus = document.activeElement;
+    closeVoices();
+    clearQuestion();
+    closeAudioContext();
+    $("voice-sample-player").pause();
+    document.body.classList.add("is-sleeping");
+    if (!$("sleep-overlay")) return;
+    $("sleep-overlay").hidden = false;
+    $("wake-sleep").focus({ preventScroll: true });
+    $("bedtime-app").inert = true;
+    $("bedtime-app").setAttribute("aria-hidden", "true");
+  }
+  function leaveSleep(restoreFocus = true) {
+    state.sleeping = false;
+    document.body.classList.remove("is-sleeping");
+    $("bedtime-app").inert = false;
+    $("bedtime-app").removeAttribute("aria-hidden");
+    if ($("sleep-overlay")) $("sleep-overlay").hidden = true;
+    if (restoreFocus && !state.disposed) {
+      const target = state.sleepFocus?.isConnected && state.sleepFocus.getClientRects().length && !state.sleepFocus.disabled ? state.sleepFocus : $("play-toggle");
+      target?.focus({ preventScroll: true });
+    }
+    state.sleepFocus = null;
   }
   function timerTick() {
     if (state.playing && state.startedAt) state.elapsed = (Date.now() - state.startedAt) / 1000;
@@ -718,6 +971,7 @@
       stopPlayback();
       $("play-status").textContent = "定时已停止。晚安，愿你睡得安稳。";
       recordHistory(elapsed);
+      enterSleep();
     } else {
       $("timer-summary").textContent = `${formatTime(remaining / 1000)} 后停止`;
       if (speechGain && audioContext) speechGain.gain.setTargetAtTime(effectiveVolume(), audioContext.currentTime, 0.1);
@@ -727,10 +981,15 @@
   }
   async function loadSpace() {
     state.disposed = false;
+    cancelGeneration();
+    clearQuestion(); state.paragraphs = []; state.sentenceNodes = []; state.paragraphIndex = 0;
+    state.selected = null; state.chunks = [];
+    for (const id of ["reader-title", "reader-source", "paragraph-position"]) if ($(id)) $(id).textContent = "";
     state.config = null;
     $("web-search").checked = false; state.scope = "local";
     state.library = "browse";
     state.stories = []; state.favorites = []; state.history = []; state.voices = [];
+    updateResumeButton();
     $("reader").hidden = true; $("reader-text").replaceChildren();
     $("reader-placeholder").hidden = false;
     $("playing-title").textContent = "选一个故事，开始今晚的陪伴";
@@ -746,6 +1005,7 @@
     if (voices.status === "fulfilled") state.voices = [...(voices.value.systemVoices || []).map((voice) => ({ ...voice, state: "ready" })), ...(voices.value.voices || [])];
     if (favorites.status === "fulfilled") state.favorites = favorites.value.favorites || [];
     if (history.status === "fulfilled") state.history = history.value.history || [];
+    updateResumeButton();
     configureCapabilities(); renderVoices();
     const failure = results.find((result) => result.status === "rejected");
     if (failure) toast(failure.reason.message);
@@ -753,7 +1013,8 @@
   }
   async function init() {
     applyTheme();
-    ["全部", "儿童", "治愈", "古风", "寓言", "晚安"].forEach((category) => {
+    document.body.classList.toggle("warm-light", $("warm-light")?.checked !== false);
+    ["全部", "儿童睡前", "治愈温柔", "小动物", "公主冒险", "成长勇气", "亲情暖心", "古风", "寓言"].forEach((category) => {
       const b = action(category, () => {
         state.category = category;
         [...$("category-tabs").children].forEach((tab) => tab.setAttribute("aria-pressed", String(tab === b)));
@@ -765,6 +1026,7 @@
     try {
       const result = await jsonRequest("/api/me");
       state.user = result.user;
+      restoreGeneratorPreferences();
       const resultSpaces = await jsonRequest("/api/spaces");
       state.spaces = resultSpaces.spaces || [];
       const requestedSpace = new URLSearchParams(location.search).get("space");
@@ -800,6 +1062,44 @@
   $("story-search").addEventListener("submit", (event) => { event.preventDefault(); clearTimeout(state.debounce); search(); $("search-input").blur(); });
   $("search-input").addEventListener("input", scheduleSearch);
   $("web-search").addEventListener("change", () => { state.scope = $("web-search").checked ? "web" : "local"; clearTimeout(state.debounce); search(); });
+  $("library-duration")?.addEventListener("change", () => { clearTimeout(state.debounce); search(); });
+  $("story-generator")?.addEventListener("submit", generateStory);
+  $("story-generator")?.addEventListener("change", saveGeneratorPreferences);
+  $("paragraph-mode")?.addEventListener("change", () => { showParagraph(state.paragraphIndex); });
+  $("prev-paragraph")?.addEventListener("click", () => changeParagraph(-1));
+  $("next-paragraph")?.addEventListener("click", () => changeParagraph(1));
+  $("continue-question")?.addEventListener("click", continueQuestion);
+  $("interactive-questions")?.addEventListener("change", () => {
+    if (state.waitingQuestion && !$("interactive-questions").checked) {
+      state.questionsDone.add(state.waitingQuestion.afterParagraph);
+      clearQuestion(); stopPlayback();
+      $("play-status").textContent = "已关闭互动提问，点朗读可以顺着听下去";
+    }
+  });
+  $("resume-last-story")?.addEventListener("click", () => {
+    const entry = state.history[0];
+    if (!entry) return;
+    const story = entry.story || [...state.stories, ...state.favorites].find((candidate) => candidate.id === entry.storyId) || { id: entry.storyId, title: entry.title, text: "" };
+    openStory(story);
+  });
+  $("next-story")?.addEventListener("click", () => {
+    const stories = state.library === "favorites" ? state.favorites : state.library === "offline" ? offlineStories() : state.library === "history" ? state.history.map((entry) => entry.story || { id: entry.storyId, title: entry.title, text: "" }) : state.stories;
+    if (!stories.length) { toast("先选择一些故事，再慢慢切换"); return; }
+    const current = stories.findIndex((story) => story.id === state.selected?.id);
+    openStory(stories[(current + 1) % stories.length]);
+  });
+  $("read-aloud-switch")?.addEventListener("change", () => {
+    if (!$("read-aloud-switch").checked) { stopPlayback(); clearQuestion(); $("play-status").textContent = "朗读已关闭，可以安静地阅读故事"; }
+    else $("play-status").textContent = "朗读已打开，轻点播放即可开始";
+    $("play-toggle").disabled = !state.selected || !$("read-aloud-switch").checked;
+  });
+  $("warm-light")?.addEventListener("change", () => document.body.classList.toggle("warm-light", $("warm-light").checked));
+  $("wake-sleep")?.addEventListener("click", () => { leaveSleep(); $("play-status").textContent = "已唤醒。需要时，再轻点朗读"; });
+  document.addEventListener("keydown", (event) => {
+    if (!state.sleeping) return;
+    if (event.key === "Escape") { event.preventDefault(); leaveSleep(); }
+    else if (event.key === "Tab") { event.preventDefault(); $("wake-sleep")?.focus(); }
+  });
   document.querySelectorAll("[data-library]").forEach((b) => b.addEventListener("click", () => {
     clearTimeout(state.debounce); ++state.searchEpoch; state.searchAbort?.abort();
     state.library = b.dataset.library; listStatus(""); renderLibrary();
@@ -859,7 +1159,7 @@
   });
   $("voice-consent").addEventListener("change", updateCloneSubmit);
   $("voice-sample-player").addEventListener("play", () => {
-    if (state.playing) { stopPlayback(); $("play-status").textContent = "录音试听中，故事已暂停"; }
+    if (state.playing || state.waitingQuestion) { stopPlayback(); $("play-status").textContent = "录音试听中，故事已暂停"; }
   });
   $("clone-form").addEventListener("submit", createClone);
   window.speechSynthesis?.addEventListener("voiceschanged", renderVoices);
@@ -895,6 +1195,7 @@
   $("sleep-controls").open = desktopMedia.matches;
   $("space-selector").addEventListener("change", async () => {
     const oldSpace = state.space.id;
+    leaveSleep(false); cancelGeneration(); state.storyAbort?.abort(); ++state.storyEpoch;
     stopPlayback(true); clearOffline(); signalSessionEvent("spacechange", oldSpace);
     state.searchAbort?.abort(); ++state.spaceEpoch; ++state.searchEpoch;
     state.deadline = 0; $("sleep-timer").value = "0"; $("timer-summary").textContent = "睡眠工具";
@@ -912,6 +1213,7 @@
       if (data.kind === "login" && data.userId !== state.user?.id) expireSession("账号已在另一个页面切换，请返回工作台重新打开故事。");
       else if (data.kind === "logout" && data.userId === state.user?.id) expireSession();
       else if (data.kind === "spacechange" && data.userId === state.user?.id && data.spaceId === state.space?.id) {
+        leaveSleep(false); cancelGeneration(); state.storyAbort?.abort(); ++state.storyEpoch;
         stopPlayback(true); clearOffline(); closeVoices();
         toast("工作台已切换空间，当前声音已停止。请确认需要的空间。");
       }
@@ -936,7 +1238,7 @@
   setInterval(() => {
     if (state.user && !state.disposed && navigator.onLine) verifyMembership();
   }, 30000);
-  window.addEventListener("pagehide", () => { stopPlayback(true); clearVoiceSample(); clearInterval(voicePoll); });
+  window.addEventListener("pagehide", () => { stopPlayback(true); closeAudioContext(); clearVoiceSample(); cancelGeneration(); state.storyAbort?.abort(); clearInterval(voicePoll); });
   setInterval(timerTick, 500);
   setInterval(applyTheme, 60000);
   // No application-wide API, vault, uploaded media, or generated audio cache.
