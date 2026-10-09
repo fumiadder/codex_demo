@@ -32,7 +32,7 @@ def docker(*args, **kw):
 
 def copy_release(path, sha, fail=False):
     path.mkdir(parents=True)
-    for name in ('server.py', 'bedtime.py', 'persistence.py', 'media_storage.py', 'storage_jobs.py', 'requirements.txt', 'stories_data.json', 'Dockerfile', 'compose.yaml', 'Caddyfile', '.dockerignore'):
+    for name in ('server.py', 'bedtime.py', 'persistence.py', 'neon_transport.py', 'media_storage.py', 'storage_jobs.py', 'requirements.txt', 'stories_data.json', 'Dockerfile', 'compose.yaml', 'Caddyfile', '.dockerignore'):
         if (ROOT/name).exists(): shutil.copy2(ROOT/name, path/name)
     for name in ('public', 'scripts'):
         shutil.copytree(ROOT/name, path/name, ignore=shutil.ignore_patterns('__pycache__','*.pyc'))

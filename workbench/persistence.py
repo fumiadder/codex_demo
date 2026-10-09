@@ -1,11 +1,13 @@
 """Request-scoped SQLite/PostgreSQL persistence for the workbench.
 
-SQLite remains the local default. PostgreSQL uses its native protocol and one
-transaction per context; no connection or credential is sent to the browser.
+SQLite remains the local default. PostgreSQL uses its native protocol by
+default, with an opt-in Neon WebSocket transport. Each context owns one
+transaction; no connection or credential is sent to the browser.
 The small compatibility layer covers the SQL used by server.py and bedtime.py.
 """
 from __future__ import annotations
 
+import os
 import re
 import socket
 import sqlite3
@@ -42,6 +44,10 @@ _CONNECTION_SQLSTATES = {
     "53400": "connection_failure",
     "57P03": "connection_failure",
 }
+_CONNECTION_REASONS = frozenset({
+    "configuration", "connection_failure", "authentication", "tls_certificate",
+    "channel_binding", "timeout", "dns", "unknown",
+})
 
 
 def _connection_failure_message(error):
@@ -53,6 +59,19 @@ def _connection_failure_message(error):
     if type(sqlstate) is not str or sqlstate not in _CONNECTION_SQLSTATES:
         sqlstate = None
     reason = _CONNECTION_SQLSTATES.get(sqlstate, "unknown")
+    # The optional transport reports fixed labels after hiding lower-level
+    # errors. Treat them as a finite enum, never as arbitrary driver output.
+    try:
+        transport_reason = getattr(error, "reason", None)
+    except Exception:
+        transport_reason = None
+    if type(transport_reason) is str and transport_reason in _CONNECTION_REASONS:
+        # A transport without more specific detail must still preserve a
+        # recognized server authentication/configuration diagnosis.
+        if transport_reason != "unknown":
+            reason = transport_reason
+        suffix = f", sqlstate={sqlstate}" if sqlstate else ""
+        return f"Cloud database connection failed (reason={reason}{suffix})"
     # libpq often reports DNS/TLS/timeouts as OperationalError without a server
     # SQLSTATE. Its text is inspected internally and never becomes output.
     try:
@@ -335,6 +354,11 @@ class Database:
         self._database_url = database_url or None
         self.dialect = "postgresql" if self._database_url else "sqlite"
         if self._database_url:
+            # A global cloud transport setting never changes local SQLite
+            # fixtures or imports an optional network dependency for them.
+            self._transport = os.environ.get("DATABASE_TRANSPORT", "native")
+            if self._transport not in ("native", "neon-ws"):
+                raise ValueError("DATABASE_TRANSPORT must be native or neon-ws") from None
             try:
                 parsed = urlsplit(self._database_url)
                 if parsed.scheme not in ("postgres", "postgresql") or not parsed.hostname or not parsed.path.strip("/"):
@@ -365,10 +389,16 @@ class Database:
             finally:
                 conn.close()
             return
-        try:
-            import psycopg
-        except ImportError:
-            raise RuntimeError("PostgreSQL storage requires the psycopg dependency") from None
+        if self._transport == "neon-ws":
+            try:
+                import neon_transport as driver
+            except ImportError:
+                raise RuntimeError("Neon WebSocket storage requires its transport dependencies") from None
+        else:
+            try:
+                import psycopg as driver
+            except ImportError:
+                raise RuntimeError("PostgreSQL storage requires the psycopg dependency") from None
         connection_options = {
             "connect_timeout": 10,
             "options": "-c statement_timeout=15000 -c lock_timeout=15000 -c idle_in_transaction_session_timeout=30000",
@@ -381,12 +411,21 @@ class Database:
             if not ca_file or not Path(ca_file).is_file():
                 raise RuntimeError("Cloud database TLS requires the system CA certificates")
             connection_options.update(sslmode="verify-full", sslrootcert=ca_file)
+        raw = None
         try:
-            raw = psycopg.connect(self._database_url, **connection_options)
-            raw.isolation_level = psycopg.IsolationLevel.READ_COMMITTED
-        except (psycopg.Error, ValueError) as error:
+            raw = driver.connect(self._database_url, **connection_options)
+            raw.isolation_level = driver.IsolationLevel.READ_COMMITTED
+        except (driver.Error, ValueError) as error:
+            # The transport may establish a socket successfully, then fail
+            # while setting transaction isolation. Close that session before
+            # returning the original sanitized setup diagnostic.
+            if raw is not None:
+                try:
+                    raw.close()
+                except Exception:
+                    pass
             raise sqlite3.OperationalError(_connection_failure_message(error)) from None
-        conn = _PostgresConnection(raw, psycopg)
+        conn = _PostgresConnection(raw, driver)
         try:
             yield conn
             conn.commit()
@@ -395,7 +434,7 @@ class Database:
             # error if the connection has already failed or been terminated.
             try:
                 raw.rollback()
-            except psycopg.Error:
+            except driver.Error:
                 pass
             raise
         finally:

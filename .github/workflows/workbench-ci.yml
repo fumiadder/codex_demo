@@ -37,7 +37,7 @@ jobs:
           python-version: '3.12'
       - name: Install pinned cloud storage dependencies
         working-directory: workbench
-        run: python -m pip install --disable-pip-version-check -r requirements.txt
+        run: python -m pip install --disable-pip-version-check -r requirements.txt websockets==15.0.1
       - name: Check server authorization and bedtime APIs on SQLite
         working-directory: workbench
         run: python -m unittest discover -s tests -v
@@ -47,6 +47,11 @@ jobs:
           TEST_POSTGRES_URL: postgresql://zhixu_tests:local_disposable_tests_only@127.0.0.1:5432/zhixu_tests?sslmode=disable
           TEST_WORKBENCH_POSTGRES_URL: postgresql://zhixu_tests:local_disposable_tests_only@127.0.0.1:5432/zhixu_tests?sslmode=disable
         run: python -m unittest discover -s tests -v
+      - name: Check PostgreSQL WebSocket transactions and HTTP authorization
+        working-directory: workbench
+        env:
+          TEST_POSTGRES_URL: postgresql://zhixu_tests:local_disposable_tests_only@127.0.0.1:5432/zhixu_tests?sslmode=disable
+        run: python scripts/run_ws_pg_tests.py
       - name: Check browser JavaScript and release scripts
         working-directory: workbench
         run: |

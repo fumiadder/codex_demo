@@ -1,5 +1,6 @@
 """Persistence contract checks; no external accounts or provider calls."""
 from concurrent.futures import ThreadPoolExecutor
+import os
 import sqlite3
 import sys
 import tempfile
@@ -171,7 +172,7 @@ class PostgresConnectionDiagnosticTests(unittest.TestCase):
             super().__init__(message)
             self.sqlstate = sqlstate
 
-    def assert_safe_failure(self, driver_error, reason, sqlstate=None):
+    def assert_safe_failure(self, driver_error, reason, sqlstate=None, transport="native"):
         secret = "do-not-expose-password"
         url = f"postgresql://owner:{secret}@private-db.example/app?sslmode=require"
         driver = SimpleNamespace(
@@ -179,7 +180,8 @@ class PostgresConnectionDiagnosticTests(unittest.TestCase):
             connect=Mock(side_effect=driver_error),
             IsolationLevel=SimpleNamespace(READ_COMMITTED="read committed"),
         )
-        with patch.dict(sys.modules, {"psycopg": driver}), patch(
+        module = "neon_transport" if transport == "neon-ws" else "psycopg"
+        with patch.dict(os.environ, {"DATABASE_TRANSPORT": transport}), patch.dict(sys.modules, {module: driver}), patch(
             "persistence.ssl.get_default_verify_paths",
             return_value=SimpleNamespace(cafile=__file__),
         ):
@@ -197,6 +199,34 @@ class PostgresConnectionDiagnosticTests(unittest.TestCase):
             self.assertNotIn(private, rendered)
             self.assertNotIn(private, repr(raised.exception))
         driver.connect.assert_called_once()
+
+    def test_websocket_transport_connection_failure_preserves_safe_labels(self):
+        error = self.DriverError("hostile-driver-detail do-not-expose-password", "08001")
+        error.reason = "timeout"
+        self.assert_safe_failure(error, "timeout", "08001", transport="neon-ws")
+        error = self.DriverError("hostile-driver-detail do-not-expose-password", "28P01")
+        error.reason = "unknown"
+        self.assert_safe_failure(error, "authentication", "28P01", transport="neon-ws")
+
+    def test_transport_reason_attributes_are_a_finite_enum(self):
+        for reason in ("configuration", "connection_failure", "authentication", "tls_certificate", "channel_binding", "timeout", "dns", "unknown"):
+            with self.subTest(reason=reason):
+                error = self.DriverError("hostile-driver-detail do-not-expose-password")
+                error.reason = reason
+                self.assert_safe_failure(error, reason, transport="neon-ws")
+        for reason in ("hostile-driver-detail do-not-expose-password", "timeout\nhostile-driver-detail", "TIMEOUT", 42, {"timeout": True}):
+            with self.subTest(reason=reason):
+                error = self.DriverError("hostile-driver-detail do-not-expose-password")
+                error.reason = reason
+                self.assert_safe_failure(error, "unknown", transport="neon-ws")
+
+    def test_broken_transport_reason_attribute_cannot_replace_safe_diagnostics(self):
+        class BrokenReasonError(self.DriverError):
+            @property
+            def reason(self):
+                raise ValueError("hostile-driver-detail do-not-expose-password")
+
+        self.assert_safe_failure(BrokenReasonError("connection timed out: hostile-driver-detail"), "timeout", transport="neon-ws")
 
     def test_libpq_network_tls_and_channel_binding_failures_have_finite_labels(self):
         private = "hostile-driver-detail postgresql://owner:do-not-expose-password@private-db.example/app"
@@ -242,6 +272,141 @@ class PostgresConnectionDiagnosticTests(unittest.TestCase):
                 raise ValueError("hostile-driver-detail do-not-expose-password")
 
         self.assert_safe_failure(BrokenDiagnosticError(), "unknown")
+
+
+class PostgresTransportSelectionTests(unittest.TestCase):
+    url = "postgresql://owner:do-not-expose-password@ep-example.ap-southeast-1.aws.neon.tech/app?sslmode=require"
+
+    class DriverError(Exception):
+        pass
+
+    class DriverIntegrityError(DriverError):
+        pass
+
+    def driver(self):
+        cursor = Mock(description=[SimpleNamespace(name="answer")], rowcount=1)
+        cursor.fetchone.return_value = (42,)
+        raw = Mock()
+        raw.execute.return_value = cursor
+        driver = SimpleNamespace(
+            Error=self.DriverError,
+            IntegrityError=self.DriverIntegrityError,
+            IsolationLevel=SimpleNamespace(READ_COMMITTED="read committed"),
+            connect=Mock(return_value=raw),
+        )
+        return driver, raw
+
+    def test_native_is_the_default_and_websocket_is_explicitly_selected(self):
+        for transport, module, other_module in ((None, "psycopg", "neon_transport"), ("native", "psycopg", "neon_transport"), ("neon-ws", "neon_transport", "psycopg")):
+            with self.subTest(transport=transport), patch.dict(os.environ, {}, clear=True):
+                if transport is not None:
+                    os.environ["DATABASE_TRANSPORT"] = transport
+                driver, raw = self.driver()
+                # The unselected dependency is unavailable: selection must be
+                # lazy and cannot silently fall back to another driver.
+                with patch.dict(sys.modules, {module: driver, other_module: None}), patch(
+                    "persistence.ssl.get_default_verify_paths", return_value=SimpleNamespace(cafile=__file__),
+                ):
+                    with Database("unused", self.url).connect_context() as conn:
+                        self.assertEqual(conn.execute("SELECT ? AS answer", (42,)).fetchone()["answer"], 42)
+                driver.connect.assert_called_once_with(
+                    self.url, connect_timeout=10,
+                    options="-c statement_timeout=15000 -c lock_timeout=15000 -c idle_in_transaction_session_timeout=30000",
+                    autocommit=False, sslmode="verify-full", sslrootcert=__file__,
+                )
+                self.assertEqual(raw.isolation_level, "read committed")
+                raw.execute.assert_called_once_with("SELECT %s AS answer", (42,))
+                raw.commit.assert_called_once_with()
+                raw.rollback.assert_not_called()
+                raw.close.assert_called_once_with()
+
+    def test_missing_selected_dependency_fails_without_a_different_driver_or_sqlite(self):
+        for transport, module, other_module, message in (
+            ("native", "psycopg", "neon_transport", "psycopg dependency"),
+            ("neon-ws", "neon_transport", "psycopg", "transport dependencies"),
+        ):
+            with self.subTest(transport=transport):
+                other_driver, _ = self.driver()
+                with patch.dict(os.environ, {"DATABASE_TRANSPORT": transport}), patch.dict(sys.modules, {module: None, other_module: other_driver}), patch("persistence.sqlite3.connect") as sqlite_connect:
+                    with self.assertRaisesRegex(RuntimeError, message) as raised:
+                        with Database("unused", self.url).connect_context():
+                            self.fail("Missing cloud dependency must fail closed")
+                self.assertTrue(raised.exception.__suppress_context__)
+                self.assertNotIn(self.url, str(raised.exception))
+                other_driver.connect.assert_not_called()
+                sqlite_connect.assert_not_called()
+
+    def test_invalid_postgres_transport_fails_before_connection(self):
+        for transport in ("", "http", "NEON-WS", "native ", "hostile-driver-detail"):
+            with self.subTest(transport=transport), patch.dict(os.environ, {"DATABASE_TRANSPORT": transport}), patch("persistence.sqlite3.connect") as sqlite_connect:
+                with self.assertRaisesRegex(ValueError, "DATABASE_TRANSPORT must be native or neon-ws") as raised:
+                    Database("unused", self.url)
+                self.assertNotIn("hostile-driver-detail", str(raised.exception))
+                sqlite_connect.assert_not_called()
+
+    def test_sqlite_ignores_transport_and_does_not_load_cloud_dependencies(self):
+        for transport in ("native", "neon-ws", "not-a-cloud-transport"):
+            with self.subTest(transport=transport), tempfile.TemporaryDirectory() as root, patch.dict(os.environ, {"DATABASE_TRANSPORT": transport}), patch.dict(sys.modules, {"psycopg": None, "neon_transport": None}):
+                database = Database(Path(root) / "local.sqlite3")
+                self.assertEqual(database.dialect, "sqlite")
+                with database.connect_context() as conn:
+                    conn.execute("CREATE TABLE local (id INTEGER PRIMARY KEY)")
+                    conn.execute("INSERT INTO local VALUES (?)", (7,))
+                with database.connect_context() as conn:
+                    self.assertEqual(conn.execute("SELECT id FROM local").fetchone()[0], 7)
+
+    def test_websocket_mode_preserves_tls_guard_even_before_driver_is_loaded(self):
+        with patch.dict(os.environ, {"DATABASE_TRANSPORT": "neon-ws"}), patch.dict(sys.modules, {"neon_transport": None}):
+            with self.assertRaisesRegex(ValueError, "TLS for remote hosts"):
+                Database("unused", self.url.replace("sslmode=require", "sslmode=disable"))
+
+    def test_websocket_operation_integrity_errors_roll_back_with_sanitized_contract(self):
+        driver, raw = self.driver()
+        raw.execute.side_effect = self.DriverIntegrityError("private row and do-not-expose-password")
+        with patch.dict(os.environ, {"DATABASE_TRANSPORT": "neon-ws"}), patch.dict(sys.modules, {"neon_transport": driver}), patch(
+            "persistence.ssl.get_default_verify_paths", return_value=SimpleNamespace(cafile=__file__),
+        ):
+            with self.assertRaisesRegex(sqlite3.IntegrityError, "Database integrity constraint failed") as raised:
+                with Database("unused", self.url).connect_context() as conn:
+                    conn.execute("INSERT INTO sample VALUES (?)", ("private row",))
+        self.assertNotIn("private row", "".join(traceback.format_exception(raised.exception)))
+        self.assertTrue(raised.exception.__suppress_context__)
+        raw.commit.assert_not_called()
+        raw.rollback.assert_called_once_with()
+        raw.close.assert_called_once_with()
+
+    def test_isolation_setup_failure_closes_session_and_preserves_safe_error(self):
+        class FailedSetup:
+            def __init__(self, error, close_error):
+                self.error = error
+                self.close = Mock(side_effect=close_error)
+
+            @property
+            def isolation_level(self):
+                return None
+
+            @isolation_level.setter
+            def isolation_level(self, value):
+                raise self.error
+
+        for transport, module in (("native", "psycopg"), ("neon-ws", "neon_transport")):
+            for close_error in (None, RuntimeError("private-close-data do-not-expose-password")):
+                with self.subTest(transport=transport, close_failure=close_error is not None):
+                    driver, _ = self.driver()
+                    raw = FailedSetup(self.DriverError("connection timed out with private-setup-data do-not-expose-password"), close_error)
+                    driver.connect.return_value = raw
+                    with patch.dict(os.environ, {"DATABASE_TRANSPORT": transport}), patch.dict(sys.modules, {module: driver}), patch(
+                        "persistence.ssl.get_default_verify_paths", return_value=SimpleNamespace(cafile=__file__),
+                    ):
+                        with self.assertRaises(sqlite3.OperationalError) as raised:
+                            with Database("unused", self.url).connect_context():
+                                self.fail("Session setup did not complete")
+                    self.assertEqual(str(raised.exception), "Cloud database connection failed (reason=timeout)")
+                    rendered = "".join(traceback.format_exception(raised.exception))
+                    for value in ("private-setup-data", "private-close-data", "do-not-expose-password"):
+                        self.assertNotIn(value, rendered)
+                    self.assertTrue(raised.exception.__suppress_context__)
+                    raw.close.assert_called_once_with()
 
 
 if __name__ == "__main__":

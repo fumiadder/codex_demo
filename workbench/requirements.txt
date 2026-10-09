@@ -1,6 +1,10 @@
-# Native PostgreSQL transactions and private, streamed S3 media storage.
+# PostgreSQL sessions (TCP or verified Neon WSS) and private streamed S3 media.
 psycopg[binary]==3.2.13
 psycopg-binary==3.2.13
+pg8000==1.31.5
+websocket-client==1.9.2
+scramp==1.4.17
+asn1crypto==1.5.1
 boto3==1.40.54
 botocore==1.40.76
 jmespath==1.1.0

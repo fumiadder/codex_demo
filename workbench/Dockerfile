@@ -10,7 +10,7 @@ COPY requirements.txt /app/requirements.txt
 RUN --mount=type=secret,id=proxy_ca \
     if [ -f /run/secrets/proxy_ca ]; then export PIP_CERT=/run/secrets/proxy_ca; fi; \
     python -m pip install --no-cache-dir --disable-pip-version-check -r requirements.txt
-COPY --chown=folio:folio server.py bedtime.py persistence.py media_storage.py storage_jobs.py stories_data.json /app/
+COPY --chown=folio:folio server.py bedtime.py persistence.py neon_transport.py media_storage.py storage_jobs.py stories_data.json /app/
 COPY --chown=folio:folio public /app/public
 COPY --chown=folio:folio scripts/manage_access.py /app/scripts/manage_access.py
 USER folio
