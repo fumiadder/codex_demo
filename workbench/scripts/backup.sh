@@ -19,6 +19,10 @@ done
 env_file=${env_file:-$deploy_root/shared/.env}
 source "$(dirname "$0")/ops_common.sh"
 init_ops
+if [[ -n $(read_setting DATABASE_URL '') || $(read_setting MEDIA_STORAGE_BACKEND local) != local ]]; then
+  echo 'Cloud storage requires PostgreSQL and private-object backups; see docs/neon-migration.md. Local volume backup refused.' >&2
+  exit 2
+fi
 ((lock_held)) || lock_ops
 compose config -q
 managed_app

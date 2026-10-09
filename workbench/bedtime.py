@@ -5,6 +5,8 @@ to a provider occur without the corresponding administrator configuration.
 """
 from __future__ import annotations
 
+import storage_jobs
+
 import base64
 import hashlib
 import io
@@ -393,6 +395,7 @@ def initialize(server, provider=None):
         entry["isExcerpt"] = False
         server.bedtime_stories[entry["id"]] = entry
     with server.db() as conn:
+        conn.execute("BEGIN IMMEDIATE")
         conn.executescript(SCHEMA)
         # A process restart cannot silently pretend an enrollment completed.
         conn.execute("UPDATE bedtime_voices SET state='failed' WHERE state='pending'")
@@ -432,10 +435,8 @@ def voice_body(handler):
 
 
 def cleanup_audio(server, conn):
-    rows = conn.execute("SELECT id FROM bedtime_audio WHERE created_at<?", (int(time.time()) - AUDIO_TTL,)).fetchall()
-    for row in rows:
-        (server.bedtime_audio_dir / row["id"]).unlink(missing_ok=True)
-    conn.execute("DELETE FROM bedtime_audio WHERE created_at<?", (int(time.time()) - AUDIO_TTL,))
+    # Queue object removal atomically with metadata expiry; drain after commit.
+    storage_jobs.expire_audio_rows(conn, AUDIO_TTL)
 
 
 def voice_json(row):
@@ -599,6 +600,7 @@ def dispatch(handler, path, query):
     with server.db() as conn:
         user = handler.current_user(conn)
         handler.membership(conn, sid, user["id"], write=write)
+    server.maybe_cleanup()
     data = None
     if method in ("POST", "PUT", "PATCH"):
         data = voice_body(handler) if route == "voices" and method == "POST" else handler.read_json()
@@ -664,6 +666,7 @@ def dispatch(handler, path, query):
                 server.throttle(("bedtime-search", uid), 30, 60)
                 # GET has no writer transaction; the API call holds no SQLite
                 # write lock and all authorization is checked again afterwards.
+                conn.commit()
                 stories = provider_call(handler, provider.search, keyword)
                 with server.db() as check:
                     handler.current_user(check)
@@ -809,48 +812,42 @@ def dispatch(handler, path, query):
             payload = provider_call(handler, provider.synthesize, text, remote_voice, target_model)
             if not isinstance(payload, bytes) or not 44 <= len(payload) <= MAX_AUDIO_BYTES or payload[:4] != b"RIFF" or payload[8:12] != b"WAVE":
                 fail(handler, 502, "提供商返回了无效音频")
+            server.cleanup_media()
+            audio_id = uuid.uuid4().hex
             with server.db() as saved:
                 saved.execute("BEGIN IMMEDIATE")
                 handler.current_user(saved)
                 handler.membership(saved, sid, uid, write=True)
                 if not voice_id.startswith("cloud:") and not saved.execute("SELECT 1 FROM bedtime_voices WHERE id=? AND space_id=? AND user_id=? AND state='ready'", (voice_id, sid, uid)).fetchone():
                     fail(handler, 404, "音色已删除")
-                cleanup_audio(server, saved)
-                space_bytes = saved.execute("SELECT COALESCE(sum(size),0) FROM bedtime_audio WHERE space_id=?", (sid,)).fetchone()[0]
-                space_bytes += saved.execute("SELECT COALESCE(sum(size),0) FROM files WHERE space_id=?", (sid,)).fetchone()[0]
-                total_bytes = saved.execute("SELECT COALESCE(sum(size),0) FROM bedtime_audio").fetchone()[0]
-                total_bytes += saved.execute("SELECT COALESCE(sum(size),0) FROM files").fetchone()[0]
+                space_bytes, total_bytes = storage_jobs.usage(saved, sid)
                 if space_bytes + len(payload) > server.max_space_storage or total_bytes + len(payload) > server.max_total_storage:
                     fail(handler, 413, "存储容量已满，请稍后重试或整理媒体文件")
-                if shutil.disk_usage(server.data_dir).free < len(payload) + 100 * 1024 * 1024:
+                if server.media_storage.backend == "local" and shutil.disk_usage(server.data_dir).free < len(payload) + 100 * 1024 * 1024:
                     fail(handler, 507, "服务器可用存储不足，请联系管理员")
-                audio_id = uuid.uuid4().hex
-                audio_path = server.bedtime_audio_dir / audio_id
-                try:
-                    with audio_path.open("xb") as audio:
-                        audio.write(payload)
-                    os.chmod(audio_path, 0o600)
+                storage_jobs.reserve(saved, "bedtime-audio", audio_id, sid, len(payload))
+            try:
+                server.media_storage.put("bedtime-audio", audio_id, payload, "audio/wav")
+                with server.db() as saved:
+                    saved.execute("BEGIN IMMEDIATE")
+                    handler.current_user(saved)
+                    handler.membership(saved, sid, uid, write=True)
+                    if not voice_id.startswith("cloud:") and not saved.execute("SELECT 1 FROM bedtime_voices WHERE id=? AND space_id=? AND user_id=? AND state='ready'", (voice_id, sid, uid)).fetchone():
+                        fail(handler, 404, "音色已删除")
+                    storage_jobs.assert_pending(saved, "bedtime-audio", audio_id)
                     saved.execute("INSERT INTO bedtime_audio VALUES(?,?,?,?,?)", (audio_id, sid, uid, len(payload), int(time.time())))
-                except Exception:
-                    audio_path.unlink(missing_ok=True)
-                    raise
+                    storage_jobs.publish(saved, "bedtime-audio", audio_id)
+            except Exception:
+                storage_jobs.abandon(server, "bedtime-audio", audio_id, sid, len(payload))
+                raise
             handler.json_response(200, {"audioUrl": f"/api/spaces/{sid}/bedtime/audio/{audio_id}", "mimeType": "audio/wav", "expiresIn": AUDIO_TTL})
             return True
         elif (audio_match := re.fullmatch(rf"audio/({ID})", route)) and method == "GET":
             row = conn.execute("SELECT * FROM bedtime_audio WHERE id=? AND space_id=? AND user_id=? AND created_at>?", (audio_match[1], sid, uid, int(time.time()) - AUDIO_TTL)).fetchone()
             if not row:
                 fail(handler, 404, "朗读音频不存在或已过期，请重新生成")
-            try:
-                audio = (server.bedtime_audio_dir / row["id"]).read_bytes()
-            except FileNotFoundError:
-                fail(handler, 404, "朗读音频不存在，请重新生成")
-            handler.send_response(200)
-            handler.security_headers(file_response=True)
-            handler.send_header("Content-Type", "audio/wav")
-            handler.send_header("Cache-Control", "private, no-store")
-            handler.send_header("Content-Length", str(len(audio)))
-            handler.end_headers()
-            handler.wfile.write(audio)
+            conn.commit()
+            handler.serve_media("bedtime-audio", row, "audio/wav", "晚安故事.wav")
             return True
         else:
             fail(handler, 404, "接口不存在")

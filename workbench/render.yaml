@@ -7,7 +7,7 @@ services:
     plan: free
     region: singapore
     rootDir: workbench
-    buildCommand: python -m py_compile server.py
+    buildCommand: pip install -r requirements.txt && python -m py_compile server.py bedtime.py persistence.py media_storage.py storage_jobs.py
     startCommand: python server.py
     healthCheckPath: /api/health
     autoDeployTrigger: "off"

@@ -27,6 +27,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from server import EMAIL_RE, SCHEMA, now_iso
+from persistence import Database
 
 
 @contextmanager
@@ -34,18 +35,17 @@ def access_database(data_dir):
     directory = Path(data_dir).resolve()
     directory.mkdir(parents=True, exist_ok=True, mode=0o700)
     path = directory / "folio.sqlite3"
-    conn = sqlite3.connect(path, timeout=15)
-    try:
-        os.chmod(path, 0o600)
-        conn.execute("PRAGMA foreign_keys=ON")
-        conn.execute("PRAGMA busy_timeout=15000")
+    database = Database(path, os.environ.get("DATABASE_URL"))
+    with database.connect_context() as conn:
+        if database.dialect == "sqlite":
+            os.chmod(path, 0o600)
         conn.execute("PRAGMA journal_mode=WAL")
+        conn.execute("BEGIN IMMEDIATE")
         conn.executescript(SCHEMA)
-        with conn:
+        # SQLite executescript ends its transaction; acquire the lock again.
+        if database.dialect == "sqlite":
             conn.execute("BEGIN IMMEDIATE")
-            yield conn
-    finally:
-        conn.close()
+        yield conn
 
 
 def normalize_email(email):

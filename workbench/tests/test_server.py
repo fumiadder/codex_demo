@@ -6,12 +6,14 @@ import hashlib
 import http.client
 import io
 import json
+import os
 import sqlite3
 import sys
 import tempfile
 import threading
 import time
 import unittest
+from urllib.parse import urlsplit
 from pathlib import Path
 from unittest import mock
 
@@ -23,6 +25,12 @@ from scripts.manage_access import issue_invitation, main as manage_access_main, 
 class ServerTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        # Full HTTP checks may run on a disposable, local PostgreSQL database.
+        url = os.environ.get("TEST_WORKBENCH_POSTGRES_URL", "")
+        if url and (urlsplit(url).hostname not in ("localhost", "127.0.0.1", "::1") or not urlsplit(url).path.startswith("/zhixu_tests")):
+            raise ValueError("HTTP PostgreSQL QA requires a local zhixu_tests database")
+        cls.database_env = mock.patch.dict(os.environ, {"DATABASE_URL": url})
+        cls.database_env.start()
         cls.temp = tempfile.TemporaryDirectory()
         cls.public = Path(cls.temp.name) / "public"
         cls.public.mkdir()
@@ -39,10 +47,11 @@ class ServerTests(unittest.TestCase):
         cls.server.server_close()
         cls.thread.join()
         cls.temp.cleanup()
+        cls.database_env.stop()
 
     def setUp(self):
         with self.server.db() as conn:
-            for table in ("vaults", "files", "items", "members", "spaces", "sessions", "users", "registration_invites"):
+            for table in ("storage_jobs", "vaults", "files", "items", "members", "spaces", "sessions", "users", "registration_invites"):
                 conn.execute("DELETE FROM " + table)
         self.server.rate_events.clear()
         self.server.trust_proxy = False
@@ -203,7 +212,11 @@ class ServerTests(unittest.TestCase):
         self.server.registration_mode = "invite"
         code = issue_invitation(self.server.data_dir, "owner@example.com", bootstrap=True)["invitationCode"]
         with self.server.db() as conn:
-            conn.execute("CREATE TRIGGER reject_test_session BEFORE INSERT ON sessions BEGIN SELECT RAISE(ABORT, 'test session write failure'); END")
+            if self.server.database.dialect == "postgresql":
+                conn.execute("CREATE FUNCTION reject_test_session_fn() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'controlled test write failure'; END $$")
+                conn.execute("CREATE TRIGGER reject_test_session BEFORE INSERT ON sessions FOR EACH ROW EXECUTE FUNCTION reject_test_session_fn()")
+            else:
+                conn.execute("CREATE TRIGGER reject_test_session BEFORE INSERT ON sessions BEGIN SELECT RAISE(ABORT, 'test session write failure'); END")
         try:
             with self.assertLogs(level="ERROR"):
                 self.assertEqual(self.request("POST", "/api/auth/register", self.invitation_fields(code=code))[0], 500)
@@ -213,7 +226,9 @@ class ServerTests(unittest.TestCase):
                 self.assertIsNone(conn.execute("SELECT consumed_at FROM registration_invites").fetchone()[0])
         finally:
             with self.server.db() as conn:
-                conn.execute("DROP TRIGGER reject_test_session")
+                conn.execute("DROP TRIGGER reject_test_session ON sessions" if self.server.database.dialect == "postgresql" else "DROP TRIGGER reject_test_session")
+                if self.server.database.dialect == "postgresql":
+                    conn.execute("DROP FUNCTION reject_test_session_fn()")
         self.assertEqual(self.request("POST", "/api/auth/register", self.invitation_fields(code=code))[0], 201)
 
     def test_bootstrap_redemption_requires_empty_database(self):
@@ -276,6 +291,8 @@ class ServerTests(unittest.TestCase):
             self.assertEqual(conn.execute("SELECT count(*) FROM registration_invites").fetchone()[0], 0)
 
     def test_existing_database_survives_additive_invitation_schema_upgrade(self):
+        if self.server.database.dialect != "sqlite":
+            self.skipTest("Legacy SQLite backup upgrade is checked in the SQLite run")
         cookie, user, space = self.register()
         payload = self.vault()
         self.assertEqual(self.task(cookie, space["id"])[0], 201)
@@ -526,6 +543,129 @@ class ServerTests(unittest.TestCase):
         with self.server.db() as conn:
             self.assertEqual(conn.execute("SELECT count(*) FROM files").fetchone()[0], 1)
         self.assertEqual(len(list(self.server.upload_dir.iterdir())), 1)
+
+    def test_media_storage_failure_retains_no_visible_record_or_untracked_object(self):
+        from media_storage import StorageError
+        cookie, _, space = self.register()
+        original = self.server.media_storage.put
+        def uncertain_put(*args, **kwargs):
+            original(*args, **kwargs)
+            raise StorageError("controlled lost upload acknowledgement")
+        with mock.patch.object(self.server.media_storage, "put", side_effect=uncertain_put):
+            self.assertEqual(self.upload(cookie, space["id"])[0], 503)
+        with self.server.db() as conn:
+            for table in ("items", "files", "storage_jobs"):
+                self.assertEqual(conn.execute("SELECT count(*) FROM " + table).fetchone()[0], 0)
+        self.assertEqual(list(self.server.upload_dir.iterdir()), [])
+
+    def test_revoke_during_media_storage_put_rechecks_and_removes_unpublished_object(self):
+        owner, _, space = self.register()
+        editor, user, _ = self.register("editor@example.com")
+        self.member(owner, space["id"], user["email"])
+        original = self.server.media_storage.put
+        def revoke_then_put(*args, **kwargs):
+            # This independent write would deadlock if S3 held the DB lock.
+            with self.server.db() as conn:
+                conn.execute("BEGIN IMMEDIATE")
+                conn.execute("DELETE FROM members WHERE space_id=? AND user_id=?", (space["id"], user["id"]))
+            original(*args, **kwargs)
+        with mock.patch.object(self.server.media_storage, "put", side_effect=revoke_then_put):
+            self.assertEqual(self.upload(editor, space["id"])[0], 404)
+        with self.server.db() as conn:
+            for table in ("items", "files", "storage_jobs"):
+                self.assertEqual(conn.execute("SELECT count(*) FROM " + table).fetchone()[0], 0)
+        self.assertEqual(list(self.server.upload_dir.iterdir()), [])
+
+    def test_failed_object_delete_hides_media_and_preserves_quota_until_retry(self):
+        import storage_jobs
+        from media_storage import StorageError
+        cookie, _, space = self.register()
+        _, body, _ = self.upload(cookie, space["id"])
+        item = body["item"]
+        with mock.patch.object(self.server.media_storage, "delete", side_effect=StorageError("controlled storage failure")):
+            self.assertEqual(self.request("DELETE", "/api/items/" + item["id"], cookie=cookie)[0], 200)
+        self.assertEqual(self.request("GET", item["meta"]["url"], cookie=cookie)[0], 404)
+        with self.server.db() as conn:
+            self.assertEqual(conn.execute("SELECT count(*) FROM storage_jobs").fetchone()[0], 1)
+            self.assertEqual(storage_jobs.usage(conn, space["id"])[0], item["meta"]["size"])
+            conn.execute("UPDATE storage_jobs SET created_at=0")
+        storage_jobs.collect(self.server)
+        self.assertEqual(list(self.server.upload_dir.iterdir()), [])
+        with self.server.db() as conn:
+            self.assertEqual(conn.execute("SELECT count(*) FROM storage_jobs").fetchone()[0], 0)
+
+    def test_late_put_after_stale_reservation_cleanup_is_tracked_and_deleted(self):
+        import storage_jobs
+        cookie, _, space = self.register()
+        original = self.server.media_storage.put
+        def delayed_put(namespace, identifier, payload, mime):
+            with self.server.db() as conn:
+                conn.execute("UPDATE storage_jobs SET created_at=0 WHERE id=?", (identifier,))
+            storage_jobs.collect(self.server)
+            original(namespace, identifier, payload, mime)
+        with mock.patch.object(self.server.media_storage, "put", side_effect=delayed_put):
+            self.assertEqual(self.upload(cookie, space["id"])[0], 503)
+        self.assertEqual(list(self.server.upload_dir.iterdir()), [])
+        with self.server.db() as conn:
+            self.assertEqual(conn.execute("SELECT count(*) FROM storage_jobs").fetchone()[0], 0)
+            self.assertEqual(conn.execute("SELECT count(*) FROM files").fetchone()[0], 0)
+
+    def test_cleanup_acknowledgement_cannot_drop_new_late_upload_deletion(self):
+        import storage_jobs
+        _, _, space = self.register()
+        identifier = "c" * 32
+        with self.server.db() as conn:
+            storage_jobs.queue_delete(conn, "uploads", identifier, space["id"], 4)
+        original_delete = self.server.media_storage.delete
+        def old_delete_then_late_put(namespace, identity):
+            original_delete(namespace, identity)
+            self.server.media_storage.put(namespace, identity, b"late", "text/plain")
+            storage_jobs.abandon(self.server, namespace, identity, space["id"], 4)
+            return False
+        with mock.patch.object(self.server.media_storage, "delete", side_effect=old_delete_then_late_put):
+            storage_jobs.collect(self.server)
+        with self.server.db() as conn:
+            self.assertEqual(conn.execute("SELECT count(*) FROM storage_jobs").fetchone()[0], 1)
+            self.assertEqual(storage_jobs.usage(conn, space["id"])[0], 4)
+        storage_jobs.collect(self.server)
+        self.assertEqual(list(self.server.upload_dir.iterdir()), [])
+        with self.server.db() as conn:
+            self.assertEqual(conn.execute("SELECT count(*) FROM storage_jobs").fetchone()[0], 0)
+
+    def test_failed_deletions_do_not_starve_newer_cleanup_jobs(self):
+        import storage_jobs
+        from media_storage import StorageError
+        _, _, space = self.register()
+        with self.server.db() as conn:
+            for number in range(5):
+                storage_jobs.queue_delete(conn, "uploads", f"{number:032x}", space["id"], 1)
+            conn.execute("UPDATE storage_jobs SET created_at=1 WHERE id!=?", (f"{4:032x}",))
+        def delete(namespace, identifier):
+            if identifier != f"{4:032x}":
+                raise StorageError("controlled inaccessible old object")
+            return False
+        with mock.patch.object(self.server.media_storage, "delete", side_effect=delete), self.assertLogs(level="WARNING"):
+            storage_jobs.collect(self.server)
+        with mock.patch.object(self.server.media_storage, "delete", side_effect=delete):
+            storage_jobs.collect(self.server)
+        with self.server.db() as conn:
+            self.assertEqual(conn.execute("SELECT count(*) FROM storage_jobs").fetchone()[0], 4)
+            self.assertIsNone(conn.execute("SELECT 1 FROM storage_jobs WHERE id=?", (f"{4:032x}",)).fetchone())
+
+    def test_committed_records_and_media_survive_server_recreation(self):
+        cookie, _, space = self.register()
+        _, body, _ = self.upload(cookie, space["id"])
+        payload = self.vault()
+        self.request("PUT", f'/api/spaces/{space["id"]}/vault', payload, cookie=cookie)
+        restarted = FolioServer(("127.0.0.1", 0), data_dir=self.server.data_dir, public_dir=self.public)
+        try:
+            with restarted.db() as conn:
+                self.assertEqual(conn.execute("SELECT count(*) FROM files").fetchone()[0], 1)
+                self.assertEqual(json.loads(conn.execute("SELECT payload FROM vaults").fetchone()[0]), payload)
+            with restarted.media_storage.open("uploads", body["item"]["meta"]["fileId"]) as stream:
+                self.assertEqual(stream.body.read(), b"example upload")
+        finally:
+            restarted.server_close()
 
     def test_persistent_connection_reads_distinct_bodies(self):
         cookie, _, space = self.register()

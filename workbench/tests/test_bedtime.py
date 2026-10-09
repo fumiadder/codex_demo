@@ -3,6 +3,7 @@ import base64
 import http.client
 import io
 import json
+import os
 import sys
 import tempfile
 import threading
@@ -11,7 +12,7 @@ import unittest
 import wave
 from types import SimpleNamespace
 from unittest.mock import patch
-from urllib.parse import quote
+from urllib.parse import quote, urlsplit
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -84,9 +85,14 @@ class FakeProviders:
 class BedtimeTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        url = os.environ.get("TEST_WORKBENCH_POSTGRES_URL", "")
+        if url and (urlsplit(url).hostname not in ("localhost", "127.0.0.1", "::1") or not urlsplit(url).path.startswith("/zhixu_tests")):
+            raise ValueError("HTTP PostgreSQL QA requires a local zhixu_tests database")
+        cls.database_env = patch.dict(os.environ, {"DATABASE_URL": url})
+        cls.database_env.start()
         cls.temp = tempfile.TemporaryDirectory()
         cls.server = FolioServer(("127.0.0.1", 0), data_dir=Path(cls.temp.name) / "data",
-                                 registration_mode="open", storage_persistence="persistent")
+                                 registration_mode="open", storage_persistence="unknown" if url else "persistent")
         cls.thread = threading.Thread(target=cls.server.serve_forever, daemon=True)
         cls.thread.start()
 
@@ -96,12 +102,13 @@ class BedtimeTests(unittest.TestCase):
         cls.server.server_close()
         cls.thread.join()
         cls.temp.cleanup()
+        cls.database_env.stop()
 
     def setUp(self):
         with self.server.db() as conn:
             # The existing space owner FK intentionally does not cascade.
             # Remove children in the same order as the main HTTP fixtures.
-            for table in ("vaults", "files", "items", "members", "spaces", "sessions", "users"):
+            for table in ("storage_jobs", "vaults", "files", "items", "members", "spaces", "sessions", "users"):
                 conn.execute("DELETE FROM " + table)
         self.server.rate_events.clear()
         self.server.bedtime_provider = self.provider = FakeProviders()

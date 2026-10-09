@@ -19,6 +19,14 @@ services:
       REGISTRATION_MODE: invite
       STORAGE_PERSISTENCE: persistent
       WORKSPACE_TEST_MODE: "0"
+      DATABASE_URL: ${DATABASE_URL:-}
+      MEDIA_STORAGE_BACKEND: ${MEDIA_STORAGE_BACKEND:-local}
+      AWS_REGION: ${AWS_REGION:-ap-southeast-1}
+      AWS_ENDPOINT_URL_S3: ${AWS_ENDPOINT_URL_S3:-}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
+      AWS_UPLOADS_BUCKET: ${AWS_UPLOADS_BUCKET:-uploads}
+      AWS_BEDTIME_AUDIO_BUCKET: ${AWS_BEDTIME_AUDIO_BUCKET:-bedtime-audio}
       # Provider keys only exist on the server; empty defaults disable cloud AI.
       DASHSCOPE_API_KEY: ${DASHSCOPE_API_KEY:-}
       STORY_SEARCH_PROVIDER: ${STORY_SEARCH_PROVIDER:-local}

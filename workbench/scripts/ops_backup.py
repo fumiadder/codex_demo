@@ -32,7 +32,7 @@ def schema(path):
     # Include every server-side schema, without importing provider/runtime code.
     source = Path(path)
     parts = []
-    for module in (source, source.parent/'bedtime.py'):
+    for module in (source, source.parent/'bedtime.py', source.parent/'storage_jobs.py'):
         if not module.exists():
             continue
         tree = ast.parse(module.read_text())

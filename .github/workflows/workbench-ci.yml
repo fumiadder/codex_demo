@@ -17,6 +17,17 @@ jobs:
     if: github.event.repository.private == false
     runs-on: ubuntu-latest
     timeout-minutes: 18
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: zhixu_tests
+          POSTGRES_PASSWORD: local_disposable_tests_only
+          POSTGRES_DB: zhixu_tests
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd 'pg_isready -U zhixu_tests -d zhixu_tests'
+          --health-interval 5s --health-timeout 5s --health-retries 12
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -24,8 +35,17 @@ jobs:
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.12'
-      - name: Check server authorization and bedtime APIs
+      - name: Install pinned cloud storage dependencies
         working-directory: workbench
+        run: python -m pip install --disable-pip-version-check -r requirements.txt
+      - name: Check server authorization and bedtime APIs on SQLite
+        working-directory: workbench
+        run: python -m unittest discover -s tests -v
+      - name: Check native PostgreSQL transactions and HTTP authorization
+        working-directory: workbench
+        env:
+          TEST_POSTGRES_URL: postgresql://zhixu_tests:local_disposable_tests_only@127.0.0.1:5432/zhixu_tests?sslmode=disable
+          TEST_WORKBENCH_POSTGRES_URL: postgresql://zhixu_tests:local_disposable_tests_only@127.0.0.1:5432/zhixu_tests?sslmode=disable
         run: python -m unittest discover -s tests -v
       - name: Check browser JavaScript and release scripts
         working-directory: workbench

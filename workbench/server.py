@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Folio's dependency-free, single-node server.
+"""Folio's single-node server with optional durable cloud storage.
 
 Run: python server.py. Put it behind an HTTPS reverse proxy for production.
 All records are checked against workspace membership; vault payloads are opaque
@@ -33,6 +33,9 @@ from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlsplit
 
 import bedtime
+import storage_jobs
+from media_storage import create_storage, MissingMedia, StorageError
+from persistence import Database
 
 PASSWORD_ITERATIONS = 310_000
 SESSION_SECONDS = 14 * 24 * 60 * 60
@@ -127,7 +130,7 @@ class FolioServer(ThreadingHTTPServer):
     allow_reuse_address = True
 
     def __init__(self, address, data_dir=None, public_dir=None, trust_proxy=None, allowed_origins=None,
-                 registration_mode=None, storage_persistence=None):
+                 registration_mode=None, storage_persistence=None, database_url=None, media_storage=None):
         self.registration_mode = os.environ.get("REGISTRATION_MODE", "open") if registration_mode is None else registration_mode
         if self.registration_mode not in ("open", "invite"):
             raise ValueError("REGISTRATION_MODE must be open or invite")
@@ -141,6 +144,17 @@ class FolioServer(ThreadingHTTPServer):
         self.data_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
         self.upload_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
         self.db_path = self.data_dir / "folio.sqlite3"
+        self.database = Database(self.db_path, os.environ.get("DATABASE_URL") if database_url is None else database_url)
+        self.media_storage = media_storage or create_storage(self.data_dir)
+        if self.media_storage.backend == "s3":
+            self.media_storage.verify()
+        self.storage_cleanup_lock = threading.Lock()
+        self.storage_maintenance_lock = threading.Lock()
+        self.storage_schedule_lock = threading.Lock()
+        self.storage_worker = None
+        self.last_storage_cleanup = 0
+        if self.database.dialect == "postgresql" and self.media_storage.backend == "local" and self.storage_persistence == "persistent":
+            raise ValueError("Persistent cloud storage requires private remote media storage")
         self.trust_proxy = (os.environ.get("TRUST_PROXY", "false").lower() in ("true", "1")) if trust_proxy is None else trust_proxy
         origins = os.environ.get("ALLOWED_ORIGINS", "") if allowed_origins is None else allowed_origins
         self.allowed_origins = set(x.strip().rstrip("/") for x in origins.split(",") if x.strip())
@@ -152,27 +166,51 @@ class FolioServer(ThreadingHTTPServer):
         self.rate_events = {}
         self.upload_slots = threading.BoundedSemaphore(4)
         self.max_space_storage = int(os.environ.get("MAX_SPACE_STORAGE_BYTES", str(1024**3)))
-        self.max_total_storage = int(os.environ.get("MAX_TOTAL_STORAGE_BYTES", str(10 * 1024**3)))
+        default_capacity = 4 * 1024**3 if self.media_storage.backend == "s3" else 10 * 1024**3
+        self.max_total_storage = int(os.environ.get("MAX_TOTAL_STORAGE_BYTES", str(default_capacity)))
         if self.max_space_storage < 1 or self.max_total_storage < 1:
             raise ValueError("Storage limits must be positive byte counts")
         self.dummy_password = hash_password(secrets.token_urlsafe(24))
         with self.db() as conn:
             conn.execute("PRAGMA journal_mode=WAL")
+            conn.execute("BEGIN IMMEDIATE")
             conn.executescript(SCHEMA)
+            conn.executescript(storage_jobs.SCHEMA)
         bedtime.initialize(self)
+        self.cleanup_media()
         super().__init__(address, FolioHandler)
 
-    @contextmanager
     def db(self):
-        conn = sqlite3.connect(self.db_path, timeout=15)
-        conn.row_factory = sqlite3.Row
-        conn.execute("PRAGMA foreign_keys=ON")
-        conn.execute("PRAGMA busy_timeout=15000")
+        return self.database.connect_context()
+
+    def cleanup_media(self):
+        if self.media_storage.backend == "local":
+            storage_jobs.collect(self)
+            return
+        # A slow private bucket must not delay an authenticated request. One
+        # bounded worker is triggered by activity and exits after this batch.
+        with self.storage_schedule_lock:
+            if self.storage_worker is not None and self.storage_worker.is_alive():
+                return
+            def run():
+                try:
+                    storage_jobs.collect(self)
+                except Exception:
+                    logging.warning("Media housekeeping deferred")
+            self.storage_worker = threading.Thread(target=run, daemon=True)
+            self.storage_worker.start()
+
+    def maybe_cleanup(self):
+        # Only active authenticated traffic drives housekeeping. An idle free
+        # database is allowed to sleep, without a polling background worker.
+        if not self.storage_maintenance_lock.acquire(blocking=False):
+            return
         try:
-            with conn:
-                yield conn
+            if time.monotonic() - self.last_storage_cleanup >= 60:
+                self.last_storage_cleanup = time.monotonic()
+                self.cleanup_media()
         finally:
-            conn.close()
+            self.storage_maintenance_lock.release()
 
     def throttle(self, key, limit, window=900):
         current = time.time()
@@ -420,6 +458,7 @@ class FolioHandler(BaseHTTPRequestHandler):
         self.__dict__.pop("_json_body", None)
         self.__dict__.pop("_prepared_upload", None)
         self._upload_slot = False
+        self._stream_response_started = False
         try:
             parsed = urlsplit(self.path)
             path = unquote(parsed.path)
@@ -443,6 +482,10 @@ class FolioHandler(BaseHTTPRequestHandler):
             self.json_response(exc.status, {"error": exc.message})
         except (BrokenPipeError, ConnectionResetError, TimeoutError):
             self.close_connection = True
+        except StorageError:
+            self.close_connection = True
+            if not self._stream_response_started:
+                self.json_response(503, {"error": "媒体存储暂时不可用，请稍后重试"})
         except (ValueError, TypeError, OverflowError):
             self.close_connection = True
             self.json_response(400, {"error": "请求内容无效"})
@@ -531,11 +574,15 @@ class FolioHandler(BaseHTTPRequestHandler):
             return
         with self.server.db() as conn:
             user = self.current_user(conn)
+            conn.commit()
+            self.server.maybe_cleanup()
             if method not in ("GET", "HEAD"):
+                conn.commit()
                 upload_route = re.fullmatch(rf"/api/spaces/({ID_RE})/uploads", path)
                 if method == "POST" and upload_route:
                     # Reject unauthorized uploads before reading large bodies.
                     self.membership(conn, upload_route[1], user["id"], write=True)
+                    conn.commit()
                     self._prepared_upload = self.prepare_upload()
                 elif method in ("POST", "PATCH", "PUT") and path != "/api/auth/logout":
                     self.read_json()
@@ -595,11 +642,11 @@ class FolioHandler(BaseHTTPRequestHandler):
                     conn.execute("UPDATE items SET kind=?,area=?,title=?,body=?,status=?,meta=?,updated_at=? WHERE id=?", (*values, now_iso(), row["id"]))
                     result = {"item": self.item_json(conn.execute("SELECT * FROM items WHERE id=?", (row["id"],)).fetchone())}
                 elif method == "DELETE":
-                    file_ids = [f[0] for f in conn.execute("SELECT id FROM files WHERE item_id=?", (row["id"],))]
+                    for file in conn.execute("SELECT * FROM files WHERE item_id=?", (row["id"],)).fetchall():
+                        storage_jobs.queue_delete(conn, "uploads", file["id"], file["space_id"], file["size"])
                     conn.execute("DELETE FROM items WHERE id=?", (row["id"],))
                     conn.commit()
-                    for fid in file_ids:
-                        (self.server.upload_dir / fid).unlink(missing_ok=True)
+                    self.server.cleanup_media()
                     result = {"ok": True}
                 else:
                     raise APIError(405, "不支持此请求方法")
@@ -659,6 +706,7 @@ class FolioHandler(BaseHTTPRequestHandler):
                 if not row:
                     raise APIError(404, "文件不存在或无权访问")
                 self.membership(conn, row["space_id"], uid)
+                conn.commit()
                 self.serve_file(row)
                 return
             else:
@@ -768,81 +816,103 @@ class FolioHandler(BaseHTTPRequestHandler):
 
     def upload(self, conn, sid, uid):
         filename, mime, payload, area, title = self._prepared_upload
+        # Release the request transaction before retrying private object cleanup.
+        conn.commit()
+        self.server.cleanup_media()
+        conn.execute("BEGIN IMMEDIATE")
+        self.current_user(conn)
+        self.membership(conn, sid, uid, write=True)
         self.check_item_capacity(conn, sid)
-        bedtime.cleanup_audio(self.server, conn)
-        space_bytes = conn.execute("SELECT COALESCE(sum(size),0) FROM files WHERE space_id=?", (sid,)).fetchone()[0]
-        space_bytes += conn.execute("SELECT COALESCE(sum(size),0) FROM bedtime_audio WHERE space_id=?", (sid,)).fetchone()[0]
-        total_bytes = conn.execute("SELECT COALESCE(sum(size),0) FROM files").fetchone()[0]
-        total_bytes += conn.execute("SELECT COALESCE(sum(size),0) FROM bedtime_audio").fetchone()[0]
+        space_bytes, total_bytes = storage_jobs.usage(conn, sid)
         if space_bytes + len(payload) > self.server.max_space_storage:
             raise APIError(413, "空间存储容量已满，请先删除不需要的文件")
-        if total_bytes + len(payload) > self.server.max_total_storage or shutil.disk_usage(self.server.data_dir).free < len(payload) + 100*1024*1024:
+        if total_bytes + len(payload) > self.server.max_total_storage:
+            raise APIError(507, "服务器可用存储不足，请联系管理员")
+        if self.server.media_storage.backend == "local" and shutil.disk_usage(self.server.data_dir).free < len(payload) + 100*1024*1024:
             raise APIError(507, "服务器可用存储不足，请联系管理员")
         file_id, item_id, stamp = new_id(), new_id(), now_iso()
-        file_path = self.server.upload_dir / file_id
+        storage_jobs.reserve(conn, "uploads", file_id, sid, len(payload))
+        # The durable reservation enforces quota while S3 runs without a DB lock.
+        conn.commit()
         try:
-            with file_path.open("xb") as handle:
-                handle.write(payload)
-            os.chmod(file_path, 0o600)
+            self.server.media_storage.put("uploads", file_id, payload, mime)
+            conn.execute("BEGIN IMMEDIATE")
+            self.current_user(conn)
+            self.membership(conn, sid, uid, write=True)
+            self.check_item_capacity(conn, sid)
+            storage_jobs.assert_pending(conn, "uploads", file_id)
             meta = {"fileId": file_id, "url": "/api/files/" + file_id, "mime": mime, "name": filename, "size": len(payload)}
             conn.execute("INSERT INTO items VALUES (?,?,?,?,?,?,?,?,?,?,?)", (item_id, sid, "media", area, title, "", "active", json.dumps(meta, ensure_ascii=False), uid, stamp, stamp))
             conn.execute("INSERT INTO files VALUES (?,?,?,?,?,?,?)", (file_id, sid, item_id, filename, mime, len(payload), stamp))
-            # Commit before returning so a concurrent media request can see it.
+            storage_jobs.publish(conn, "uploads", file_id)
             conn.commit()
             return {"item": self.item_json(conn.execute("SELECT * FROM items WHERE id=?", (item_id,)).fetchone())}
         except Exception:
-            file_path.unlink(missing_ok=True)
+            try:
+                conn.rollback()
+            except sqlite3.Error:
+                pass
+            storage_jobs.abandon(self.server, "uploads", file_id, sid, len(payload))
             raise
 
     def serve_file(self, row):
-        path = self.server.upload_dir / row["id"]
+        return self.serve_media("uploads", row, row["mime"], row["name"])
+
+    def serve_media(self, namespace, row, mime, filename):
+        size = row["size"]
+        start, end, partial = 0, size - 1, False
+        byte_range = self.headers.get("Range")
+        if byte_range:
+            match = re.fullmatch(r"bytes=(\d*)-(\d*)", byte_range)
+            if not match or not any(match.groups()):
+                self.range_error(size)
+                return
+            if match[1]:
+                start = int(match[1])
+                end = min(int(match[2]), size-1) if match[2] else size-1
+            else:
+                suffix = int(match[2])
+                if suffix <= 0:
+                    self.range_error(size)
+                    return
+                start, end = max(0, size-suffix), size-1
+            if start >= size or start > end:
+                self.range_error(size)
+                return
+            partial = True
+        length = end-start+1
         try:
-            handle = path.open("rb")
-        except FileNotFoundError:
-            raise APIError(404, "文件不存在")
-        with handle:
-            size = row["size"]
-            start, end, partial = 0, size - 1, False
-            byte_range = self.headers.get("Range")
-            if byte_range:
-                match = re.fullmatch(r"bytes=(\d*)-(\d*)", byte_range)
-                if not match or not any(match.groups()):
-                    self.range_error(size)
-                    return
-                if match[1]:
-                    start = int(match[1])
-                    end = min(int(match[2]), size-1) if match[2] else size-1
-                else:
-                    suffix = int(match[2])
-                    if suffix <= 0:
-                        self.range_error(size)
-                        return
-                    start, end = max(0, size-suffix), size-1
-                if start >= size or start > end:
-                    self.range_error(size)
-                    return
-                partial = True
-            length = end-start+1
+            stream = self.server.media_storage.open(namespace, row["id"], byte_range=(start, end) if partial else None)
+        except MissingMedia:
+            raise APIError(404, "文件不存在或已过期")
+        with stream:
+            if stream.total_size != size or stream.size != length:
+                raise StorageError("Private media size mismatch")
+            self._stream_response_started = True
             self.send_response(206 if partial else 200)
             self.security_headers(file_response=True)
-            self.send_header("Content-Type", row["mime"] + ("; charset=utf-8" if row["mime"] == "text/plain" else ""))
+            self.send_header("Content-Type", mime + ("; charset=utf-8" if mime == "text/plain" else ""))
             self.send_header("Cache-Control", "private, no-store")
             self.send_header("Accept-Ranges", "bytes")
             self.send_header("Content-Length", str(length))
             if partial:
                 self.send_header("Content-Range", f"bytes {start}-{end}/{size}")
             from urllib.parse import quote
-            disposition = "attachment" if row["mime"] == "application/octet-stream" else "inline"
-            self.send_header("Content-Disposition", disposition + "; filename*=UTF-8''" + quote(row["name"]))
+            disposition = "attachment" if mime == "application/octet-stream" else "inline"
+            self.send_header("Content-Disposition", disposition + "; filename*=UTF-8''" + quote(filename))
             self.end_headers()
-            handle.seek(start)
             remaining = length
-            while remaining > 0:
-                chunk = handle.read(min(65_536, remaining))
-                if not chunk:
-                    break
-                self.wfile.write(chunk)
-                remaining -= len(chunk)
+            try:
+                while remaining > 0:
+                    chunk = stream.body.read(min(65_536, remaining))
+                    if not chunk:
+                        raise StorageError("Private media stream truncated")
+                    self.wfile.write(chunk)
+                    remaining -= len(chunk)
+            except StorageError:
+                # Headers are already sent; terminate instead of appending JSON.
+                self.close_connection = True
+                raise BrokenPipeError("Private media stream interrupted") from None
 
     def range_error(self, size):
         self.send_response(416)
