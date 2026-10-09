@@ -26,7 +26,7 @@ jobs:
           POSTGRES_DB: zhixu_tests
         ports: ['5432:5432']
         options: >-
-          --health-cmd 'pg_isready -U zhixu_tests -d zhixu_tests'
+          --health-cmd "pg_isready -U zhixu_tests -d zhixu_tests"
           --health-interval 5s --health-timeout 5s --health-retries 12
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
