@@ -46,7 +46,7 @@ def account_boundaries(page, context, base, email_a):
     page.get_by_label("私密内容", exact=True).fill("QA_A_VAULT_PRIVATE_TEXT")
     page.get_by_role("button", name="加密保存", exact=True).click()
     expect(page.locator("#modal")).not_to_be_visible()
-    page.wait_for_function("state.vault.key !== null && state.vault.entries.length === 1")
+    page.wait_for_function("() => state.vault.key !== null && state.vault.entries.length === 1")
     page.evaluate("""() => {
       window.__qaRevoked = [];
       const revoke = URL.revokeObjectURL.bind(URL);
@@ -203,7 +203,7 @@ def checks(base):
         page.set_viewport_size({"width": 1440, "height": 1000})
         expect(page.locator("#mobile-navigation")).not_to_be_visible()
         page.wait_for_function(
-            "!document.querySelector('#sidebar').inert",
+            "() => !document.querySelector('#sidebar').inert",
             timeout=5000,
         )
         no_overflow(page)

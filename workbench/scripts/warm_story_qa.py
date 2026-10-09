@@ -362,7 +362,7 @@ def generation_checks(origin, provider):
             expect(page.locator("#sleep-overlay")).to_be_visible()
             expect(page.locator("#play-toggle")).to_have_attribute("aria-label", "开始朗读")
             assert page.evaluate("window.__qaAudio.stops") > stops
-            page.wait_for_function("window.__qaAudio.contexts.every(context=>context.state==='closed')")
+            page.wait_for_function("() => window.__qaAudio.contexts.every(context=>context.state==='closed')")
             assert page.evaluate("!navigator.mediaSession || navigator.mediaSession.metadata === null")
             assert page.evaluate("document.activeElement.id") == "wake-sleep"
             page.keyboard.press("Tab")

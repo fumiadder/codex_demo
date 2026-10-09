@@ -166,7 +166,7 @@ def checks(origin):
 
         page.locator("#sleep-controls summary").click()
         page.locator("#noise-kind").select_option("rain")
-        page.wait_for_function("window.__qaAudio.starts > 0")
+        page.wait_for_function("() => window.__qaAudio.starts > 0")
         page.clock.install()
         page.locator("#sleep-timer").select_option("5")
         page.clock.fast_forward(5 * 60 * 1000 + 1000)
