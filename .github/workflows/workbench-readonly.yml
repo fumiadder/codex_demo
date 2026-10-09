@@ -1,0 +1,57 @@
+name: Workbench read-only production check
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  public-check:
+    # Standard Linux runners are free for public repositories.
+    if: github.event.repository.private == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Read verification source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Check production health and configuration
+        run: python3 workbench/scripts/ops_health.py --url https://zhixu-free-test.onrender.com --timeout 180
+      - name: Check story entry and anonymous access boundaries
+        run: |
+          python3 - <<'PY'
+          import urllib.error
+          import urllib.request
+
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, *args, **kwargs):
+                  raise ValueError('Unexpected production redirect')
+
+          origin = 'https://zhixu-free-test.onrender.com'
+          opener = urllib.request.build_opener(NoRedirect())
+          checks = (
+              ('/bedtime.html?panel=voices', 200),
+              ('/app.js', 200),
+              ('/bedtime.js', 200),
+              ('/bedtime.css', 200),
+              ('/api/me', 401),
+              ('/api/spaces', 401),
+          )
+          for path, expected in checks:
+              try:
+                  response = opener.open(origin + path, timeout=10)
+              except urllib.error.HTTPError as error:
+                  response = error
+              with response:
+                  if response.status != expected:
+                      raise SystemExit('FAIL anonymous status check: ' + path)
+                  if expected == 401:
+                      directives = response.headers.get('Cache-Control', '').lower().split(',')
+                      if 'no-store' not in [item.strip() for item in directives]:
+                          raise SystemExit('FAIL private API cache check: ' + path)
+                  elif not response.read(1024 * 1024):
+                      raise SystemExit('FAIL empty public asset: ' + path)
+          print('PASS story entry, public assets, and anonymous private API boundaries')
+          PY
