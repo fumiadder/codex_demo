@@ -1,11 +1,9 @@
 name: Workbench public deployment check
 
 on:
-  push:
-    branches: [deploy/zhixu-free-test]
-    paths:
-      - .github/workflows/workbench-smoke.yml
-      - workbench/scripts/public_deploy_qa.py
+  # Run after Render reports Live. A push-time public check would inspect the
+  # previous deployment and could block "After CI Checks Pass" auto-deploy.
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -16,7 +14,7 @@ jobs:
     # check automatically if the repository becomes private.
     if: github.event.repository.private == false
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 12
     steps:
       - name: Read deployment test script
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
@@ -27,3 +25,7 @@ jobs:
           TARGET_URL: https://zhixu-free-test.onrender.com
           PYTHONUNBUFFERED: "1"
         run: python3 workbench/scripts/public_deploy_qa.py
+      - name: Check deployed bedtime stories and disconnected cloud behavior
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: python3 workbench/scripts/bedtime_public_qa.py
