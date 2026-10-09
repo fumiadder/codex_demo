@@ -2,6 +2,10 @@ name: Workbench read-only production check
 
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows: ["Workbench CI"]
+    branches: [main]
+    types: [completed]
 
 permissions:
   contents: read
@@ -9,7 +13,9 @@ permissions:
 jobs:
   public-check:
     # Standard Linux runners are free for public repositories.
-    if: github.event.repository.private == false
+    # Inspect the deployed site after source validation. If Render is still
+    # deploying, rerun this read-only job after that deployment becomes Live.
+    if: github.event.repository.private == false && (github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -17,6 +23,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: false
+          ref: main
       - name: Check production health and configuration
         run: python3 workbench/scripts/ops_health.py --url https://zhixu-free-test.onrender.com --timeout 180
       - name: Check story entry and anonymous access boundaries

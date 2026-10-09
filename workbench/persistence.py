@@ -7,6 +7,7 @@ The small compatibility layer covers the SQL used by server.py and bedtime.py.
 from __future__ import annotations
 
 import re
+import socket
 import sqlite3
 import ssl
 from contextlib import contextmanager
@@ -24,6 +25,68 @@ _SQLITE_PRAGMAS = re.compile(
     r"PRAGMA\s+(?:journal_mode\s*=\s*WAL|foreign_keys\s*=\s*ON|busy_timeout\s*=\s*15000)\s*;?",
     re.IGNORECASE,
 )
+# Only these server codes may appear in connection diagnostics. Never render
+# arbitrary driver attributes, messages, URLs, hostnames or authentication data.
+_CONNECTION_SQLSTATES = {
+    "0A000": "configuration",
+    "08000": "connection_failure",
+    "08001": "connection_failure",
+    "08003": "connection_failure",
+    "08004": "connection_failure",
+    "08006": "connection_failure",
+    "08P01": "connection_failure",
+    "28000": "authentication",
+    "28P01": "authentication",
+    "3D000": "configuration",
+    "53300": "connection_failure",
+    "53400": "connection_failure",
+    "57P03": "connection_failure",
+}
+
+
+def _connection_failure_message(error):
+    """Return finite diagnostic labels, without exposing libpq error details."""
+    try:
+        sqlstate = getattr(error, "sqlstate", None)
+    except Exception:
+        sqlstate = None
+    if type(sqlstate) is not str or sqlstate not in _CONNECTION_SQLSTATES:
+        sqlstate = None
+    reason = _CONNECTION_SQLSTATES.get(sqlstate, "unknown")
+    # libpq often reports DNS/TLS/timeouts as OperationalError without a server
+    # SQLSTATE. Its text is inspected internally and never becomes output.
+    try:
+        detail = str(error).lower()
+    except Exception:
+        detail = ""
+    if reason == "authentication":
+        pass
+    elif isinstance(error, ssl.SSLCertVerificationError) or any(fragment in detail for fragment in (
+        "certificate verify failed", "certificate verification failed",
+        "does not match host name", "certificate has expired",
+        "self-signed certificate", "root certificate file",
+    )):
+        reason = "tls_certificate"
+    elif "channel binding" in detail or "channel_binding" in detail:
+        reason = "channel_binding"
+    elif isinstance(error, TimeoutError) or "timeout" in detail or "timed out" in detail:
+        reason = "timeout"
+    elif isinstance(error, socket.gaierror) or any(fragment in detail for fragment in (
+        "could not translate host name", "name or service not known",
+        "temporary failure in name resolution", "nodename nor servname provided",
+    )):
+        reason = "dns"
+    elif "password authentication failed" in detail or "authentication failed" in detail:
+        reason = "authentication"
+    elif any(fragment in detail for fragment in (
+        "connection refused", "network is unreachable", "no route to host",
+        "server closed the connection", "connection reset",
+    )):
+        reason = "connection_failure"
+    elif isinstance(error, ValueError) or "unsupported startup parameter" in detail:
+        reason = "configuration"
+    suffix = f", sqlstate={sqlstate}" if sqlstate else ""
+    return f"Cloud database connection failed (reason={reason}{suffix})"
 
 
 class Row:
@@ -321,8 +384,8 @@ class Database:
         try:
             raw = psycopg.connect(self._database_url, **connection_options)
             raw.isolation_level = psycopg.IsolationLevel.READ_COMMITTED
-        except (psycopg.Error, ValueError):
-            raise sqlite3.OperationalError("Cloud database connection failed") from None
+        except (psycopg.Error, ValueError) as error:
+            raise sqlite3.OperationalError(_connection_failure_message(error)) from None
         conn = _PostgresConnection(raw, psycopg)
         try:
             yield conn

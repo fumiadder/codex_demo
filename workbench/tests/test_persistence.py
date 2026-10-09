@@ -4,9 +4,12 @@ import sqlite3
 import sys
 import tempfile
 import threading
+import traceback
 import unittest
 import uuid
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import Mock, patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from persistence import Database, Row, _postgres_query, _schema_statements
@@ -160,6 +163,85 @@ class SqlAdaptationTests(unittest.TestCase):
         database = Database("unused", "postgresql://user:secret@example.com/app?sslmode=require")
         self.assertEqual(database.dialect, "postgresql")
         self.assertNotIn("secret", repr(database))
+
+
+class PostgresConnectionDiagnosticTests(unittest.TestCase):
+    class DriverError(Exception):
+        def __init__(self, message, sqlstate=None):
+            super().__init__(message)
+            self.sqlstate = sqlstate
+
+    def assert_safe_failure(self, driver_error, reason, sqlstate=None):
+        secret = "do-not-expose-password"
+        url = f"postgresql://owner:{secret}@private-db.example/app?sslmode=require"
+        driver = SimpleNamespace(
+            Error=self.DriverError,
+            connect=Mock(side_effect=driver_error),
+            IsolationLevel=SimpleNamespace(READ_COMMITTED="read committed"),
+        )
+        with patch.dict(sys.modules, {"psycopg": driver}), patch(
+            "persistence.ssl.get_default_verify_paths",
+            return_value=SimpleNamespace(cafile=__file__),
+        ):
+            with self.assertRaises(sqlite3.OperationalError) as raised:
+                with Database("unused", url).connect_context():
+                    self.fail("A failed cloud connection must never fall back to SQLite")
+        expected = f"Cloud database connection failed (reason={reason}"
+        if sqlstate:
+            expected += f", sqlstate={sqlstate}"
+        self.assertEqual(str(raised.exception), expected + ")")
+        self.assertIsNone(raised.exception.__cause__)
+        self.assertTrue(raised.exception.__suppress_context__)
+        rendered = "".join(traceback.format_exception(raised.exception))
+        for private in (secret, url, "private-db.example", "hostile-driver-detail"):
+            self.assertNotIn(private, rendered)
+            self.assertNotIn(private, repr(raised.exception))
+        driver.connect.assert_called_once()
+
+    def test_libpq_network_tls_and_channel_binding_failures_have_finite_labels(self):
+        private = "hostile-driver-detail postgresql://owner:do-not-expose-password@private-db.example/app"
+        cases = (
+            ("connection timeout expired", "timeout"),
+            ("could not translate host name", "dns"),
+            ("SSL error: certificate verify failed", "tls_certificate"),
+            ('server certificate for "internal" does not match host name "other"', "tls_certificate"),
+            ("channel binding required, but server did not offer it", "channel_binding"),
+            ("password authentication failed", "authentication"),
+            ("connection refused", "connection_failure"),
+            ("unsupported startup parameter: options", "configuration"),
+            ("an unrecognized failure", "unknown"),
+        )
+        for detail, reason in cases:
+            with self.subTest(reason=reason):
+                self.assert_safe_failure(self.DriverError(f"{detail}: {private}"), reason)
+
+    def test_only_known_connection_sqlstates_are_emitted(self):
+        for state, reason in (("28P01", "authentication"), ("28000", "authentication"), ("08006", "connection_failure"), ("0A000", "configuration"), ("3D000", "configuration")):
+            with self.subTest(state=state):
+                self.assert_safe_failure(self.DriverError("hostile-driver-detail", state), reason, state)
+        for state in ("SECRT", "23505", "28p01", "28P01\nhostile-driver-detail", 28000, {"sqlstate": "28P01"}):
+            with self.subTest(state=state):
+                self.assert_safe_failure(self.DriverError("hostile-driver-detail", state), "unknown")
+
+    def test_timeout_can_preserve_an_allowlisted_connection_sqlstate(self):
+        self.assert_safe_failure(self.DriverError("connection timed out: hostile-driver-detail", "08001"), "timeout", "08001")
+
+    def test_invalid_connection_parameters_have_safe_configuration_label(self):
+        self.assert_safe_failure(ValueError("invalid parameter: hostile-driver-detail do-not-expose-password"), "configuration")
+
+    def test_broken_exception_attributes_cannot_replace_safe_diagnostics(self):
+        class BrokenDiagnosticError(self.DriverError):
+            def __init__(self):
+                Exception.__init__(self)
+
+            @property
+            def sqlstate(self):
+                raise ValueError("hostile-driver-detail do-not-expose-password")
+
+            def __str__(self):
+                raise ValueError("hostile-driver-detail do-not-expose-password")
+
+        self.assert_safe_failure(BrokenDiagnosticError(), "unknown")
 
 
 if __name__ == "__main__":

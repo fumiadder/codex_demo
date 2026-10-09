@@ -202,7 +202,10 @@ def checks(base):
         page.screenshot(path=str(ROOT / "artifacts" / "mobile-workbench.png"), full_page=False, animations="disabled")
         page.set_viewport_size({"width": 1440, "height": 1000})
         expect(page.locator("#mobile-navigation")).not_to_be_visible()
-        assert not page.locator("#sidebar").evaluate("el => el.inert")
+        page.wait_for_function(
+            "!document.querySelector('#sidebar').inert",
+            timeout=5000,
+        )
         no_overflow(page)
         account_boundaries(page, context, base, email_a)
         page.locator('[data-area="life"]').click()
