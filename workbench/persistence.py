@@ -48,6 +48,10 @@ _CONNECTION_REASONS = frozenset({
     "configuration", "connection_failure", "authentication", "tls_certificate",
     "channel_binding", "timeout", "dns", "unknown",
 })
+_CONNECTION_PROTOCOL_DETAILS = frozenset({
+    "endpoint_missing", "endpoint_unknown", "endpoint_unavailable",
+    "startup_parameters", "protocol_version", "protocol_message", "unknown",
+})
 
 
 def _connection_failure_message(error):
@@ -59,6 +63,14 @@ def _connection_failure_message(error):
     if type(sqlstate) is not str or sqlstate not in _CONNECTION_SQLSTATES:
         sqlstate = None
     reason = _CONNECTION_SQLSTATES.get(sqlstate, "unknown")
+    suffix = f", sqlstate={sqlstate}" if sqlstate else ""
+    if sqlstate == "08P01":
+        try:
+            protocol_detail = getattr(error, "detail", None)
+        except Exception:
+            protocol_detail = None
+        if type(protocol_detail) is str and protocol_detail in _CONNECTION_PROTOCOL_DETAILS:
+            suffix += f", detail={protocol_detail}"
     # The optional transport reports fixed labels after hiding lower-level
     # errors. Treat them as a finite enum, never as arbitrary driver output.
     try:
@@ -70,7 +82,6 @@ def _connection_failure_message(error):
         # recognized server authentication/configuration diagnosis.
         if transport_reason != "unknown":
             reason = transport_reason
-        suffix = f", sqlstate={sqlstate}" if sqlstate else ""
         return f"Cloud database connection failed (reason={reason}{suffix})"
     # libpq often reports DNS/TLS/timeouts as OperationalError without a server
     # SQLSTATE. Its text is inspected internally and never becomes output.
@@ -104,7 +115,6 @@ def _connection_failure_message(error):
         reason = "connection_failure"
     elif isinstance(error, ValueError) or "unsupported startup parameter" in detail:
         reason = "configuration"
-    suffix = f", sqlstate={sqlstate}" if sqlstate else ""
     return f"Cloud database connection failed (reason={reason}{suffix})"
 
 

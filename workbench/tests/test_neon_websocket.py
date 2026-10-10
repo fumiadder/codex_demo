@@ -114,9 +114,45 @@ class NeonWebSocketPersistenceTests(PersistenceContract, unittest.TestCase):
 
     def test_real_session_uses_read_committed_and_configured_timeouts(self):
         with self.database.connect_context() as conn:
-            self.assertEqual(conn.execute("SHOW transaction_isolation").fetchone()[0], "read committed")
-            self.assertEqual(conn.execute("SHOW statement_timeout").fetchone()[0], "15s")
-            self.assertEqual(conn.execute("SHOW lock_timeout").fetchone()[0], "15s")
+            self._assert_transaction_limits(conn)
+
+    def _assert_transaction_limits(self, conn):
+        for setting, expected in (
+            ("transaction_isolation", "read committed"),
+            ("statement_timeout", "15s"),
+            ("lock_timeout", "15s"),
+            ("idle_in_transaction_session_timeout", "30s"),
+        ):
+            with self.subTest(setting=setting):
+                self.assertEqual(conn.execute("SHOW " + setting).fetchone()[0], expected)
+
+    def test_commit_and_rollback_restore_limits_before_subsequent_parameterized_queries(self):
+        table = f'"{self.schema}"."{self.parent_table}"'
+        with self.database.connect_context() as conn:
+            self._assert_transaction_limits(conn)
+            conn.execute(f"INSERT INTO {table} VALUES (?,?)", ("first", "committed"))
+            # SET LOCAL deliberately changes the current transaction only. The
+            # following committed transaction must receive the app's limits.
+            conn.execute("SET LOCAL statement_timeout = '1s'")
+            conn.execute("SET LOCAL lock_timeout = '2s'")
+            conn.execute("SET LOCAL idle_in_transaction_session_timeout = '3s'")
+            conn.commit()
+            # Parameterized SQL starts this new transaction before any SHOW,
+            # checking both query paths apply READ COMMITTED and all timeouts.
+            row = conn.execute(f"SELECT value FROM {table} WHERE id=?", ("first",)).fetchone()
+            self.assertEqual(row[0], "committed")
+            self._assert_transaction_limits(conn)
+            conn.execute(f"INSERT INTO {table} VALUES (?,?)", ("second", "rolled-back"))
+            conn.execute("SET LOCAL statement_timeout = '1s'")
+            conn.execute("SET LOCAL lock_timeout = '2s'")
+            conn.execute("SET LOCAL idle_in_transaction_session_timeout = '3s'")
+            conn.rollback()
+            self.assertIsNone(conn.execute(f"SELECT value FROM {table} WHERE id=?", ("second",)).fetchone())
+            self._assert_transaction_limits(conn)
+            conn.execute(f"UPDATE {table} SET value=? WHERE id=?", ("after-rollback", "first"))
+        with self.database.connect_context() as conn:
+            self.assertEqual(conn.execute(f"SELECT count(*) FROM {table}").fetchone()[0], 1)
+            self.assertEqual(conn.execute(f"SELECT value FROM {table} WHERE id=?", ("first",)).fetchone()[0], "after-rollback")
 
     def test_native_constraint_details_do_not_escape_the_persistence_facade(self):
         private_value = "private-probe-value-" + uuid.uuid4().hex

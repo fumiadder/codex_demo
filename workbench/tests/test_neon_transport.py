@@ -159,7 +159,7 @@ class NeonConnectionTests(unittest.TestCase):
         )
         return patch("neon_transport._load_dependencies", return_value=(self.dbapi, self.websocket))
 
-    def test_remote_uses_fixed_verified_wss_and_native_startup_options(self):
+    def test_remote_uses_fixed_verified_wss_without_startup_options(self):
         with patch.dict("os.environ", {}, clear=True), self.dependencies():
             connection = transport.connect(self.url, options="-c statement_timeout=15000", sslmode="verify-full")
         args, kwargs = self.websocket.create_connection.call_args
@@ -176,7 +176,8 @@ class NeonConnectionTests(unittest.TestCase):
         self.assertEqual(parameters["user"], "o wner")
         self.assertEqual(parameters["password"], "p@ss")
         self.assertEqual(parameters["database"], "zhi xu")
-        self.assertEqual(parameters["startup_params"], {"options": "-c statement_timeout=15000"})
+        self.assertEqual(parameters["startup_params"], {})
+        self.assertEqual(connection._timeouts, (("statement_timeout", 15000),))
         self.assertIs(parameters["ssl_context"], False)
         self.assertFalse(self.raw.autocommit)
         connection.close()
@@ -255,6 +256,24 @@ class NeonConnectionTests(unittest.TestCase):
         self.assertNotIn("secret-host", "".join(traceback.format_exception(raised.exception)))
         self.assertIsNone(raised.exception.__cause__)
 
+    def test_timeout_options_reject_autocommit_and_arbitrary_gucs_before_network(self):
+        cases = (
+            ("-c statement_timeout=15000", True),
+            ("-c statement_timeout=0", False),
+            ("-c lock_timeout=20000", False),
+            ("-c search_path=private", False),
+            ("-c statement_timeout=15000;DROP TABLE users", False),
+            ("-c statement_timeout=15000 -c statement_timeout=15000", False),
+            ("-c statement_timeout=15000 -c", False),
+            ("", False),
+        )
+        for options, autocommit in cases:
+            with self.subTest(options=options), patch.dict("os.environ", {}, clear=True), self.dependencies():
+                with self.assertRaises(transport.Error) as raised:
+                    transport.connect(self.url, options=options, autocommit=autocommit)
+                self.websocket.create_connection.assert_not_called()
+                self.assertEqual(raised.exception.reason, "configuration")
+
 
 class NeonDriverFacadeTests(unittest.TestCase):
     def setUp(self):
@@ -263,9 +282,19 @@ class NeonDriverFacadeTests(unittest.TestCase):
         self.raw = Mock(autocommit=False)
         self.raw._in_transaction = False
         self.raw.execute_unnamed.return_value = SimpleNamespace(rows=[])
+        self.raw.execute_simple.side_effect = self._execute_simple
+        self.raw.commit.side_effect = self._end_transaction
+        self.raw.rollback.side_effect = self._end_transaction
         self.raw.cursor.return_value = self.cursor
         self.stream = Mock()
         self.connection = transport.RawConnection(self.raw, self.stream)
+
+    def _execute_simple(self, sql):
+        if sql.startswith("BEGIN"):
+            self.raw._in_transaction = True
+
+    def _end_transaction(self):
+        self.raw._in_transaction = False
 
     def test_execute_preserves_absent_and_bound_parameter_arguments(self):
         self.connection.execute("SELECT 'literal 50%'")
@@ -273,7 +302,7 @@ class NeonDriverFacadeTests(unittest.TestCase):
         self.cursor.execute.reset_mock()
         self.connection.execute("SELECT %s", ("bound",))
         self.cursor.execute.assert_not_called()
-        self.raw.execute_simple.assert_called_once_with("begin transaction")
+        self.raw.execute_simple.assert_called_once_with("BEGIN ISOLATION LEVEL READ COMMITTED")
         self.raw.execute_unnamed.assert_called_once_with("SELECT $1", vals=("bound",), oids=())
 
     def test_format_translation_preserves_literals_comments_and_numbered_binding(self):
@@ -304,18 +333,51 @@ class NeonDriverFacadeTests(unittest.TestCase):
         self.assertEqual(cursor.fetchall(), [["story"]])
         self.assertEqual(list(transport.Cursor(iter([["one"], ["two"]]))), [["one"], ["two"]])
 
-    def test_isolation_change_runs_outside_transaction_and_restores_autocommit(self):
-        def execute(sql):
-            self.assertTrue(self.raw.autocommit)
-        self.cursor.execute.side_effect = execute
+    def test_isolation_change_starts_real_transaction_without_session_sql(self):
         self.connection.isolation_level = transport.IsolationLevel.READ_COMMITTED
         self.assertFalse(self.raw.autocommit)
-        self.cursor.execute.assert_called_once_with("SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL READ COMMITTED")
+        self.raw.execute_simple.assert_called_once_with("BEGIN ISOLATION LEVEL READ COMMITTED")
+        self.cursor.execute.assert_not_called()
         self.assertIs(self.connection.isolation_level, transport.IsolationLevel.READ_COMMITTED)
-        self.cursor.execute.side_effect = RuntimeError("private-sql")
+        self.connection.rollback()
+        self.raw.execute_simple.side_effect = RuntimeError("private-sql")
         with self.assertRaises(transport.Error):
             self.connection.isolation_level = transport.IsolationLevel.READ_COMMITTED
         self.assertFalse(self.raw.autocommit)
+
+    def test_timeouts_are_local_and_reapplied_after_commit_or_rollback(self):
+        options = "-c statement_timeout=15000 -c lock_timeout=15000 -c idle_in_transaction_session_timeout=30000"
+        self.connection = transport.RawConnection(self.raw, self.stream, transport._transaction_timeouts(options))
+        expected = [
+            "BEGIN ISOLATION LEVEL READ COMMITTED",
+            "SET LOCAL statement_timeout = 15000",
+            "SET LOCAL lock_timeout = 15000",
+            "SET LOCAL idle_in_transaction_session_timeout = 30000",
+        ]
+        self.connection.isolation_level = transport.IsolationLevel.READ_COMMITTED
+        self.connection.execute("SELECT 1")
+        self.connection.execute("SELECT %s", (2,))
+        self.assertEqual([call.args[0] for call in self.raw.execute_simple.call_args_list], expected)
+        for end_transaction in (self.connection.commit, self.connection.rollback):
+            end_transaction()
+            self.raw.execute_simple.reset_mock()
+            self.connection.execute("SELECT 1")
+            self.assertEqual([call.args[0] for call in self.raw.execute_simple.call_args_list], expected)
+        self.raw.autocommit = True
+        with self.assertRaises(transport.Error):
+            self.connection.execute("SELECT 1")
+
+    def test_failed_timeout_setup_prevents_application_query(self):
+        self.connection = transport.RawConnection(self.raw, self.stream, (("statement_timeout", 15000),))
+        def execute(sql):
+            self._execute_simple(sql)
+            if sql.startswith("SET LOCAL"):
+                raise RuntimeError("private-timeout-error")
+        self.raw.execute_simple.side_effect = execute
+        with self.assertRaises(transport.Error):
+            self.connection.execute("SELECT 1")
+        self.cursor.execute.assert_not_called()
+        self.raw.execute_unnamed.assert_not_called()
 
     def test_integrity_errors_expose_only_validated_sqlstate(self):
         self.raw.execute_unnamed.side_effect = Exception({"C": "23505", "M": "private-row secret-password", "D": "private-data"})
@@ -343,6 +405,69 @@ class NeonDriverFacadeTests(unittest.TestCase):
                 getattr(self.connection, action)()
             self.assertNotIn("password-secret", str(raised.exception))
         self.stream.close.assert_called_once()
+
+
+class NeonProtocolDiagnosticTests(unittest.TestCase):
+    def test_known_protocol_messages_produce_only_fixed_details(self):
+        cases = (
+            ("The endpoint ID is not specified: secret-host", "endpoint_missing"),
+            ("Unknown endpoint secret-host", "endpoint_unknown"),
+            ("Endpoint is disabled for secret-account", "endpoint_unavailable"),
+            ("Unsupported startup parameter secret-option", "startup_parameters"),
+            ("Unsupported frontend protocol secret-version", "protocol_version"),
+            ("Message contents do not agree with length: secret-payload", "protocol_message"),
+            ("arbitrary private response", "unknown"),
+        )
+        for message, detail in cases:
+            with self.subTest(detail=detail):
+                error = transport._safe_error(Exception({"C": "08P01", "M": message, "H": "secret-password"}), connecting=True)
+                self.assertEqual(error.reason, "connection_failure")
+                self.assertEqual(error.sqlstate, "08P01")
+                self.assertEqual(error.detail, detail)
+                self.assertEqual(str(error), f"Cloud database connection failed (reason=connection_failure, sqlstate=08P01, detail={detail})")
+                self.assertNotIn("secret-", repr(error))
+                wrapped = transport._safe_error(error, connecting=True)
+                self.assertEqual(wrapped.detail, detail)
+
+    def test_protocol_detail_requires_exact_known_enum_and_sqlstate(self):
+        for sqlstate, detail in (("28P01", "endpoint_missing"), ("08P01", "secret-host"), ("08P01-secret", "endpoint_missing"), ("08P01", [])):
+            with self.subTest(sqlstate=sqlstate, detail=detail):
+                error = transport.Error(sqlstate=sqlstate, detail=detail)
+                self.assertIsNone(error.detail)
+                self.assertNotIn("secret", str(error))
+        error = transport._safe_error(Exception({"C": "28P01", "M": "Endpoint id is missing secret-password"}))
+        self.assertIsNone(error.detail)
+        self.assertEqual(error.reason, "authentication")
+
+    def test_hostile_attributes_and_server_field_objects_are_not_rendered(self):
+        class Hostile:
+            def __str__(self):
+                raise AssertionError("secret-password must never be rendered")
+        class HostileDriverError(Exception):
+            @property
+            def args(self):
+                raise RuntimeError("secret-password must never escape")
+            def __str__(self):
+                raise RuntimeError("secret-password must never escape")
+        class HostileSanitizedError(transport.Error):
+            @property
+            def detail(self):
+                raise RuntimeError("secret-password must never escape")
+            @detail.setter
+            def detail(self, value):
+                pass
+        error = transport._safe_error(Exception({"C": "08P01", "M": Hostile(), "H": Hostile()}))
+        self.assertEqual(error.detail, "unknown")
+        self.assertNotIn("secret", str(error))
+        error = transport._safe_error(HostileDriverError())
+        self.assertEqual(error.reason, "unknown")
+        self.assertIsNone(error.detail)
+        hostile = HostileSanitizedError.__new__(HostileSanitizedError)
+        Exception.__init__(hostile, "safe")
+        hostile.reason, hostile.sqlstate = "connection_failure", "08P01"
+        error = transport._safe_error(hostile)
+        self.assertEqual(error.detail, "unknown")
+        self.assertNotIn("secret", str(error))
 
 
 if __name__ == "__main__":

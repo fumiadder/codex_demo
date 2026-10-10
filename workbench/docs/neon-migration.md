@@ -1,6 +1,6 @@
 # Render Free + Neon Free：发布、存储与后续迁移
 
-## 当前状态（2026-10-09）
+## 当前状态（2026-10-10）
 
 采用已有 Render Free 服务 [zhixu-free-test.onrender.com](https://zhixu-free-test.onrender.com)，数据库与媒体放到 Neon Free。Neon 项目为 `blue-band-05556085` / `zhixu-workbench`，AWS 新加坡；数据库 `zhixu`，私有桶 `uploads`、`bedtime-audio` 已创建。Native SQL 已确认 PostgreSQL 17.11；13 张表、6 个索引、76 列与此前已验证源码一致。首位管理员邀请已签发，但账号尚未注册。
 
@@ -8,7 +8,7 @@
 
 已验证提交 `564386d` 的 [main CI](https://github.com/fumiadder/codex_demo/actions/runs/37926678128) 成功。但 Render 直接连接部署 `dep-db4de23l550s73bd8290` 与池化连接部署 `dep-db4dftdg1s2s739346hg` 均在约 10 秒后出现 PostgreSQL TCP 连接超时；两个私有桶的 S3 HEAD 启动检查通过。Native Neon SQL 的 `SELECT 1` 成功不能代替 Render 应用连接。真实云端 PUT／GET／Range／删除及重启保留尚未验收。
 
-正在验证显式启用的 Neon WebSocket 传输。需先通过代码检查和 CI，再更新同一 Render 服务；不能把正在验证的实现或成功构建当作公网已上线。不创建收费服务、磁盘或定时任务。
+WSS 提交 `99016b7` 已通过完整 CI，但首次部署 `dep-db4e0srbc2fs73bg8h80` 和数据库唤醒后重试 `dep-db4e30rl550s73bf3tu0` 均收到 PostgreSQL `08P01`，尚未 Live。正在验证启动协议兼容修改：不发送 startup `options`，而在每个事务内设置隔离级别和超时。尚未确定此次协议错误的具体原因，诊断仅输出固定类别。代码和 CI 通过后再更新同一服务；不创建收费服务、磁盘或定时任务。
 
 | Neon Free 限额 | 规划 |
 | --- | --- |
@@ -47,6 +47,8 @@
 ## 待验证的 Neon WebSocket 传输
 
 `DATABASE_TRANSPORT=neon-ws` 仅改变数据库会话的网络传输：连接原始 Neon 直接主机名的 `wss://<direct-host>/v2`，由 pg8000 使用 PostgreSQL 原生协议、实际交互式事务、READ COMMITTED 隔离和既有 advisory lock。不是 HTTP SQL 请求或无状态事务模拟。
+
+WSS 不在 PostgreSQL 启动消息中发送 `options`。每个新事务先执行 `BEGIN ISOLATION LEVEL READ COMMITTED`，再以 `SET LOCAL` 设置语句、锁和事务空闲超时为 15／15／30 秒，之后才执行应用查询和权限锁。提交或回滚后下一条查询重新建立相同约束。设置名称及数值只接受已知固定值；要求这些约束的连接禁止 autocommit。原生 TCP 驱动不改变。
 
 外层 WSS 强制 CA 与主机名验证，提供 TLS 加密。与官方 Neon SDK 的 WSS 用法一致，内层 PostgreSQL SSL 关闭。WSS 不支持 `channel_binding=require`，配置中明确要求时必须拒绝；因此候选 WSS 私有连接串显式移除该参数。原始严格 TLS／channel binding 的 native 连接串保留给可信终端的原生连接、CLI 和备份，不通过日志或源码公开。传输失败不会改用另一条连接路径或 SQLite。
 

@@ -172,7 +172,7 @@ class PostgresConnectionDiagnosticTests(unittest.TestCase):
             super().__init__(message)
             self.sqlstate = sqlstate
 
-    def assert_safe_failure(self, driver_error, reason, sqlstate=None, transport="native"):
+    def assert_safe_failure(self, driver_error, reason, sqlstate=None, transport="native", detail=None):
         secret = "do-not-expose-password"
         url = f"postgresql://owner:{secret}@private-db.example/app?sslmode=require"
         driver = SimpleNamespace(
@@ -191,6 +191,8 @@ class PostgresConnectionDiagnosticTests(unittest.TestCase):
         expected = f"Cloud database connection failed (reason={reason}"
         if sqlstate:
             expected += f", sqlstate={sqlstate}"
+        if detail:
+            expected += f", detail={detail}"
         self.assertEqual(str(raised.exception), expected + ")")
         self.assertIsNone(raised.exception.__cause__)
         self.assertTrue(raised.exception.__suppress_context__)
@@ -227,6 +229,38 @@ class PostgresConnectionDiagnosticTests(unittest.TestCase):
                 raise ValueError("hostile-driver-detail do-not-expose-password")
 
         self.assert_safe_failure(BrokenReasonError("connection timed out: hostile-driver-detail"), "timeout", transport="neon-ws")
+
+    def test_protocol_details_are_a_finite_enum_for_protocol_errors_only(self):
+        for detail in ("endpoint_missing", "endpoint_unknown", "endpoint_unavailable", "startup_parameters", "protocol_version", "protocol_message", "unknown"):
+            with self.subTest(detail=detail):
+                error = self.DriverError("hostile-driver-detail do-not-expose-password", "08P01")
+                error.reason = "connection_failure"
+                error.detail = detail
+                self.assert_safe_failure(error, "connection_failure", "08P01", transport="neon-ws", detail=detail)
+        for state, reason in (("08006", "connection_failure"), ("28P01", "authentication"), ("SECRT", "unknown"), (None, "unknown")):
+            with self.subTest(state=state):
+                error = self.DriverError("hostile-driver-detail do-not-expose-password", state)
+                error.detail = "endpoint_missing"
+                expected_state = state if state in ("08006", "28P01") else None
+                self.assert_safe_failure(error, reason, expected_state, transport="neon-ws")
+
+    def test_hostile_and_broken_protocol_detail_attributes_are_not_exposed(self):
+        class StringSubclass(str):
+            def __str__(self):
+                raise ValueError("hostile-driver-detail do-not-expose-password")
+
+        for detail in ("hostile-driver-detail do-not-expose-password", "endpoint_missing\nhostile-driver-detail", "ENDPOINT_MISSING", 42, {"endpoint_missing": True}, StringSubclass("endpoint_missing")):
+            with self.subTest(detail_type=type(detail).__name__):
+                error = self.DriverError("hostile-driver-detail do-not-expose-password", "08P01")
+                error.detail = detail
+                self.assert_safe_failure(error, "connection_failure", "08P01", transport="neon-ws")
+
+        class BrokenDetailError(self.DriverError):
+            @property
+            def detail(self):
+                raise ValueError("hostile-driver-detail do-not-expose-password")
+
+        self.assert_safe_failure(BrokenDetailError("hostile-driver-detail", "08P01"), "connection_failure", "08P01", transport="neon-ws")
 
     def test_libpq_network_tls_and_channel_binding_failures_have_finite_labels(self):
         private = "hostile-driver-detail postgresql://owner:do-not-expose-password@private-db.example/app"

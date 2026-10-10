@@ -1,7 +1,7 @@
 """PostgreSQL sessions over Neon's official, certificate-verified WSS endpoint.
 
 Only the transport changes: pg8000 still speaks PostgreSQL's native session
-protocol, including transactions, parameter binding and startup timeouts. The
+protocol, including transactions, parameter binding and transaction timeouts. The
 official Neon SDK uses ``wss://<database hostname>/v2`` and disables inner
 PostgreSQL TLS because the outer WebSocket already authenticates and encrypts
 the entire connection. No database credentials enter the WebSocket URL or
@@ -27,6 +27,11 @@ _LOCAL_HOSTS = {"localhost", "127.0.0.1", "::1"}
 # one MiB. Leave headroom while refusing hostile PG lengths/WS allocations.
 _MAX_PACKET_BYTES = 16 * 1024 * 1024
 _MAX_BUFFER_BYTES = 2 * _MAX_PACKET_BYTES
+_ALLOWED_TIMEOUTS = {
+    "statement_timeout": 15000,
+    "lock_timeout": 15000,
+    "idle_in_transaction_session_timeout": 30000,
+}
 _REASONS = {
     "configuration", "tls_certificate", "channel_binding", "authentication",
     "connection_failure", "timeout", "dns", "unknown",
@@ -36,16 +41,52 @@ _SQLSTATE_REASONS = {
     "42704": "configuration", "53300": "connection_failure",
     "53400": "connection_failure", "57P03": "connection_failure",
 }
+_PROTOCOL_DETAILS = {
+    "endpoint_missing", "endpoint_unknown", "endpoint_unavailable",
+    "startup_parameters", "protocol_version", "protocol_message", "unknown",
+}
+# Only fixed labels may leave this module. Matching phrases are diagnostic
+# hints, never instructions to alter routing, TLS or authentication.
+_PROTOCOL_DETAIL_PHRASES = (
+    ("endpoint_missing", (
+        "endpoint id is not specified", "endpoint id is missing",
+        "endpoint is not specified", "missing endpoint id",
+    )),
+    ("endpoint_unknown", (
+        "endpoint not found", "endpoint is not found", "unknown endpoint",
+        "invalid endpoint id", "project or endpoint not found",
+    )),
+    ("endpoint_unavailable", (
+        "endpoint is not available", "endpoint is unavailable",
+        "endpoint is disabled", "endpoint is suspended", "endpoint is not ready",
+    )),
+    ("startup_parameters", (
+        "unsupported startup parameter", "unrecognized configuration parameter",
+        "invalid startup parameter",
+    )),
+    ("protocol_version", (
+        "unsupported frontend protocol", "unsupported protocol version",
+        "invalid protocol version",
+    )),
+    ("protocol_message", (
+        "invalid startup packet", "invalid startup message", "invalid message format",
+        "unexpected message type", "invalid frontend message type",
+        "message contents do not agree with length",
+    )),
+)
 
 
 class Error(Exception):
     """Driver-compatible error containing only finite, non-secret diagnostics."""
 
-    def __init__(self, *, reason="unknown", sqlstate=None, connecting=False):
+    def __init__(self, *, reason="unknown", sqlstate=None, detail=None, connecting=False):
         self.reason = reason if type(reason) is str and reason in _REASONS else "unknown"
         self.sqlstate = sqlstate if type(sqlstate) is str and _SQLSTATE.fullmatch(sqlstate) else None
+        self.detail = detail if self.sqlstate == "08P01" and type(detail) is str and detail in _PROTOCOL_DETAILS else None
         phase = "connection" if connecting else "operation"
         suffix = f", sqlstate={self.sqlstate}" if self.sqlstate else ""
+        if self.detail is not None:
+            suffix += f", detail={self.detail}"
         super().__init__(f"Cloud database {phase} failed (reason={self.reason}{suffix})")
 
 
@@ -57,14 +98,46 @@ class IsolationLevel(Enum):
     READ_COMMITTED = "READ COMMITTED"
 
 
+def _safe_attribute(value, name, default=None):
+    try:
+        return getattr(value, name, default)
+    except Exception:
+        return default
+
+
+def _driver_error_fields(error):
+    args = _safe_attribute(error, "args", ())
+    return args[0] if type(args) is tuple and args and type(args[0]) is dict else {}
+
+
+def _protocol_error_detail(error, sqlstate):
+    if sqlstate != "08P01":
+        return None
+    if isinstance(error, Error):
+        detail = _safe_attribute(error, "detail")
+        return detail if type(detail) is str and detail in _PROTOCOL_DETAILS else "unknown"
+    fields = _driver_error_fields(error)
+    # Inspect bounded, exact strings only; never stringify arbitrary objects,
+    # render server text, or carry it in the sanitized exception's attributes.
+    messages = [fields.get(key) for key in ("M", "H")]
+    messages = [value[:8192].lower() for value in messages if type(value) is str]
+    for label, phrases in _PROTOCOL_DETAIL_PHRASES:
+        if any(phrase in message for message in messages for phrase in phrases):
+            return label
+    return "unknown"
+
+
 def _error_details(error):
     """Inspect driver exceptions internally without ever returning raw text."""
     sqlstate = None
     if isinstance(error, Error):
-        return error.reason, error.sqlstate
-    args = getattr(error, "args", ())
-    if args and type(args[0]) is dict:
-        candidate = args[0].get("C")
+        reason, sqlstate = _safe_attribute(error, "reason"), _safe_attribute(error, "sqlstate")
+        reason = reason if type(reason) is str and reason in _REASONS else "unknown"
+        sqlstate = sqlstate if type(sqlstate) is str and _SQLSTATE.fullmatch(sqlstate) else None
+        return reason, sqlstate
+    fields = _driver_error_fields(error)
+    if fields:
+        candidate = fields.get("C")
         if type(candidate) is str and _SQLSTATE.fullmatch(candidate):
             sqlstate = candidate
     if sqlstate and sqlstate.startswith("28"):
@@ -106,21 +179,24 @@ def _error_details(error):
             "connection refused", "network is unreachable", "connection reset",
         )):
             # A wrapper may hide a more specific DNS/TLS/timeout cause.
-            cause = getattr(current, "__cause__", None)
+            cause = _safe_attribute(current, "__cause__")
             if cause is not None and id(cause) not in seen:
                 current = cause
                 continue
             return "connection_failure", sqlstate
         if isinstance(current, (ValueError, TypeError)):
             return "configuration", sqlstate
-        current = getattr(current, "__cause__", None)
+        current = _safe_attribute(current, "__cause__")
     return "unknown", sqlstate
 
 
 def _safe_error(error, *, connecting=False):
     reason, sqlstate = _error_details(error)
     error_type = IntegrityError if sqlstate and sqlstate.startswith("23") else Error
-    return error_type(reason=reason, sqlstate=sqlstate, connecting=connecting)
+    return error_type(
+        reason=reason, sqlstate=sqlstate, detail=_protocol_error_detail(error, sqlstate),
+        connecting=connecting,
+    )
 
 
 class _WebSocketStream:
@@ -306,24 +382,37 @@ def _native_query(sql, parameters):
 
 
 class RawConnection:
-    def __init__(self, connection, stream):
+    def __init__(self, connection, stream, timeouts=()):
         self._connection, self._stream = connection, stream
-        self._isolation_level = None
+        self._timeouts = timeouts
+        self._isolation_level = IsolationLevel.READ_COMMITTED
+
+    def _begin_if_needed(self):
+        if self._connection.autocommit:
+            if self._timeouts:
+                raise Error(reason="configuration")
+            return
+        if not self._connection._in_transaction:
+            # Neon's WSS proxy may reject the PostgreSQL startup `options`
+            # field. Configure the same safeguards through ordinary PG SQL in
+            # the actual transaction, before any application query or lock.
+            self._connection.execute_simple("BEGIN ISOLATION LEVEL READ COMMITTED")
+            for name, milliseconds in self._timeouts:
+                self._connection.execute_simple(f"SET LOCAL {name} = {milliseconds}")
 
     def execute(self, sql, parameters=None):
         try:
+            query, values = (None, None) if parameters is None else _native_query(sql, parameters)
+            self._begin_if_needed()
             cursor = self._connection.cursor()
             # Omitting parameters selects pg8000's simple-query path. Passing
             # None explicitly would fail len(args), and would change the path.
             if parameters is None:
                 cursor.execute(sql)
             else:
-                query, values = _native_query(sql, parameters)
                 # Preserve DBAPI's implicit transaction and buffered cursor
                 # behavior, but bypass its incompatible format scanner. These
                 # attributes are the pinned pg8000 1.31.5 DBAPI implementation.
-                if not self._connection._in_transaction and not self._connection.autocommit:
-                    self._connection.execute_simple("begin transaction")
                 cursor._context = self._connection.execute_unnamed(
                     query, vals=values, oids=cursor._input_oids,
                 )
@@ -343,13 +432,10 @@ class RawConnection:
         if value is not IsolationLevel.READ_COMMITTED:
             raise Error(reason="configuration")
         try:
-            previous = self._connection.autocommit
-            self._connection.autocommit = True
-            try:
-                self.execute("SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL READ COMMITTED")
-                self._isolation_level = value
-            finally:
-                self._connection.autocommit = previous
+            if self._connection.autocommit:
+                raise Error(reason="configuration")
+            self._begin_if_needed()
+            self._isolation_level = value
         except Exception as error:
             raise _safe_error(error) from None
 
@@ -440,6 +526,31 @@ def _load_dependencies():
     return pg8000.dbapi, websocket
 
 
+def _transaction_timeouts(options):
+    """Accept only the application's fixed timeout settings, never SQL/GUCs."""
+    if options is None:
+        return ()
+    if type(options) is not str:
+        raise Error(reason="configuration")
+    tokens = options.split()
+    if not tokens or len(tokens) % 2:
+        raise Error(reason="configuration")
+    selected = {}
+    for index in range(0, len(tokens), 2):
+        if tokens[index] != "-c":
+            raise Error(reason="configuration")
+        name, separator, value = tokens[index + 1].partition("=")
+        if (
+            separator != "=" or name not in _ALLOWED_TIMEOUTS or name in selected
+            or value != str(_ALLOWED_TIMEOUTS[name])
+        ):
+            raise Error(reason="configuration")
+        selected[name] = _ALLOWED_TIMEOUTS[name]
+    # Names and numeric values used in SET LOCAL come exclusively from this
+    # allowlist; no caller-provided fragment is ever interpolated into SQL.
+    return tuple((name, selected[name]) for name in _ALLOWED_TIMEOUTS if name in selected)
+
+
 def _bounded_websocket_class(websocket):
     """Bound allocation before websocket-client reads a frame's payload.
 
@@ -501,7 +612,8 @@ def connect(database_url, *, connect_timeout=10, options=None, autocommit=False,
         timeout = float(connect_timeout)
         if not math.isfinite(timeout) or timeout <= 0 or type(autocommit) is not bool:
             raise Error(reason="configuration")
-        if options is not None and (not isinstance(options, str) or "\x00" in options):
+        timeouts = _transaction_timeouts(options)
+        if autocommit and timeouts:
             raise Error(reason="configuration")
         host, user, password, database, ws_url, ca_file = _connection_settings(
             database_url, sslmode, sslrootcert,
@@ -529,10 +641,10 @@ def connect(database_url, *, connect_timeout=10, options=None, autocommit=False,
         connection = dbapi.connect(
             user=user, password=password, database=database, host=host,
             port=5432, sock=stream, ssl_context=False, timeout=timeout,
-            startup_params={} if options is None else {"options": options},
+            startup_params={},
         )
         connection.autocommit = autocommit
-        return RawConnection(connection, stream)
+        return RawConnection(connection, stream, timeouts)
     except Exception as error:
         if stream is not None:
             try:
