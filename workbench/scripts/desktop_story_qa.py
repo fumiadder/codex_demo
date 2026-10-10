@@ -15,6 +15,7 @@ import struct
 import sys
 import tempfile
 import threading
+import time
 import uuid
 import wave
 from pathlib import Path
@@ -29,6 +30,65 @@ import bedtime
 
 PASSWORD = "QA-only-desktop-2026"
 HEADERS = {"X-Requested-With": "Workspace"}
+
+# Enforce the relevant iOS policy while retaining actual browser WAV decoding
+# and native play(). Chromium alone does not enforce Safari's per-element
+# permission. This probe checks a delayed reply cannot rely on a new element.
+MEDIA_GESTURE_PROBE = """
+(() => {
+  let inClick = false, nextId = 1;
+  const unlocked = new WeakSet(), ids = new WeakMap();
+  const id = audio => { if (!ids.has(audio)) ids.set(audio, nextId++); return ids.get(audio); };
+  window.__qaMedia = {calls: [], elements: [], denied: 0, sources: [], revoked: [], gains: [], contexts: []};
+  const now = Date.now.bind(Date);
+  window.__qaNowOffset = 0;
+  Date.now = () => now() + window.__qaNowOffset;
+  document.addEventListener('click', () => {
+    inClick = true;
+    // Browser event dispatch can checkpoint microtasks between listeners.
+    // A task boundary ends this synthetic gesture before the delayed reply.
+    setTimeout(() => { inClick = false; }, 0);
+  }, true);
+  const play = HTMLMediaElement.prototype.play;
+  HTMLMediaElement.prototype.play = function(...args) {
+    const gesture = inClick;
+    window.__qaMedia.calls.push({id: id(this), gesture, src: this.getAttribute('src'), rate: this.playbackRate});
+    if (!window.__qaMedia.elements.includes(this)) window.__qaMedia.elements.push(this);
+    if (!gesture && !unlocked.has(this)) {
+      window.__qaMedia.denied++;
+      return Promise.reject(new DOMException('QA Safari per-element gesture required', 'NotAllowedError'));
+    }
+    const operation = Promise.resolve(play.apply(this, args)).then(value => {
+      if (gesture) unlocked.add(this);
+      return value;
+    });
+    if (window.__qaMedia.holdNext) {
+      window.__qaMedia.holdNext = false;
+      return operation.then(value => new Promise(resolve => { window.__qaMedia.releaseUnlock = () => resolve(value); }));
+    }
+    return operation;
+  };
+  const source = AudioContext.prototype.createMediaElementSource;
+  AudioContext.prototype.createMediaElementSource = function(audio) {
+    window.__qaMedia.sources.push(id(audio));
+    if (!window.__qaMedia.contexts.includes(this)) window.__qaMedia.contexts.push(this);
+    return source.call(this, audio);
+  };
+  const gain = AudioContext.prototype.createGain;
+  AudioContext.prototype.createGain = function(...args) {
+    const node = gain.apply(this, args);
+    window.__qaMedia.gains.push(node);
+    return node;
+  };
+  const revoke = URL.revokeObjectURL.bind(URL);
+  URL.revokeObjectURL = url => { window.__qaMedia.revoked.push(url); revoke(url); };
+  // Only system speech callbacks are a fixture; cloud WAV media plays natively.
+  Object.defineProperty(window, 'speechSynthesis', {configurable: true, value: {
+    getVoices: () => [], addEventListener: () => {}, cancel: () => {},
+    speak: utterance => queueMicrotask(() => utterance.onstart?.()),
+  }});
+})();
+"""
 
 
 def report(message):
@@ -69,6 +129,8 @@ class FakeQAProviders:
         self.synth_calls = []
         self.search_calls = []
         self.audio = sample(3)["buffer"]
+        self.synthesis_gate = None
+        self.synthesis_started = threading.Event()
 
     def enroll(self, payload, preferred_name):
         self.enroll_calls.append((bedtime.pcm_sample(payload), preferred_name))
@@ -76,6 +138,11 @@ class FakeQAProviders:
 
     def synthesize(self, text, voice, model):
         self.synth_calls.append((text, voice, model))
+        self.synthesis_started.set()
+        if self.synthesis_gate is not None:
+            assert self.synthesis_gate.wait(10), "QA synthesis gate was not released"
+        # Allow the click's transient activation to expire before audio arrives.
+        time.sleep(0.25)
         return self.audio
 
     def search(self, keyword):
@@ -90,6 +157,7 @@ def cloud_checks(origin, server, provider):
     with sync_playwright() as p:
         browser = p.chromium.launch(executable_path=os.environ.get("QA_CHROMIUM", "/usr/bin/chromium"), headless=True, args=["--no-sandbox", "--disable-dev-shm-usage"])
         context = browser.new_context(viewport={"width":1440,"height":1050}, locale="zh-CN")
+        context.add_init_script(MEDIA_GESTURE_PROBE)
         account = register(context, origin, "QA 云接口流程测试")
         page = context.new_page()
         errors, requests = [], []
@@ -121,16 +189,46 @@ def cloud_checks(origin, server, provider):
             row = conn.execute("SELECT * FROM bedtime_voices WHERE id=?", (voice["id"],)).fetchone()
             assert row["state"] == "ready" and row["user_id"] == account["user"]["id"] and row["space_id"] == account["space"]["id"]
 
+        # Device speech must begin while its optional media unlock promise is
+        # still pending. It then switches to the first cloud voice through a
+        # change event, without depending on a new click's media permission.
+        page.locator("#voice-selector").select_option("system:default")
+        before_device_synthesis = len(provider.synth_calls)
+        before_unlock_revokes = page.evaluate("window.__qaMedia.revoked.length")
+        page.evaluate("window.__qaMedia.holdNext=true")
+        page.locator("#play-toggle").click()
+        expect(page.locator("#play-toggle")).to_have_attribute("aria-label", "暂停朗读")
+        page.wait_for_function("()=>typeof window.__qaMedia.releaseUnlock==='function'")
+        assert len(provider.synth_calls) == before_device_synthesis, ("device speech requested cloud synthesis", page.locator("#voice-selector").input_value(), errors)
+        assert page.evaluate("window.__qaMedia.revoked.length") == before_unlock_revokes
+        page.evaluate("window.__qaMedia.releaseUnlock()")
+        page.wait_for_function("before=>window.__qaMedia.revoked.length===before+1", arg=before_unlock_revokes)
         with page.expect_response(lambda response: "/bedtime/audio/" in response.url and response.request.method == "GET") as played:
-            page.locator("#play-toggle").click()
+            page.locator("#voice-selector").select_option(voice["id"])
         expect(page.locator("#play-toggle")).to_have_attribute("aria-label", "暂停朗读")
         assert played.value.status == 200
         assert played.value.headers["cache-control"] == "private, no-store"
         assert played.value.body() == provider.audio
-        assert provider.synth_calls[0][0] in original_text
-        assert provider.synth_calls[0][1:] == ("QA-private-provider-voice", bedtime.VC_MODEL)
+        assert provider.synth_calls[before_device_synthesis][0] in original_text
+        assert provider.synth_calls[before_device_synthesis][1:] == ("QA-private-provider-voice", bedtime.VC_MODEL)
         assert page.locator("#reader-text").inner_text() == original_text
+        media = page.evaluate("({calls:window.__qaMedia.calls, sources:window.__qaMedia.sources, denied:window.__qaMedia.denied, revoked:window.__qaMedia.revoked})")
+        assert len(media["calls"]) == 3, media
+        assert media["calls"][0]["gesture"] and not any(call["gesture"] for call in media["calls"][1:]), media
+        assert all(call["id"] == media["calls"][0]["id"] for call in media["calls"]), media
+        assert all(call["src"] in media["revoked"] for call in media["calls"][:2]), media
+        assert media["sources"] == [media["calls"][0]["id"]] and media["denied"] == 0, media
+        first_audio_id = media["calls"][0]["id"]
+        first_audio_url = media["calls"][-1]["src"]
+        # Playback rate modifies the live media element without synthesizing or
+        # reloading the text. GainNode still controls volume on iOS.
+        calls_before_rate = len(provider.synth_calls)
+        page.locator("#speech-rate").select_option("0.7")
+        assert page.evaluate("window.__qaMedia.elements[0].playbackRate") == 0.7
+        assert len(provider.synth_calls) == calls_before_rate
         page.locator("#play-toggle").click()
+        assert page.evaluate("window.__qaMedia.elements.every(audio=>audio.paused && !audio.hasAttribute('src'))")
+        assert page.evaluate("url=>window.__qaMedia.revoked.includes(url)", first_audio_url)
 
         page.locator("#search-input").fill("QA 月亮")
         page.locator("#web-search").check()
@@ -145,10 +243,67 @@ def cloud_checks(origin, server, provider):
         expect(page.locator("#play-toggle")).to_have_attribute("aria-label", "暂停朗读")
         assert web_played.value.status == 200
         assert "QA 模拟检索文本" in provider.synth_calls[-1][0]
+        # A real media ended event starts the next sentence without another
+        # click; its private WAV must reuse the same already unlocked element.
+        with page.expect_response(lambda response: "/bedtime/audio/" in response.url and response.request.method == "GET") as next_sentence:
+            page.wait_for_function("()=>document.querySelector('#story-progress').value>0")
+        assert next_sentence.value.status == 200
+        expect(page.locator("#play-toggle")).to_have_attribute("aria-label", "暂停朗读")
+        assert "月亮轻轻盖上云朵" in provider.synth_calls[-1][0]
+        media = page.evaluate("({calls:window.__qaMedia.calls, sources:window.__qaMedia.sources, denied:window.__qaMedia.denied})")
+        assert all(call["id"] == first_audio_id for call in media["calls"]), media
+        assert media["sources"] == [first_audio_id] and media["denied"] == 0, media
         page.locator("#play-toggle").click()
+        assert page.evaluate("window.__qaMedia.elements.every(audio=>audio.paused && !audio.hasAttribute('src'))")
+        assert not page.evaluate("Object.keys(localStorage).some(key=>/audio/i.test(key))")
+
+        # Pausing a request still in flight must not attach or play its audio.
+        before_audio_gets = len([url for method,url in requests if method == "GET" and "/bedtime/audio/" in url])
+        provider.synthesis_gate = gate = threading.Event()
+        provider.synthesis_started.clear()
+        page.locator("#play-toggle").click()
+        assert provider.synthesis_started.wait(5)
+        with page.expect_response(lambda response: response.url.endswith("/bedtime/synthesize") and response.request.method == "POST"):
+            page.locator("#play-toggle").click()
+            gate.set()
+        provider.synthesis_gate = None
+        page.wait_for_timeout(150)
+        assert before_audio_gets == len([url for method,url in requests if method == "GET" and "/bedtime/audio/" in url])
+        assert page.evaluate("window.__qaMedia.elements.every(audio=>audio.paused && !audio.hasAttribute('src'))")
+
+        with page.expect_response(lambda response: "/bedtime/audio/" in response.url and response.request.method == "GET"):
+            page.locator("#play-toggle").click()
+        expect(page.locator("#play-toggle")).to_have_attribute("aria-label", "暂停朗读")
+        page.locator("#sleep-timer").select_option("30")
+        page.evaluate("window.__qaNowOffset=30*60000-30000")
+        page.wait_for_function("()=>window.__qaMedia.gains.at(-1).gain.value<0.6")
+        assert page.evaluate("window.__qaMedia.gains.at(-1).gain.value") > 0
+        page.evaluate("window.__qaNowOffset=30*60000+1000")
+        expect(page.locator("#sleep-overlay")).to_be_visible()
+        page.wait_for_function("()=>window.__qaMedia.contexts.every(context=>context.state==='closed')")
+        assert page.evaluate("window.__qaMedia.elements.every(audio=>audio.paused && !audio.hasAttribute('src'))")
+        page.evaluate("window.__qaNowOffset=0")
+        page.locator("#wake-sleep").click()
+        with page.expect_response(lambda response: "/bedtime/audio/" in response.url and response.request.method == "GET"):
+            page.locator("#play-toggle").click()
+        expect(page.locator("#play-toggle")).to_have_attribute("aria-label", "暂停朗读")
+        media = page.evaluate("({calls:window.__qaMedia.calls, sources:window.__qaMedia.sources, denied:window.__qaMedia.denied})")
+        assert len(media["sources"]) == 2 and media["sources"][0] != media["sources"][1], media
+        assert media["calls"][-2]["gesture"] and not media["calls"][-1]["gesture"], media
+        assert media["calls"][-2]["id"] == media["calls"][-1]["id"] == media["sources"][-1], media
+        assert media["denied"] == 0, media
+        sibling = context.new_page()
+        sibling.goto(origin, wait_until="networkidle")
+        sibling.evaluate("uid=>localStorage.setItem('zhixu:session-event',JSON.stringify({kind:'logout',userId:uid,at:Date.now()}))", account["user"]["id"])
+        expect(page.locator("#bedtime-app")).not_to_be_visible()
+        assert page.evaluate("window.__qaMedia.elements.every(audio=>audio.paused && !audio.hasAttribute('src'))")
+        assert page.evaluate("window.__qaMedia.calls.every(call=>window.__qaMedia.revoked.includes(call.src))")
         assert not errors, errors
         browser.close()
         report("明确模拟供应商：真实上传/同意/克隆入库与自动选音色；文本不重载、私人音频真实播放、QA 联网文本沿用同一音色（不验证真人克隆质量）")
+        report("模拟 Safari 每元素手势限制：点击本机静音解锁、延迟私有音频沿用同元素与唯一媒体源；语速不重合成、暂停/换故事/退出清源与 Blob，不缓存私有音频（真实 iPhone 待设备验收）")
+        report("真实句末自动继续；合成等待期间暂停不取音频；GainNode 睡眠渐弱、定时关闭 Context，唤醒后新元素重新点击解锁与异步播放")
+        report("设备语音事件为 QA stub：慢静音解锁不阻塞设备朗读，change 切首个云音色无需新点击手势，真实私人 WAV 继续播放且文本保持")
 
 
 def checks(origin):

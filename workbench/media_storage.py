@@ -1,9 +1,14 @@
 """Private application media, served through the existing authorized API.
 
 The local backend preserves the existing ``uploads`` and ``bedtime-audio``
-directories.  The S3 backend is for Neon Object Storage and never produces a
-public or presigned URL.  Authorization, quota reservations and audio expiry
-remain the responsibility of the caller, outside long database transactions.
+directories. Ordinary media stays private and is streamed through the existing
+authorized, same-origin API. Only a server-created temporary voice enrollment
+sample may receive a short-lived S3 signed GET URL, passed directly to the voice
+provider; it must never be returned to browsers, persisted, or logged. The caller
+must reserve a fresh sample ID without a published media row, enforce consent
+and workspace authorization, and queue deletion immediately after enrollment.
+Authorization, quota reservations and audio expiry remain the responsibility of
+the caller, outside long database transactions.
 """
 from dataclasses import dataclass
 import os
@@ -11,7 +16,7 @@ from pathlib import Path
 import re
 import stat as stat_module
 from typing import BinaryIO
-from urllib.parse import urlsplit
+from urllib.parse import parse_qs, urlsplit
 
 
 NAMESPACES = frozenset(("uploads", "bedtime-audio"))
@@ -297,6 +302,57 @@ class S3Storage:
 
     def stat(self, namespace, object_id):
         return self._info(self._call("head_object", namespace, Key=_key(namespace, object_id)))
+
+    def signed_voice_sample_url(self, object_id, expires_seconds=300):
+        """Sign only a server-created temporary enrollment sample, for <= 5 min.
+
+        This is a server-to-provider capability, not a media sharing API. HEAD
+        confirms existence, not user ownership: the caller must create/reserve
+        the random ID itself and delete the sample after the provider consumes
+        it. The URL and SDK exceptions contain secrets and must not be logged.
+        """
+        try:
+            namespace = "bedtime-audio"
+            key = _key(namespace, object_id)
+            if type(expires_seconds) is not int or not 1 <= expires_seconds <= 300:
+                raise ValueError
+            endpoint_url = self._client.meta.endpoint_url
+            if (not isinstance(endpoint_url, str) or len(endpoint_url) > 2048 or
+                    any(ord(char) <= 32 or ord(char) == 127 or char == "\\" for char in endpoint_url)):
+                raise ValueError
+            endpoint = urlsplit(endpoint_url)
+            if (endpoint.scheme != "https" or not endpoint.hostname or
+                    not _NEON_STORAGE_HOST.fullmatch(endpoint.hostname) or
+                    endpoint.username is not None or endpoint.password is not None or
+                    endpoint.port not in (None, 443) or endpoint.path not in ("", "/") or
+                    endpoint.query or endpoint.fragment):
+                raise ValueError
+            self.stat(namespace, object_id)
+            signed_url = self._client.generate_presigned_url(
+                "get_object", Params={"Bucket": self.buckets[namespace], "Key": key},
+                ExpiresIn=expires_seconds, HttpMethod="GET",
+            )
+            if (not isinstance(signed_url, str) or not signed_url or len(signed_url) > 8192 or
+                    any(ord(char) <= 32 or ord(char) == 127 or char == "\\" for char in signed_url)):
+                raise ValueError
+            signed = urlsplit(signed_url)
+            if (signed.scheme != "https" or signed.hostname != endpoint.hostname or
+                    signed.username is not None or signed.password is not None or
+                    signed.port not in (None, 443) or signed.fragment or
+                    signed.path != f"/{self.buckets[namespace]}/{key}"):
+                raise ValueError
+            query = parse_qs(signed.query, keep_blank_values=True, strict_parsing=True, max_num_fields=32)
+            if (any(len(values) != 1 for values in query.values()) or
+                    query.get("X-Amz-Algorithm") != ["AWS4-HMAC-SHA256"] or
+                    query.get("X-Amz-Expires") != [str(expires_seconds)] or
+                    query.get("X-Amz-SignedHeaders") != ["host"] or
+                    len(query.get("X-Amz-Signature", [])) != 1 or
+                    not re.fullmatch(r"[a-fA-F0-9]{64}", query["X-Amz-Signature"][0])):
+                raise ValueError
+            return signed_url
+        except Exception:
+            # Do not include endpoint/query parameters or chained SDK errors.
+            raise StorageError("Temporary voice sample URL preparation failed") from None
 
     def open(self, namespace, object_id, byte_range=None):
         key = _key(namespace, object_id)

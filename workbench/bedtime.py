@@ -57,6 +57,8 @@ CREATE TABLE IF NOT EXISTS bedtime_audio (
 """
 
 VC_MODEL = "qwen3-tts-vc-2026-01-22"
+QWEN_AUDIO_MODEL = "qwen-audio-3.1-tts-flash"
+CLOUD_VOICE_MODELS = frozenset((VC_MODEL, QWEN_AUDIO_MODEL))
 SYSTEM_MODEL = "qwen3-tts-flash"
 ENROLLMENT_URL = "https://dashscope.aliyuncs.com/api/v1/services/audio/tts/customization"
 SYNTHESIS_URL = "https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation"
@@ -92,6 +94,28 @@ SYSTEM_VOICES = [
     {"id": "cloud:Mochi", "name": "沙小弥 · 轻柔童声", "kind": "system"},
     {"id": "cloud:Cherry", "name": "芊悦 · 亲切女声", "kind": "system"},
 ]
+QWEN_AUDIO_VOICES = [
+    {"id": "cloud:wenhuaiqing_v3.1", "name": "温柔女声 · 温怀清", "kind": "system"},
+    {"id": "cloud:longyuan_v3.1", "name": "治愈女声 · 龙媛", "kind": "system"},
+    {"id": "cloud:longsanshu_v3.1", "name": "沉稳男声 · 龙三叔", "kind": "system"},
+]
+_MAAS_VOICE_HOST = re.compile(r"[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.cn-beijing\.maas\.aliyuncs\.com\Z")
+VOICE_ENROLLMENT_SECONDS = 45
+
+
+def voice_api_origin(value):
+    """An administrator-selected Beijing business-space origin, never a URL."""
+    if not isinstance(value, str) or re.search(r"[\x00-\x20]", value):
+        return ""
+    try:
+        parsed = urlsplit(value)
+        if (parsed.scheme == "https" and _MAAS_VOICE_HOST.fullmatch(parsed.hostname or "")
+                and parsed.username is None and parsed.password is None and parsed.port is None
+                and not parsed.path and not parsed.query and not parsed.fragment):
+            return "https://" + parsed.hostname
+    except ValueError:
+        pass
+    return ""
 
 
 def stamp():
@@ -100,6 +124,14 @@ def stamp():
 
 class ProviderFailure(Exception):
     """An intentionally sanitized error, with no provider URL, token, or body."""
+
+
+class EnrollmentFailure(ProviderFailure):
+    """A failed vendor voice retained only in a private server-side profile."""
+    def __init__(self, message, voice, model):
+        super().__init__(message)
+        self.remote_voice = voice
+        self.target_model = model
 
 
 class NoRedirect(HTTPRedirectHandler):
@@ -170,6 +202,11 @@ class HTTPProviders:
         self.generation_model = model if model in GENERATION_MODELS else ""
         self.generation_allowed = env.get("STORY_GENERATION_ENABLED", "1") == "1"
         self.voice_allowed = env.get("CLOUD_VOICE_ENABLED", "1") == "1"
+        voice_model = env.get("CLOUD_VOICE_MODEL", VC_MODEL).strip()
+        # Never substitute the legacy billable API when a selected model or
+        # its business-space host is unavailable.
+        self.voice_model = voice_model if voice_model in CLOUD_VOICE_MODELS else ""
+        self.voice_origin = voice_api_origin(env.get("CLOUD_VOICE_API_HOST", "").strip())
         self.search_provider = env.get("STORY_SEARCH_PROVIDER", "local").strip().lower()
         self.search_key = ""
         self.search_url = ""
@@ -198,7 +235,25 @@ class HTTPProviders:
 
     @property
     def voice_enabled(self):
-        return bool(self.voice_key and self.voice_allowed)
+        return bool(self.voice_key and self.voice_allowed and self.voice_model
+                    and (self.voice_model == VC_MODEL or self.voice_origin))
+
+    @property
+    def requires_sample_url(self):
+        return self.voice_model == QWEN_AUDIO_MODEL
+
+    @property
+    def system_voices(self):
+        return QWEN_AUDIO_VOICES if self.voice_model == QWEN_AUDIO_MODEL else SYSTEM_VOICES if self.voice_model == VC_MODEL else []
+
+    @property
+    def system_model(self):
+        return self.voice_model if self.voice_model == QWEN_AUDIO_MODEL else SYSTEM_MODEL
+
+    def supports_voice_model(self, model):
+        if self.voice_model == QWEN_AUDIO_MODEL:
+            return model == QWEN_AUDIO_MODEL
+        return self.voice_model == VC_MODEL and model in (VC_MODEL, SYSTEM_MODEL)
 
     @property
     def generation_enabled(self):
@@ -208,14 +263,14 @@ class HTTPProviders:
     def search_enabled(self):
         return bool(self.search_key and self.search_url)
 
-    def _json(self, url, key, body):
+    def _json(self, url, key, body, *, timeout=40):
         request = Request(url, json.dumps(body, ensure_ascii=False).encode(), {
             "Authorization": "Bearer " + key,
             "Content-Type": "application/json",
             "Accept": "application/json",
         }, method="POST")
         try:
-            with self.opener.open(request, timeout=40) as response:
+            with self.opener.open(request, timeout=timeout) as response:
                 data = response.read(2 * 1024 * 1024 + 1)
                 if len(data) > 2 * 1024 * 1024:
                     raise ProviderFailure("提供商响应超过大小限制")
@@ -225,12 +280,34 @@ class HTTPProviders:
                 return result
         except ProviderFailure:
             raise
-        except (HTTPError, URLError, TimeoutError, ValueError, OSError):
+        except HTTPError as exc:
+            # Read only a bounded error object and map a fixed allowlist. Never
+            # expose the provider body, request URL, key, host, or arbitrary code.
+            vendor_code = None
+            try:
+                error_data = exc.read(16 * 1024 + 1)
+                if len(error_data) <= 16 * 1024:
+                    error_result = json.loads(error_data)
+                    vendor_code = error_result.get("code") if isinstance(error_result, dict) else None
+            except (ValueError, OSError, TypeError):
+                pass
+            finally:
+                exc.close()
+            if exc.code == 401:
+                raise ProviderFailure("百炼认证失败，请管理员核对服务端密钥及其所属业务空间") from None
+            if exc.code == 403 and vendor_code == "AllocationQuota.FreeTierOnly":
+                raise ProviderFailure("免费额度限制阻止了本次调用，请在百炼控制台核对剩余额度；不会自动切换模型或付费调用") from None
+            if exc.code == 403:
+                raise ProviderFailure("百炼拒绝了本次调用，请核对业务空间、模型权限与免费额度设置") from None
+            raise ProviderFailure("提供商暂时不可用，请检查服务端配置或稍后重试") from None
+        except (URLError, TimeoutError, ValueError, OSError):
             raise ProviderFailure("提供商暂时不可用，请检查服务端配置或稍后重试") from None
 
     def enroll(self, payload, preferred_name):
         if not self.voice_enabled:
             raise ProviderFailure("音色克隆尚未配置")
+        if self.requires_sample_url:
+            return self._enroll_qwen_audio(payload, preferred_name)
         data = self._json(ENROLLMENT_URL, self.voice_key, {
             "model": "qwen-voice-enrollment",
             "input": {"action": "create", "target_model": VC_MODEL,
@@ -246,6 +323,81 @@ class HTTPProviders:
         return voice, VC_MODEL
 
     def delete_voice(self, voice):
+        return self.delete_voice_for_model(voice, self.voice_model)
+
+    def _voice_request(self, body, deadline):
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise ProviderFailure("音色处理超时，请稍后重新创建")
+        response = self._json(self.voice_origin + "/api/v1/services/audio/tts/customization",
+                              self.voice_key, body, timeout=min(40, remaining))
+        if time.monotonic() > deadline:
+            output = response.get("output", {})
+            voice = output.get("voice_id") if isinstance(output, dict) else None
+            if (body.get("input", {}).get("action") == "create_voice"
+                    and isinstance(voice, str) and 0 < len(voice) <= 512):
+                raise EnrollmentFailure("音色处理超时，请稍后重新创建", voice, self.voice_model)
+            raise ProviderFailure("音色处理超时，请稍后重新创建")
+        return response
+
+    def _enroll_qwen_audio(self, sample_url, preferred_name):
+        # This URL is produced by the private storage adapter; clients submit
+        # WAV bytes, never a fetch target or provider-readable sample URL.
+        if not public_url(sample_url):
+            raise ProviderFailure("新音色服务需要短时签名的 HTTPS 样本")
+        prefix = "".join(character for character in preferred_name if character.isascii() and character.isalnum())[:10]
+        if not prefix:
+            raise ProviderFailure("音色注册前缀无效")
+        deadline = time.monotonic() + VOICE_ENROLLMENT_SECONDS
+        created = self._voice_request({
+            "model": "voice-enrollment",
+            "input": {"action": "create_voice", "target_model": self.voice_model, "prefix": prefix,
+                      "url": sample_url, "language_hints": ["zh"]},
+        }, deadline)
+        output = created.get("output", {})
+        voice = output.get("voice_id") if isinstance(output, dict) else None
+        if not isinstance(voice, str) or not voice or len(voice) > 512:
+            raise ProviderFailure("提供商没有返回可用音色")
+        try:
+            while True:
+                queried = self._voice_request({"model": "voice-enrollment",
+                                               "input": {"action": "query_voice", "voice_id": voice}}, deadline)
+                output = queried.get("output", {})
+                if not isinstance(output, dict) or output.get("target_model", self.voice_model) != self.voice_model:
+                    raise ProviderFailure("提供商返回了不兼容的音色模型")
+                status = output.get("status")
+                if status == "OK":
+                    return voice, self.voice_model
+                if status == "UNDEPLOYED":
+                    raise ProviderFailure("音色未能完成部署，请检查声音素材后重新创建")
+                if status != "DEPLOYING":
+                    raise ProviderFailure("提供商返回了未知的音色状态")
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    raise ProviderFailure("音色处理超时，请稍后重新创建")
+                time.sleep(min(1, remaining))
+        except ProviderFailure as exc:
+            # Cleanup stays within the same bounded registration deadline.
+            # If it cannot run, a server-only failed profile can retain the
+            # vendor identifier for an explicit, correctly routed retry.
+            removed = False
+            try:
+                self._voice_request({"model": "voice-enrollment",
+                                     "input": {"action": "delete_voice", "voice_id": voice}}, deadline)
+                removed = True
+            except ProviderFailure:
+                pass
+            if not removed:
+                raise EnrollmentFailure(str(exc), voice, self.voice_model) from None
+            raise
+
+    def delete_voice_for_model(self, voice, model):
+        if not self.voice_enabled or not self.supports_voice_model(model):
+            raise ProviderFailure("该音色使用的云模型当前未启用，请联系管理员；不会自动调用其他模型")
+        if model == QWEN_AUDIO_MODEL:
+            self._voice_request({"model": "voice-enrollment", "input": {"action": "delete_voice", "voice_id": voice}},
+                                time.monotonic() + 40)
+            return
         self._json(ENROLLMENT_URL, self.voice_key, {
             "model": "qwen-voice-enrollment", "input": {"action": "delete", "voice": voice},
         })
@@ -303,9 +455,19 @@ class HTTPProviders:
     def synthesize(self, text, voice, model):
         if not self.voice_enabled:
             raise ProviderFailure("云端朗读尚未配置")
-        data = self._json(SYNTHESIS_URL, self.voice_key, {
-            "model": model, "input": {"text": text, "voice": voice, "language_type": "Chinese"},
-        })
+        if not self.supports_voice_model(model):
+            raise ProviderFailure("该音色使用的云模型当前未启用，请联系管理员；不会自动调用其他模型")
+        if model == QWEN_AUDIO_MODEL:
+            data = self._json(self.voice_origin + "/api/v1/services/audio/tts/SpeechSynthesizer", self.voice_key, {
+                "model": model, "input": {"text": text, "voice": voice, "format": "wav", "sample_rate": 24000},
+            })
+            output = data.get("output", {})
+            if not isinstance(output, dict) or output.get("finish_reason") != "stop":
+                raise ProviderFailure("云端朗读未完成，请稍后重试")
+        else:
+            data = self._json(SYNTHESIS_URL, self.voice_key, {
+                "model": model, "input": {"text": text, "voice": voice, "language_type": "Chinese"},
+            })
         output = data.get("output", {})
         audio = output.get("audio", {}) if isinstance(output, dict) else {}
         if not isinstance(audio, dict):
@@ -426,9 +588,66 @@ def provider_call(handler, function, *args):
     try:
         return function(*args)
     except ProviderFailure as exc:
-        fail(handler, 502, str(exc))
+        error = handler.server.bedtime_error(502, str(exc))
+        if isinstance(exc, EnrollmentFailure):
+            error.remote_voice = exc.remote_voice
+            error.target_model = exc.target_model
+        raise error from None
     finally:
         handler.server.bedtime_provider_slots.release()
+
+
+def clone_available(server, provider):
+    if not provider.voice_enabled:
+        return False
+    if not getattr(provider, "requires_sample_url", False):
+        return True
+    return (server.media_storage.backend == "s3"
+            and callable(getattr(server.media_storage, "signed_voice_sample_url", None)))
+
+
+def configured_system_voices(provider):
+    return getattr(provider, "system_voices", SYSTEM_VOICES) if provider.voice_enabled else []
+
+
+def delete_provider_voice(handler, remote_voice, target_model):
+    provider = handler.server.bedtime_provider
+    function = getattr(provider, "delete_voice_for_model", None)
+    if function:
+        return provider_call(handler, function, remote_voice, target_model)
+    return provider_call(handler, provider.delete_voice, remote_voice)
+
+
+def recover_enrollment(handler, voice_id, sid, uid, remote_voice, target_model):
+    """Preserve a failed vendor identifier when cleanup cannot be confirmed."""
+    server = handler.server
+    # Confirm the outcome before deleting a possibly committed ready profile.
+    # This also records the vendor ID before attempting another external call.
+    try:
+        with server.db() as conn:
+            conn.execute("BEGIN IMMEDIATE")
+            row = conn.execute("SELECT state,provider_voice,target_model FROM bedtime_voices WHERE id=? AND space_id=? AND user_id=?",
+                               (voice_id, sid, uid)).fetchone()
+            if row and row["state"] == "ready" and row["provider_voice"] == remote_voice and row["target_model"] == target_model:
+                return
+            conn.execute("UPDATE bedtime_voices SET state='failed',provider_voice=?,target_model=? WHERE id=? AND space_id=? AND user_id=?",
+                         (remote_voice, target_model, voice_id, sid, uid))
+    except Exception:
+        # An uncertain DB commit is safer to preserve than to delete a voice
+        # which might already have been published. Do not replace the original
+        # request error or log a credential/voice identifier.
+        return
+    try:
+        delete_provider_voice(handler, remote_voice, target_model)
+    except Exception:
+        return
+    try:
+        with server.db() as conn:
+            conn.execute("DELETE FROM bedtime_voices WHERE id=? AND space_id=? AND user_id=? AND state='failed' AND provider_voice=?",
+                         (voice_id, sid, uid, remote_voice))
+    except Exception:
+        # A retained failed row permits another explicit cleanup attempt.
+        pass
 
 
 def voice_body(handler):
@@ -636,10 +855,10 @@ def dispatch(handler, path, query):
                                           "durationMinutes": GENERATION_ENUMS["durationMinutes"],
                                           "styles": GENERATION_ENUMS["style"], "protagonists": GENERATION_ENUMS["protagonist"]},
                       "webSearch": {"enabled": provider.search_enabled, "provider": provider.search_provider},
-                      "voiceClone": {"enabled": provider.voice_enabled, "provider": "dashscope", "sampleRate": 24000,
+                      "voiceClone": {"enabled": clone_available(server, provider), "provider": "dashscope", "sampleRate": 24000,
                                      "minimumSeconds": 10, "maximumSeconds": 30},
                       "synthesis": {"enabled": provider.voice_enabled, "provider": "dashscope", "maxCharacters": 600,
-                                    "systemVoices": SYSTEM_VOICES if provider.voice_enabled else []}}
+                                    "systemVoices": configured_system_voices(provider)}}
         elif route == "generate" and method == "POST":
             parameters = generation_parameters(handler, data)
             if not getattr(provider, "generation_enabled", False):
@@ -737,7 +956,7 @@ def dispatch(handler, path, query):
                 fail(handler, 405, "不支持此请求方法")
         elif route == "voices" and method == "GET":
             rows = conn.execute("SELECT * FROM bedtime_voices WHERE space_id=? AND user_id=? ORDER BY created_at,id", (sid, uid)).fetchall()
-            result = {"voices": [voice_json(row) for row in rows], "systemVoices": SYSTEM_VOICES if provider.voice_enabled else []}
+            result = {"voices": [voice_json(row) for row in rows], "systemVoices": configured_system_voices(provider)}
         elif route == "voices" and method == "POST":
             name = handler.string(data.get("name", ""), "音色名称", 60, True)
             if data.get("consent") is not True:
@@ -754,20 +973,45 @@ def dispatch(handler, path, query):
                 fail(handler, 400, str(exc) if str(exc).startswith("音频") or str(exc).startswith("请") else "音频编码无效")
             if not provider.voice_enabled:
                 fail(handler, 503, "音色克隆尚未配置，请联系管理员设置服务端模型密钥")
+            if not clone_available(server, provider):
+                fail(handler, 503, "新音色模型需要已配置的私有对象存储与短时签名链接，本地存储不支持该注册方式")
             server.throttle(("bedtime-enroll", uid), 5, 3600)
             server.throttle(("bedtime-enroll-day", uid), 10, 86400)
             count = conn.execute("SELECT count(*) FROM bedtime_voices WHERE space_id=? AND user_id=?", (sid, uid)).fetchone()[0]
             if count >= 10:
                 fail(handler, 409, "每个空间最多保存 10 个专属音色")
             voice_id, created = uuid.uuid4().hex, stamp()
-            conn.execute("INSERT INTO bedtime_voices VALUES(?,?,?,?,?,?,?,?)", (voice_id, sid, uid, name, "pending", "", VC_MODEL, created))
+            target_model = getattr(provider, "voice_model", VC_MODEL)
+            sample_id = None
+            if getattr(provider, "requires_sample_url", False):
+                space_bytes, total_bytes = storage_jobs.usage(conn, sid)
+                if space_bytes + len(payload) > server.max_space_storage or total_bytes + len(payload) > server.max_total_storage:
+                    fail(handler, 413, "存储容量已满，请先整理媒体文件")
+                sample_id = uuid.uuid4().hex
+                storage_jobs.reserve(conn, "bedtime-audio", sample_id, sid, len(payload))
+            conn.execute("INSERT INTO bedtime_voices VALUES(?,?,?,?,?,?,?,?)", (voice_id, sid, uid, name, "pending", "", target_model, created))
             conn.commit()
             try:
-                remote_voice, target_model = provider_call(handler, provider.enroll, payload, "bedtime" + voice_id[:8])
-            except server.bedtime_error:
+                if sample_id:
+                    server.media_storage.put("bedtime-audio", sample_id, payload, "audio/wav")
+                    with server.db() as check:
+                        handler.current_user(check)
+                        handler.membership(check, sid, uid, write=True)
+                        storage_jobs.assert_pending(check, "bedtime-audio", sample_id)
+                    sample_url = server.media_storage.signed_voice_sample_url(sample_id, expires_seconds=300)
+                    remote_voice, target_model = provider_call(handler, provider.enroll, sample_url, "bt" + voice_id[:8])
+                else:
+                    remote_voice, target_model = provider_call(handler, provider.enroll, payload, "bedtime" + voice_id[:8])
+            except Exception as exc:
                 with server.db() as failed:
-                    failed.execute("UPDATE bedtime_voices SET state='failed' WHERE id=? AND user_id=? AND space_id=?", (voice_id, uid, sid))
+                    remote = getattr(exc, "remote_voice", "")
+                    failed.execute("UPDATE bedtime_voices SET state='failed',provider_voice=? WHERE id=? AND user_id=? AND space_id=?", (remote, voice_id, uid, sid))
                 raise
+            finally:
+                if sample_id:
+                    # No bedtime_audio row publishes this sample to the app.
+                    # A durable delete job survives failed cleanup or a crash.
+                    storage_jobs.abandon(server, "bedtime-audio", sample_id, sid, len(payload))
             try:
                 with server.db() as ready:
                     ready.execute("BEGIN IMMEDIATE")
@@ -779,15 +1023,11 @@ def dispatch(handler, path, query):
                         fail(handler, 404, "音色创建已经取消")
                 handler.json_response(201, {"voice": voice_json(row)})
                 return True
-            except server.bedtime_error:
+            except Exception:
                 # A membership/session revoke during enrollment must not expose
-                # the result or orphan a usable voice profile in another user.
-                try:
-                    provider_call(handler, provider.delete_voice, remote_voice)
-                except server.bedtime_error:
-                    pass
-                with server.db() as failed:
-                    failed.execute("DELETE FROM bedtime_voices WHERE id=? AND user_id=? AND space_id=?", (voice_id, uid, sid))
+                # the result. Keep a server-only failed vendor identifier if
+                # cleanup fails, and preserve uncertain committed ready data.
+                recover_enrollment(handler, voice_id, sid, uid, remote_voice, target_model)
                 raise
         elif voice_match := re.fullmatch(rf"voices/({ID})", route):
             if method != "DELETE":
@@ -801,7 +1041,7 @@ def dispatch(handler, path, query):
                 if not provider.voice_enabled:
                     fail(handler, 503, "请恢复服务端密钥以同时删除云端音色")
                 conn.commit()
-                provider_call(handler, provider.delete_voice, row["provider_voice"])
+                delete_provider_voice(handler, row["provider_voice"], row["target_model"])
                 conn.execute("BEGIN IMMEDIATE")
                 handler.current_user(conn)
                 handler.membership(conn, sid, uid, write=True)
@@ -812,8 +1052,8 @@ def dispatch(handler, path, query):
             voice_id = handler.string(data.get("voiceId", ""), "音色编号", 96, True)
             if not provider.voice_enabled:
                 fail(handler, 503, "云端朗读尚未配置，请使用设备系统音色")
-            if voice_id in {voice["id"] for voice in SYSTEM_VOICES}:
-                remote_voice, target_model = voice_id.split(":", 1)[1], SYSTEM_MODEL
+            if voice_id in {voice["id"] for voice in configured_system_voices(provider)}:
+                remote_voice, target_model = voice_id.split(":", 1)[1], getattr(provider, "system_model", SYSTEM_MODEL)
             else:
                 row = conn.execute("SELECT * FROM bedtime_voices WHERE id=? AND space_id=? AND user_id=? AND state='ready'", (voice_id, sid, uid)).fetchone()
                 if not row:

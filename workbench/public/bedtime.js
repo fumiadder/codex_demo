@@ -18,6 +18,7 @@
     questionsDone: new Set(), waitingQuestion: null, sleeping: false, sleepFocus: null,
   };
   let audioContext = null, speechGain = null, noiseGain = null, noiseSource = null;
+  let cloudAudio = null, cloudAudioSource = null;
   let toastTimeout = null, voicePoll = null;
   const themeMedia = window.matchMedia("(prefers-color-scheme: dark)");
   const desktopMedia = window.matchMedia("(min-width: 1024px)");
@@ -673,14 +674,65 @@
   async function ensureAudioContext() {
     const Context = window.AudioContext || window.webkitAudioContext;
     if (!Context) return null;
-    if (!audioContext || audioContext.state === "closed") audioContext = new Context();
+    if (!audioContext || audioContext.state === "closed") {
+      resetCloudAudio();
+      audioContext = new Context();
+    }
     if (audioContext.state === "suspended") await audioContext.resume();
     return audioContext;
   }
   function closeAudioContext() {
     const context = audioContext;
     audioContext = null;
+    resetCloudAudio();
     if (context && context.state !== "closed") context.close().catch(() => {});
+  }
+  function clearCloudAudio() {
+    if (!cloudAudio) return;
+    cloudAudio.onplaying = cloudAudio.ontimeupdate = cloudAudio.onended = cloudAudio.onerror = null;
+    cloudAudio.pause();
+    cloudAudio.removeAttribute("src");
+    cloudAudio.load();
+    cloudAudioSource?.disconnect();
+  }
+  function resetCloudAudio() {
+    clearCloudAudio();
+    cloudAudio = null;
+    cloudAudioSource = null;
+  }
+  function getCloudAudio() {
+    if (!cloudAudio) {
+      cloudAudio = new Audio();
+      cloudAudio.preload = "auto";
+      cloudAudio.setAttribute("playsinline", "");
+    }
+    return cloudAudio;
+  }
+  function unlockCloudAudio(epoch) {
+    const audio = getCloudAudio();
+    // Safari grants media playback to this element in the user's click. A
+    // locally generated silent WAV needs no network, supplier or recording.
+    const wav = new ArrayBuffer(44 + 800 * 2), view = new DataView(wav);
+    const write = (offset, text) => [...text].forEach((c, index) => view.setUint8(offset + index, c.charCodeAt(0)));
+    write(0, "RIFF"); view.setUint32(4, wav.byteLength - 8, true); write(8, "WAVE");
+    write(12, "fmt "); view.setUint32(16, 16, true); view.setUint16(20, 1, true);
+    view.setUint16(22, 1, true); view.setUint32(24, 8000, true); view.setUint32(28, 16000, true);
+    view.setUint16(32, 2, true); view.setUint16(34, 16, true); write(36, "data"); view.setUint32(40, 1600, true);
+    const url = URL.createObjectURL(new Blob([wav], { type: "audio/wav" }));
+    state.urls.add(url);
+    audio.src = url;
+    audio.playbackRate = 1;
+    audio.volume = 1;
+    // Keep this play() before the first await or network request.
+    return Promise.resolve(audio.play()).then(() => {
+      if (epoch === state.audioEpoch && cloudAudio === audio) clearCloudAudio();
+    }, () => {
+      if (epoch === state.audioEpoch && cloudAudio === audio) clearCloudAudio();
+      if (epoch === state.audioEpoch && state.playing) throw new Error("请再点一次朗读，允许浏览器播放声音。");
+    }).finally(() => {
+      URL.revokeObjectURL(url);
+      state.urls.delete(url);
+    });
   }
   function stopNoise() {
     try { noiseSource?.stop(); } catch { /* An already ended source is safe. */ }
@@ -728,7 +780,8 @@
     clearTimeout(state.speechStartTimeout);
     window.speechSynthesis?.cancel(); state.utterance = null;
     if (navigator.mediaSession) { navigator.mediaSession.metadata = null; navigator.mediaSession.playbackState = "none"; }
-    if (state.audio) { state.audio.pause(); state.audio.removeAttribute("src"); state.audio.load(); state.audio = null; }
+    clearCloudAudio();
+    state.audio = null;
     speechGain?.disconnect(); speechGain = null;
     if (!keepNoise) stopNoise();
     if (!keepNoise && audioContext && audioContext.state === "running") audioContext.suspend().catch(() => {});
@@ -860,13 +913,17 @@
     if (epoch !== state.audioEpoch || !state.playing) return;
     if (!blob.type.startsWith("audio/") && blob.type !== "application/octet-stream") throw new Error("声音响应格式异常，请重试。");
     const objectURL = URL.createObjectURL(blob); state.urls.add(objectURL);
-    const audio = new Audio(objectURL); state.audio = audio;
-    audio.playbackRate = Number($("speech-rate").value);
     const context = await ensureAudioContext();
     if (epoch !== state.audioEpoch || !state.playing) { URL.revokeObjectURL(objectURL); state.urls.delete(objectURL); return; }
+    const audio = getCloudAudio(); state.audio = audio;
+    audio.src = objectURL;
+    audio.playbackRate = Number($("speech-rate").value);
     if (context) {
-      const source = context.createMediaElementSource(audio);
-      speechGain = context.createGain(); speechGain.gain.value = effectiveVolume(); source.connect(speechGain); speechGain.connect(context.destination);
+      // A media element can be bound to only one source node. Reuse that node
+      // for every paragraph and reconnect only the current volume control.
+      if (!cloudAudioSource) cloudAudioSource = context.createMediaElementSource(audio);
+      cloudAudioSource.disconnect();
+      speechGain = context.createGain(); speechGain.gain.value = effectiveVolume(); cloudAudioSource.connect(speechGain); speechGain.connect(context.destination);
     } else audio.volume = effectiveVolume();
     audio.onplaying = () => {
       if (epoch !== state.audioEpoch) return;
@@ -881,6 +938,8 @@
     audio.onended = () => {
       URL.revokeObjectURL(objectURL); state.urls.delete(objectURL);
       if (epoch !== state.audioEpoch || !state.playing) return;
+      clearCloudAudio();
+      state.audio = null;
       speechGain?.disconnect(); speechGain = null;
       finishChunk(chunk, epoch);
     };
@@ -908,8 +967,17 @@
     state.chunkIndex = 0;
     state.startedAt = 0;
     try {
-      // Resume in the user's click before awaiting network calls (iOS policy).
-      await ensureAudioContext();
+      // Both unlocks begin synchronously in the user's click (iOS policy).
+      const contextReady = ensureAudioContext();
+      let mediaReady = null;
+      if (state.config?.synthesis?.enabled && writable()) {
+        if ($("voice-selector").value.startsWith("system:")) {
+          // Prime a later switch to cloud speech, while device speech remains
+          // independent of media playback support or a slow unlock promise.
+          try { unlockCloudAudio(epoch).catch(() => {}); } catch { /* Device speech can continue. */ }
+        } else mediaReady = unlockCloudAudio(epoch);
+      }
+      await Promise.all([contextReady, mediaReady]);
       if (epoch !== state.audioEpoch || !state.playing) return;
       await startNoise();
       await playCurrentChunk(epoch);
