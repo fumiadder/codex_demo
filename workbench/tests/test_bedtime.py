@@ -205,6 +205,7 @@ class BedtimeTests(unittest.TestCase):
         self.assertFalse(config["webSearch"]["enabled"])
         self.assertFalse(config["voiceClone"]["enabled"])
         self.assertFalse(config["storyGeneration"]["enabled"])
+        self.assertEqual(config["storyGeneration"]["model"], bedtime.GENERATION_MODEL)
         self.assertEqual(headers["Cache-Control"], "no-store")
         self.assertNotIn("key", json.dumps(config).lower())
         self.assertEqual(self.request("GET", self.prefix + "search?q=" + quote("童话") + "&scope=web", cookie=self.owner)[0], 503)
@@ -330,20 +331,119 @@ class BedtimeTests(unittest.TestCase):
     def test_official_generation_compatible_request_and_incomplete_output_rejection(self):
         provider = bedtime.HTTPProviders({"DASHSCOPE_API_KEY": "test-secret-not-real"})
         self.assertTrue(provider.generation_enabled)
+        self.assertTrue(provider.voice_enabled)
         raw = self.provider.generate(dict(bedtime.GENERATION_DEFAULTS))
         completed = {"choices": [{"finish_reason": "stop", "message": {"content": json.dumps(raw)}}]}
-        with patch.object(provider, "_json", return_value=completed) as fake:
-            self.assertEqual(provider.generate(dict(bedtime.GENERATION_DEFAULTS)), raw)
-        url, token, body = fake.call_args.args
-        self.assertEqual(url, "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions")
-        self.assertEqual(token, "test-secret-not-real")
-        self.assertEqual(body["model"], bedtime.GENERATION_MODEL)
-        self.assertEqual(body["response_format"], {"type": "json_object"})
-        self.assertEqual([message["role"] for message in body["messages"]], ["system", "user"])
+        for duration, limit in ((1, 900), (5, 2600)):
+            with self.subTest(duration=duration), patch.object(provider, "_json", return_value=completed) as fake:
+                self.assertEqual(provider.generate({**bedtime.GENERATION_DEFAULTS, "durationMinutes": duration}), raw)
+                url, token, body = fake.call_args.args
+                self.assertEqual(url, "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions")
+                self.assertEqual(token, "test-secret-not-real")
+                self.assertEqual(body["model"], bedtime.GENERATION_MODEL)
+                self.assertEqual(body["response_format"], {"type": "json_object"})
+                self.assertEqual([message["role"] for message in body["messages"]], ["system", "user"])
+                self.assertEqual(body["max_tokens"], limit)
+                self.assertNotIn("max_completion_tokens", body)
+                self.assertNotIn("enable_thinking", body)
         for response in ({"choices": []}, {"choices": [{"finish_reason": "length", "message": {"content": "{}"}}]},
                          {"choices": [{"finish_reason": "stop", "message": {"content": "not json"}}]}):
             with patch.object(provider, "_json", return_value=response), self.assertRaises(bedtime.ProviderFailure):
                 provider.generate(dict(bedtime.GENERATION_DEFAULTS))
+
+    def test_flash_generation_profile_short_long_and_no_model_fallback(self):
+        provider = bedtime.HTTPProviders({"DASHSCOPE_API_KEY": "test-secret-not-real",
+                                          "STORY_GENERATION_MODEL": "qwen3.8-flash"})
+        self.assertTrue(provider.generation_enabled)
+        for duration, limit in ((1, 900), (5, 2600)):
+            raw = self.provider.generate({**bedtime.GENERATION_DEFAULTS, "durationMinutes": duration})
+            completed = {"choices": [{"finish_reason": "stop", "message": {"content": json.dumps(raw)}}]}
+            with self.subTest(duration=duration), patch.object(provider, "_json", return_value=completed) as fake:
+                self.assertEqual(provider.generate({**bedtime.GENERATION_DEFAULTS, "durationMinutes": duration}), raw)
+                url, token, body = fake.call_args.args
+                self.assertEqual(url, bedtime.GENERATION_URL)
+                self.assertEqual(token, "test-secret-not-real")
+                self.assertEqual(body["model"], "qwen3.8-flash")
+                self.assertIs(body["enable_thinking"], False)
+                self.assertEqual(body["max_completion_tokens"], limit)
+                self.assertNotIn("max_tokens", body)
+                self.assertEqual(body["response_format"], {"type": "json_object"})
+                self.assertEqual([message["role"] for message in body["messages"]], ["system", "user"])
+        with patch.object(provider, "_json", side_effect=bedtime.ProviderFailure("供应商暂时不可用")) as fake:
+            with self.assertRaises(bedtime.ProviderFailure):
+                provider.generate(dict(bedtime.GENERATION_DEFAULTS))
+            self.assertEqual(fake.call_count, 1)
+            self.assertEqual(fake.call_args.args[2]["model"], "qwen3.8-flash")
+
+    def test_invalid_generation_model_is_disabled_and_not_exposed(self):
+        private_setting = "unsupported-private-model-setting"
+        provider = self.server.bedtime_provider = bedtime.HTTPProviders({
+            "DASHSCOPE_API_KEY": "test-secret-not-real", "STORY_GENERATION_MODEL": private_setting,
+        })
+        self.assertFalse(provider.generation_enabled)
+        self.assertTrue(provider.voice_enabled)
+        with patch.object(provider, "_json") as fake:
+            with self.assertRaises(bedtime.ProviderFailure):
+                provider.generate(dict(bedtime.GENERATION_DEFAULTS))
+            status, config, _ = self.request("GET", self.prefix + "config", cookie=self.owner)
+            self.assertEqual(status, 200)
+            self.assertFalse(config["storyGeneration"]["enabled"])
+            self.assertEqual(config["storyGeneration"]["model"], "")
+            self.assertNotIn(private_setting, json.dumps(config))
+            self.assertEqual(self.request("POST", self.prefix + "generate", {}, self.owner)[0], 503)
+            fake.assert_not_called()
+
+    def test_provider_feature_flags_require_exact_one_and_are_independent(self):
+        for flag in ("0", "", "true", "yes", " 1", "1 ", 1, True):
+            with self.subTest(flag=flag):
+                provider = bedtime.HTTPProviders({"DASHSCOPE_API_KEY": "test-secret-not-real",
+                                                  "STORY_GENERATION_ENABLED": flag})
+                self.assertFalse(provider.generation_enabled)
+                self.assertTrue(provider.voice_enabled)
+                with patch.object(provider, "_json") as fake:
+                    with self.assertRaises(bedtime.ProviderFailure):
+                        provider.generate(dict(bedtime.GENERATION_DEFAULTS))
+                    fake.assert_not_called()
+                provider = bedtime.HTTPProviders({"DASHSCOPE_API_KEY": "test-secret-not-real",
+                                                  "CLOUD_VOICE_ENABLED": flag})
+                self.assertTrue(provider.generation_enabled)
+                self.assertFalse(provider.voice_enabled)
+                with patch.object(provider, "_json") as fake:
+                    with self.assertRaises(bedtime.ProviderFailure):
+                        provider.enroll(wav(10), "test-voice")
+                    with self.assertRaises(bedtime.ProviderFailure):
+                        provider.synthesize("晚安", "Seren", bedtime.SYSTEM_MODEL)
+                    fake.assert_not_called()
+        missing_key = bedtime.HTTPProviders({"STORY_GENERATION_ENABLED": "1", "CLOUD_VOICE_ENABLED": "1",
+                                              "STORY_GENERATION_MODEL": "qwen3.8-flash"})
+        self.assertFalse(missing_key.generation_enabled)
+        self.assertFalse(missing_key.voice_enabled)
+
+    def test_story_only_key_does_not_enable_cloud_voice_routes(self):
+        provider = self.server.bedtime_provider = bedtime.HTTPProviders({
+            "DASHSCOPE_API_KEY": "test-secret-not-real", "STORY_GENERATION_MODEL": "qwen3.8-flash",
+            "STORY_GENERATION_ENABLED": "1", "CLOUD_VOICE_ENABLED": "0",
+        })
+        raw = self.provider.generate(dict(bedtime.GENERATION_DEFAULTS))
+        completed = {"choices": [{"finish_reason": "stop", "message": {"content": json.dumps(raw)}}]}
+        with patch.object(provider, "_json", return_value=completed) as fake:
+            status, config, _ = self.request("GET", self.prefix + "config", cookie=self.owner)
+            self.assertEqual(status, 200)
+            self.assertTrue(config["storyGeneration"]["enabled"])
+            self.assertEqual(config["storyGeneration"]["model"], "qwen3.8-flash")
+            self.assertFalse(config["voiceClone"]["enabled"])
+            self.assertFalse(config["synthesis"]["enabled"])
+            self.assertEqual(config["synthesis"]["systemVoices"], [])
+            self.assertFalse(config["webSearch"]["enabled"])
+            self.assertTrue(config["systemSpeech"])
+            self.assertEqual(self.request("POST", self.prefix + "voices", self.clone_body(), self.owner)[0], 503)
+            self.assertEqual(self.request("POST", self.prefix + "synthesize", {"text": "晚安", "voiceId": "cloud:Seren"}, self.owner)[0], 503)
+            self.assertEqual(self.request("GET", self.prefix + "voices", cookie=self.owner)[1]["systemVoices"], [])
+            fake.assert_not_called()
+            status, result, _ = self.request("POST", self.prefix + "generate", {}, self.owner)
+            self.assertEqual(status, 200, result)
+            self.assertEqual(fake.call_count, 1)
+            self.assertEqual(fake.call_args.args[2]["model"], "qwen3.8-flash")
 
     def test_original_categories_duration_and_structured_sleep_ending(self):
         for category in bedtime.STORY_CATEGORIES:

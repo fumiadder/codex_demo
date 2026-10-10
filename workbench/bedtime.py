@@ -62,6 +62,7 @@ ENROLLMENT_URL = "https://dashscope.aliyuncs.com/api/v1/services/audio/tts/custo
 SYNTHESIS_URL = "https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation"
 GENERATION_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
 GENERATION_MODEL = "qwen-plus"
+GENERATION_MODELS = frozenset((GENERATION_MODEL, "qwen3.8-flash"))
 STORY_CATEGORIES = ["儿童睡前", "治愈温柔", "小动物", "公主冒险", "成长勇气", "亲情暖心"]
 GENERATION_ENUMS = {
     "ageGroup": ["3-6", "7-10"], "category": STORY_CATEGORIES,
@@ -163,6 +164,12 @@ class HTTPProviders:
     def __init__(self, environ=None):
         env = os.environ if environ is None else environ
         self.voice_key = env.get("DASHSCOPE_API_KEY", "").strip()
+        model = env.get("STORY_GENERATION_MODEL", GENERATION_MODEL).strip()
+        # An unsupported setting disables generation; never send arbitrary
+        # model identifiers or silently substitute a billable provider model.
+        self.generation_model = model if model in GENERATION_MODELS else ""
+        self.generation_allowed = env.get("STORY_GENERATION_ENABLED", "1") == "1"
+        self.voice_allowed = env.get("CLOUD_VOICE_ENABLED", "1") == "1"
         self.search_provider = env.get("STORY_SEARCH_PROVIDER", "local").strip().lower()
         self.search_key = ""
         self.search_url = ""
@@ -191,11 +198,11 @@ class HTTPProviders:
 
     @property
     def voice_enabled(self):
-        return bool(self.voice_key)
+        return bool(self.voice_key and self.voice_allowed)
 
     @property
     def generation_enabled(self):
-        return bool(self.voice_key)
+        return bool(self.voice_key and self.generation_allowed and self.generation_model)
 
     @property
     def search_enabled(self):
@@ -268,12 +275,17 @@ class HTTPProviders:
             + ("可在中间加入1至2个不需要回答的温和想象问题，不能出现在最后一段；不要记忆测验和对错评分。"
                if parameters["interactive"] else "questions必须为空数组，不加入互动提问。")
         )
-        response = self._json(GENERATION_URL, self.voice_key, {
-            "model": GENERATION_MODEL,
+        request = {
+            "model": self.generation_model,
             "messages": [{"role": "system", "content": system}, {"role": "user", "content": request_text}],
             "response_format": {"type": "json_object"}, "temperature": 0.7,
-            "max_tokens": 900 if parameters["durationMinutes"] == 1 else 2600,
-        })
+        }
+        limit = 900 if parameters["durationMinutes"] == 1 else 2600
+        if self.generation_model == "qwen3.8-flash":
+            request.update(enable_thinking=False, max_completion_tokens=limit)
+        else:
+            request["max_tokens"] = limit
+        response = self._json(GENERATION_URL, self.voice_key, request)
         choices = response.get("choices")
         if not isinstance(choices, list) or len(choices) != 1 or not isinstance(choices[0], dict):
             raise ProviderFailure("提供商没有返回完整故事")
@@ -289,6 +301,8 @@ class HTTPProviders:
         return story
 
     def synthesize(self, text, voice, model):
+        if not self.voice_enabled:
+            raise ProviderFailure("云端朗读尚未配置")
         data = self._json(SYNTHESIS_URL, self.voice_key, {
             "model": model, "input": {"text": text, "voice": voice, "language_type": "Chinese"},
         })
@@ -614,9 +628,10 @@ def dispatch(handler, path, query):
         handler.membership(conn, sid, uid, write=write)
         provider = server.bedtime_provider
         if route == "config" and method == "GET":
+            model = getattr(provider, "generation_model", GENERATION_MODEL)
             result = {"systemSpeech": True,
                       "storyGeneration": {"enabled": bool(getattr(provider, "generation_enabled", False)),
-                                          "provider": "dashscope", "model": GENERATION_MODEL,
+                                          "provider": "dashscope", "model": model if model in GENERATION_MODELS else "",
                                           "ageGroups": GENERATION_ENUMS["ageGroup"], "categories": STORY_CATEGORIES,
                                           "durationMinutes": GENERATION_ENUMS["durationMinutes"],
                                           "styles": GENERATION_ENUMS["style"], "protagonists": GENERATION_ENUMS["protagonist"]},

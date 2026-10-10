@@ -26,16 +26,21 @@
 
 | 变量 | 用途与默认值 |
 | --- | --- |
-| `DASHSCOPE_API_KEY` | 阿里云百炼密钥；空值关闭 AI 故事生成、克隆和云端朗读 |
+| `DASHSCOPE_API_KEY` | 阿里云百炼中国内地密钥；空值关闭 AI 故事生成、克隆和云端朗读 |
+| `STORY_GENERATION_MODEL` | 默认 `qwen-plus`；可明确选择 `qwen3.8-flash`。其他值关闭生成，不回退 |
+| `STORY_GENERATION_ENABLED` | 默认 `1` 兼容已有配置；只有 `1` 允许生成，设 `0` 可独立关闭 |
+| `CLOUD_VOICE_ENABLED` | 默认 `1` 兼容已有配置；只有 `1` 允许克隆及云端合成。先只启用故事时设 `0`，仍可使用设备朗读 |
 | `STORY_SEARCH_PROVIDER` | `local` 默认原创库；可选 `opensearch` 或 `tavily` |
 | `OPENSEARCH_API_KEY` | 阿里云 OpenSearch AI 搜索服务专用密钥，与百炼密钥独立 |
 | `OPENSEARCH_ENDPOINT` | 控制台提供的 HTTPS 公网服务 origin，主机须属于 `*.opensearch.aliyuncs.com`；不填路径 |
 | `OPENSEARCH_WORKSPACE` | OpenSearch workspace 名称，默认 `default` |
 | `TAVILY_API_KEY` | 仅在选用 Tavily 时填写；中国大陆网络可达性未验证 |
 
+分阶段接入时，先在百炼北京地域核对故事模型的实际余额和有效期，开启该模型“免费额度用完即停”，再配置 `STORY_GENERATION_MODEL=qwen3.8-flash`、`STORY_GENERATION_ENABLED=1`、`CLOUD_VOICE_ENABLED=0` 及私有 Key。语音服务还需要逐项核对 `qwen3-tts-flash`、`qwen3-tts-vc-2026-01-22` 与 `qwen-voice-enrollment` 的额度及停止策略，确认后才把 `CLOUD_VOICE_ENABLED` 改为 `1`。这些开关控制是否调用供应商，不能替代供应商的额度停止机制。
+
 配置有效只表示具备调用条件，并不表示提供商验证、免费额度或联网可达性已确认。云服务存在用量费用；应用不会创建任何云付费资源，也不自动填入 API 密钥。
 
-故事生成使用固定百炼兼容接口 `https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions` 和 `qwen-plus`，只发送经过枚举校验的偏好，不发送姓名或已有笔记。每账号最多 10 次／小时、20 次／日，并与音色服务共用最多 2 个并发请求。服务器校验 JSON 段落、长度和温和问题，按默认开启的恐怖词检查拒绝明显不合适输出；这不是内容适龄的绝对保证。模型失败、被截断或输出不符合设置时返回明确错误，不提供伪造生成结果。生成文本不自动写数据库或缓存；主动收藏／播放记录时才保存私人快照，普通账号导入不能冒充内置或官方生成来源。
+故事生成使用固定百炼兼容接口 `https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions` ，按服务端配置使用 `qwen-plus` 或 `qwen3.8-flash`。后者显式关闭思考并以 `max_completion_tokens` 限制输出；前者保持原有请求参数。模型只由管理员环境配置选择，浏览器偏好不能指定模型或接口；配置不支持的模型时关闭生成，不切换其他可能计费的模型。只发送经过枚举校验的偏好，不发送姓名或已有笔记。每账号最多 10 次／小时、20 次／日，并与音色服务共用最多 2 个并发请求。服务器校验 JSON 段落、长度和温和问题，按默认开启的恐怖词检查拒绝明显不合适输出；这不是内容适龄的绝对保证。模型失败、被截断或输出不符合设置时返回明确错误，不提供伪造生成结果。生成文本不自动写数据库或缓存；主动收藏／播放记录时才保存私人快照，普通账号导入不能冒充内置或官方生成来源。
 
 克隆使用官方 `qwen-voice-enrollment` HTTP 接口与 `qwen3-tts-vc-2026-01-22` 模型。浏览器将样本解码并导出为 **24 kHz、单声道、16 位 PCM WAV**；服务器再次检查实际 10–30 秒时长、完整帧数据、非空声音，最大 1.5 MB、JSON 上限 2.5 MB。素材通过受认证的服务端 Base64 请求发给百炼，不创建公开样本链接，也不持久保存原始克隆素材。用户必须确认声音为本人或已获授权。一次克隆请求只有提供商实际返回音色 ID 才标为 `ready`，失败保持 `failed` 并可删除。模型 ID 与供应商音色 ID 仅服务端保存，每个空间每个账号最多 10 个档案。
 
@@ -87,4 +92,4 @@
 
 `python -m unittest discover -s tests -v` 包含真实 HTTP 权限及隔离测试，云服务使用显式注入的假提供商验证协议和授权竞态，不会触发真实计费。覆盖共享成员隔离、只读角色、实际样本时长和 30 秒边界、大 Base64、音色切换保持文本、供应商 ID 不外泄、合成音频鉴权、退出登录/成员移除期间的结果丢弃、失败不假报完成、并发限制、磁盘余量、固定音频主机与重定向拒绝、官方裸 PCM 包装为 WAV。通过本地测试不代表已经公网部署或云供应商实测。
 
-官方资料：[音色复刻](https://help.aliyun.com/zh/model-studio/voice-cloning-user-guide)、[Qwen-TTS HTTP API](https://help.aliyun.com/zh/model-studio/qwen-tts-api)、[音色复刻 HTTP API](https://help.aliyun.com/zh/model-studio/voice-clone-design-http-api)、[系统音色列表](https://help.aliyun.com/zh/model-studio/qwen-tts-voice-list)、[OpenSearch 网页搜索](https://help.aliyun.com/zh/open-search/search-platform/developer-reference/web-search)、[OpenSearch 公网服务地址](https://help.aliyun.com/zh/open-search/search-platform/user-guide/get-service-call-address)。
+官方资料：[音色复刻](https://help.aliyun.com/zh/model-studio/voice-cloning-user-guide)、[Qwen-TTS HTTP API](https://help.aliyun.com/zh/model-studio/qwen-tts-api)、[音色复刻 HTTP API](https://help.aliyun.com/zh/model-studio/voice-clone-design-http-api)、[系统音色列表](https://help.aliyun.com/zh/model-studio/qwen-tts-voice-list)、[Qwen3.8-Flash](https://help.aliyun.com/zh/model-studio/qwen3-8-flash)、[结构化输出](https://help.aliyun.com/zh/model-studio/qwen-structured-output)、[免费额度停止规则](https://help.aliyun.com/zh/model-studio/new-free-quota)、[OpenSearch 网页搜索](https://help.aliyun.com/zh/open-search/search-platform/developer-reference/web-search)、[OpenSearch 公网服务地址](https://help.aliyun.com/zh/open-search/search-platform/user-guide/get-service-call-address)。

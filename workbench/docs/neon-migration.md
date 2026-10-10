@@ -2,13 +2,13 @@
 
 ## 当前状态（2026-10-10）
 
-采用已有 Render Free 服务 [zhixu-free-test.onrender.com](https://zhixu-free-test.onrender.com)，数据库与媒体放到 Neon Free。Neon 项目为 `blue-band-05556085` / `zhixu-workbench`，AWS 新加坡；数据库 `zhixu`，私有桶 `uploads`、`bedtime-audio` 已创建。Native SQL 已确认 PostgreSQL 17.11；13 张表、6 个索引、76 列与此前已验证源码一致。首位管理员邀请已签发，但账号尚未注册。
+采用已有 Render Free 服务 [zhixu-free-test.onrender.com](https://zhixu-free-test.onrender.com)，数据库与媒体放到 Neon Free。Neon 项目为 `blue-band-05556085` / `zhixu-workbench`，AWS 新加坡；数据库 `zhixu`，私有桶 `uploads`、`bedtime-audio` 已创建。已确认 PostgreSQL 17.11、13 张表、6 个索引、76 列。用户确认没有真实旧数据，本次全新安装；管理员已注册并成功登录，一次性邀请已使用。
 
-**用户已确认旧测试站没有真实数据，本次全新安装，无需迁移。新版尚未 Live，公网仍是旧版。** 用户已登录并确认 My Workspace，授权使用 Render 连接工具部署现有免费服务；私有配置和构建命令已应用，不需要再次登录、手动导入环境变量或重复修改构建命令。
+存储版本 `f504f8e` 已通过 [完整 CI](https://github.com/fumiadder/codex_demo/actions/runs/38028783119) 并进入 Live。Render 的 WSS 数据库初始化及两个私有桶 HEAD 均成功；[重新部署后的只读公网验收](https://github.com/fumiadder/codex_demo/actions/runs/37926968296) 第 2 次运行通过。
 
-已验证提交 `564386d` 的 [main CI](https://github.com/fumiadder/codex_demo/actions/runs/37926678128) 成功。但 Render 直接连接部署 `dep-db4de23l550s73bd8290` 与池化连接部署 `dep-db4dftdg1s2s739346hg` 均在约 10 秒后出现 PostgreSQL TCP 连接超时；两个私有桶的 S3 HEAD 启动检查通过。Native Neon SQL 的 `SELECT 1` 成功不能代替 Render 应用连接。真实云端 PUT／GET／Range／删除及重启保留尚未验收。
+用户已保存 2 条记录并上传 1 个 540,815 字节的文件。同一版本重新部署 `dep-db4uicd9fdbs73avd50g` 后，账号、空间、成员、记录、文件及密码箱表的数量和内容摘要保持一致，私有 S3 对象的键、大小与 ETag 保持一致。这些证明云端写入与重部署保留；尚未独立读取用户附件字节或验证其下载校验值，当前密码箱表为空，实际解锁与多账号共享还需本人验收。
 
-WSS 提交 `99016b7` 已通过完整 CI，但首次部署 `dep-db4e0srbc2fs73bg8h80` 和数据库唤醒后重试 `dep-db4e30rl550s73bf3tu0` 均收到 PostgreSQL `08P01`，尚未 Live。正在验证启动协议兼容修改：不发送 startup `options`，而在每个事务内设置隔离级别和超时。尚未确定此次协议错误的具体原因，诊断仅输出固定类别。代码和 CI 通过后再更新同一服务；不创建收费服务、磁盘或定时任务。
+Render 自动部署已由原生 API 确认为 `autoDeploy=yes`、`autoDeployTrigger=checksPass`，发布分支 `deploy/zhixu-free-test`。后续更新通过 CI 后推进该分支，继续使用同一数据库和私有桶。当前故事、设备朗读可以使用；真实 AI 仍需核对模型额度、停止策略并配置服务器私有密钥，具体见 [BEDTIME.md](../BEDTIME.md)。
 
 | Neon Free 限额 | 规划 |
 | --- | --- |
@@ -26,7 +26,7 @@ WSS 提交 `99016b7` 已通过完整 CI，但首次部署 `dep-db4e0srbc2fs73bg8
 | 环境变量 | 配置 |
 | --- | --- |
 | `DATABASE_URL` | Neon `zhixu` 的连接串；必须非空，按所选传输使用匹配的私有配置 |
-| `DATABASE_TRANSPORT` | 默认 `native`；待验证的 WSS 路径必须显式设置 `neon-ws`，不能自动回退 |
+| `DATABASE_TRANSPORT` | 默认 `native`；WSS 路径必须显式设置 `neon-ws`，不能自动回退 |
 | `MEDIA_STORAGE_BACKEND` | `s3` |
 | `AWS_REGION` | `ap-southeast-1` |
 | `AWS_ENDPOINT_URL_S3` | 该项目实际的 HTTPS Neon S3 endpoint |
@@ -44,7 +44,7 @@ WSS 提交 `99016b7` 已通过完整 CI，但首次部署 `dep-db4e0srbc2fs73bg8
 
 确认并移除会覆盖上述配置的旧测试设置。桶保持私有；浏览器只通过登录后的同站 API 访问文件与音频，服务端检查账号、空间成员权限及 CSRF。不要发给前端 S3 密钥或长期签名 URL，也不要把“知道链接”当作访问权限。`/api/health` 只检查数据库，不能替代对象存储验证。
 
-## 待验证的 Neon WebSocket 传输
+## 已部署的 Neon WebSocket 传输
 
 `DATABASE_TRANSPORT=neon-ws` 仅改变数据库会话的网络传输：连接原始 Neon 直接主机名的 `wss://<direct-host>/v2`，由 pg8000 使用 PostgreSQL 原生协议、实际交互式事务、READ COMMITTED 隔离和既有 advisory lock。不是 HTTP SQL 请求或无状态事务模拟。
 
@@ -52,11 +52,11 @@ WSS 不在 PostgreSQL 启动消息中发送 `options`。每个新事务先执行
 
 外层 WSS 强制 CA 与主机名验证，提供 TLS 加密。与官方 Neon SDK 的 WSS 用法一致，内层 PostgreSQL SSL 关闭。WSS 不支持 `channel_binding=require`，配置中明确要求时必须拒绝；因此候选 WSS 私有连接串显式移除该参数。原始严格 TLS／channel binding 的 native 连接串保留给可信终端的原生连接、CLI 和备份，不通过日志或源码公开。传输失败不会改用另一条连接路径或 SQLite。
 
-这些是待验证实现和配置要求。尚不能宣称 WSS 已从 Render 成功连接、提交云端数据或通过上传验收；需要先完成本地真实协议／事务测试及 CI，再部署、核对实际运行结果。
+本地原生及 WebSocket PostgreSQL 测试、完整 CI 和实际 Render 初始化均已通过。管理员账号、记录和附件已写入云端，并在一次同版本重新部署后保留；私有附件的实际预览、下载及多账号权限继续验收。
 
 ## 以后存在旧数据时：快照与迁移
 
-本次没有需迁移的旧数据，不执行以下流程。今后迁移已有安装时才使用，目标须另行准备为空的专用数据库与桶；当前已有 bootstrap 邀请的 Neon 目标不能直接当作空迁移目标。
+本次没有需迁移的旧数据，不执行以下流程。今后迁移已有安装时才使用，目标须另行准备为空的专用数据库与桶；当前已有用户、记录和媒体的 Neon 目标不能当作空迁移目标。
 
 先停止源端写入和目标应用，保留原始 SQLite、相关 WAL 与完整媒体导出。只复制一个正在写入的 `folio.sqlite3` 文件不构成可靠备份。以下 `/private/export/data` 和 `/private/backup/...` 均为示意路径：替换为操作者设备或受控私有备份目录，不放入仓库。源目录须包含 `folio.sqlite3`、`uploads/`、`bedtime-audio/`。
 
