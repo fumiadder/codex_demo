@@ -6,11 +6,13 @@ to a provider occur without the corresponding administrator configuration.
 from __future__ import annotations
 
 import storage_jobs
+from media_storage import StorageError
 
 import base64
 import hashlib
 import io
 import json
+import logging
 import math
 import os
 import re
@@ -101,6 +103,47 @@ QWEN_AUDIO_VOICES = [
 ]
 _MAAS_VOICE_HOST = re.compile(r"[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.cn-beijing\.maas\.aliyuncs\.com\Z")
 VOICE_ENROLLMENT_SECONDS = 45
+
+_VOICE_DIAGNOSTIC_OPERATIONS = frozenset(("enroll_create", "enroll_query", "enroll_delete", "synthesize",
+                                         "sample_put", "sample_sign"))
+_VOICE_DIAGNOSTIC_REASONS = frozenset(("auth_failed", "free_quota", "model_denied", "workspace_denied",
+                                      "input_download", "input_format", "input_inspection", "invalid_parameter",
+                                      "model_unavailable", "rate_limited", "provider_unavailable", "network_or_timeout",
+                                      "invalid_response", "timeout", "storage_failure", "unknown"))
+_VOICE_ERROR_REASONS = {
+    "AllocationQuota.FreeTierOnly": "free_quota", "Model.AccessDenied": "model_denied",
+    "Workspace.AccessDenied": "workspace_denied", "App.AccessDenied": "workspace_denied",
+    "BadRequest.InputDownloadFailed": "input_download", "InvalidURL.Timeout": "input_download",
+    "InvalidURL.ConnectionRefused": "input_download", "GatewayTimeout.InputDownload": "input_download",
+    "BadRequest.UnsupportedFileFormat": "input_format", "InvalidParameter.DataInspection": "input_inspection",
+    "InvalidParameter": "invalid_parameter", "ModelNotFound": "model_unavailable",
+    "model_not_found": "model_unavailable",
+}
+
+
+def log_voice_failure(operation, reason, http_status=0):
+    """Log fixed diagnostic labels only; never vendor bodies or credentials."""
+    if not isinstance(operation, str) or operation not in _VOICE_DIAGNOSTIC_OPERATIONS:
+        return
+    if not isinstance(reason, str) or reason not in _VOICE_DIAGNOSTIC_REASONS:
+        reason = "unknown"
+    if type(http_status) is not int or not 100 <= http_status <= 599:
+        http_status = 0
+    logging.warning("voice_failure operation=%s http_status=%d reason=%s", operation, http_status, reason)
+
+
+def voice_request_operation(body):
+    if not isinstance(body, dict):
+        return ""
+    model = body.get("model")
+    if isinstance(model, str) and model in (QWEN_AUDIO_MODEL, VC_MODEL, SYSTEM_MODEL):
+        return "synthesize"
+    if model not in ("voice-enrollment", "qwen-voice-enrollment"):
+        return ""
+    values = body.get("input", {})
+    action = values.get("action") if isinstance(values, dict) else None
+    return {"create_voice": "enroll_create", "create": "enroll_create", "query_voice": "enroll_query",
+            "delete_voice": "enroll_delete", "delete": "enroll_delete"}.get(action, "") if isinstance(action, str) else ""
 
 
 def voice_api_origin(value):
@@ -264,6 +307,7 @@ class HTTPProviders:
         return bool(self.search_key and self.search_url)
 
     def _json(self, url, key, body, *, timeout=40):
+        operation = voice_request_operation(body)
         request = Request(url, json.dumps(body, ensure_ascii=False).encode(), {
             "Authorization": "Bearer " + key,
             "Content-Type": "application/json",
@@ -279,6 +323,7 @@ class HTTPProviders:
                     raise ProviderFailure("提供商未能完成请求，请稍后重试")
                 return result
         except ProviderFailure:
+            log_voice_failure(operation, "invalid_response")
             raise
         except HTTPError as exc:
             # Read only a bounded error object and map a fixed allowlist. Never
@@ -293,6 +338,14 @@ class HTTPProviders:
                 pass
             finally:
                 exc.close()
+            reason = _VOICE_ERROR_REASONS.get(vendor_code, "unknown") if isinstance(vendor_code, str) else "unknown"
+            if exc.code == 401:
+                reason = "auth_failed"
+            elif exc.code == 429:
+                reason = "rate_limited"
+            elif exc.code in (500, 502, 503, 504) and reason == "unknown":
+                reason = "provider_unavailable"
+            log_voice_failure(operation, reason, exc.code)
             if exc.code == 401:
                 raise ProviderFailure("百炼认证失败，请管理员核对服务端密钥及其所属业务空间") from None
             if exc.code == 403 and vendor_code == "AllocationQuota.FreeTierOnly":
@@ -300,7 +353,11 @@ class HTTPProviders:
             if exc.code == 403:
                 raise ProviderFailure("百炼拒绝了本次调用，请核对业务空间、模型权限与免费额度设置") from None
             raise ProviderFailure("提供商暂时不可用，请检查服务端配置或稍后重试") from None
-        except (URLError, TimeoutError, ValueError, OSError):
+        except ValueError:
+            log_voice_failure(operation, "invalid_response")
+            raise ProviderFailure("提供商暂时不可用，请检查服务端配置或稍后重试") from None
+        except (URLError, TimeoutError, OSError):
+            log_voice_failure(operation, "network_or_timeout")
             raise ProviderFailure("提供商暂时不可用，请检查服务端配置或稍后重试") from None
 
     def enroll(self, payload, preferred_name):
@@ -328,10 +385,12 @@ class HTTPProviders:
     def _voice_request(self, body, deadline):
         remaining = deadline - time.monotonic()
         if remaining <= 0:
+            log_voice_failure(voice_request_operation(body), "timeout")
             raise ProviderFailure("音色处理超时，请稍后重新创建")
         response = self._json(self.voice_origin + "/api/v1/services/audio/tts/customization",
                               self.voice_key, body, timeout=min(40, remaining))
         if time.monotonic() > deadline:
+            log_voice_failure(voice_request_operation(body), "timeout")
             output = response.get("output", {})
             voice = output.get("voice_id") if isinstance(output, dict) else None
             if (body.get("input", {}).get("action") == "create_voice"
@@ -344,9 +403,11 @@ class HTTPProviders:
         # This URL is produced by the private storage adapter; clients submit
         # WAV bytes, never a fetch target or provider-readable sample URL.
         if not public_url(sample_url):
+            log_voice_failure("enroll_create", "invalid_parameter")
             raise ProviderFailure("新音色服务需要短时签名的 HTTPS 样本")
         prefix = "".join(character for character in preferred_name if character.isascii() and character.isalnum())[:10]
         if not prefix:
+            log_voice_failure("enroll_create", "invalid_parameter")
             raise ProviderFailure("音色注册前缀无效")
         deadline = time.monotonic() + VOICE_ENROLLMENT_SECONDS
         created = self._voice_request({
@@ -357,6 +418,7 @@ class HTTPProviders:
         output = created.get("output", {})
         voice = output.get("voice_id") if isinstance(output, dict) else None
         if not isinstance(voice, str) or not voice or len(voice) > 512:
+            log_voice_failure("enroll_create", "invalid_response")
             raise ProviderFailure("提供商没有返回可用音色")
         try:
             while True:
@@ -364,16 +426,20 @@ class HTTPProviders:
                                                "input": {"action": "query_voice", "voice_id": voice}}, deadline)
                 output = queried.get("output", {})
                 if not isinstance(output, dict) or output.get("target_model", self.voice_model) != self.voice_model:
+                    log_voice_failure("enroll_query", "invalid_response")
                     raise ProviderFailure("提供商返回了不兼容的音色模型")
                 status = output.get("status")
                 if status == "OK":
                     return voice, self.voice_model
                 if status == "UNDEPLOYED":
+                    log_voice_failure("enroll_query", "input_inspection")
                     raise ProviderFailure("音色未能完成部署，请检查声音素材后重新创建")
                 if status != "DEPLOYING":
+                    log_voice_failure("enroll_query", "invalid_response")
                     raise ProviderFailure("提供商返回了未知的音色状态")
                 remaining = deadline - time.monotonic()
                 if remaining <= 0:
+                    log_voice_failure("enroll_query", "timeout")
                     raise ProviderFailure("音色处理超时，请稍后重新创建")
                 time.sleep(min(1, remaining))
         except ProviderFailure as exc:
@@ -463,6 +529,7 @@ class HTTPProviders:
             })
             output = data.get("output", {})
             if not isinstance(output, dict) or output.get("finish_reason") != "stop":
+                log_voice_failure("synthesize", "invalid_response")
                 raise ProviderFailure("云端朗读未完成，请稍后重试")
         else:
             data = self._json(SYNTHESIS_URL, self.voice_key, {
@@ -991,6 +1058,7 @@ def dispatch(handler, path, query):
                 storage_jobs.reserve(conn, "bedtime-audio", sample_id, sid, len(payload))
             conn.execute("INSERT INTO bedtime_voices VALUES(?,?,?,?,?,?,?,?)", (voice_id, sid, uid, name, "pending", "", target_model, created))
             conn.commit()
+            sample_stage = "sample_put"
             try:
                 if sample_id:
                     server.media_storage.put("bedtime-audio", sample_id, payload, "audio/wav")
@@ -998,11 +1066,14 @@ def dispatch(handler, path, query):
                         handler.current_user(check)
                         handler.membership(check, sid, uid, write=True)
                         storage_jobs.assert_pending(check, "bedtime-audio", sample_id)
+                    sample_stage = "sample_sign"
                     sample_url = server.media_storage.signed_voice_sample_url(sample_id, expires_seconds=300)
                     remote_voice, target_model = provider_call(handler, provider.enroll, sample_url, "bt" + voice_id[:8])
                 else:
                     remote_voice, target_model = provider_call(handler, provider.enroll, payload, "bedtime" + voice_id[:8])
             except Exception as exc:
+                if sample_id and isinstance(exc, StorageError):
+                    log_voice_failure(sample_stage, "storage_failure")
                 with server.db() as failed:
                     remote = getattr(exc, "remote_voice", "")
                     failed.execute("UPDATE bedtime_voices SET state='failed',provider_voice=? WHERE id=? AND user_id=? AND space_id=?", (remote, voice_id, uid, sid))
