@@ -12,7 +12,7 @@
     chunks: [], chunkIndex: 0, currentChar: 0, startedAt: 0,
     elapsed: 0, deadline: 0, urls: new Set(), voiceFile: null,
     cloneBusy: false, disposed: false, speechStartTimeout: null,
-    voiceSampleEpoch: 0, voicePreviewURL: null,
+    voiceSampleEpoch: 0, voicePreviewURL: null, voiceRecording: null, voicePreparing: false,
     generationEpoch: 0, generationAbort: null, generationBusy: false,
     paragraphs: [], paragraphIndex: 0, sentenceNodes: [],
     questionsDone: new Set(), waitingQuestion: null, sleeping: false, sleepFocus: null,
@@ -471,7 +471,7 @@
   function configureCapabilities() {
     const clone = state.config?.voiceClone?.enabled && writable();
     $("web-search").disabled = !state.config?.webSearch?.enabled;
-    $("clone-entry-note").textContent = clone ? "上传 10–30 秒人声，创建专属声音" : "可先选择录音试听 · 专属音色服务待连接";
+    $("clone-entry-note").textContent = clone ? "直接录制 10–30 秒人声，创建专属声音" : "可先录音试听 · 专属音色服务待连接";
     const reason = !writable() ? "当前空间为只读。可以在本机试听录音、用设备声音听故事；创建音色需要编辑权限。" : !state.config?.voiceClone?.enabled ? "专属音色服务尚未连接。可以先选择录音在本机试听；素材不会提交到云端。管理员连接服务后，才能创建音色并联网朗读故事。" : `已配置云端音色服务${state.config.voiceClone.provider ? `：${state.config.voiceClone.provider}` : ""}。素材仅在你确认创建时提交给配置的服务，用于创建你的个人音色。`;
     $("clone-status").textContent = reason;
     $("voice-name").disabled = state.disposed;
@@ -569,10 +569,112 @@
     updateCloneSubmit();
   }
   function updateCloneSubmit() {
-    $("clone-submit").disabled = state.disposed || state.cloneBusy || !state.config?.voiceClone?.enabled || !writable() || !state.voiceFile || !$("voice-consent").checked;
+    $("clone-submit").disabled = state.disposed || state.cloneBusy || !!state.voiceRecording || state.voicePreparing || !state.config?.voiceClone?.enabled || !writable() || !state.voiceFile || !$("voice-consent").checked;
+    updateRecordingControls();
+  }
+  function updateRecordingControls() {
+    const supported = !!navigator.mediaDevices?.getUserMedia && typeof window.MediaRecorder === "function";
+    $("voice-record-start").disabled = !supported || state.disposed || state.cloneBusy || !!state.voiceRecording || state.voicePreparing;
+    $("voice-record-start").textContent = state.voiceFile ? "重新录音" : "开始录音";
+    $("voice-record-stop").disabled = !state.voiceRecording?.recorder || state.voiceRecording.recorder.state !== "recording";
+    $("voice-file").disabled = state.disposed || state.cloneBusy || !!state.voiceRecording || state.voicePreparing;
+    document.querySelector(".voice-recording").classList.toggle("is-recording", !!state.voiceRecording?.recorder);
+    if (!supported) $("voice-record-status").textContent = "当前浏览器不支持页面录音，可以选择已有录音，或使用新版 Safari / Chrome。";
+  }
+  function releaseRecordingTracks(session) {
+    clearInterval(session.timer); clearTimeout(session.limit);
+    session.stream?.getTracks().forEach((track) => { track.onended = null; track.stop(); });
+  }
+  function cancelVoiceRecording() {
+    const session = state.voiceRecording;
+    state.voiceRecording = null;
+    if (!session) return;
+    if (session.recorder) {
+      session.recorder.ondataavailable = null; session.recorder.onstop = null; session.recorder.onerror = null;
+      try { if (session.recorder.state !== "inactive") session.recorder.stop(); } catch { /* Tracks are still released. */ }
+    }
+    releaseRecordingTracks(session); session.parts = [];
+  }
+  function showVoiceSample(converted) {
+    state.voiceFile = converted;
+    state.voicePreviewURL = URL.createObjectURL(converted.blob);
+    $("voice-sample-player").src = state.voicePreviewURL;
+    $("sample-preview").hidden = false;
+    $("audio-duration-note").textContent = `约 ${converted.duration.toFixed(1)} 秒 · 已在本机检查声音`;
+    $("sample-preview-note").textContent = state.config?.voiceClone?.enabled && writable() ? "仅在当前页面试听。确认创建时，才将这段人声交给已配置的音色服务。" : "仅在当前页面试听；云端服务待连接，这段录音不会上传。";
+  }
+  async function startVoiceRecording() {
+    if (state.disposed || state.cloneBusy || state.voiceRecording || state.voicePreparing || !$("voice-dialog").open) return;
+    clearVoiceSample(); stopPlayback(); $("voice-consent").checked = false;
+    $("clone-error").textContent = "";
+    const session = { stream: null, recorder: null, parts: [], bytes: 0, timer: null, limit: null };
+    state.voiceRecording = session;
+    const epoch = state.spaceEpoch, sampleEpoch = state.voiceSampleEpoch;
+    const current = () => state.voiceRecording === session && epoch === state.spaceEpoch && sampleEpoch === state.voiceSampleEpoch && !state.disposed && !state.sleeping && $("voice-dialog").open;
+    $("voice-record-status").textContent = "正在请求麦克风…请允许浏览器使用麦克风。";
+    updateCloneSubmit();
+    try {
+      session.stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true }, video: false });
+      if (!current() || document.hidden) { releaseRecordingTracks(session); return; }
+      const mime = ["audio/webm;codecs=opus", "audio/mp4", "audio/ogg;codecs=opus"].find((type) => MediaRecorder.isTypeSupported?.(type));
+      session.recorder = new MediaRecorder(session.stream, mime ? { mimeType: mime } : undefined);
+      session.recorder.ondataavailable = (event) => {
+        if (!current() || !event.data.size) return;
+        session.bytes += event.data.size;
+        if (session.bytes > 10 * 1024 * 1024) { clearVoiceSample(); $("clone-error").textContent = "录音过大，请重新录制一段 10–30 秒人声。"; updateCloneSubmit(); return; }
+        session.parts.push(event.data);
+      };
+      session.recorder.onerror = () => {
+        if (!current()) return;
+        clearVoiceSample(); $("clone-error").textContent = "录音中断，请检查麦克风后重试，或选择已有录音。"; updateCloneSubmit();
+      };
+      session.recorder.onstop = async () => {
+        releaseRecordingTracks(session);
+        if (!current()) { session.parts = []; return; }
+        const blob = new Blob(session.parts, { type: session.recorder.mimeType || session.parts[0]?.type || "audio/webm" });
+        session.parts = []; state.voiceRecording = null; state.voicePreparing = true;
+        $("voice-record-status").textContent = "正在整理录音…"; updateCloneSubmit();
+        try {
+          const converted = await decodeVoiceFile(blob, true);
+          if (epoch !== state.spaceEpoch || sampleEpoch !== state.voiceSampleEpoch || state.disposed || !$("voice-dialog").open) return;
+          showVoiceSample(converted);
+          $("voice-record-status").textContent = "录音已完成，可以先试听再创建音色。";
+        } catch (error) {
+          if (epoch === state.spaceEpoch && sampleEpoch === state.voiceSampleEpoch && !state.disposed && $("voice-dialog").open) {
+            $("clone-error").textContent = error.message;
+            $("voice-record-status").textContent = "请重新录制一段 10–30 秒人声。";
+          }
+        } finally {
+          if (epoch === state.spaceEpoch && sampleEpoch === state.voiceSampleEpoch && !state.disposed) { state.voicePreparing = false; updateCloneSubmit(); }
+        }
+      };
+      session.stream.getTracks().forEach((track) => { track.onended = () => { if (current()) session.recorder.onerror(); }; });
+      session.recorder.start(1000);
+      const started = performance.now();
+      const tick = () => { if (current()) $("voice-record-status").textContent = `录音中 · ${Math.min(30, Math.floor((performance.now() - started) / 1000))} 秒 / 30 秒`; };
+      tick(); session.timer = setInterval(tick, 500);
+      session.limit = setTimeout(stopVoiceRecording, 30000);
+      updateCloneSubmit();
+    } catch (error) {
+      releaseRecordingTracks(session);
+      if (!current()) return;
+      state.voiceRecording = null;
+      $("voice-record-status").textContent = error.name === "NotAllowedError" || error.name === "SecurityError" ? "麦克风未获授权。可以在浏览器地址栏允许麦克风后重试，或选择已有录音。" : error.name === "NotFoundError" ? "没有找到麦克风，请连接麦克风，或选择已有录音。" : "暂时无法录音，请检查麦克风是否被其他应用占用，或选择已有录音。";
+      updateCloneSubmit();
+    }
+  }
+  function stopVoiceRecording() {
+    const session = state.voiceRecording;
+    if (!session?.recorder || session.recorder.state !== "recording") return;
+    clearInterval(session.timer); clearTimeout(session.limit);
+    $("voice-record-stop").disabled = true;
+    $("voice-record-status").textContent = "正在整理录音…";
+    session.recorder.stop();
+    releaseRecordingTracks(session);
   }
   function clearVoiceSample(resetFile = true) {
     ++state.voiceSampleEpoch;
+    cancelVoiceRecording(); state.voicePreparing = false;
     const player = $("voice-sample-player");
     player.pause();
     player.removeAttribute("src");
@@ -583,8 +685,10 @@
     if (resetFile) $("voice-file").value = "";
     $("sample-preview").hidden = true;
     $("audio-duration-note").textContent = "清晰自然说话，无音乐、无其他人声。";
+    $("voice-record-status").textContent = "录制 10–30 秒，页面会自动处理格式。30 秒时自动停止。";
+    updateRecordingControls();
   }
-  async function decodeVoiceFile(file) {
+  async function decodeVoiceFile(file, recorded = false) {
     if (!file) return null;
     if (file.size > 10 * 1024 * 1024) throw new Error("声音素材需小于 10 MB。");
     const Context = window.AudioContext || window.webkitAudioContext;
@@ -597,9 +701,11 @@
     const sampleRate = 24000;
     // Decoders can resample a 10-second WAV into 440999 frames at 44.1 kHz.
     // Validate the exact PCM frame count we will submit, not that tiny drift.
-    const frames = Math.ceil(buffer.duration * sampleRate);
-    if (frames < 10 * sampleRate || frames > 30 * sampleRate) throw new Error(`这段声音约 ${buffer.duration.toFixed(1)} 秒，请上传 10–30 秒人声。`);
-    const offline = new OfflineAudioContext(1, frames, sampleRate);
+    const frames = recorded ? Math.min(30 * sampleRate, Math.ceil(buffer.duration * sampleRate)) : Math.ceil(buffer.duration * sampleRate);
+    if (frames < 10 * sampleRate || frames > 30 * sampleRate) throw new Error(`这段声音约 ${buffer.duration.toFixed(1)} 秒，请录制或选择 10–30 秒人声。`);
+    const OfflineContext = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+    if (!OfflineContext) throw new Error("当前浏览器无法处理声音，请使用新版 Safari 或 Chrome。");
+    const offline = new OfflineContext(1, frames, sampleRate);
     const source = offline.createBufferSource(); source.buffer = buffer; source.connect(offline.destination); source.start();
     const rendered = await offline.startRendering();
     const pcm = rendered.getChannelData(0);
@@ -614,7 +720,7 @@
   }
   async function createClone(event) {
     event.preventDefault();
-    if (!writable() || !state.config?.voiceClone?.enabled || state.cloneBusy) return;
+    if (!writable() || !state.config?.voiceClone?.enabled || state.cloneBusy || state.voiceRecording || state.voicePreparing) return;
     if (!$("voice-consent").checked) return;
     state.cloneBusy = true;
     const epoch = state.spaceEpoch;
@@ -625,7 +731,7 @@
     try {
       const file = $("voice-file").files[0];
       const voiceFile = state.voiceFile || await decodeVoiceFile(file);
-      if (!voiceFile) throw new Error("请先选择一段 10–30 秒声音。");
+      if (!voiceFile) throw new Error("请先录制或选择一段 10–30 秒声音。");
       if (epoch !== state.spaceEpoch) return;
       const result = await api("/voices", "POST", { name: $("voice-name").value.trim(), audioBase64: voiceFile.base64, mimeType: "audio/wav", consent: true });
       if (epoch !== state.spaceEpoch || state.disposed) return;
@@ -1201,8 +1307,10 @@
   $("voice-file").addEventListener("change", async () => {
     const file = $("voice-file").files[0];
     clearVoiceSample(false); $("clone-error").textContent = "";
+    $("voice-consent").checked = false;
     updateCloneSubmit();
     if (!file) return;
+    state.voicePreparing = true; updateCloneSubmit();
     $("audio-duration-note").textContent = "正在检查这段声音…";
     $("clone-submit").disabled = true;
     const epoch = state.spaceEpoch;
@@ -1210,21 +1318,18 @@
     try {
       const converted = await decodeVoiceFile(file);
       if (epoch !== state.spaceEpoch || sampleEpoch !== state.voiceSampleEpoch || state.disposed || $("voice-file").files[0] !== file || !$("voice-dialog").open) return;
-      state.voiceFile = converted;
-      state.voicePreviewURL = URL.createObjectURL(converted.blob);
-      $("voice-sample-player").src = state.voicePreviewURL;
-      $("sample-preview").hidden = false;
-      $("audio-duration-note").textContent = `约 ${converted.duration.toFixed(1)} 秒 · 已在本机检查声音`;
-      $("sample-preview-note").textContent = state.config?.voiceClone?.enabled && writable() ? "仅在当前页面试听。确认创建时，才将这段人声交给已配置的音色服务。" : "仅在当前页面试听；云端服务待连接，这段录音不会上传。";
+      showVoiceSample(converted);
     } catch (error) {
       if (epoch !== state.spaceEpoch || sampleEpoch !== state.voiceSampleEpoch || state.disposed || $("voice-file").files[0] !== file) return;
       $("clone-error").textContent = error.message;
       $("audio-duration-note").textContent = "请选择一段清晰的 10–30 秒人声。";
       $("voice-file").value = "";
     } finally {
-      if (epoch === state.spaceEpoch && sampleEpoch === state.voiceSampleEpoch && !state.disposed) updateCloneSubmit();
+      if (epoch === state.spaceEpoch && sampleEpoch === state.voiceSampleEpoch && !state.disposed) { state.voicePreparing = false; updateCloneSubmit(); }
     }
   });
+  $("voice-record-start").addEventListener("click", startVoiceRecording);
+  $("voice-record-stop").addEventListener("click", stopVoiceRecording);
   $("voice-consent").addEventListener("change", updateCloneSubmit);
   $("voice-sample-player").addEventListener("play", () => {
     if (state.playing || state.waitingQuestion) { stopPlayback(); $("play-status").textContent = "录音试听中，故事已暂停"; }
@@ -1289,7 +1394,7 @@
   });
   document.addEventListener("visibilitychange", async () => {
     timerTick();
-    if (document.hidden) return;
+    if (document.hidden) { if (state.voiceRecording || state.voicePreparing) closeVoices(); return; }
     if (!state.user || state.disposed) return;
     try { const me = await jsonRequest("/api/me"); if (me.user.id !== state.user.id) expireSession(); else await verifyMembership(); }
     catch (error) { if (error.status === 401) expireSession(); }

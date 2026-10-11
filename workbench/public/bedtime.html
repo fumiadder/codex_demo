@@ -66,7 +66,7 @@
         <div class="search-options"><span id="search-source-note">知序原创故事库</span><label class="duration-choice" for="library-duration">时长 <select id="library-duration"><option value="">全部时长</option><option value="1">约 1 分钟</option><option value="5">约 5 分钟</option></select></label><label><input id="web-search" type="checkbox" disabled /> 联网检索</label></div>
         <nav id="category-tabs" class="category-tabs" aria-label="故事分类"></nav>
         <button id="open-voices" class="voice-entry" type="button">
-          <span class="voice-entry-icon" aria-hidden="true">♫</span><span><strong>用熟悉的声音，说晚安</strong><small id="clone-entry-note">上传一小段声音，创建专属音色</small></span><span class="entry-arrow" aria-hidden="true">›</span>
+          <span class="voice-entry-icon" aria-hidden="true">♫</span><span><strong>用熟悉的声音，说晚安</strong><small id="clone-entry-note">录制一小段声音，创建专属音色</small></span><span class="entry-arrow" aria-hidden="true">›</span>
         </button>
         <div class="story-workspace">
         <section class="story-library" aria-label="寻找故事">
@@ -114,7 +114,12 @@
         <p class="dialog-note">一小段熟悉的声音，陪伴很多个夜晚。音色档案仅对你在当前空间可见。</p>
         <div class="dialog-share"><button id="dialog-share-link" class="quiet-button" type="button">复制音色上传链接</button><p id="dialog-share-result" class="share-link-result" hidden></p></div>
         <div id="voice-library" class="voice-library"></div><p id="clone-status" class="capability-note" role="status"></p>
-        <form id="clone-form"><label>音色名字<input id="voice-name" type="text" maxlength="60" placeholder="例如：我的轻声晚安" required /></label><label class="upload-label">选择 10–30 秒人声<input id="voice-file" type="file" accept="audio/*,.wav,.mp3,.m4a,.webm,.ogg" required /><span id="audio-duration-note">清晰自然说话，无音乐、无其他人声。</span></label><div id="sample-preview" class="sample-preview" hidden><span>试听这段录音</span><audio id="voice-sample-player" controls preload="metadata" aria-label="试听上传的人声素材"></audio><p id="sample-preview-note">仅在当前页面试听，创建音色时才提交给配置的服务。</p></div><label class="consent-label"><input id="voice-consent" type="checkbox" required /> 我确认这是本人的声音，或已获得声音本人授权，并同意交给配置的音色服务处理。</label><p id="clone-error" class="error-text" role="alert"></p><button id="clone-submit" class="primary-button" type="submit">创建专属音色</button></form>
+        <form id="clone-form">
+          <label>音色名字<input id="voice-name" type="text" maxlength="60" placeholder="例如：我的轻声晚安" required /></label>
+          <div class="voice-recording"><strong>直接录下你的声音</strong><p>用自然的声音说一小段话，建议 15–20 秒，无音乐、无其他人声。</p><div class="voice-record-actions"><button id="voice-record-start" class="quiet-button" type="button">开始录音</button><button id="voice-record-stop" class="quiet-button" type="button" disabled>停止录音</button></div><p id="voice-record-status" role="status" aria-live="polite">录制 10–30 秒，页面会自动处理格式。30 秒时自动停止。</p></div>
+          <label class="upload-label">也可以选择已有录音<input id="voice-file" type="file" accept="audio/*,.wav,.mp3,.m4a,.webm,.ogg" /><span id="audio-duration-note">清晰自然说话，无音乐、无其他人声。</span></label>
+          <div id="sample-preview" class="sample-preview" hidden><span>试听这段录音</span><audio id="voice-sample-player" controls preload="metadata" aria-label="试听人声素材"></audio><p id="sample-preview-note">仅在当前页面试听，创建音色时才提交给配置的服务。</p></div><label class="consent-label"><input id="voice-consent" type="checkbox" required /> 我确认这是本人的声音，或已获得声音本人授权，并同意交给配置的音色服务处理。</label><p id="clone-error" class="error-text" role="alert"></p><button id="clone-submit" class="primary-button" type="submit">创建专属音色</button>
+        </form>
       </dialog>
     </div>
     <div id="sleep-overlay" class="sleep-overlay" role="dialog" aria-modal="true" aria-labelledby="sleep-title" hidden><div class="sleep-rest"><span aria-hidden="true">☾</span><h2 id="sleep-title">时间到了，晚安。</h2><p>故事和背景音已停止。<br />把屏幕放下，好好休息吧。</p><button id="wake-sleep" type="button">回到故事</button></div></div>

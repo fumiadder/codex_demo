@@ -1,8 +1,9 @@
 """Real desktop, direct upload-link and local sample checks.
 
 Uses disposable real accounts/HTTP and browser WAV decoding/native playback.
-The generated sine-wave fixture tests file handling, not voice quality. No live
-cloud credentials, paid provider calls, microphone or personal recording is used.
+The generated sine-wave fixture tests file handling, not voice quality. Native
+MediaRecorder checks use Chromium's fake microphone, never a person's recording.
+No live cloud credentials or paid provider calls are used.
 Group eight injects an explicitly fake provider into a second isolated server;
 HTTP authorization, cloning DB writes and private audio playback remain real.
 Run: python scripts/desktop_story_qa.py
@@ -87,6 +88,46 @@ MEDIA_GESTURE_PROBE = """
     getVoices: () => [], addEventListener: () => {}, cancel: () => {},
     speak: utterance => queueMicrotask(() => utterance.onstart?.()),
   }});
+})();
+"""
+
+# Instrument the real stream and recorder instead of manufacturing a recording
+# result. A held native getUserMedia reply also exercises permission races.
+MICROPHONE_PROBE = """
+(() => {
+  const microphone = window.__qaMicrophone = {streams: [], recorders: [], errors: [], revoked: [], blobs: new Map()};
+  const getUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+  navigator.mediaDevices.getUserMedia = async constraints => {
+    try {
+      const stream = await getUserMedia(constraints);
+      microphone.streams.push(stream);
+      if (microphone.holdNext) {
+        microphone.holdNext = false;
+        await new Promise(resolve => { microphone.releasePermission = resolve; });
+      }
+      return stream;
+    } catch (error) { microphone.errors.push(error.name); throw error; }
+  };
+  const start = MediaRecorder.prototype.start;
+  MediaRecorder.prototype.start = function(...args) {
+    microphone.recorders.push(this);
+    this.__qaStarted = performance.now();
+    this.__qaChunks = [];
+    this.addEventListener('dataavailable', event => this.__qaChunks.push({after:performance.now()-this.__qaStarted, size:event.data.size}));
+    return start.apply(this, args);
+  };
+  const stop = MediaRecorder.prototype.stop;
+  MediaRecorder.prototype.stop = function(...args) {
+    this.__qaStopped = performance.now();
+    return stop.apply(this, args);
+  };
+  const create = URL.createObjectURL.bind(URL);
+  URL.createObjectURL = blob => { const url = create(blob); microphone.blobs.set(url, blob); return url; };
+  const revoke = URL.revokeObjectURL.bind(URL);
+  URL.revokeObjectURL = url => { microphone.revoked.push(url); microphone.blobs.delete(url); revoke(url); };
+  const now = Date.now.bind(Date);
+  window.__qaNowOffset = 0;
+  Date.now = () => now() + window.__qaNowOffset;
 })();
 """
 
@@ -306,6 +347,205 @@ def cloud_checks(origin, server, provider):
         report("设备语音事件为 QA stub：慢静音解锁不阻塞设备朗读，change 切首个云音色无需新点击手势，真实私人 WAV 继续播放且文本保持")
 
 
+def recording_checks(origin, server, provider):
+    """Native fake-microphone recording through the unchanged HTTP clone route."""
+    with sync_playwright() as p:
+        browser = p.chromium.launch(
+            executable_path=os.environ.get("QA_CHROMIUM", "/usr/bin/chromium"),
+            headless=True,
+            args=["--no-sandbox", "--disable-dev-shm-usage", "--use-fake-device-for-media-stream"],
+        )
+        context = browser.new_context(viewport={"width":390, "height":844}, locale="zh-CN")
+        context.grant_permissions(["microphone"], origin=origin)
+        context.add_init_script(MICROPHONE_PROBE)
+        account = register(context, origin, "QA 页面麦克风录音")
+        created_space = context.request.post(origin + "/api/spaces", data={"name":"QA 录音隔离空间"}, headers=HEADERS)
+        assert created_space.status == 201, created_space.text()
+        second_space = created_space.json()["space"]
+        page = context.new_page()
+        errors, requests = [], []
+        page.on("pageerror", lambda error: errors.append(str(error)))
+        page.on("request", lambda request: requests.append((request.method, request.url)))
+        page.goto(origin + "/bedtime.html?space=" + account["space"]["id"], wait_until="networkidle")
+        page.locator(".story-card").first.click()
+        original_text = page.locator("#reader-text").inner_text()
+        page.locator("#open-voices").click()
+        no_overflow(page)
+        assert not page.locator("#voice-file").evaluate("el=>el.required")
+        before_enroll = len(provider.enroll_calls)
+
+        def start_recording():
+            before = page.evaluate("window.__qaMicrophone.recorders.length")
+            page.locator("#voice-record-start").click()
+            page.wait_for_function("before=>window.__qaMicrophone.recorders.length===before+1 && window.__qaMicrophone.recorders.at(-1).state==='recording'", arg=before)
+            expect(page.locator("#voice-record-status")).to_contain_text("录音中")
+            expect(page.locator("#voice-record-stop")).to_be_enabled()
+            expect(page.locator("#clone-submit")).to_be_disabled()
+
+        def tracks_ended():
+            page.wait_for_function("()=>window.__qaMicrophone.streams.length>0 && window.__qaMicrophone.streams.every(stream=>stream.getTracks().every(track=>track.readyState==='ended'))")
+
+        # A real two-second Opus recording must pass through native decoding and
+        # fail duration validation, rather than simply accepting a timer label.
+        start_recording()
+        page.wait_for_timeout(2200)
+        page.locator("#voice-record-stop").click()
+        tracks_ended()
+        expect(page.locator("#clone-error")).to_contain_text("10–30 秒")
+        expect(page.locator("#sample-preview")).not_to_be_visible()
+        expect(page.locator("#clone-submit")).to_be_disabled()
+        assert len(provider.enroll_calls) == before_enroll
+        report("Chromium 原生假麦克风和 MediaRecorder：不足 10 秒拒绝、停止即释放音轨，录制阶段没有克隆请求")
+
+        start_recording()
+        # Fake Chromium capture can produce fewer samples than wall time under
+        # concurrent browser load. Follow the UI's 15–20-second advice, while
+        # keeping validation on the actual decoded PCM duration, never a label.
+        page.wait_for_timeout(16000)
+        page.locator("#voice-record-stop").click()
+        tracks_ended()
+        expect(page.locator("#sample-preview")).to_be_visible(timeout=10000)
+        page.wait_for_function("()=>document.querySelector('#voice-sample-player').readyState>=1")
+        preview_url = page.locator("#voice-sample-player").get_attribute("src")
+        assert preview_url.startswith("blob:"), preview_url
+        duration = page.locator("#voice-sample-player").evaluate("audio=>audio.duration")
+        assert 10 <= duration <= 20, (duration, page.evaluate("window.__qaMicrophone.recorders.at(-1).__qaChunks"))
+        recorder = page.evaluate("""()=>{
+          const recorder=window.__qaMicrophone.recorders.at(-1);
+          return {stopped:recorder.__qaStopped-recorder.__qaStarted, chunks:recorder.__qaChunks};
+        }""")
+        assert recorder["chunks"][-1]["after"] >= recorder["stopped"] and recorder["chunks"][-1]["size"] > 0, recorder
+        header = page.evaluate("""async url => {
+          // Product CSP intentionally allows blob media, not blob fetch. Read
+          // the actual Blob captured by the QA createObjectURL probe directly.
+          const bytes = await window.__qaMicrophone.blobs.get(url).arrayBuffer();
+          const view = new DataView(bytes);
+          let signal=false;
+          for(let offset=44;offset<bytes.byteLength;offset+=2) { if(view.getInt16(offset,true)!==0) {signal=true;break;} }
+          return {riff:String.fromCharCode(...new Uint8Array(bytes,0,4)), channels:view.getUint16(22,true), rate:view.getUint32(24,true), bits:view.getUint16(34,true), signal};
+        }""", preview_url)
+        assert header == {"riff":"RIFF", "channels":1, "rate":24000, "bits":16, "signal":True}, header
+        assert page.locator("#voice-file").input_value() == ""
+        assert not [(method,url) for method,url in requests if method == "POST" and url.endswith("/bedtime/voices")]
+        page.locator("#voice-name").fill("QA 页面直接录音")
+        expect(page.locator("#clone-submit")).to_be_disabled()
+        page.locator("#voice-consent").check()
+        expect(page.locator("#clone-submit")).to_be_enabled()
+        with page.expect_response(lambda response: response.url.endswith("/bedtime/voices") and response.request.method == "POST") as created:
+            page.locator("#clone-submit").click()
+        assert created.value.status == 201, created.value.text()
+        voice = created.value.json()["voice"]
+        assert voice["state"] == "ready"
+        assert len(provider.enroll_calls) == before_enroll + 1
+        assert 10 <= provider.enroll_calls[-1][0] <= 20
+        assert re.fullmatch(r"bedtime[0-9a-f]{8}", provider.enroll_calls[-1][1])
+        assert voice["name"] == "QA 页面直接录音"
+        expect(page.locator("#voice-selector")).to_have_value(voice["id"])
+        assert page.locator("#reader-text").inner_text() == original_text
+        assert page.evaluate("url=>window.__qaMicrophone.revoked.includes(url)", preview_url)
+        with server.db() as conn:
+            row = conn.execute("SELECT * FROM bedtime_voices WHERE id=?", (voice["id"],)).fetchone()
+            assert row["user_id"] == account["user"]["id"] and row["space_id"] == account["space"]["id"] and row["state"] == "ready" and row["name"] == "QA 页面直接录音"
+        report("原生麦克风录制 16 秒，在本机解码为有效 10–30 秒/24kHz/单声道/PCM16 WAV；无需文件输入，明确同意后复用模拟供应商克隆接口，当前故事不重载")
+
+        # Keep the real 30-second boundary. Encoded tail padding must not cause
+        # the recording's automatic stop to reject its own otherwise valid WAV.
+        page.locator("#open-voices").click()
+        start_recording()
+        expect(page.locator("#sample-preview")).to_be_visible(timeout=35000)
+        tracks_ended()
+        page.wait_for_function("()=>document.querySelector('#voice-sample-player').readyState>=1")
+        auto_duration = page.locator("#voice-sample-player").evaluate("audio=>audio.duration")
+        assert 10 <= auto_duration <= 30, (auto_duration, page.evaluate("window.__qaMicrophone.recorders.at(-1).__qaChunks"))
+        assert len(provider.enroll_calls) == before_enroll + 1
+        page.locator("#close-voices").click()
+        report("原生录制达到 30 秒自动停止并释放麦克风，编码尾差裁切后仍可本机预览，未点击创建不提交")
+
+        page.locator("#open-voices").click()
+        start_recording()
+        page.locator("#close-voices").click()
+        tracks_ended()
+        page.locator("#open-voices").click()
+        expect(page.locator("#sample-preview")).not_to_be_visible()
+        expect(page.locator("#clone-submit")).to_be_disabled()
+        page.evaluate("window.__qaMicrophone.holdNext=true")
+        page.locator("#voice-record-start").click()
+        page.wait_for_function("()=>typeof window.__qaMicrophone.releasePermission==='function'")
+        page.locator("#close-voices").click()
+        page.evaluate("window.__qaMicrophone.releasePermission()")
+        tracks_ended()
+        page.locator("#open-voices").click()
+        expect(page.locator("#sample-preview")).not_to_be_visible()
+        expect(page.locator("#clone-submit")).to_be_disabled()
+        start_recording()
+        page.locator("#space-selector").select_option(second_space["id"])
+        tracks_ended()
+        expect(page.locator("#voice-dialog")).not_to_be_visible()
+        page.locator("#open-voices").click()
+        expect(page.locator("#sample-preview")).not_to_be_visible()
+        assert page.locator("#voice-name").input_value() == ""
+        expect(page.locator("#clone-submit")).to_be_disabled()
+        page.locator("#close-voices").click()
+        report("关闭与切换空间释放真实音轨；迟到的 getUserMedia 回复也立即停止，旧录音不出现在重开弹窗或其他空间")
+
+        if not page.locator("#sleep-controls").evaluate("details=>details.open"):
+            page.locator("#sleep-controls > summary").click()
+        page.locator("#sleep-timer").select_option("30")
+        page.locator("#open-voices").click()
+        start_recording()
+        page.evaluate("window.__qaNowOffset=30*60000+1000")
+        expect(page.locator("#sleep-overlay")).to_be_visible()
+        tracks_ended()
+        expect(page.locator("#voice-dialog")).not_to_be_visible()
+        page.evaluate("window.__qaNowOffset=0")
+        page.locator("#wake-sleep").click()
+        page.locator("#open-voices").click()
+        expect(page.locator("#sample-preview")).not_to_be_visible()
+        start_recording()
+        page.evaluate("window.dispatchEvent(new Event('pagehide'))")
+        tracks_ended()
+        expect(page.locator("#sample-preview")).not_to_be_visible()
+        page.locator("#close-voices").click()
+        report("定时睡眠及 pagehide 事件停止真实录音并释放音轨，未完成素材不保留为可提交预览")
+
+        # Chromium's permission denial is real; the provider stays the explicit
+        # isolated fake and the legacy WAV upload remains usable afterwards.
+        cdp = context.new_cdp_session(page)
+        target = cdp.send("Target.getTargetInfo")["targetInfo"]
+        permissions = browser.new_browser_cdp_session()
+        permissions.send("Browser.setPermission", {"permission":{"name":"microphone"}, "setting":"denied", "origin":origin, "browserContextId":target["browserContextId"]})
+        page.locator("#open-voices").click()
+        page.locator("#voice-record-start").click()
+        page.wait_for_function("()=>window.__qaMicrophone.errors.includes('NotAllowedError')")
+        expect(page.locator("#voice-record-status")).to_contain_text("麦克风未获授权")
+        expect(page.locator("#voice-file")).to_be_enabled()
+        page.locator("#voice-file").set_input_files(sample(12))
+        expect(page.locator("#sample-preview")).to_be_visible()
+        page.locator("#voice-name").fill("QA 拒绝麦克风后上传")
+        page.locator("#voice-consent").check()
+        with page.expect_response(lambda response: response.url.endswith("/bedtime/voices") and response.request.method == "POST") as uploaded:
+            page.locator("#clone-submit").click()
+        assert uploaded.value.status == 201, uploaded.value.text()
+        assert provider.enroll_calls[-1][0] == 12
+        assert uploaded.value.json()["voice"]["name"] == "QA 拒绝麦克风后上传"
+        assert len(provider.enroll_calls) == before_enroll + 2
+        permissions.send("Browser.setPermission", {"permission":{"name":"microphone"}, "setting":"granted", "origin":origin, "browserContextId":target["browserContextId"]})
+        page.locator("#open-voices").click()
+        start_recording()
+        sibling = context.new_page()
+        sibling.goto(origin, wait_until="networkidle")
+        sibling.evaluate("uid=>localStorage.setItem('zhixu:session-event',JSON.stringify({kind:'logout',userId:uid,at:Date.now()}))", account["user"]["id"])
+        expect(page.locator("#bedtime-app")).not_to_be_visible()
+        expect(page.locator("#voice-dialog")).not_to_be_visible()
+        tracks_ended()
+        expect(page.locator("#sample-preview")).not_to_be_visible()
+        assert len(provider.enroll_calls) == before_enroll + 2
+        assert not errors, errors
+        browser.close()
+        report("Chromium 真实拒绝麦克风权限有明确提示；既有文件上传/试听/授权/克隆路线仍可用，无真实百炼请求")
+        report("跨标签退出停止进行中的真实录音，释放所有麦克风音轨，清理录音弹窗与未完成素材")
+
+
 def checks(origin):
     with sync_playwright() as p:
         browser = p.chromium.launch(executable_path=os.environ.get("QA_CHROMIUM", "/usr/bin/chromium"), headless=True, args=["--no-sandbox", "--disable-dev-shm-usage"])
@@ -471,6 +711,7 @@ def run():
         thread.start()
         try:
             cloud_checks(f"http://127.0.0.1:{server.server_port}", server, provider)
+            recording_checks(f"http://127.0.0.1:{server.server_port}", server, provider)
         finally:
             server.shutdown()
             server.server_close()
