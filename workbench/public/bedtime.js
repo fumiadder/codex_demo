@@ -578,6 +578,7 @@
     $("voice-record-start").textContent = state.voiceFile ? "重新录音" : "开始录音";
     $("voice-record-stop").disabled = !state.voiceRecording?.recorder || state.voiceRecording.recorder.state !== "recording";
     $("voice-file").disabled = state.disposed || state.cloneBusy || !!state.voiceRecording || state.voicePreparing;
+    $("voice-save-sample").disabled = state.disposed || !!state.voiceRecording || state.voicePreparing || !state.voiceFile || !state.voicePreviewURL;
     document.querySelector(".voice-recording").classList.toggle("is-recording", !!state.voiceRecording?.recorder);
     if (!supported) $("voice-record-status").textContent = "当前浏览器不支持页面录音，可以选择已有录音，或使用新版 Safari / Chrome。";
   }
@@ -600,8 +601,20 @@
     state.voicePreviewURL = URL.createObjectURL(converted.blob);
     $("voice-sample-player").src = state.voicePreviewURL;
     $("sample-preview").hidden = false;
+    $("voice-save-status").textContent = "";
     $("audio-duration-note").textContent = `约 ${converted.duration.toFixed(1)} 秒 · 已在本机检查声音`;
     $("sample-preview-note").textContent = state.config?.voiceClone?.enabled && writable() ? "仅在当前页面试听。确认创建时，才将这段人声交给已配置的音色服务。" : "仅在当前页面试听；云端服务待连接，这段录音不会上传。";
+  }
+  function saveVoiceSample() {
+    if (state.disposed || state.voiceRecording || state.voicePreparing || !state.voiceFile || !state.voicePreviewURL || !$("voice-dialog").open) return;
+    const link = node("a");
+    link.href = state.voicePreviewURL;
+    const timestamp = new Date().toLocaleString("sv-SE", { timeZone: "Asia/Shanghai", hour12: false }).replace(/\D/g, "");
+    link.download = `知序录音-${timestamp}.wav`;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    $("voice-save-status").textContent = "已发起下载。请确认文件已保存到设备，之后可选择这个 WAV 文件继续使用。";
   }
   async function startVoiceRecording() {
     if (state.disposed || state.cloneBusy || state.voiceRecording || state.voicePreparing || !$("voice-dialog").open) return;
@@ -638,7 +651,7 @@
           const converted = await decodeVoiceFile(blob, true);
           if (epoch !== state.spaceEpoch || sampleEpoch !== state.voiceSampleEpoch || state.disposed || !$("voice-dialog").open) return;
           showVoiceSample(converted);
-          $("voice-record-status").textContent = "录音已完成，可以先试听再创建音色。";
+          $("voice-record-status").textContent = "录音已完成，请先保存录音文件，再试听或创建音色。";
         } catch (error) {
           if (epoch === state.spaceEpoch && sampleEpoch === state.voiceSampleEpoch && !state.disposed && $("voice-dialog").open) {
             $("clone-error").textContent = error.message;
@@ -684,6 +697,7 @@
     state.voiceFile = null;
     if (resetFile) $("voice-file").value = "";
     $("sample-preview").hidden = true;
+    $("voice-save-status").textContent = "";
     $("audio-duration-note").textContent = "清晰自然说话，无音乐、无其他人声。";
     $("voice-record-status").textContent = "录制 10–30 秒，页面会自动处理格式。30 秒时自动停止。";
     updateRecordingControls();
@@ -1330,6 +1344,7 @@
   });
   $("voice-record-start").addEventListener("click", startVoiceRecording);
   $("voice-record-stop").addEventListener("click", stopVoiceRecording);
+  $("voice-save-sample").addEventListener("click", saveVoiceSample);
   $("voice-consent").addEventListener("change", updateCloneSubmit);
   $("voice-sample-player").addEventListener("play", () => {
     if (state.playing || state.waitingQuestion) { stopPlayback(); $("play-status").textContent = "录音试听中，故事已暂停"; }

@@ -95,9 +95,10 @@ MEDIA_GESTURE_PROBE = """
 # result. A held native getUserMedia reply also exercises permission races.
 MICROPHONE_PROBE = """
 (() => {
-  const microphone = window.__qaMicrophone = {streams: [], recorders: [], errors: [], revoked: [], blobs: new Map()};
+  const microphone = window.__qaMicrophone = {calls: 0, streams: [], recorders: [], errors: [], revoked: [], blobs: new Map()};
   const getUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
   navigator.mediaDevices.getUserMedia = async constraints => {
+    microphone.calls++;
     try {
       const stream = await getUserMedia(constraints);
       microphone.streams.push(stream);
@@ -172,8 +173,12 @@ class FakeQAProviders:
         self.audio = sample(3)["buffer"]
         self.synthesis_gate = None
         self.synthesis_started = threading.Event()
+        self.enrollment_failure = None
 
     def enroll(self, payload, preferred_name):
+        if self.enrollment_failure is not None:
+            message, self.enrollment_failure = self.enrollment_failure, None
+            raise bedtime.ProviderFailure(message)
         self.enroll_calls.append((bedtime.pcm_sample(payload), preferred_name))
         return "QA-private-provider-voice", bedtime.VC_MODEL
 
@@ -372,6 +377,7 @@ def recording_checks(origin, server, provider):
         page.locator("#open-voices").click()
         no_overflow(page)
         assert not page.locator("#voice-file").evaluate("el=>el.required")
+        expect(page.locator("#voice-save-sample")).to_be_disabled()
         before_enroll = len(provider.enroll_calls)
 
         def start_recording():
@@ -381,6 +387,7 @@ def recording_checks(origin, server, provider):
             expect(page.locator("#voice-record-status")).to_contain_text("录音中")
             expect(page.locator("#voice-record-stop")).to_be_enabled()
             expect(page.locator("#clone-submit")).to_be_disabled()
+            expect(page.locator("#voice-save-sample")).to_be_disabled()
 
         def tracks_ended():
             page.wait_for_function("()=>window.__qaMicrophone.streams.length>0 && window.__qaMicrophone.streams.every(stream=>stream.getTracks().every(track=>track.readyState==='ended'))")
@@ -394,6 +401,7 @@ def recording_checks(origin, server, provider):
         expect(page.locator("#clone-error")).to_contain_text("10–30 秒")
         expect(page.locator("#sample-preview")).not_to_be_visible()
         expect(page.locator("#clone-submit")).to_be_disabled()
+        expect(page.locator("#voice-save-sample")).to_be_disabled()
         assert len(provider.enroll_calls) == before_enroll
         report("Chromium 原生假麦克风和 MediaRecorder：不足 10 秒拒绝、停止即释放音轨，录制阶段没有克隆请求")
 
@@ -431,6 +439,59 @@ def recording_checks(origin, server, provider):
         expect(page.locator("#clone-submit")).to_be_disabled()
         page.locator("#voice-consent").check()
         expect(page.locator("#clone-submit")).to_be_enabled()
+        expect(page.locator("#voice-save-sample")).to_be_enabled()
+        no_overflow(page)
+        with tempfile.TemporaryDirectory(prefix="zhixu-recording-download-qa-") as download_dir:
+            with page.expect_download() as saved:
+                page.locator("#voice-save-sample").click()
+            downloaded = saved.value
+            assert downloaded.failure() is None
+            assert downloaded.suggested_filename.startswith("知序录音-") and downloaded.suggested_filename.endswith(".wav"), downloaded.suggested_filename
+            assert "QA 页面直接录音" not in downloaded.suggested_filename
+            recording_file = Path(download_dir) / downloaded.suggested_filename
+            downloaded.save_as(recording_file)
+            recorded_bytes = recording_file.read_bytes()
+            with wave.open(io.BytesIO(recorded_bytes), "rb") as wav:
+                assert (wav.getnchannels(), wav.getframerate(), wav.getsampwidth(), wav.getcomptype()) == (1, 24000, 2, "NONE")
+                downloaded_duration = wav.getnframes() / wav.getframerate()
+                assert 10 <= downloaded_duration <= 20, downloaded_duration
+                assert any(value[0] != 0 for value in struct.iter_unpack("<h", wav.readframes(wav.getnframes()))), "saved native recording is silent"
+            assert abs(downloaded_duration - duration) < 1 / 24000
+            assert len(provider.enroll_calls) == before_enroll
+            assert not [(method,url) for method,url in requests if method == "POST" and url.endswith("/bedtime/voices")]
+
+            # A real HTTP 502 from the isolated fake must not destroy the local
+            # sample. The downloaded copy is retained independently of refresh.
+            provider.enrollment_failure = "QA 模拟供应商暂时拒绝创建"
+            with page.expect_response(lambda response: response.url.endswith("/bedtime/voices") and response.request.method == "POST") as rejected:
+                page.locator("#clone-submit").click()
+            assert rejected.value.status == 502, rejected.value.text()
+            expect(page.locator("#clone-error")).to_contain_text("QA 模拟供应商暂时拒绝创建")
+            expect(page.locator("#voice-save-sample")).to_be_enabled()
+            expect(page.locator("#clone-submit")).to_be_enabled()
+            assert page.locator("#voice-sample-player").get_attribute("src") == preview_url
+            with page.expect_download() as saved_again:
+                page.locator("#voice-save-sample").click()
+            retry_file = Path(download_dir) / "after-rejected.wav"
+            saved_again.value.save_as(retry_file)
+            assert retry_file.read_bytes() == recorded_bytes
+
+            page.reload(wait_until="networkidle")
+            page.locator(".story-card").first.click()
+            original_text = page.locator("#reader-text").inner_text()
+            page.locator("#open-voices").click()
+            expect(page.locator("#sample-preview")).not_to_be_visible()
+            expect(page.locator("#voice-save-sample")).to_be_disabled()
+            assert page.evaluate("window.__qaMicrophone.calls") == 0
+            page.locator("#voice-file").set_input_files(recording_file)
+            expect(page.locator("#sample-preview")).to_be_visible()
+            expect(page.locator("#voice-save-sample")).to_be_enabled()
+            page.wait_for_function("()=>document.querySelector('#voice-sample-player').readyState>=1")
+            preview_url = page.locator("#voice-sample-player").get_attribute("src")
+            assert abs(page.locator("#voice-sample-player").evaluate("audio=>audio.duration") - downloaded_duration) < 1 / 24000
+            assert page.evaluate("window.__qaMicrophone.calls") == 0
+        page.locator("#voice-name").fill("QA 页面直接录音")
+        page.locator("#voice-consent").check()
         with page.expect_response(lambda response: response.url.endswith("/bedtime/voices") and response.request.method == "POST") as created:
             page.locator("#clone-submit").click()
         assert created.value.status == 201, created.value.text()
@@ -440,13 +501,14 @@ def recording_checks(origin, server, provider):
         assert 10 <= provider.enroll_calls[-1][0] <= 20
         assert re.fullmatch(r"bedtime[0-9a-f]{8}", provider.enroll_calls[-1][1])
         assert voice["name"] == "QA 页面直接录音"
+        assert page.evaluate("window.__qaMicrophone.calls") == 0
         expect(page.locator("#voice-selector")).to_have_value(voice["id"])
         assert page.locator("#reader-text").inner_text() == original_text
         assert page.evaluate("url=>window.__qaMicrophone.revoked.includes(url)", preview_url)
         with server.db() as conn:
             row = conn.execute("SELECT * FROM bedtime_voices WHERE id=?", (voice["id"],)).fetchone()
             assert row["user_id"] == account["user"]["id"] and row["space_id"] == account["space"]["id"] and row["state"] == "ready" and row["name"] == "QA 页面直接录音"
-        report("原生麦克风录制 16 秒，在本机解码为有效 10–30 秒/24kHz/单声道/PCM16 WAV；无需文件输入，明确同意后复用模拟供应商克隆接口，当前故事不重载")
+        report("原生麦克风录音可下载为非静音 24kHz/单声道/PCM16 WAV；模拟创建失败保留同一可下载素材，刷新后上传下载文件并授权创建，无需再次请求麦克风，当前故事不重载")
 
         # Keep the real 30-second boundary. Encoded tail padding must not cause
         # the recording's automatic stop to reject its own otherwise valid WAV.
@@ -457,8 +519,14 @@ def recording_checks(origin, server, provider):
         page.wait_for_function("()=>document.querySelector('#voice-sample-player').readyState>=1")
         auto_duration = page.locator("#voice-sample-player").evaluate("audio=>audio.duration")
         assert 10 <= auto_duration <= 30, (auto_duration, page.evaluate("window.__qaMicrophone.recorders.at(-1).__qaChunks"))
+        expect(page.locator("#voice-save-sample")).to_be_enabled()
         assert len(provider.enroll_calls) == before_enroll + 1
+        old_preview = page.locator("#voice-sample-player").get_attribute("src")
+        start_recording()
+        assert page.evaluate("url=>window.__qaMicrophone.revoked.includes(url)", old_preview)
         page.locator("#close-voices").click()
+        tracks_ended()
+        expect(page.locator("#voice-save-sample")).to_be_disabled()
         report("原生录制达到 30 秒自动停止并释放麦克风，编码尾差裁切后仍可本机预览，未点击创建不提交")
 
         page.locator("#open-voices").click()
@@ -468,6 +536,7 @@ def recording_checks(origin, server, provider):
         page.locator("#open-voices").click()
         expect(page.locator("#sample-preview")).not_to_be_visible()
         expect(page.locator("#clone-submit")).to_be_disabled()
+        expect(page.locator("#voice-save-sample")).to_be_disabled()
         page.evaluate("window.__qaMicrophone.holdNext=true")
         page.locator("#voice-record-start").click()
         page.wait_for_function("()=>typeof window.__qaMicrophone.releasePermission==='function'")
@@ -477,6 +546,19 @@ def recording_checks(origin, server, provider):
         page.locator("#open-voices").click()
         expect(page.locator("#sample-preview")).not_to_be_visible()
         expect(page.locator("#clone-submit")).to_be_disabled()
+        expect(page.locator("#voice-save-sample")).to_be_disabled()
+        page.locator("#voice-file").set_input_files(sample(12))
+        expect(page.locator("#sample-preview")).to_be_visible()
+        expect(page.locator("#voice-save-sample")).to_be_enabled()
+        prepared_url = page.locator("#voice-sample-player").get_attribute("src")
+        page.locator("#space-selector").select_option(second_space["id"])
+        expect(page.locator("#voice-dialog")).not_to_be_visible()
+        expect(page.locator("#voice-save-sample")).to_be_disabled()
+        assert page.evaluate("url=>window.__qaMicrophone.revoked.includes(url)", prepared_url)
+        page.locator("#space-selector").select_option(account["space"]["id"])
+        page.locator("#open-voices").click()
+        expect(page.locator("#sample-preview")).not_to_be_visible()
+        expect(page.locator("#voice-save-sample")).to_be_disabled()
         start_recording()
         page.locator("#space-selector").select_option(second_space["id"])
         tracks_ended()
@@ -485,6 +567,7 @@ def recording_checks(origin, server, provider):
         expect(page.locator("#sample-preview")).not_to_be_visible()
         assert page.locator("#voice-name").input_value() == ""
         expect(page.locator("#clone-submit")).to_be_disabled()
+        expect(page.locator("#voice-save-sample")).to_be_disabled()
         page.locator("#close-voices").click()
         report("关闭与切换空间释放真实音轨；迟到的 getUserMedia 回复也立即停止，旧录音不出现在重开弹窗或其他空间")
 

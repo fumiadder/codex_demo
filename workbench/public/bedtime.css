@@ -224,6 +224,8 @@ dialog::backdrop { background: #77645166; backdrop-filter: blur(5px); }
 .sample-preview > span { font-size: calc(12px * var(--font-scale)); }
 .sample-preview audio { display: block; width: 100%; min-width: 0; max-width: 100%; height: 42px; }
 .sample-preview p { font-size: calc(11px * var(--font-scale)); color: var(--muted); line-height: 1.8; }
+#voice-save-sample { min-height: 44px; padding: 10px 16px; border-radius: 18px; background: var(--mint); color: var(--ink); justify-self: start; max-width: 100%; }
+#voice-save-status:empty { display: none; }
 #clone-form .consent-label { flex-direction: row; align-items: flex-start; font-size: calc(11px * var(--font-scale)); color: var(--muted); line-height: 1.9; }
 .consent-label input { margin-top: 5px; flex: none; }
 .error-text { font-size: calc(12px * var(--font-scale)); line-height: 1.8; color: #88644F; overflow-wrap: anywhere; }
