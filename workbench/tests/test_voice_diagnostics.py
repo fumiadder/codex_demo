@@ -32,9 +32,11 @@ PRIVATE_DETAIL = " ".join(PRIVATE_MARKERS)
 OPERATIONS = ("enroll_create", "enroll_query", "enroll_delete", "synthesize",
               "sample_put", "sample_sign")
 REASONS = ("auth_failed", "free_quota", "model_denied", "workspace_denied",
+           "access_denied", "service_not_activated", "endpoint_denied", "account_not_ready",
            "input_download", "input_format", "input_inspection", "invalid_parameter",
            "model_unavailable", "rate_limited", "provider_unavailable",
-           "network_or_timeout", "invalid_response", "timeout", "storage_failure", "unknown")
+           "network_or_timeout", "invalid_response", "nonjson_error", "invalid_error_response",
+           "timeout", "storage_failure", "unknown")
 
 
 class MemoryResponse(io.BytesIO):
@@ -43,6 +45,19 @@ class MemoryResponse(io.BytesIO):
 
     def __exit__(self, *args):
         self.close()
+
+
+class ErrorBody(io.BytesIO):
+    def __init__(self, payload):
+        super().__init__(payload)
+        self.read_limits = []
+        self.bytes_read = 0
+
+    def read(self, size=-1):
+        self.read_limits.append(size)
+        result = super().read(size)
+        self.bytes_read += len(result)
+        return result
 
 
 def new_provider():
@@ -121,6 +136,23 @@ class VoiceProviderDiagnosticTests(VoiceDiagnosticAssertions, unittest.TestCase)
         return provider._json(PRIVATE_ORIGIN + "/api/v1/services/audio/tts/customization",
                               PRIVATE_KEY, voice_body() if body is None else body)
 
+    def assert_http_failure(self, payload, status, expected):
+        provider = new_provider()
+        stream = ErrorBody(payload)
+        error = HTTPError(PRIVATE_ORIGIN + "/" + PRIVATE_KEY, status,
+                          PRIVATE_DETAIL, {"Private-Header": PRIVATE_KEY}, stream)
+        provider.opener.open.side_effect = error
+        with self.assertLogs(level="WARNING") as captured:
+            with self.assertRaises(bedtime.ProviderFailure) as caught:
+                self.call_json(provider)
+        self.assert_safe_record(captured, "enroll_create", expected, status)
+        self.assert_safe_exception(caught.exception)
+        self.assertTrue(stream.closed)
+        self.assertEqual(stream.read_limits, [16 * 1024 + 1])
+        self.assertLessEqual(stream.bytes_read, 16 * 1024 + 1)
+        self.assertEqual(provider.opener.open.call_count, 1)
+        return str(caught.exception)
+
     def test_http_error_categories_never_log_provider_body_or_exception(self):
         cases = (
             (401, PRIVATE_CODE, "auth_failed"),
@@ -128,6 +160,11 @@ class VoiceProviderDiagnosticTests(VoiceDiagnosticAssertions, unittest.TestCase)
             (403, "Model.AccessDenied", "model_denied"),
             (403, "Workspace.AccessDenied", "workspace_denied"),
             (403, "App.AccessDenied", "workspace_denied"),
+            (403, "AccessDenied", "access_denied"),
+            (403, "access_denied", "access_denied"),
+            (403, "AccessDenied.Unpurchased", "service_not_activated"),
+            (403, "Endpoint.AccessDenied", "endpoint_denied"),
+            (400, "Arrearage", "account_not_ready"),
             (400, "BadRequest.InputDownloadFailed", "input_download"),
             (400, "InvalidURL.Timeout", "input_download"),
             (400, "InvalidURL.ConnectionRefused", "input_download"),
@@ -147,21 +184,48 @@ class VoiceProviderDiagnosticTests(VoiceDiagnosticAssertions, unittest.TestCase)
             (400, [PRIVATE_DETAIL], "unknown"),
         )
         for status, code, expected in cases:
-            with self.subTest(status=status, code_type=type(code).__name__, expected=expected):
-                provider = new_provider()
-                payload = json.dumps({"code": code, "message": PRIVATE_DETAIL,
-                                      "request_id": PRIVATE_REQUEST,
-                                      "output": {"voice_id": PRIVATE_VOICE, "url": PRIVATE_SAMPLE}}).encode()
-                error = HTTPError(PRIVATE_ORIGIN + "/" + PRIVATE_KEY, status,
-                                  PRIVATE_DETAIL, {"Private-Header": PRIVATE_KEY}, io.BytesIO(payload))
-                provider.opener.open.side_effect = error
-                with self.assertLogs(level="WARNING") as captured:
-                    with self.assertRaises(bedtime.ProviderFailure) as caught:
-                        self.call_json(provider)
-                self.assert_safe_record(captured, "enroll_create", expected, status)
-                self.assert_safe_exception(caught.exception)
-                self.assertTrue(error.fp.closed)
-                self.assertEqual(provider.opener.open.call_count, 1)
+            for nested in (False, True):
+                with self.subTest(status=status, nested=nested, code_type=type(code).__name__, expected=expected):
+                    error_fields = {"code": code, "message": PRIVATE_DETAIL, "request_id": PRIVATE_REQUEST}
+                    envelope = {"error": error_fields} if nested else error_fields
+                    envelope["output"] = {"voice_id": PRIVATE_VOICE, "url": PRIVATE_SAMPLE}
+                    message = self.assert_http_failure(json.dumps(envelope).encode(), status, expected)
+                    if status == 403:
+                        self.assertEqual(message,
+                            "免费额度限制阻止了本次调用，请在百炼控制台核对剩余额度；不会自动切换模型或付费调用"
+                            if expected == "free_quota" else
+                            "百炼拒绝了本次调用，请核对业务空间、模型权限与免费额度设置")
+
+    def test_code_precedence_and_nested_error_shapes_are_conservative(self):
+        cases = (
+            ({"code": "Model.AccessDenied", "error": {"code": "AllocationQuota.FreeTierOnly"}}, "model_denied"),
+            ({"code": PRIVATE_CODE, "error": {"code": "AllocationQuota.FreeTierOnly"}}, "unknown"),
+            ({"code": " ", "error": {"code": "Model.AccessDenied"}}, "unknown"),
+            ({"code": "", "error": {"code": "AllocationQuota.FreeTierOnly"}}, "free_quota"),
+            ({"code": None, "error": {"code": "AccessDenied"}}, "access_denied"),
+            ({"code": [PRIVATE_DETAIL], "error": {"code": "Endpoint.AccessDenied"}}, "endpoint_denied"),
+            ({"code": {"private": PRIVATE_DETAIL}, "error": {"code": "Arrearage"}}, "account_not_ready"),
+            ({"code": True, "error": {"code": "AccessDenied.Unpurchased"}}, "service_not_activated"),
+            ({"error": [{"code": "Model.AccessDenied", "message": PRIVATE_DETAIL}]}, "unknown"),
+            ({"error": PRIVATE_DETAIL}, "unknown"),
+            ({"error": None}, "unknown"),
+            ({"error": {"code": {"Model.AccessDenied": PRIVATE_DETAIL}}}, "unknown"),
+            ({"error": {"code": ["Model.AccessDenied", PRIVATE_DETAIL]}}, "unknown"),
+            ({"error": {"code": 403}}, "unknown"),
+            ({"error": {"code": ""}}, "unknown"),
+            ({"error": {"code": "Model.AccessDenied\n" + PRIVATE_KEY}}, "unknown"),
+            ({"code": " Model.AccessDenied"}, "unknown"),
+            ({"code": "Model.AccessDenied." + PRIVATE_CODE}, "unknown"),
+            ({"error": {"message": "AllocationQuota.FreeTierOnly", "request_id": PRIVATE_REQUEST}}, "unknown"),
+            ({"Code": "Model.AccessDenied", "error": {"Code": "AllocationQuota.FreeTierOnly"}}, "unknown"),
+            ({"output": {"code": "Model.AccessDenied", "voice_id": PRIVATE_VOICE}}, "unknown"),
+        )
+        for envelope, expected in cases:
+            with self.subTest(expected=expected, envelope_type=type(envelope.get("error")).__name__):
+                envelope["message"] = PRIVATE_DETAIL
+                envelope["request_id"] = PRIVATE_REQUEST
+                message = self.assert_http_failure(json.dumps(envelope).encode(), 403, expected)
+                self.assertEqual("免费额度限制" in message, expected == "free_quota")
 
     def test_query_delete_and_synthesis_are_identified_without_logging_private_input(self):
         bodies = [(voice_body("query_voice"), "enroll_query"),
@@ -217,18 +281,61 @@ class VoiceProviderDiagnosticTests(VoiceDiagnosticAssertions, unittest.TestCase)
                 self.assert_safe_record(captured, "enroll_create", "invalid_response", 0)
                 self.assert_safe_exception(caught.exception)
 
-    def test_nonjson_and_oversized_http_error_body_stay_bounded_and_unknown(self):
-        for payload in (PRIVATE_DETAIL.encode(), PRIVATE_DETAIL.encode() * 1000):
-            with self.subTest(payload_size=len(payload)):
-                provider = new_provider()
-                error = HTTPError(PRIVATE_SAMPLE, 400, PRIVATE_DETAIL, {}, io.BytesIO(payload))
-                provider.opener.open.side_effect = error
-                with self.assertLogs(level="WARNING") as captured:
-                    with self.assertRaises(bedtime.ProviderFailure) as caught:
-                        self.call_json(provider)
-                self.assert_safe_record(captured, "enroll_create", "unknown", 400)
-                self.assert_safe_exception(caught.exception)
-                self.assertTrue(error.fp.closed)
+    def test_unknown_403_error_shapes_are_distinguished_without_exposing_body(self):
+        cases = (
+            (PRIVATE_DETAIL.encode(), "nonjson_error"),
+            (b'{"code":', "nonjson_error"),
+            (b'\xff' + PRIVATE_DETAIL.encode(), "nonjson_error"),
+            (json.dumps([PRIVATE_DETAIL]).encode(), "invalid_error_response"),
+            (json.dumps(PRIVATE_DETAIL).encode(), "invalid_error_response"),
+            (b"null", "invalid_error_response"),
+            (b"403", "invalid_error_response"),
+            (b"true", "invalid_error_response"),
+            (PRIVATE_DETAIL.encode() * 1000, "invalid_error_response"),
+            (b'{"code":"AllocationQuota.FreeTierOnly"}' + b" " * (16 * 1024), "invalid_error_response"),
+            (b"[" * 2000 + b"0" + b"]" * 2000, "invalid_error_response"),
+            (b"{}", "unknown"),
+            (json.dumps({"code": PRIVATE_CODE, "message": PRIVATE_DETAIL}).encode(), "unknown"),
+        )
+        for payload, expected in cases:
+            with self.subTest(payload_size=len(payload), expected=expected):
+                message = self.assert_http_failure(payload, 403, expected)
+                self.assertEqual(message, "百炼拒绝了本次调用，请核对业务空间、模型权限与免费额度设置")
+
+    def test_error_shape_classification_preserves_existing_http_status_fallbacks(self):
+        for status, expected in ((400, "unknown"), (401, "auth_failed"), (429, "rate_limited"),
+                                 (500, "provider_unavailable"), (502, "provider_unavailable"),
+                                 (503, "provider_unavailable"), (504, "provider_unavailable")):
+            for payload in (PRIVATE_DETAIL.encode(), json.dumps([PRIVATE_DETAIL]).encode(),
+                            PRIVATE_DETAIL.encode() * 1000):
+                with self.subTest(status=status, payload_size=len(payload)):
+                    self.assert_http_failure(payload, status, expected)
+        for status, expected in ((401, "auth_failed"), (429, "rate_limited")):
+            for code in ("AllocationQuota.FreeTierOnly", "AccessDenied", "Arrearage"):
+                with self.subTest(status=status, nested_code=code):
+                    self.assert_http_failure(json.dumps({"error": {"code": code, "message": PRIVATE_DETAIL}}).encode(),
+                                             status, expected)
+
+    def test_error_body_at_limit_is_read_and_closed_before_classification(self):
+        payload = json.dumps({"error": {"code": "AllocationQuota.FreeTierOnly", "message": PRIVATE_DETAIL}}).encode()
+        payload += b" " * (16 * 1024 - len(payload))
+        message = self.assert_http_failure(payload, 403, "free_quota")
+        self.assertIn("不会自动切换模型或付费调用", message)
+
+    def test_error_body_read_failure_is_closed_and_does_not_invent_json_diagnosis(self):
+        provider = new_provider()
+        stream = ErrorBody(b"")
+        stream.read = Mock(side_effect=OSError(PRIVATE_DETAIL))
+        error = HTTPError(PRIVATE_SAMPLE, 403, PRIVATE_DETAIL, {}, stream)
+        provider.opener.open.side_effect = error
+        with self.assertLogs(level="WARNING") as captured:
+            with self.assertRaises(bedtime.ProviderFailure) as caught:
+                self.call_json(provider)
+        self.assert_safe_record(captured, "enroll_create", "unknown", 403)
+        self.assert_safe_exception(caught.exception)
+        self.assertTrue(stream.closed)
+        stream.read.assert_called_once_with(16 * 1024 + 1)
+        self.assertEqual(provider.opener.open.call_count, 1)
 
     def test_successful_voice_response_creates_no_failure_log(self):
         provider = new_provider()

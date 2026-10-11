@@ -107,12 +107,17 @@ VOICE_ENROLLMENT_SECONDS = 45
 _VOICE_DIAGNOSTIC_OPERATIONS = frozenset(("enroll_create", "enroll_query", "enroll_delete", "synthesize",
                                          "sample_put", "sample_sign"))
 _VOICE_DIAGNOSTIC_REASONS = frozenset(("auth_failed", "free_quota", "model_denied", "workspace_denied",
+                                      "access_denied", "service_not_activated", "endpoint_denied", "account_not_ready",
                                       "input_download", "input_format", "input_inspection", "invalid_parameter",
                                       "model_unavailable", "rate_limited", "provider_unavailable", "network_or_timeout",
-                                      "invalid_response", "timeout", "storage_failure", "unknown"))
+                                      "invalid_response", "nonjson_error", "invalid_error_response",
+                                      "timeout", "storage_failure", "unknown"))
 _VOICE_ERROR_REASONS = {
     "AllocationQuota.FreeTierOnly": "free_quota", "Model.AccessDenied": "model_denied",
     "Workspace.AccessDenied": "workspace_denied", "App.AccessDenied": "workspace_denied",
+    "AccessDenied": "access_denied", "access_denied": "access_denied",
+    "AccessDenied.Unpurchased": "service_not_activated", "Endpoint.AccessDenied": "endpoint_denied",
+    "Arrearage": "account_not_ready",
     "BadRequest.InputDownloadFailed": "input_download", "InvalidURL.Timeout": "input_download",
     "InvalidURL.ConnectionRefused": "input_download", "GatewayTimeout.InputDownload": "input_download",
     "BadRequest.UnsupportedFileFormat": "input_format", "InvalidParameter.DataInspection": "input_inspection",
@@ -329,12 +334,27 @@ class HTTPProviders:
             # Read only a bounded error object and map a fixed allowlist. Never
             # expose the provider body, request URL, key, host, or arbitrary code.
             vendor_code = None
+            error_shape = "unknown"
             try:
                 error_data = exc.read(16 * 1024 + 1)
-                if len(error_data) <= 16 * 1024:
+                if len(error_data) > 16 * 1024:
+                    error_shape = "invalid_error_response"
+                else:
                     error_result = json.loads(error_data)
-                    vendor_code = error_result.get("code") if isinstance(error_result, dict) else None
-            except (ValueError, OSError, TypeError):
+                    if isinstance(error_result, dict):
+                        vendor_code = error_result.get("code")
+                        # Keep a nonempty top-level code authoritative, even if
+                        # unrecognized. Read only the alternate exact code field.
+                        if not isinstance(vendor_code, str) or not vendor_code:
+                            nested_error = error_result.get("error")
+                            vendor_code = nested_error.get("code") if isinstance(nested_error, dict) else None
+                    else:
+                        error_shape = "invalid_error_response"
+            except (json.JSONDecodeError, UnicodeDecodeError):
+                error_shape = "nonjson_error"
+            except (ValueError, TypeError, RecursionError):
+                error_shape = "invalid_error_response"
+            except OSError:
                 pass
             finally:
                 exc.close()
@@ -343,6 +363,8 @@ class HTTPProviders:
                 reason = "auth_failed"
             elif exc.code == 429:
                 reason = "rate_limited"
+            elif exc.code == 403 and reason == "unknown":
+                reason = error_shape
             elif exc.code in (500, 502, 503, 504) and reason == "unknown":
                 reason = "provider_unavailable"
             log_voice_failure(operation, reason, exc.code)
