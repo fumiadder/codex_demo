@@ -16,10 +16,13 @@
 
 ```text
 WORKSPACE_SITE_ADDRESS=https://<服务器公网 IP>
-CADDY_EXTRA_GLOBAL=local_certs
+CADDY_EXTRA_GLOBAL="local_certs
+default_sni <服务器公网 IP>"
 ```
 
-`deploy.sh` 检测到 `WORKSPACE_DOMAIN` 为 IPv4 时，会让只读健康检查跳过证书链校验（响应体、生产配置与安全响应头仍逐项核对）。此模式下 80 端口不做跳转，请直接使用 `https://<IP>` 访问；拿到域名后删掉这两个变量、恢复 `WORKSPACE_DOMAIN` 即可切回公开 HTTPS。
+`default_sni` 不可省略：部分客户端（例如默认配置的 curl）对 IP 字面量不发送 SNI，没有该指令时 Caddy 无法选择证书并返回 internal error 告警。`deploy.sh` 检测到 `WORKSPACE_DOMAIN` 为 IPv4 时，会让只读健康检查跳过证书链校验（响应体、生产配置与安全响应头仍逐项核对）。此模式下 80 端口仍由 Caddy 自动 308 跳转到 HTTPS，请直接使用 `https://<IP>` 访问；拿到域名后删掉这两个变量、恢复 `WORKSPACE_DOMAIN` 即可切回公开 HTTPS。
+
+内地云服务器构建镜像时若默认 PyPI 过慢，可在服务器的发布副本 Dockerfile 中为 pip 增加 `-i https://mirrors.aliyun.com/pypi/simple/`（只改服务器本地副本，仓库保持官方源），Docker Hub 则通过 `/etc/docker/daemon.json` 的 `registry-mirrors` 配置加速。
 
 ## 一次性设置
 
