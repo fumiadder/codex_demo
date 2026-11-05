@@ -71,7 +71,7 @@ def abandon(server, namespace, identifier, sid, size):
 
 def usage(conn, sid):
     space, total = 0, 0
-    for table in ("files", "bedtime_audio", "storage_jobs"):
+    for table in ("files", "bedtime_audio", "daily_images", "storage_jobs"):
         space += int(conn.execute(f"SELECT COALESCE(sum(size),0) FROM {table} WHERE space_id=?", (sid,)).fetchone()[0])
         total += int(conn.execute(f"SELECT COALESCE(sum(size),0) FROM {table}").fetchone()[0])
     return space, total

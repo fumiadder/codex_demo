@@ -1,5 +1,7 @@
 # PostgreSQL sessions (TCP or verified Neon WSS) and private streamed S3 media.
 psycopg[binary]==3.2.13
+# Downscale private originals into in-memory copies for vision recognition.
+Pillow==13.0.0
 psycopg-binary==3.2.13
 pg8000==1.31.5
 websocket-client==1.9.2

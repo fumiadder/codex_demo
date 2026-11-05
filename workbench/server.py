@@ -33,6 +33,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlsplit
 
 import bedtime
+import daily
 import storage_jobs
 from media_storage import create_storage, MissingMedia, StorageError
 from persistence import Database
@@ -177,6 +178,7 @@ class FolioServer(ThreadingHTTPServer):
             conn.executescript(SCHEMA)
             conn.executescript(storage_jobs.SCHEMA)
         bedtime.initialize(self)
+        daily.initialize(self)
         self.cleanup_media()
         super().__init__(address, FolioHandler)
 
@@ -571,6 +573,8 @@ class FolioHandler(BaseHTTPRequestHandler):
             self.json_response(201 if register else 200, {"user": user}, self.session_cookie(token))
             return
         if bedtime.dispatch(self, path, query):
+            return
+        if daily.dispatch(self, path, query):
             return
         with self.server.db() as conn:
             user = self.current_user(conn)

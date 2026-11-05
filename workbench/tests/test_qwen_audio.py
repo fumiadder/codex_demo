@@ -16,6 +16,7 @@ from urllib.error import HTTPError
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import bedtime
+import daily
 import storage_jobs
 from media_storage import StorageError
 from server import APIError, FolioHandler, SCHEMA
@@ -278,7 +279,7 @@ class QwenAudioSampleRouteTests(unittest.TestCase):
         self.sid = "a" * 32
         self.prefix = "/api/spaces/" + self.sid + "/bedtime/"
         with db() as conn:
-            conn.executescript(SCHEMA + bedtime.SCHEMA + storage_jobs.SCHEMA)
+            conn.executescript(SCHEMA + bedtime.SCHEMA + daily.SCHEMA + storage_jobs.SCHEMA)
             conn.execute("INSERT INTO users VALUES(?,?,?,?,?)", ("b" * 32, "test@example.com", "测试", "not-used", "now"))
             conn.execute("INSERT INTO spaces VALUES(?,?,?,?)", (self.sid, "测试", "b" * 32, "now"))
             conn.execute("INSERT INTO members VALUES(?,?,?)", (self.sid, "b" * 32, "owner"))
