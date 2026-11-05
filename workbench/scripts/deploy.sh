@@ -43,7 +43,11 @@ if [[ -n "$container" ]]; then
   previous_image=$(docker inspect --format '{{.Image}}' "$container")
   previous_schema=$(docker image inspect --format '{{index .Config.Labels "io.zhixu.schema"}}' "$previous_image")
   if [[ ! "$previous_schema" =~ ^[a-f0-9]{64}$ ]]; then
-    previous_schema=$(docker run --rm --network none --entrypoint python "$previous_image" -c 'import server,hashlib,importlib.util; parts=[server.SCHEMA]; parts.extend([__import__("bedtime").SCHEMA] if importlib.util.find_spec("bedtime") else []); print(hashlib.sha256("\n--module-schema--\n".join(parts).encode()).hexdigest())')
+    previous_schema=$(docker run --rm --network none --entrypoint python "$previous_image" -c 'import server,hashlib,importlib.util; parts=[server.SCHEMA];
+for name in ("bedtime","daily","storage_jobs"):
+    spec=importlib.util.find_spec(name)
+    if spec: parts.append(__import__(name).SCHEMA)
+print(hashlib.sha256("\n--module-schema--\n".join(parts).encode()).hexdigest())')
   fi
   [[ "$previous_schema" == "$SCHEMA_HASH" ]] || { echo 'Schema change refused before stopping app; reviewed migration and recovery plan required' >&2; exit 4; }
 elif docker volume inspect "$data_volume" >/dev/null 2>&1 && ((!use_existing)); then

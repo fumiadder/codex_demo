@@ -30,6 +30,8 @@ services:
       AWS_BEDTIME_AUDIO_BUCKET: ${AWS_BEDTIME_AUDIO_BUCKET:-bedtime-audio}
       # Provider keys only exist on the server; empty defaults disable cloud AI.
       DASHSCOPE_API_KEY: ${DASHSCOPE_API_KEY:-}
+      VISION_ENABLED: ${VISION_ENABLED:-1}
+      VISION_MODEL: ${VISION_MODEL:-qwen3.8-flash}
       STORY_SEARCH_PROVIDER: ${STORY_SEARCH_PROVIDER:-local}
       OPENSEARCH_API_KEY: ${OPENSEARCH_API_KEY:-}
       OPENSEARCH_ENDPOINT: ${OPENSEARCH_ENDPOINT:-}

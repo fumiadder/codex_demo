@@ -58,7 +58,7 @@ jobs:
           node --check public/app.js
           node --check public/bedtime.js
           python -m compileall -q server.py scripts
-          python -m py_compile bedtime.py
+          python -m py_compile bedtime.py daily.py
           bash -n scripts/ops_common.sh scripts/deploy.sh scripts/backup.sh scripts/restore.sh
       - name: Install pinned browser QA tools
         run: |
@@ -90,6 +90,11 @@ jobs:
         env:
           PYTHONUNBUFFERED: '1'
         run: python scripts/life_entry_browser_qa.py
+      - name: Check daily image capture and no-key vision degradation
+        working-directory: workbench
+        env:
+          PYTHONUNBUFFERED: '1'
+        run: python scripts/daily_browser_qa.py
       - name: Check desktop stories and voice upload links
         working-directory: workbench
         env:

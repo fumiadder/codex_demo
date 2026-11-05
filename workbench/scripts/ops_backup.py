@@ -32,7 +32,7 @@ def schema(path):
     # Include every server-side schema, without importing provider/runtime code.
     source = Path(path)
     parts = []
-    for module in (source, source.parent/'bedtime.py', source.parent/'storage_jobs.py'):
+    for module in (source, source.parent/'bedtime.py', source.parent/'daily.py', source.parent/'storage_jobs.py'):
         if not module.exists():
             continue
         tree = ast.parse(module.read_text())
@@ -60,6 +60,14 @@ def validate_references(conn, data):
             item = data/directory/file_id
             if item.is_symlink() or not item.is_file() or item.stat().st_size != size:
                 raise ValueError('Referenced uploaded file missing or wrong size')
+        # Daily images reuse the private uploads namespace and object directory.
+        if table == 'files' and 'daily_images' in tables:
+            for file_id, size in conn.execute('SELECT id,size FROM daily_images'):
+                if len(file_id) != 32 or any(c not in '0123456789abcdef' for c in file_id):
+                    raise ValueError('Unsafe daily image identifier')
+                item = data/'uploads'/file_id
+                if item.is_symlink() or not item.is_file() or item.stat().st_size != size:
+                    raise ValueError('Referenced daily image missing or wrong size')
 
 
 def validate_data(data):
