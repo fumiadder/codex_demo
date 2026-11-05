@@ -65,6 +65,10 @@ services:
     ports: ["80:80", "443:443"]
     environment:
       WORKSPACE_DOMAIN: ${WORKSPACE_DOMAIN:?请在服务器shared/.env设置域名}
+      # Defaults to the public domain. For an IP-only temporary server set
+      # WORKSPACE_SITE_ADDRESS=https://<ip> together with CADDY_EXTRA_GLOBAL=local_certs.
+      WORKSPACE_SITE_ADDRESS: ${WORKSPACE_SITE_ADDRESS:-${WORKSPACE_DOMAIN}}
+      CADDY_EXTRA_GLOBAL: ${CADDY_EXTRA_GLOBAL:-}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data

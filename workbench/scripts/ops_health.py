@@ -2,6 +2,7 @@
 """Read-only production HTTPS/config/header check; never creates accounts."""
 import argparse
 import json
+import ssl
 import time
 import urllib.error
 import urllib.request
@@ -13,11 +14,16 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
         raise ValueError('Unexpected production redirect')
 
 
-def run(url, budget):
+def run(url, budget, insecure=False):
     parsed = urlsplit(url)
     if parsed.scheme != 'https' or not parsed.hostname or parsed.path not in ('','/') or parsed.query or parsed.fragment or parsed.username:
         raise ValueError('An HTTPS origin is required')
-    opener = urllib.request.build_opener(NoRedirect())
+    handlers = [NoRedirect()]
+    if insecure:
+        # Only used for an IP-only temporary server with Caddy's internal CA.
+        # The response body and security headers are still fully verified.
+        handlers.append(urllib.request.HTTPSHandler(context=ssl._create_unverified_context()))
+    opener = urllib.request.build_opener(*handlers)
     end = time.monotonic()+budget
     while True:
         try:
@@ -44,11 +50,13 @@ if __name__ == '__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--url',required=True)
     parser.add_argument('--timeout',type=int,default=120)
+    parser.add_argument('--insecure',action='store_true',
+                        help='skip TLS certificate verification (IP-only internal-CA servers only)')
     args=parser.parse_args()
     try:
         if not 1 <= args.timeout <= 180:
             raise ValueError('Invalid readiness timeout')
-        run(args.url,args.timeout)
+        run(args.url,args.timeout,args.insecure)
     except Exception as error:
         print('FAIL production verification: '+type(error).__name__)
         raise SystemExit(1)

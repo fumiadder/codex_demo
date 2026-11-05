@@ -102,7 +102,12 @@ wait_healthy || { echo 'New app health failed' >&2; exit 5; }
 compose exec -T app python -c 'import urllib.request,json; c=json.load(urllib.request.urlopen("http://127.0.0.1:8000/api/config",timeout=3)); assert c.get("testMode") is False and c.get("storagePersistence")=="persistent" and c.get("registrationMode")=="invite", "Production configuration check failed"'
 if ((!app_only)); then
   compose up -d --no-build gateway
-  python3 "$ops_dir/ops_health.py" --url "https://$domain" --timeout 120
+  health_args=(--url "https://$domain" --timeout 120)
+  # An IP-only temporary server uses Caddy's internal self-signed CA.
+  if [[ "$domain" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    health_args+=(--insecure)
+  fi
+  python3 "$ops_dir/ops_health.py" "${health_args[@]}"
 fi
 ln -s "$release_dir" "$deploy_root/current.next.$$"
 mv -Tf "$deploy_root/current.next.$$" "$deploy_root/current"
