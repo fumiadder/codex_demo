@@ -24,6 +24,8 @@ WORKSPACE_TEST_MODE=0
 
 睡前故事默认使用本地故事与设备系统音色。`DASHSCOPE_API_KEY` 留空时云端音色克隆和合成不可用；配置密钥后，用户实际调用可能产生服务商用量费用。实时搜索选择 `STORY_SEARCH_PROVIDER=opensearch` 或 `tavily`，并填写对应服务端配置。模型密钥只存在于服务器 `.env`，不写入源码、页面、GitHub 发布包或日志。产品不会因部署自动训练音色或创建收费资源。
 
+今日记录的图片识别与每日小结复用同一个 `DASHSCOPE_API_KEY`，无需单独开通 VL 模型；`VISION_MODEL` 默认 `qwen3.8-flash`，可明确改为 `qwen3.7-plus` 或 `qwen3.8-max`，未知值会关闭视觉而不回退其他模型，`VISION_ENABLED=0` 可独立关闭 AI、保留图片记录。升级只新增 `daily_*` 表且启动时幂等建表，不改动现有表结构与卷；回退旧镜像时新表被忽略，清理顺序见 `DAILY.md`。
+
 ## 首次注册与协作
 
 首个健康部署完成后，在服务器终端执行：

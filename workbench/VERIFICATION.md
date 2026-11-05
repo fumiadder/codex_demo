@@ -68,6 +68,16 @@ Render 实例 https://zhixu-free-test.onrender.com 已在 2026-10-07 11:07:58 UT
 
 国内不同运营商网络可达性、真实手机麦克风权限及浏览器语音转写服务连通性，仍需实际设备验收。Headless Chromium 无法可靠模拟切换浏览器标签的可见性变化，未把模拟事件当作真实标签切换测试；该自动锁定处理器已代码检查，切空间和页面刷新锁定已实测。
 
+## 今日记录浏览器检查
+
+`scripts/daily_browser_qa.py` 用临时数据目录启动真实服务，覆盖无密钥降级链路：模块库入口、两阶段私图上传与就绪缩略图、建记录后的时间线与九宫格、待连接 AI 卡片不伪造结果、灯箱计数、手动编辑摘要、总览卡片，以及 320/390px 窄屏无横向溢出与导航抽屉。
+
+```bash
+QA_CHROMIUM=/usr/bin/chromium python scripts/daily_browser_qa.py
+```
+
+本地 macOS 若 Playwright 自带浏览器目录不可写，可用 `PLAYWRIGHT_BROWSERS_PATH` 指向可写目录并经 `QA_CHROMIUM` 指定 headless shell。截图输出到 `artifacts/workbench-daily-mobile.png`。后端视觉识别另有 `tests/test_daily.py`（含 FakeProvider 的成功、限流、配额、暂存回收与权限用例）；无密钥端到端冒烟确认识别与小结返回明确 503，上传、建条目、原图服务与删除全部正常。
+
 ## 可重复浏览器检查
 
 开发环境需要 Playwright 和系统 Chromium；应用运行本身不需要这些工具。使用临时数据目录启动测试服务，避免把测试账号写入个人生产空间：
