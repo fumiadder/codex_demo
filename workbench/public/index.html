@@ -101,6 +101,12 @@
         <circle cx="8" cy="8" r="1.5" />
         <path d="m3 17 5-5 4 4 4-7 5 6" />
       </symbol>
+      <symbol id="i-camera" viewBox="0 0 24 24">
+        <path
+          d="M4 8h3l1.5-2.5h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"
+        />
+        <circle cx="12" cy="13" r="3.5" />
+      </symbol>
       <symbol id="i-play" viewBox="0 0 24 24">
         <path d="m8 5 11 7-11 7Z" />
       </symbol>
@@ -280,6 +286,10 @@
             <svg class="icon"><use href="#i-grid" /></svg><span>总览</span
             ><span class="nav-shortcut">⌘ 1</span>
           </button>
+          <button class="nav-item" data-view="daily">
+            <svg class="icon"><use href="#i-camera" /></svg><span>今日记录</span
+            ><span id="nav-daily-count" class="nav-count">0</span>
+          </button>
           <button class="nav-item" data-view="tasks">
             <svg class="icon"><use href="#i-task" /></svg><span>待办事项</span
             ><span id="nav-task-count" class="nav-count">0</span>
@@ -450,5 +460,6 @@
       hidden
       accept="image/*,video/*,audio/*,application/pdf,text/plain"
     />
+    <input id="daily-file-input" type="file" hidden accept="image/*" multiple />
   </body>
 </html>

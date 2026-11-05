@@ -37,10 +37,21 @@ const state = {
   },
   demoStore: {},
   demoVaults: {},
+  demoDaily: {},
   objectURLs: new Set(),
+  daily: {
+    config: null,
+    entries: [],
+    digests: {},
+    month: "",
+    loading: false,
+    loadedSpace: null,
+    composer: [],
+  },
 };
 const names = {
   overview: "今天，也从容一点。",
+  daily: "拍下来，就是今天的记录。",
   tasks: "把重要的事，向前推进。",
   notes: "让灵感有个落脚的地方。",
   media: "所有资料，随手可得。",
@@ -50,6 +61,7 @@ const names = {
 };
 const descriptions = {
   overview: "让每个想法有去处，让每一步都算数。",
+  daily: "拍照或选图快速记下今天，AI 帮你识别、总结并提出待办。",
   tasks: "一步一步，把想做的变成已完成。",
   notes: "值得留下的念头，不必等到明天。",
   media: "图片、视频、音频与文档，收在同一个地方。",
@@ -653,6 +665,17 @@ function enterDemo() {
       },
     ],
   };
+  state.demoDaily = {};
+  state.daily = {
+    config: null,
+    entries: [],
+    digests: {},
+    month: "",
+    loading: false,
+    loadedSpace: null,
+    composer: [],
+  };
+  dailyConfigPromise = null;
   state.area = "work";
   state.view = "overview";
   enterApp();
@@ -753,6 +776,17 @@ function showAuth() {
   state.demo = false;
   state.demoStore = {};
   state.demoVaults = {};
+  state.demoDaily = {};
+  state.daily = {
+    config: null,
+    entries: [],
+    digests: {},
+    month: "",
+    loading: false,
+    loadedSpace: null,
+    composer: [],
+  };
+  dailyConfigPromise = null;
   state.user = null;
   state.space = null;
   state.spaces = [];
@@ -803,6 +837,10 @@ async function switchSpace(id) {
   state.vault.loading = false;
   state.vault.spaceId = id;
   state.items = [];
+  state.daily.entries = [];
+  state.daily.digests = {};
+  state.daily.loadedSpace = null;
+  state.daily.composer = [];
   sessionStorage.setItem(`zhixu:space:${state.user.id}`, id);
   $("#current-space-name").textContent = space.name;
   $("#current-space-role").textContent =
@@ -849,6 +887,7 @@ function navigate(view) {
     $("#main-content").focus({ preventScroll: true });
   }
   if (view === "vault") loadVault();
+  if (view === "daily") loadDailyEntries();
 }
 function setArea(area) {
   state.area = area;
@@ -892,6 +931,10 @@ function render() {
   $("#nav-task-count").textContent = currentItems("task").filter(
     (t) => t.status !== "done",
   ).length;
+  const todayDaily = state.daily.entries.filter(
+    (entry) => entry.entryDate === dailyDateString(),
+  ).length;
+  $("#nav-daily-count").textContent = todayDaily;
   const content = $("#view-content");
   content.replaceChildren();
   if (state.loading) {
@@ -911,6 +954,7 @@ function render() {
   }
   ({
     overview: renderOverview,
+    daily: renderDaily,
     tasks: renderTasks,
     notes: renderNotes,
     media: renderMedia,
@@ -1065,6 +1109,7 @@ function renderOverview(content) {
   capture.append(inner);
   grid.append(capture);
   content.append(grid);
+  content.append(renderOverviewDaily());
   content.append(sectionHeading("最近的灵感与笔记", "想法值得被留下", "notes"));
   const noteGrid = el("div", "notes-grid overview-notes");
   if (notes.length)
@@ -1145,6 +1190,64 @@ function renderOverview(content) {
   spaceSummary.append(art);
   lower.append(spaceSummary);
   content.append(lower);
+}
+function renderOverviewDaily() {
+  if (
+    state.space &&
+    state.daily.loadedSpace !== state.space.id &&
+    !state.daily.loading
+  )
+    loadDailyEntries();
+  const card = el("section", "card overview-daily");
+  card.append(
+    cardHeading("今日记录", "camera", "全部记录 ↗", () =>
+      navigate("daily"),
+    ),
+  );
+  const today = dailyDateString();
+  const entries = state.daily.entries.filter(
+    (entry) => entry.entryDate === today && entry.area === state.area,
+  );
+  if (!entries.length) {
+    emptyState(
+      card,
+      "camera",
+      "拍一张，今天就有记录",
+      "白板、便签、屏幕或现场，AI 会识别并总结成摘要与待办。",
+      writable() ? "拍第一张" : null,
+      writable() ? () => navigate("daily") : null,
+    );
+    return card;
+  }
+  const strip = el("div", "overview-daily-strip");
+  for (const entry of entries.slice(0, 6)) {
+    const tile = button("", "overview-daily-tile", () => navigate("daily"));
+    const image = entry.images?.[0];
+    const url = image ? dailyImageURL(image) : "";
+    if (url) {
+      const img = el("img");
+      img.src = url;
+      img.alt = entry.title;
+      img.loading = "lazy";
+      tile.append(img);
+    } else {
+      tile.append(svg("camera"));
+    }
+    tile.append(el("span", "", entry.title));
+    strip.append(tile);
+  }
+  card.append(strip);
+  const foot = el("div", "card-action-footer");
+  foot.append(
+    writable()
+      ? button("再记一笔", "add-task-button", () => navigate("daily"), "camera")
+      : el("span"),
+    el("span", "", `今天已记录 ${entries.length} 条`),
+  );
+  const addButton = $("button", foot);
+  if (addButton) addButton.disabled = !writable();
+  card.append(foot);
+  return card;
 }
 function renderBedtimeEntry(content) {
   const entry = el("section", "life-bedtime-entry");
@@ -1488,6 +1591,13 @@ function renderSpaces(content) {
 function renderModules(content) {
   const modules = [
     [
+      "camera",
+      "今日记录",
+      "拍照或选图快速记下今天，视觉模型识别图片、总结摘要并提出待办。",
+      "daily",
+      true,
+    ],
+    [
       "task",
       "待办事项",
       "把需要推进的事情记下来，完成后留下进展。",
@@ -1563,7 +1673,7 @@ function renderModules(content) {
     el(
       "span",
       "",
-      "按需添加，保持轻盈。当前版本包含记录、资料、协作和密码箱；AI、日历与更多工具将按实际需求继续接入。",
+      "按需添加，保持轻盈。当前版本包含图片速记、记录、资料、协作和密码箱；更多 AI 与日历工具将按实际需求继续接入。",
     ),
   );
   content.append(note);
@@ -1780,6 +1890,7 @@ function showNew() {
   showModal("给想法一个位置", (body) => {
     const options = el("div", "new-options");
     for (const [iconName, title, text, action] of [
+      ["camera", "拍照记一笔", "拍照或选图，AI 识别总结", () => navigate("daily")],
       ["task", "待办事项", "记录接下来要做的事", () => showEditor("task")],
       ["note", "灵感笔记", "留住此刻的想法", () => showEditor("note")],
       ["mic", "语音录入", "说下来，保存为录音", showVoice],
@@ -2679,6 +2790,820 @@ function showVaultEditor(entry) {
   });
 }
 
+// ── 今日记录：图片速记与视觉识别 ──────────────────────────────
+function dailyDateString(date = new Date()) {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Shanghai",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(date);
+}
+function dailyDayLabel(entryDate) {
+  const today = dailyDateString();
+  if (entryDate === today) return "今天";
+  const yesterday = dailyDateString(new Date(Date.now() - 86400000));
+  if (entryDate === yesterday) return "昨天";
+  const [year, month, day] = entryDate.split("-").map(Number);
+  const weekday = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"][
+    new Date(Date.UTC(year, month - 1, day)).getUTCDay()
+  ];
+  return `${month}月${day}日 ${weekday}`;
+}
+function dailyTime(value) {
+  return new Intl.DateTimeFormat("zh-CN", {
+    timeZone: "Asia/Shanghai",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(new Date(value));
+}
+function visionEnabled() {
+  return state.daily.config?.vision?.enabled === true && !state.demo;
+}
+let dailyConfigPromise = null;
+async function loadDailyConfig() {
+  if (state.daily.config) return state.daily.config;
+  const fallback = {
+    vision: { enabled: false, model: "" },
+    maxImages: 9,
+    maxUploadBytes: 25 * 1024 * 1024,
+    imageMimes: ["image/png", "image/jpeg", "image/gif", "image/webp"],
+  };
+  if (state.demo) {
+    state.daily.config = fallback;
+    return fallback;
+  }
+  if (!dailyConfigPromise)
+    dailyConfigPromise = api(`/api/spaces/${state.space.id}/daily/config`)
+      .then((result) => {
+        state.daily.config = result;
+        return result;
+      })
+      .catch(() => {
+        state.daily.config = fallback;
+        return fallback;
+      });
+  return dailyConfigPromise;
+}
+async function loadDailyEntries({ force = false } = {}) {
+  if (!state.space) return;
+  await loadDailyConfig();
+  if (state.demo) {
+    if (!state.demoDaily[state.space.id])
+      state.demoDaily[state.space.id] = demoDailyEntries();
+    state.daily.entries = state.demoDaily[state.space.id];
+    state.daily.digests = {};
+    state.daily.loadedSpace = state.space.id;
+    render();
+    return;
+  }
+  if (!force && state.daily.loadedSpace === state.space.id) {
+    render();
+    return;
+  }
+  // The loading flag is also the re-entrancy guard: render() can re-enter this
+  // function through the overview card, so without it the calls recurse forever.
+  if (state.daily.loading) return;
+  state.daily.loading = true;
+  render();
+  try {
+    const month = dailyDateString().slice(0, 7);
+    const result = await api(
+      `/api/spaces/${state.space.id}/daily/entries?month=${month}`,
+    );
+    state.daily.entries = result.entries || [];
+    state.daily.digests = result.digests || {};
+    state.daily.month = result.month || month;
+    state.daily.loadedSpace = state.space.id;
+  } catch (err) {
+    toast(errorMessage(err), true);
+  }
+  state.daily.loading = false;
+  render();
+}
+function upsertDailyEntry(entry) {
+  const index = state.daily.entries.findIndex((item) => item.id === entry.id);
+  if (index >= 0) state.daily.entries[index] = entry;
+  else state.daily.entries.unshift(entry);
+  state.daily.entries.sort(
+    (a, b) =>
+      b.entryDate.localeCompare(a.entryDate) ||
+      b.createdAt.localeCompare(a.createdAt),
+  );
+}
+function currentDailyEntries() {
+  return state.daily.entries.filter((entry) => entry.area === state.area);
+}
+function dailyImageURL(image) {
+  if (image?.localURL)
+    return state.objectURLs.has(image.localURL) ? image.localURL : "";
+  return image?.url || "";
+}
+function renderDaily(content) {
+  if (state.daily.loading) {
+    loading(content);
+    return;
+  }
+  if (writable()) content.append(renderDailyComposer());
+  const entries = currentDailyEntries();
+  const groups = new Map();
+  for (const entry of entries) {
+    if (!groups.has(entry.entryDate)) groups.set(entry.entryDate, []);
+    groups.get(entry.entryDate).push(entry);
+  }
+  const timeline = el("div", "daily-timeline");
+  if (!entries.length) {
+    emptyState(
+      timeline,
+      "camera",
+      state.area === "work" ? "今天忙了什么？拍下来" : "把生活瞬间留下来",
+      "拍照或选图即可记录，AI 会识别图片、总结内容并提出待办建议。",
+      writable() ? "拍第一张" : null,
+      writable() ? () => pickDailyImages(true) : null,
+    );
+  }
+  for (const [date, dayEntries] of groups) {
+    const group = el("section", "daily-day-group");
+    const header = el("div", "daily-day-header");
+    const heading = el("h2", "", dailyDayLabel(date));
+    const dateText = el("span", "", date);
+    header.append(heading, dateText);
+    group.append(header);
+    const digest = state.daily.digests[date];
+    if (digest) group.append(renderDigestCard(date, digest));
+    else if (date === dailyDateString() && visionEnabled() && writable()) {
+      const digestAction = el("div", "daily-digest-action");
+      digestAction.append(
+        button("生成今日小结", "text-button", () =>
+          generateDailyDigest(date),
+        ),
+      );
+      group.append(digestAction);
+    }
+    for (const entry of dayEntries) group.append(renderDailyEntry(entry));
+    timeline.append(group);
+  }
+  content.append(timeline);
+  if (entries.length) {
+    const note = el("p", "daily-archive-note");
+    note.textContent = `仅展示 ${state.daily.month || dailyDateString().slice(0, 7)} 的记录，更早的月份将在后续版本开放。`;
+    content.append(note);
+  }
+}
+function renderDigestCard(date, digest) {
+  const card = el("article", "card daily-digest-card");
+  card.append(
+    cardHeading("今日小结", "note", null, null, "AI"),
+    el("p", "daily-digest-text", digest),
+  );
+  if (writable() && visionEnabled()) {
+    const foot = el("div", "daily-card-footer");
+    foot.append(
+      button("重新生成", "text-button", () => generateDailyDigest(date)),
+    );
+    card.append(foot);
+  }
+  return card;
+}
+function renderDailyComposer() {
+  const card = el("section", "card daily-composer");
+  card.append(
+    cardHeading(
+      state.area === "work" ? "拍一张，记下今天的工作" : "拍一张，留下此刻",
+      "camera",
+    ),
+  );
+  const picker = el("div", "daily-picker-row");
+  const cameraButton = button("拍照", "button secondary", () =>
+    pickDailyImages(true),
+  );
+  cameraButton.prepend(svg("camera", true));
+  const galleryButton = button("从相册选择", "button secondary", () =>
+    pickDailyImages(false),
+  );
+  galleryButton.prepend(svg("image", true));
+  picker.append(cameraButton, galleryButton);
+  const strip = el("div", "daily-composer-strip");
+  const note = el("textarea", "daily-note");
+  note.placeholder = "补充一句背景（可选）：和谁、在哪、接下来要做什么…";
+  note.maxLength = 100000;
+  note.setAttribute("aria-label", "记录附言");
+  const bottom = el("div", "daily-composer-bottom");
+  const counter = el("span", "daily-counter", "");
+  const submit = button(
+    visionEnabled() ? "保存并识别" : "保存记录",
+    "button primary",
+    () => submitDailyEntry(note, submit),
+  );
+  bottom.append(counter, submit);
+  const hint = el(
+    "p",
+    "capture-hint",
+    visionEnabled()
+      ? "原图保存在当前空间，识别在服务端完成，不会替换原图。"
+      : "图片识别待连接服务端模型，可先保存图片并手动填写摘要。",
+  );
+  card.append(picker, strip, note, bottom, hint);
+  renderComposerStrip(strip, counter);
+  card._strip = strip;
+  card._counter = counter;
+  return card;
+}
+function renderComposerStrip(strip, counter) {
+  strip.replaceChildren();
+  const items = state.daily.composer;
+  for (const item of items) {
+    const tile = el("div", `daily-upload ${item.status}`);
+    const image = el("img");
+    image.src = item.localURL;
+    image.alt = item.name;
+    tile.append(image);
+    const status = el("span", "daily-upload-status");
+    if (item.status === "uploading") status.textContent = "上传中…";
+    else if (item.status === "queued") status.textContent = "等待上传";
+    else if (item.status === "error")
+      status.textContent = item.error || "上传失败";
+    else status.textContent = "已就绪";
+    const remove = iconButton("close", "移除这张图片", () =>
+      removeComposerImage(item.tempId),
+    );
+    remove.classList.add("daily-upload-remove");
+    tile.append(remove);
+    if (item.status === "error") {
+      const retry = button("重试", "text-button", () =>
+        uploadDailyImage(item).then(() => refreshComposerStrip()),
+      );
+      tile.append(status, retry);
+    } else {
+      tile.append(status);
+    }
+    strip.append(tile);
+  }
+  counter.textContent = items.length
+    ? `${items.length}/${state.daily.config?.maxImages || 9} 张`
+    : "";
+}
+function refreshComposerStrip() {
+  const card = $(".daily-composer");
+  if (card?._strip) renderComposerStrip(card._strip, card._counter);
+}
+function pickDailyImages(capture) {
+  if (!ensureWrite()) return;
+  const input = $("#daily-file-input");
+  if (capture) input.setAttribute("capture", "environment");
+  else input.removeAttribute("capture");
+  input.value = "";
+  input.click();
+}
+async function onDailyFiles(fileList) {
+  const files = [...(fileList || [])];
+  if (!files.length) return;
+  const config = await loadDailyConfig();
+  const room = config.maxImages - state.daily.composer.length;
+  if (room <= 0) {
+    toast(`每条记录最多 ${config.maxImages} 张图片`, true);
+    return;
+  }
+  for (const file of files.slice(0, room)) {
+    if (!file.type.startsWith("image/")) {
+      toast(`「${file.name}」不是图片，已跳过`, true);
+      continue;
+    }
+    if (file.size < 1 || file.size > config.maxUploadBytes) {
+      toast(`「${file.name}」须在 25 MB 以内`, true);
+      continue;
+    }
+    const localURL = URL.createObjectURL(file);
+    state.objectURLs.add(localURL);
+    const item = {
+      tempId: crypto.randomUUID(),
+      file,
+      localURL,
+      name: file.name,
+      size: file.size,
+      status: state.demo ? "ready" : "queued",
+      uploadId: "",
+      error: "",
+    };
+    state.daily.composer.push(item);
+    if (!state.demo) uploadDailyImage(item).then(() => refreshComposerStrip());
+  }
+  refreshComposerStrip();
+}
+async function uploadDailyImage(item) {
+  item.status = "uploading";
+  item.error = "";
+  refreshComposerStrip();
+  try {
+    const data = new FormData();
+    data.append("file", item.file, item.name);
+    const result = await api(
+      `/api/spaces/${state.space.id}/daily/uploads`,
+      "POST",
+      data,
+    );
+    item.uploadId = result.upload.id;
+    item.status = "ready";
+  } catch (err) {
+    item.status = "error";
+    item.error = errorMessage(err);
+  }
+}
+function removeComposerImage(tempId) {
+  const index = state.daily.composer.findIndex(
+    (item) => item.tempId === tempId,
+  );
+  if (index < 0) return;
+  const [item] = state.daily.composer.splice(index, 1);
+  if (item.localURL) {
+    URL.revokeObjectURL(item.localURL);
+    state.objectURLs.delete(item.localURL);
+  }
+  refreshComposerStrip();
+}
+async function submitDailyEntry(note, submit) {
+  if (!ensureWrite()) return;
+  const items = state.daily.composer;
+  const body = note.value.trim();
+  if (!items.length && !body) {
+    note.focus();
+    toast("先拍一张图片，或写一句记录", true);
+    return;
+  }
+  if (!state.demo && items.some((item) => item.status !== "ready")) {
+    toast("图片还在上传，请稍等", true);
+    return;
+  }
+  submit.disabled = true;
+  const sid = state.space.id;
+  try {
+    let entry;
+    if (state.demo) {
+      entry = buildDemoDailyEntry(items, body);
+      state.demoDaily[sid].unshift(entry);
+      state.daily.entries = state.demoDaily[sid];
+    } else {
+      const result = await api(`/api/spaces/${sid}/daily/entries`, "POST", {
+        imageIds: items.map((item) => item.uploadId),
+        body,
+        area: state.area,
+      });
+      entry = result.entry;
+      upsertDailyEntry(entry);
+    }
+    for (const item of items) {
+      URL.revokeObjectURL(item.localURL);
+      state.objectURLs.delete(item.localURL);
+    }
+    state.daily.composer = [];
+    note.value = "";
+    render();
+    toast(state.demo ? "已保存到本地演示" : "记录已保存");
+    if (!state.demo && visionEnabled() && entry.images?.length) {
+      await recognizeDailyEntry(entry, { silent: true });
+    }
+  } catch (err) {
+    toast(errorMessage(err), true);
+    submit.disabled = false;
+  }
+}
+function buildDemoDailyEntry(items, body) {
+  const now = new Date().toISOString();
+  const entryId = `local-${crypto.randomUUID()}`;
+  return {
+    id: entryId,
+    spaceId: state.space.id,
+    area: state.area,
+    entryDate: dailyDateString(),
+    title: body.split("\n")[0].slice(0, 20) || "今日记录",
+    summary: "",
+    body,
+    status: "active",
+    meta: {
+      ai: {
+        status: "disabled",
+        model: "",
+        title: "",
+        summary: "",
+        tags: [],
+        suggestions: [],
+        recognizedAt: "",
+        applied: false,
+      },
+      convertedSuggestions: [],
+      source: "daily",
+    },
+    createdBy: state.user.id,
+    createdAt: now,
+    updatedAt: now,
+    images: items.map((item, index) => ({
+      id: `local-${crypto.randomUUID()}`,
+      entryId,
+      name: item.name,
+      mime: item.file.type,
+      size: item.size,
+      width: 0,
+      height: 0,
+      sortOrder: index,
+      url: "",
+      localURL: item.localURL,
+      createdAt: now,
+    })),
+  };
+}
+function demoDailyEntries() {
+  const now = new Date().toISOString();
+  return [
+    {
+      id: `local-demo-${crypto.randomUUID()}`,
+      spaceId: "demo-personal",
+      area: "work",
+      entryDate: dailyDateString(),
+      title: "演示：拍一张白板开始记录",
+      summary: "",
+      body: "演示模式下，拍照记录只保存在当前浏览器，不会上传或调用 AI。",
+      status: "active",
+      meta: {
+        ai: {
+          status: "disabled",
+          model: "",
+          title: "",
+          summary: "",
+          tags: [],
+          suggestions: [],
+          recognizedAt: "",
+          applied: false,
+        },
+        convertedSuggestions: [],
+        source: "daily",
+      },
+      createdBy: "demo-user",
+      createdAt: now,
+      updatedAt: now,
+      images: [],
+    },
+  ];
+}
+function renderDailyEntry(entry) {
+  const card = el("article", "card daily-entry");
+  const ai = entry.meta?.ai || {};
+  const head = el("div", "daily-entry-head");
+  const titleWrap = el("div");
+  titleWrap.append(el("h3", "daily-entry-title", entry.title));
+  const meta = el("div", "daily-entry-meta");
+  meta.append(
+    el("span", "", dailyTime(entry.createdAt)),
+    el("span", "", entry.area === "work" ? "工作" : "生活"),
+  );
+  head.append(titleWrap, meta);
+  card.append(head);
+  if (entry.images?.length) card.append(renderDailyImageGrid(entry));
+  if (ai.status === "pending") {
+    const pending = el("div", "daily-ai pending");
+    pending.append(
+      el("span", "daily-skeleton"),
+      el("p", "", "正在识别图片，马上生成摘要与待办建议…"),
+    );
+    card.append(pending);
+  } else if (ai.status === "failed") {
+    const failed = el("div", "daily-ai failed");
+    failed.append(el("p", "", "这次识别没有成功，图片仍已保存。"));
+    if (writable() && visionEnabled())
+      failed.append(
+        button("重新识别", "button secondary", () =>
+          recognizeDailyEntry(entry),
+        ),
+      );
+    card.append(failed);
+  } else if (ai.status === "done") {
+    card.append(renderRecognition(entry, ai));
+  } else if (!entry.summary) {
+    const disabled = el("div", "daily-ai disabled");
+    disabled.append(
+      el(
+        "p",
+        "",
+        visionEnabled()
+          ? "还没有识别结果。"
+          : "图片识别待连接，可先手动填写摘要。",
+      ),
+    );
+    if (writable() && visionEnabled())
+      disabled.append(
+        button("开始识别", "button secondary", () =>
+          recognizeDailyEntry(entry),
+        ),
+      );
+    card.append(disabled);
+  }
+  if (entry.summary && ai.status !== "done")
+    card.append(el("p", "daily-summary", entry.summary));
+  if (entry.body) card.append(el("p", "daily-body", entry.body));
+  if (writable()) card.append(renderDailyEntryActions(entry, ai));
+  return card;
+}
+function renderDailyImageGrid(entry) {
+  const grid = el("div", `daily-image-grid count-${Math.min(entry.images.length, 9)}`);
+  entry.images.forEach((image, index) => {
+    const url = dailyImageURL(image);
+    const tile = button("", "daily-image-tile", () =>
+      showDailyLightbox(entry.images, index),
+    );
+    if (url) {
+      const img = el("img");
+      img.src = url;
+      img.alt = image.name || entry.title;
+      img.loading = "lazy";
+      tile.append(img);
+    } else {
+      tile.append(svg("image"));
+    }
+    grid.append(tile);
+  });
+  return grid;
+}
+function renderRecognition(entry, ai) {
+  const block = el("div", "daily-ai done");
+  if (ai.summary) block.append(el("p", "daily-summary", ai.summary));
+  if (ai.tags?.length) {
+    const tags = el("div", "daily-tags");
+    for (const tag of ai.tags) tags.append(el("span", "daily-tag", `#${tag}`));
+    block.append(tags);
+  }
+  if (ai.suggestions?.length) {
+    const suggestions = el("div", "daily-suggestions");
+    suggestions.append(el("p", "daily-suggestion-title", "识别到的待办建议"));
+    const converted = new Set(entry.meta?.convertedSuggestions || []);
+    for (const text of ai.suggestions) {
+      const chip = button("", "daily-suggestion", () =>
+        convertSuggestion(entry, text),
+      );
+      chip.append(svg("plus", true), el("span", "", text));
+      if (converted.has(text)) {
+        chip.disabled = true;
+        chip.classList.add("converted");
+        chip.replaceChildren(el("span", "", `已加入待办：${text}`));
+      }
+      suggestions.append(chip);
+    }
+    block.append(suggestions);
+  }
+  if (writable() && !ai.applied) {
+    block.append(
+      button("采用识别的标题与摘要", "text-button", () =>
+        applyDailyRecognition(entry),
+      ),
+    );
+  }
+  return block;
+}
+function renderDailyEntryActions(entry, ai) {
+  const actions = el("div", "daily-card-footer");
+  if (ai.status === "done" && visionEnabled())
+    actions.append(
+      button("重新识别", "text-button", () => recognizeDailyEntry(entry)),
+    );
+  actions.append(
+    button("编辑", "text-button", () => editDailyEntry(entry)),
+    button("删除", "text-button danger-text", () => deleteDailyEntry(entry)),
+  );
+  return actions;
+}
+function showDailyLightbox(images, index) {
+  let current = index;
+  showModal("图片预览", (body) => {
+    const wrap = el("div", "daily-lightbox");
+    const img = el("img");
+    const counter = el("span", "daily-lightbox-count");
+    const renderImage = () => {
+      const url = dailyImageURL(images[current]);
+      if (url) img.src = url;
+      img.alt = images[current]?.name || "记录图片";
+      counter.textContent = `${current + 1} / ${images.length}`;
+    };
+    renderImage();
+    wrap.append(img);
+    body.append(wrap, counter);
+    if (images.length > 1) {
+      const controls = el("div", "daily-lightbox-controls");
+      const prev = button("上一张", "button secondary", () => {
+        current = (current - 1 + images.length) % images.length;
+        renderImage();
+      });
+      const next = button("下一张", "button primary", () => {
+        current = (current + 1) % images.length;
+        renderImage();
+      });
+      controls.append(prev, next);
+      body.append(controls);
+    }
+  });
+}
+async function recognizeDailyEntry(entry, { silent = false } = {}) {
+  if (!visionEnabled()) {
+    toast("图片识别尚未连接，请联系管理员配置服务端密钥", true);
+    return;
+  }
+  entry.meta = entry.meta || {};
+  entry.meta.ai = { ...(entry.meta.ai || {}), status: "pending" };
+  render();
+  try {
+    const result = await api(
+      `/api/spaces/${state.space.id}/daily/entries/${entry.id}/recognize`,
+      "POST",
+      {},
+    );
+    upsertDailyEntry(result.entry);
+    render();
+    if (!silent) toast("识别完成");
+  } catch (err) {
+    entry.meta.ai.status = "failed";
+    render();
+    toast(errorMessage(err), true);
+  }
+}
+async function applyDailyRecognition(entry) {
+  if (state.demo) return;
+  try {
+    const result = await api(
+      `/api/spaces/${state.space.id}/daily/entries/${entry.id}`,
+      "PATCH",
+      { applyAi: true },
+    );
+    upsertDailyEntry(result.entry);
+    render();
+    toast("已采用识别结果");
+  } catch (err) {
+    toast(errorMessage(err), true);
+  }
+}
+async function convertSuggestion(entry, text) {
+  if (!ensureWrite()) return;
+  try {
+    if (!state.demo) {
+      await api(`/api/spaces/${state.space.id}/items`, "POST", {
+        kind: "task",
+        area: entry.area,
+        title: text,
+        body: "",
+        status: "todo",
+        meta: { source: "daily-suggestion", entryId: entry.id },
+      });
+      const converted = [
+        ...new Set([...(entry.meta?.convertedSuggestions || []), text]),
+      ];
+      const result = await api(
+        `/api/spaces/${state.space.id}/daily/entries/${entry.id}`,
+        "PATCH",
+        { convertedSuggestions: converted },
+      );
+      upsertDailyEntry(result.entry);
+    } else {
+      entry.meta = entry.meta || {};
+      entry.meta.convertedSuggestions = [
+        ...new Set([...(entry.meta.convertedSuggestions || []), text]),
+      ];
+    }
+    render();
+    toast("已加入待办事项");
+  } catch (err) {
+    toast(errorMessage(err), true);
+  }
+}
+function editDailyEntry(entry) {
+  showModal("编辑这条记录", (body) => {
+    const form = el("form", "editor-main");
+    const title = input("text", "给这条记录起个名字", entry.title);
+    title.maxLength = 200;
+    const summary = el("textarea");
+    summary.placeholder = "手动填写或修改摘要";
+    summary.value = entry.summary || "";
+    summary.maxLength = 1000;
+    const note = el("textarea");
+    note.placeholder = "附言";
+    note.value = entry.body || "";
+    note.maxLength = 100000;
+    const area = select(
+      [
+        ["work", "工作"],
+        ["life", "生活"],
+      ],
+      entry.area,
+    );
+    form.append(
+      labelField("标题", title),
+      labelField("摘要", summary),
+      labelField("附言", note),
+      labelField("所属分区", area),
+    );
+    const error = el("p", "form-error");
+    const save = el("button", "button primary", "保存修改");
+    save.type = "submit";
+    form.append(
+      error,
+      actionsRow(button("取消", "button secondary", closeModal), save),
+    );
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!title.value.trim()) {
+        error.textContent = "请输入标题";
+        return;
+      }
+      save.disabled = true;
+      try {
+        const payload = {
+          title: title.value.trim(),
+          summary: summary.value.trim(),
+          body: note.value.trim(),
+          area: area.value,
+        };
+        if (state.demo) {
+          Object.assign(entry, payload);
+          entry.updatedAt = new Date().toISOString();
+        } else {
+          const result = await api(
+            `/api/spaces/${state.space.id}/daily/entries/${entry.id}`,
+            "PATCH",
+            payload,
+          );
+          upsertDailyEntry(result.entry);
+        }
+        closeModal();
+        render();
+        toast("记录已更新");
+      } catch (err) {
+        error.textContent = errorMessage(err);
+        save.disabled = false;
+      }
+    });
+    body.append(form);
+  });
+}
+function deleteDailyEntry(entry) {
+  showModal("删除这条记录？", (body) => {
+    body.append(
+      el(
+        "p",
+        "modal-body-note",
+        `「${entry.title}」删除后无法恢复，${entry.images?.length ? "对应的原始图片也会删除。" : ""}`,
+      ),
+    );
+    const error = el("p", "form-error");
+    const remove = button("确认删除", "button danger", async () => {
+      remove.disabled = true;
+      try {
+        if (!state.demo)
+          await api(
+            `/api/spaces/${state.space.id}/daily/entries/${entry.id}`,
+            "DELETE",
+          );
+        else
+          state.demoDaily[state.space.id] = state.demoDaily[
+            state.space.id
+          ].filter((item) => item.id !== entry.id);
+        state.daily.entries = state.daily.entries.filter(
+          (item) => item.id !== entry.id,
+        );
+        for (const image of entry.images || []) {
+          if (image.localURL) {
+            URL.revokeObjectURL(image.localURL);
+            state.objectURLs.delete(image.localURL);
+          }
+        }
+        closeModal();
+        render();
+        toast(state.demo ? "已从本地演示移除" : "记录已删除");
+      } catch (err) {
+        error.textContent = errorMessage(err);
+        remove.disabled = false;
+      }
+    });
+    body.append(
+      error,
+      actionsRow(button("取消", "button secondary", closeModal), remove),
+    );
+  });
+}
+async function generateDailyDigest(date) {
+  if (!visionEnabled()) {
+    toast("每日小结尚未连接服务端模型", true);
+    return;
+  }
+  try {
+    const result = await api(
+      `/api/spaces/${state.space.id}/daily/digest`,
+      "POST",
+      { date },
+    );
+    state.daily.digests[date] = result.digest.digest;
+    render();
+    toast("今日小结已生成");
+  } catch (err) {
+    toast(errorMessage(err), true);
+  }
+}
+
 function showVoice() {
   if (!ensureWrite()) return;
   const sid = state.space.id,
@@ -3076,6 +4001,9 @@ mobileLayout.addEventListener("change", () => {
 });
 $("#file-input").addEventListener("change", (event) =>
   uploadFiles([...event.target.files]),
+);
+$("#daily-file-input").addEventListener("change", (event) =>
+  onDailyFiles(event.target.files),
 );
 document.addEventListener("keydown", (event) => {
   if (mobileLayout.matches && $("#sidebar").classList.contains("open")) {
