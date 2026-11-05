@@ -280,41 +280,39 @@
             ><small id="current-space-role">私人空间</small></span
           ><svg class="icon small"><use href="#i-chevron" /></svg>
         </button>
-        <div class="nav-label">我的工作台</div>
+        <div class="nav-label" id="main-nav-label">我的工作台</div>
         <nav class="main-nav" aria-label="主导航">
-          <button class="nav-item active" data-view="overview">
-            <svg class="icon"><use href="#i-grid" /></svg><span>总览</span
+          <button class="nav-item active" data-view="overview" data-areas="work life">
+            <svg class="icon"><use href="#i-grid" /></svg
+            ><span data-label-work="总览" data-label-life="生活总览">总览</span
             ><span class="nav-shortcut">⌘ 1</span>
           </button>
-          <button class="nav-item" data-view="daily">
-            <svg class="icon"><use href="#i-camera" /></svg><span>今日记录</span
+          <button class="nav-item" data-view="daily" data-areas="work life">
+            <svg class="icon"><use href="#i-camera" /></svg
+            ><span data-label-work="今日记录" data-label-life="今日瞬间">今日记录</span
             ><span id="nav-daily-count" class="nav-count">0</span>
           </button>
-          <button class="nav-item" data-view="tasks">
-            <svg class="icon"><use href="#i-task" /></svg><span>待办事项</span
+          <button class="nav-item" data-view="bedtime" data-areas="life" hidden>
+            <svg class="icon"><use href="#i-cloud" /></svg><span>晚安故事</span>
+          </button>
+          <button class="nav-item" data-view="tasks" data-areas="work life">
+            <svg class="icon"><use href="#i-task" /></svg
+            ><span data-label-work="待办事项" data-label-life="生活清单">待办事项</span
             ><span id="nav-task-count" class="nav-count">0</span>
           </button>
-          <button class="nav-item" data-view="notes">
+          <button class="nav-item" data-view="notes" data-areas="work life">
             <svg class="icon"><use href="#i-note" /></svg
-            ><span>灵感与笔记</span>
+            ><span data-label-work="灵感与笔记" data-label-life="心情笔记">灵感与笔记</span>
           </button>
-          <button class="nav-item" data-view="media">
+          <button class="nav-item" data-view="media" data-areas="work life">
             <svg class="icon"><use href="#i-folder" /></svg
-            ><span>媒体资料库</span>
+            ><span data-label-work="媒体资料库" data-label-life="回忆收藏">媒体资料库</span>
           </button>
-          <button class="nav-item" data-view="vault">
+          <button class="nav-item" data-view="vault" data-areas="work">
             <svg class="icon"><use href="#i-lock" /></svg><span>私密密码箱</span
             ><span class="tiny-dot"></span>
           </button>
         </nav>
-        <section id="life-navigation" hidden>
-          <div class="nav-label second">生活专区</div>
-          <nav class="main-nav" aria-label="生活功能">
-            <button class="nav-item" data-view="bedtime">
-              <svg class="icon"><use href="#i-cloud" /></svg><span>晚安故事</span>
-            </button>
-          </nav>
-        </section>
         <div class="nav-label second">连接与拓展</div>
         <nav class="main-nav" aria-label="空间导航">
           <button class="nav-item" data-view="spaces">
@@ -417,16 +415,19 @@
         </footer>
         <nav id="mobile-navigation" class="mobile-navigation" aria-label="常用功能">
           <button type="button" data-mobile-view="overview" class="mobile-nav-item active">
-            <svg class="icon"><use href="#i-grid" /></svg><span>总览</span>
+            <svg class="icon"><use href="#i-grid" /></svg
+            ><span data-label-work="总览" data-label-life="日常">总览</span>
           </button>
           <button type="button" data-mobile-view="tasks" class="mobile-nav-item">
-            <svg class="icon"><use href="#i-task" /></svg><span>待办</span>
+            <svg class="icon"><use href="#i-task" /></svg
+            ><span data-label-work="待办" data-label-life="清单">待办</span>
           </button>
           <button type="button" id="mobile-new" class="mobile-nav-item mobile-nav-create" aria-label="新建记录">
             <span class="mobile-create-icon"><svg class="icon"><use href="#i-plus" /></svg></span><span>新建</span>
           </button>
           <button type="button" data-mobile-view="notes" class="mobile-nav-item">
-            <svg class="icon"><use href="#i-note" /></svg><span>笔记</span>
+            <svg class="icon"><use href="#i-note" /></svg
+            ><span data-label-work="笔记" data-label-life="心情">笔记</span>
           </button>
           <button type="button" id="mobile-more" class="mobile-nav-item" aria-controls="sidebar" aria-expanded="false" aria-label="更多功能，展开导航">
             <svg class="icon"><use href="#i-more" /></svg><span>更多</span>

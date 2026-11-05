@@ -69,6 +69,46 @@ const descriptions = {
   spaces: "独立空间隔离数据，用明确的权限一起协作。",
   modules: "基础功能已就绪，AI 能力将在接入模型服务后启用。",
 };
+// The life area gets its own menu labels and page copy so the two areas read
+// as distinct spaces rather than one identical list with an extra entry.
+const lifeNames = {
+  overview: "给生活，留一点空白。",
+  daily: "把今天的光，存进相册。",
+  tasks: "慢慢来，照顾好每一件小事。",
+  notes: "心情和念头，都值得被记下。",
+  media: "收藏声音与画面，也收藏回忆。",
+};
+const lifeDescriptions = {
+  overview: "记下喜欢的瞬间，照顾那些重要的小事。",
+  daily: "拍照或选图留下此刻，AI 帮你识别、总结并提出待办。",
+  tasks: "不慌不忙，把生活里的小事一一安顿。",
+  notes: "随手写下心情、灵感与想说的话。",
+  media: "照片、声音和文件，替你收好每一段回忆。",
+};
+function areaName(view) {
+  return state.area === "life" && lifeNames[view]
+    ? lifeNames[view]
+    : names[view];
+}
+function areaDescription(view) {
+  return state.area === "life" && lifeDescriptions[view]
+    ? lifeDescriptions[view]
+    : descriptions[view];
+}
+function applyAreaNav() {
+  const isLife = state.area === "life";
+  const label = $("#main-nav-label");
+  if (label) label.textContent = isLife ? "我的生活" : "我的工作台";
+  $$(".nav-item[data-areas]").forEach((button) => {
+    const allowed = (button.dataset.areas || "").split(/\s+/);
+    button.hidden = !allowed.includes(state.area);
+  });
+  $$("[data-label-work]").forEach((node) => {
+    node.textContent = isLife
+      ? node.dataset.labelLife
+      : node.dataset.labelWork;
+  });
+}
 const roleNames = { owner: "所有者", editor: "编辑者", viewer: "只读成员" };
 const kindNames = { task: "待办", note: "笔记", media: "媒体" };
 const fieldKeys = ["kind", "area", "title", "body", "status", "meta"];
@@ -810,7 +850,6 @@ function showAuth() {
   $("#auth-screen").hidden = false;
   $("#app-shell").hidden = true;
   document.body.classList.remove("life-area");
-  $("#life-navigation").hidden = true;
   updateAuthReturnNote();
 }
 window.addEventListener("storage", (event) => {
@@ -889,16 +928,21 @@ function navigate(view) {
   if (view === "vault") loadVault();
   if (view === "daily") loadDailyEntries();
 }
+const areaViews = {
+  work: ["overview", "daily", "tasks", "notes", "media", "vault", "spaces", "modules"],
+  life: ["overview", "daily", "bedtime", "tasks", "notes", "media", "spaces", "modules"],
+};
 function setArea(area) {
   state.area = area;
   state.taskFilter = "all";
   state.mediaFilter = "all";
+  if (!areaViews[area].includes(state.view)) state.view = "overview";
   closeModal();
   render();
 }
 function render() {
   document.body.classList.toggle("life-area", state.area === "life");
-  $("#life-navigation").hidden = state.area !== "life";
+  applyAreaNav();
   $$(".nav-item, [data-mobile-view]").forEach((b) => {
     const view = b.dataset.view || b.dataset.mobileView;
     b.classList.toggle("active", view === state.view);
@@ -911,14 +955,8 @@ function render() {
     b.classList.toggle("active", b.dataset.area === state.area);
     b.setAttribute("aria-pressed", String(b.dataset.area === state.area));
   });
-  $("#page-title").textContent =
-    state.area === "life" && state.view === "overview"
-      ? "给生活，留一点空白。"
-      : names[state.view];
-  $("#page-description").textContent =
-    state.area === "life" && state.view === "overview"
-      ? "记下喜欢的瞬间，照顾那些重要的小事。"
-      : descriptions[state.view];
+  $("#page-title").textContent = areaName(state.view);
+  $("#page-description").textContent = areaDescription(state.view);
   $("#page-eyebrow").textContent =
     state.view === "overview"
       ? state.area === "work"

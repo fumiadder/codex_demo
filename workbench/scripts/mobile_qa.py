@@ -209,7 +209,7 @@ def checks(base):
         no_overflow(page)
         account_boundaries(page, context, base, email_a)
         page.locator('[data-area="life"]').click()
-        expect(page.locator("#life-navigation")).to_be_visible()
+        expect(page.locator('.main-nav [data-view="bedtime"]')).to_be_visible()
         page.locator('[data-view="bedtime"]').click()
         expect(page).to_have_url(re.compile(r"/bedtime\.html\?space="))
         expect(page.locator("#bedtime-app")).to_be_visible()

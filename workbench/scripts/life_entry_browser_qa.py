@@ -36,11 +36,18 @@ with tempfile.TemporaryDirectory(prefix='zhixu-life-qa-') as data:
             page.on('pageerror',lambda error:errors.append(str(error)))
             page.goto(base,wait_until='networkidle');register(page)
             expect(page.locator('#view-content')).to_contain_text('添加第一件待办')
-            expect(page.locator('#life-navigation')).not_to_be_visible()
+            expect(page.locator('.main-nav [data-view="bedtime"]')).to_be_hidden()
+            expect(page.locator('.main-nav [data-view="vault"]')).to_be_visible()
+            expect(page.locator('#main-nav-label')).to_have_text('我的工作台')
+            expect(page.locator('.main-nav [data-view="tasks"] [data-label-work]')).to_have_text('待办事项')
             page.locator('[data-view="modules"]').click()
             assert page.locator('#view-content .life-bedtime-entry').count()==0
             page.locator('[data-area="life"]').click()
-            expect(page.locator('#life-navigation')).to_be_visible()
+            expect(page.locator('.main-nav [data-view="bedtime"]')).to_be_visible()
+            expect(page.locator('.main-nav [data-view="vault"]')).to_be_hidden()
+            expect(page.locator('#main-nav-label')).to_have_text('我的生活')
+            expect(page.locator('.main-nav [data-view="tasks"] [data-label-work]')).to_have_text('生活清单')
+            expect(page.locator('.main-nav [data-view="media"] [data-label-work]')).to_have_text('回忆收藏')
             expect(page.locator('#view-content .module-category-heading')).to_contain_text('生活功能')
             expect(page.locator('#view-content .life-bedtime-entry')).to_be_visible()
             page.locator('[data-view="overview"]').click()
@@ -68,11 +75,11 @@ with tempfile.TemporaryDirectory(prefix='zhixu-life-qa-') as data:
             expect(page.locator('#voice-dialog')).not_to_be_visible()
             expect(page.locator('.back-link')).to_have_attribute('href','/?area=life')
             page.locator('.back-link').click()
-            expect(page.locator('#life-navigation')).to_be_visible()
+            expect(page.locator('.main-nav [data-view="bedtime"]')).to_be_visible()
             expect(page.locator('#life-bedtime-title')).to_have_text('睡前小故事')
             for area in ['work','Life','life-extra']:
                 page.goto(base+'/?area='+area,wait_until='networkidle')
-                expect(page.locator('#life-navigation')).not_to_be_visible()
+                expect(page.locator('.main-nav [data-view="bedtime"]')).to_be_hidden()
                 assert page.evaluate('state.area')=='work'
             print('PASS four phone widths no overflow; actual bedtime backlink returns to life and other area values default work',flush=True)
             # An existing authenticated session consumes only the bedtime next.
@@ -96,7 +103,7 @@ with tempfile.TemporaryDirectory(prefix='zhixu-life-qa-') as data:
             life_signup=life_context.new_page()
             life_signup.goto(base+'/?area=life',wait_until='networkidle')
             email_b=register(life_signup)
-            expect(life_signup.locator('#life-navigation')).to_be_visible()
+            expect(life_signup.locator('.main-nav [data-view="bedtime"]')).to_be_visible()
             expect(life_signup.locator('#life-bedtime-title')).to_have_text('睡前小故事')
             uid_b=life_signup.evaluate('state.user.id');sid_b=life_signup.evaluate('state.space.id')
             assert life_signup.evaluate('(uid) => sessionStorage.getItem(`zhixu:space:${uid}`)',uid_b)==sid_b
@@ -104,7 +111,7 @@ with tempfile.TemporaryDirectory(prefix='zhixu-life-qa-') as data:
             assert response.ok, response.text()
             life_signup.evaluate('(sid) => sessionStorage.setItem("zhixu-space",sid)',sid)
             life_signup.goto(base+'/?area=life',wait_until='networkidle')
-            expect(life_signup.locator('#life-navigation')).to_be_visible()
+            expect(life_signup.locator('.main-nav [data-view="bedtime"]')).to_be_visible()
             expect(life_signup.locator('#life-bedtime-title')).to_have_text('睡前小故事')
             assert life_signup.evaluate('state.space.id')==sid_b
             assert life_signup.evaluate('sessionStorage.getItem("zhixu-space")')==sid
