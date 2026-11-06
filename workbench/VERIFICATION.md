@@ -22,6 +22,7 @@
 - 浏览器 QA：account_export（15）、mobile（9）、frontend_hardening（4）、life_entry（6）、daily（5）、menu_visual（2）、collaboration（7）、bedtime（11）退出码均为 0。
 - `warm_story_qa` 出现语音事件时序断言偶发失败（3 次中 1 次通过）；已用 stash 在批次 0 的 HEAD 上对照复现同样失败，且 `bedtime.html` 只加载 `bedtime.js`、本批次未改动任何 bedtime 文件，确认为与本次改动无关的既有 QA 时序竞态。
 - CI 工作流补登 account_export 浏览器检查。生产部署与烟测在提交通过 CI 后另行记录。
+- 发布前打包自查发现并修复一个会导致生产启动失败的缺陷：`scripts/package_release.py` 的 `ALLOW_FILES` 是显式清单，未包含新增根模块 `export.py`，旧清单打出的不可变镜像会在 `import export` 时崩溃。已把 `export.py` 加入清单，并新增 `tests/test_package_release.py` 守卫：断言根目录每个运行时模块都在发布清单内、且清单条目都真实存在，今后新增根模块漏登记会在单测阶段直接失败。
 
 ## 审计缺陷修复与安全加固（批次 0）
 
