@@ -14,6 +14,11 @@ import tempfile
 import time
 from pathlib import Path
 
+try:  # Reuse the single canonical release allowlist so new modules cannot drift.
+    from package_release import ALLOW_FILES
+except ImportError:  # package-style import (tests, tooling)
+    from scripts.package_release import ALLOW_FILES
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -32,7 +37,7 @@ def docker(*args, **kw):
 
 def copy_release(path, sha, fail=False):
     path.mkdir(parents=True)
-    for name in ('server.py', 'bedtime.py', 'persistence.py', 'neon_transport.py', 'media_storage.py', 'storage_jobs.py', 'requirements.txt', 'stories_data.json', 'Dockerfile', 'compose.yaml', 'Caddyfile', '.dockerignore'):
+    for name in ALLOW_FILES:
         if (ROOT/name).exists(): shutil.copy2(ROOT/name, path/name)
     for name in ('public', 'scripts'):
         shutil.copytree(ROOT/name, path/name, ignore=shutil.ignore_patterns('__pycache__','*.pyc'))

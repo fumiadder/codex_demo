@@ -23,6 +23,7 @@
 - `warm_story_qa` 出现语音事件时序断言偶发失败（3 次中 1 次通过）；已用 stash 在批次 0 的 HEAD 上对照复现同样失败，且 `bedtime.html` 只加载 `bedtime.js`、本批次未改动任何 bedtime 文件，确认为与本次改动无关的既有 QA 时序竞态。
 - CI 工作流补登 account_export 浏览器检查。生产部署与烟测在提交通过 CI 后另行记录。
 - 发布前打包自查发现并修复一个会导致生产启动失败的缺陷：`scripts/package_release.py` 的 `ALLOW_FILES` 是显式清单，未包含新增根模块 `export.py`，旧清单打出的不可变镜像会在 `import export` 时崩溃。已把 `export.py` 加入清单，并新增 `tests/test_package_release.py` 守卫：断言根目录每个运行时模块都在发布清单内、且清单条目都真实存在，今后新增根模块漏登记会在单测阶段直接失败。
+- 首次生产部署（49c5246）被 `deploy.sh` 的健康检查拦截并自动回滚：新容器启动即 `ModuleNotFoundError: No module named 'export'`。根因是除打包清单外还存在第二份显式模块清单——`Dockerfile` 的 `COPY` 逐文件列举同样漏了 `export.py`，tarball 含模块但镜像内没有。回滚后旧镜像健康、数据库与上传卷原样保留，生产未受影响。修复：Dockerfile COPY 与 `render.yaml` 编译命令补齐全部根模块（顺带补上历史遗漏的 `neon_transport.py`）；`scripts/ops_qa.py` 的第三份副本清单改为直接复用 `package_release.ALLOW_FILES`（同时补上它历史遗漏的 `daily.py`）；守卫测试扩展为同时校验发布清单、Dockerfile COPY、render.yaml 三处与根模块完全一致（267 项单测，仅已知 macOS 偶发失败）。`ops_backup.py`、`migrate_storage.py` 的清单只收集带 `SCHEMA` 常量的模块，`export.py` 无 SCHEMA，不纳入是正确行为。
 
 ## 审计缺陷修复与安全加固（批次 0）
 
