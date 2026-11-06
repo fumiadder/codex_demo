@@ -110,6 +110,11 @@ jobs:
         env:
           PYTHONUNBUFFERED: '1'
         run: python scripts/frontend_hardening_qa.py
+      - name: Check data export, account and space lifecycle
+        working-directory: workbench
+        env:
+          PYTHONUNBUFFERED: '1'
+        run: python scripts/account_export_qa.py
       - name: Check desktop stories and voice upload links
         working-directory: workbench
         env:

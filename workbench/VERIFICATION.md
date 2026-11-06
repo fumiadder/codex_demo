@@ -1,5 +1,28 @@
 # 验证记录
 
+## 数据主权与账号生命周期（批次 1）
+
+本批次新增数据导出、自动快照与账号/空间生命周期，无数据库结构变化（无新表、无 ALTER/DROP），旧镜像可直接运行现有数据库。三个 subagent 按冻结契约并行（导出模块、账号生命周期、设置中心），文件域不重叠。
+
+后端：
+
+- 新增 `export.py`：owner 专属单空间导出（JSON/Markdown/HTML），SQL 层绑定 `space_id`，媒体流式入 zip，临时文件 0600 并在结束时清理；密码箱仅导出本人密文并标注仍需原密码；会话、邀请码、密码哈希、其他空间数据一律不导出；HTML/Markdown 全量转义，归档路径白名单防 zip-slip；按账号每小时 6 次限流。
+- 自动快照只在 SQLite 方言、由认证流量驱动的维护路径执行，每天一份、保留 7 份、0700/0600 权限；**快照为全库文件、无任何 HTTP 下载路由**，仅运维可接触。实现中发现并修复了在线备份复制 WAL 文件头导致 `os.replace` 丢最新页的隐患：改为隔离临时目录备份、`wal_checkpoint(TRUNCATE)` 并切回 rollback 日志后原子落位。
+- `PATCH /api/me` 支持改昵称与改密码（嵌套 `{password:{currentPassword,newPassword}}`），改密成功轮换全部会话；`DELETE /api/me/account` 与 `DELETE /api/spaces/:sid` 均先校验密码/所有者，在有其他成员或用户在他人空间留有共享记录（`created_by` 无级联）时 fail-closed 返回 409，媒体对象先入删除队列再级联；撤权成员时清理其晚安故事收藏、历史、音色、私有音频与密码箱副本，共享条目保留。
+- 新增 21 项后端测试（`test_export` 11、`test_server` 新增 10），全量 263 项中仅 `test_large_base64_clone` 的 macOS 回环 BrokenPipe 既有偶发失败（隔离可通过、Linux CI 不受影响）。
+
+前端：
+
+- 空间管理内新增 owner 可见的三格式导出（非 owner 提示无权限、演示模式禁用），blob 下载的对象 URL 统一登记并回收；侧栏新增「账号设置」：改昵称、改密码（含强度与一致性校验）、注销账号（需登录密码且逐字键入「删除我的账号」双条件启用）、删除空间（需键入空间全名，409 中文指引原样展示）。
+- 全程无 alert/confirm/innerHTML，错误走 role=alert 与 toast，样式仅用现有 token、44px 触控、320px 窄屏适配；新增 `scripts/account_export_qa.py` 真实 HTTP 集成测试 15 项。
+
+本地验证（2026-11-07，Asia/Shanghai）：
+
+- 后端 263 项除已知偶发外全绿；`node --check`、`py_compile`、`bash -n` 通过。
+- 浏览器 QA：account_export（15）、mobile（9）、frontend_hardening（4）、life_entry（6）、daily（5）、menu_visual（2）、collaboration（7）、bedtime（11）退出码均为 0。
+- `warm_story_qa` 出现语音事件时序断言偶发失败（3 次中 1 次通过）；已用 stash 在批次 0 的 HEAD 上对照复现同样失败，且 `bedtime.html` 只加载 `bedtime.js`、本批次未改动任何 bedtime 文件，确认为与本次改动无关的既有 QA 时序竞态。
+- CI 工作流补登 account_export 浏览器检查。生产部署与烟测在提交通过 CI 后另行记录。
+
 ## 审计缺陷修复与安全加固（批次 0）
 
 本次修复来自四个只读审计（前端、后端、测试基线、市面对标）发现的 P1/P2，无数据库结构变化（无 ALTER/DROP、无新表），旧镜像可直接运行现有数据库。
