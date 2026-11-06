@@ -25,6 +25,14 @@
 - 发布前打包自查发现并修复一个会导致生产启动失败的缺陷：`scripts/package_release.py` 的 `ALLOW_FILES` 是显式清单，未包含新增根模块 `export.py`，旧清单打出的不可变镜像会在 `import export` 时崩溃。已把 `export.py` 加入清单，并新增 `tests/test_package_release.py` 守卫：断言根目录每个运行时模块都在发布清单内、且清单条目都真实存在，今后新增根模块漏登记会在单测阶段直接失败。
 - 首次生产部署（49c5246）被 `deploy.sh` 的健康检查拦截并自动回滚：新容器启动即 `ModuleNotFoundError: No module named 'export'`。根因是除打包清单外还存在第二份显式模块清单——`Dockerfile` 的 `COPY` 逐文件列举同样漏了 `export.py`，tarball 含模块但镜像内没有。回滚后旧镜像健康、数据库与上传卷原样保留，生产未受影响。修复：Dockerfile COPY 与 `render.yaml` 编译命令补齐全部根模块（顺带补上历史遗漏的 `neon_transport.py`）；`scripts/ops_qa.py` 的第三份副本清单改为直接复用 `package_release.ALLOW_FILES`（同时补上它历史遗漏的 `daily.py`）；守卫测试扩展为同时校验发布清单、Dockerfile COPY、render.yaml 三处与根模块完全一致（267 项单测，仅已知 macOS 偶发失败）。`ops_backup.py`、`migrate_storage.py` 的清单只收集带 `SCHEMA` 常量的模块，`export.py` 无 SCHEMA，不纳入是正确行为。
 
+生产部署（2026-11-07，Asia/Shanghai，最终提交 `1a5f7c2`）：
+
+- 修复后先在服务器做不触碰生产的预飞：用 `docker compose build` 构建独立 `zhixu-preflight` 标签，以临时空数据目录跑一次性容器，确认 `import export/server/daily/bedtime` 全部成功、`/api/health` 返回 ok、容器 healthy、无 traceback 后销毁预飞容器与临时数据；同时算出 `SCHEMA_HASH=83d99f53…2838` 与现网完全一致（本批无结构变化，结构守卫通过）。
+- 正式 `deploy.sh`：自动备份（`backups/20261106T171543Z-41af7021`）→ 构建（层缓存命中，秒级）→ 健康检查通过 → 切换，无回滚。`current` 与 `state/current-sha` 指向 `1a5f7c2`，镜像标签 revision/schema 正确，网关与应用均 healthy。此前失败的 49c5246 也留有独立备份（`20261106T170141Z`）。
+- 一次性邀请注册的临时账号完成 18 项真实链路烟测并全部通过：注册、建空间、播种任务；JSON/Markdown/HTML 三种导出均为合法 zip 且含对应条目（`export.json`/`INDEX.md`/`index.html`）；非法格式 400、匿名导出 401；改昵称、改密码并轮换会话、旧密码拒绝、新密码登录、错误旧密码 400；删除无成员空间 200 且列表消失；注销账号 200 后会话失效且无法再登录。测试结束账号经注销接口自删除，九张关联表零残留，真实用户 `2521532473@qq.com` 数据完好、无孤儿媒体与删除任务。
+- 自动快照经认证流量的维护路径真实生成：`/data/snapshots/folio-20261106-171803.db`（目录 0700、文件 0600），复制到临时库独立打开 `PRAGMA integrity_check=ok` 且含拍摄时点数据，证明 WAL 收敛修复在生产生效、快照为自包含单文件；当天仅一份，符合每日一份契约。
+- 外部复核：新前端（账号设置入口）已对外提供，HSTS、nosniff、DENY 等安全头齐全，未认证访问受保护接口一律 401，`/api/config` 仍为 `testMode=false / persistent / invite`。GitHub Workbench CI 对 `1a5f7c2` 全绿（含新增的数据导出/账号生命周期浏览器检查与打包清单守卫）。
+
 ## 审计缺陷修复与安全加固（批次 0）
 
 本次修复来自四个只读审计（前端、后端、测试基线、市面对标）发现的 P1/P2，无数据库结构变化（无 ALTER/DROP、无新表），旧镜像可直接运行现有数据库。
