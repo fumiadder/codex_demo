@@ -27,6 +27,14 @@
 - 浏览器 QA 独立复跑 8 套全部退出 0：life_entry（6）、mobile（9）、daily（5）、menu_visual（2）、frontend_hardening（4）、bedtime（11）、warm_story（11）、collaboration（7）。
 - `node --check`、`py_compile`、`bash -n` 全部通过；CI 工作流补登 collaboration、menu_visual、frontend_hardening 三个浏览器检查。
 
+生产部署（2026-11-06，Asia/Shanghai，提交 `b90d61d`）：
+
+- 服务器 `/srv/zhixu` 走标准 `deploy.sh`：自动备份（`backups/20261106T155448Z-d5692d1f`）→ 构建 → 健康检查 → 切换；无数据库结构变化，镜像 schema 标签与上一版同为 `83d99f53…2838`，结构守卫直接通过，失败回滚镜像保留。
+- 首次构建因容器内 pip 直连 pypi.org 超时中止（仅构建阶段，未触碰运行中的应用）；按既往国内部署做法在服务器发布目录的 Dockerfile 追加阿里云镜像源（与上一版发布 Dockerfile 完全一致，仓库源码不包含镜像源），重建后通过。
+- 部署后外部断言：`/api/health` 返回 ok，`/api/config` 为 `testMode=false / persistent / invite`，未认证访问受保护接口一律 401，HSTS、nosniff、CSP（frame-ancestors 'none'）等安全头齐全，新 `app.js` 已对外提供。
+- 一次性邀请注册的临时账号完成 13 项真实链路烟测并全部通过：邀请注册/登录、建空间、active 待办创建与持久化、今日记录配置、真实 PNG 上传（经配额与像素检查路径）、图片入记录、记录列表、密码箱写入与读回、未授权拒绝、登出后会话失效。测试结束后该账号、空间、记录、3 个私有图片对象与邀请码全部删除，九张关联表零残留；真实用户 `2521532473@qq.com` 的空间与数据保持原样，磁盘无孤儿对象，应用持续 healthy。
+- GitHub 三个工作流（Workbench CI、production deployment 凭据校验、read-only production check）对该提交均为 success；其中 production deployment 的实际部署步骤因未配置服务器密钥而跳过，线上更新由上述手动部署完成。
+
 ## 工作／生活分区菜单差异化
 
 生活区不再复用同一份菜单：晚安故事并入生活区主导航，私密密码箱仅保留在工作区，共有功能在两个分区使用不同名称（工作区：今日记录／待办事项／灵感与笔记／媒体资料库；生活区：今日瞬间／生活清单／心情笔记／回忆收藏），页面标题与说明文案同步切换，移动端底部导航文案随分区变化。处于工作专属视图时切换到生活区会自动回到总览，不会停留在不可达的视图上。
