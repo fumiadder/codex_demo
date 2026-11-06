@@ -95,7 +95,16 @@ with tempfile.TemporaryDirectory(prefix="zhixu-daily-qa-") as data:
             entry.locator(".daily-image-tile").first.click()
             expect(page.locator("#modal .daily-lightbox img")).to_be_visible()
             expect(page.locator(".daily-lightbox-count")).to_have_text("1 / 2")
-            page.locator("#modal-close").click()
+            # P2-3: arrow keys cycle through the images and Escape closes the modal.
+            page.keyboard.press("ArrowRight")
+            expect(page.locator(".daily-lightbox-count")).to_have_text("2 / 2")
+            page.keyboard.press("ArrowRight")
+            expect(page.locator(".daily-lightbox-count")).to_have_text("1 / 2")
+            page.keyboard.press("ArrowLeft")
+            expect(page.locator(".daily-lightbox-count")).to_have_text("2 / 2")
+            page.keyboard.press("Escape")
+            expect(page.locator("#modal")).not_to_be_visible()
+            print("PASS lightbox arrow-key cycling and Escape close", flush=True)
 
             # Manual editing keeps working without a model.
             entry.get_by_role("button", name="编辑").click()
@@ -121,6 +130,88 @@ with tempfile.TemporaryDirectory(prefix="zhixu-daily-qa-") as data:
             expect(page.locator(".daily-composer")).to_be_visible()
             (ROOT / "artifacts").mkdir(exist_ok=True)
             page.screenshot(path=str(ROOT / "artifacts/workbench-daily-mobile.png"), full_page=True)
+            page.set_viewport_size({"width": 1440, "height": 1000})
+
+            # P1-F1: a converted suggestion must create an "active" task, matching
+            # the front-end state machine and editor (active/done only, never "todo").
+            page.evaluate("""() => {
+              state.daily.entries.push({
+                id: 'qa-suggestion-entry', spaceId: state.space.id, area: state.area,
+                entryDate: dailyDateString(), title: 'QA 建议来源记录', summary: '', body: '',
+                status: 'active',
+                meta: {ai: {status: 'done', suggestions: ['QA 建议转待办']},
+                       convertedSuggestions: [], source: 'daily'},
+                createdBy: state.user.id,
+                createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+                images: [],
+              });
+              render();
+            }""")
+            with page.expect_response(
+                lambda response: response.request.method == "POST"
+                and response.url.endswith("/items")
+            ) as item_response:
+                page.locator(".daily-suggestion", has_text="QA 建议转待办").click()
+            payload = item_response.value.request.post_data_json
+            assert payload["status"] == "active", payload
+            assert payload["meta"]["source"] == "daily-suggestion"
+            sid = page.evaluate("state.space.id")
+            tasks = context.request.get(base + f"/api/spaces/{sid}/items").json()["items"]
+            created = [task for task in tasks if task["title"] == "QA 建议转待办"]
+            assert len(created) == 1 and created[0]["status"] == "active", created
+            # 转换流程不本地插入任务，重新拉取后任务视图应展示这条 active 待办
+            page.evaluate("loadItems()")
+            page.locator('[data-view="tasks"]').click()
+            expect(page.locator("#view-content")).to_contain_text("QA 建议转待办")
+            print("PASS suggestion conversion posts and persists an active task", flush=True)
+
+            # P2-2: a failed upload tile blocks submit and exposes retry/remove;
+            # reusing the original File object recovers to ready and re-enables submit.
+            page.locator('[data-view="daily"]').click()
+            retry_image = upload_dir / "retry.png"
+            remove_image = upload_dir / "remove.png"
+            make_png(retry_image, (90, 120, 160))
+            make_png(remove_image, (160, 110, 90))
+            failed_uploads = {"count": 0}
+
+            def fail_first_upload(route):
+                if failed_uploads["count"] == 0:
+                    failed_uploads["count"] += 1
+                    route.fulfill(status=503, content_type="application/json",
+                                  body='{"error":"QA 模拟上传暂时不可用"}')
+                else:
+                    route.continue_()
+
+            page.route("**/daily/uploads", fail_first_upload)
+            page.set_input_files("#daily-file-input", [str(retry_image)])
+            error_tile = page.locator(".daily-upload.error")
+            expect(error_tile).to_have_count(1)
+            expect(error_tile.locator(".daily-upload-status")).to_contain_text("QA 模拟上传暂时不可用")
+            expect(error_tile.get_by_role("button", name="重试", exact=True)).to_be_visible()
+            expect(error_tile.get_by_role("button", name="移除", exact=True)).to_be_visible()
+            submit_button = page.locator(".daily-composer .button.primary")
+            expect(submit_button).to_be_disabled()
+            with page.expect_response(
+                lambda response: response.request.method == "POST"
+                and response.url.endswith("/daily/uploads")
+            ) as retry_response:
+                error_tile.get_by_role("button", name="重试", exact=True).click()
+            assert retry_response.value.ok, retry_response.value.status
+            expect(page.locator(".daily-upload.ready")).to_have_count(1)
+            expect(submit_button).to_be_enabled()
+            print("PASS failed upload tile offers retry/remove and retry restores ready state", flush=True)
+
+            # Removing another failed tile unblocks the composer as well.
+            failed_uploads["count"] = 0
+            page.set_input_files("#daily-file-input", [str(remove_image)])
+            second_error = page.locator(".daily-upload.error")
+            expect(second_error).to_have_count(1)
+            expect(submit_button).to_be_disabled()
+            second_error.get_by_role("button", name="移除", exact=True).click()
+            expect(page.locator(".daily-upload.error")).to_have_count(0)
+            expect(submit_button).to_be_enabled()
+            page.unroute("**/daily/uploads", fail_first_upload)
+            print("PASS removing a failed upload tile clears the blocked submit state", flush=True)
 
             assert not errors, "Page errors: " + " | ".join(errors)
             print("PASS daily capture, staged upload, no-key degradation, editing and mobile layout", flush=True)

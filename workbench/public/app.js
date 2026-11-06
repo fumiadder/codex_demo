@@ -49,6 +49,8 @@ const state = {
     composer: [],
   },
 };
+// 单一事实源：/api/config 未下发上传上限时，与服务端 MAX_UPLOAD_BYTES 保持一致
+const MAX_UPLOAD_MB = 25;
 const names = {
   overview: "今天，也从容一点。",
   daily: "拍下来，就是今天的记录。",
@@ -312,7 +314,26 @@ function toast(message, error = false) {
   window.setTimeout(() => node.remove(), 4500);
 }
 function errorMessage(error) {
-  return error?.message || "暂时无法完成，请重试。";
+  if (error?.message) return error.message;
+  if (error?.status === 429) return "操作太频繁，请稍后再试。";
+  if (error?.status === 503) return "服务暂未连接，请稍后再试。";
+  return "暂时无法完成，请重试。";
+}
+// 统一映射限流与暂不可用响应：429 优先采用 Retry-After（秒）提示；
+// 503 不覆盖后端给出的具体中文 message，缺省时才用通用文案。
+function apiStatusMessage(status, result, response) {
+  const detail = result?.error || result?.message || "";
+  if (status === 429) {
+    const retryAfter = Number.parseInt(
+      response.headers.get("Retry-After") || "",
+      10,
+    );
+    if (Number.isFinite(retryAfter) && retryAfter > 0)
+      return `操作太频繁，请 ${retryAfter} 秒后再试`;
+    return detail || "操作太频繁，请稍后再试。";
+  }
+  if (status === 503) return detail || "服务暂未连接，请稍后再试。";
+  return detail || "请求未完成";
 }
 async function api(path, method = "GET", data) {
   const expectedUser = state.demo ? null : state.user?.id;
@@ -346,7 +367,9 @@ async function api(path, method = "GET", data) {
     throw new Error("服务响应异常，请稍后重试。");
   }
   if (!response.ok) {
-    const err = new Error(result.error || result.message || "请求未完成");
+    const err = new Error(
+      apiStatusMessage(response.status, result, response),
+    );
     err.status = response.status;
     throw err;
   }
@@ -676,6 +699,36 @@ function demoItems() {
       { tag: "生活清单" },
       "active",
       32,
+    ),
+    make(
+      "lm1",
+      "media",
+      "life",
+      "周末的散步路线",
+      "",
+      {
+        demoPreview: "landscape",
+        mime: "image/demo",
+        name: "示例散步照片 · 无实际文件",
+        size: 0,
+      },
+      "active",
+      6,
+    ),
+    make(
+      "lm2",
+      "media",
+      "life",
+      "家里做的一顿饭",
+      "",
+      {
+        demoPreview: "landscape",
+        mime: "image/demo",
+        name: "示例家常菜照片 · 无实际文件",
+        size: 0,
+      },
+      "active",
+      9,
     ),
   ];
 }
@@ -1549,7 +1602,7 @@ function renderMedia(content) {
   const note = el(
     "p",
     "view-top-note",
-    "每份文件最大 25 MB。可以将文件拖到此处，或通过语音录入保存录音。",
+    `每份文件最大 ${MAX_UPLOAD_MB} MB。可以将文件拖到此处，或通过语音录入保存录音。`,
   );
   content.append(note);
   const items = currentItems("media").filter(
@@ -1957,8 +2010,8 @@ async function uploadFiles(files) {
   for (const file of files) {
     if (state.sessionEpoch !== session || state.space?.id !== sid) break;
     try {
-      if (file.size < 1 || file.size > 25 * 1024 * 1024)
-        throw new Error(`「${file.name}」须在 1 字节到 25 MB 之间。`);
+      if (file.size < 1 || file.size > MAX_UPLOAD_MB * 1024 * 1024)
+        throw new Error(`「${file.name}」须在 1 字节到 ${MAX_UPLOAD_MB} MB 之间。`);
       let item;
       if (state.demo) {
         const url = URL.createObjectURL(file);
@@ -2025,6 +2078,9 @@ function showMedia(item) {
         };
       } else if (item.meta?.mime === "application/pdf") {
         const frame = el("iframe");
+        // 禁掉脚本等全部权限；blob:/同源 PDF 需保留同源身份才能被内置查看器读取，
+        // 因此只放开 allow-same-origin（不放开 allow-scripts）
+        frame.setAttribute("sandbox", "allow-same-origin");
         frame.src = url;
         frame.title = item.title;
         preview.append(frame);
@@ -2607,9 +2663,39 @@ function renderVault(content) {
     );
     save.type = "submit";
     form.append(error, save);
+    // 新建密码箱仅持久化失败时，保留已派生密钥与表单上下文，允许原地重试
+    let retryCreate = false;
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
       error.textContent = "";
+      const id = state.space.id,
+        epoch = state.vault.epoch;
+      if (retryCreate) {
+        if (
+          state.space?.id !== id ||
+          state.vault.epoch !== epoch ||
+          !state.vault.key
+        ) {
+          retryCreate = false;
+          return;
+        }
+        save.disabled = true;
+        save.textContent = "正在保存…";
+        try {
+          await persistVault([]);
+          if (state.space?.id !== id || state.vault.epoch !== epoch) return;
+          retryCreate = false;
+          render();
+          toast("密码箱已创建");
+        } catch (err) {
+          if (state.space?.id !== id || state.vault.epoch !== epoch) return;
+          error.setAttribute("role", "alert");
+          error.textContent = errorMessage(err);
+          save.disabled = false;
+          save.textContent = "重试创建密码箱";
+        }
+        return;
+      }
       if (!existing && password.value !== confirm.value) {
         error.textContent = "两次输入的密码不同，请重新确认。";
         return;
@@ -2617,8 +2703,6 @@ function renderVault(content) {
       const secret = password.value;
       password.value = "";
       if (confirm) confirm.value = "";
-      const id = state.space.id,
-        epoch = state.vault.epoch;
       save.disabled = true;
       save.textContent = "正在浏览器中解密…";
       try {
@@ -2649,10 +2733,17 @@ function renderVault(content) {
           try {
             await persistVault([]);
           } catch (err) {
-            state.vault.key = null;
-            state.vault.entries = [];
-            state.vault.payload = null;
-            throw err;
+            if (state.space?.id !== id || state.vault.epoch !== epoch) return;
+            // 持久化失败：保留 key、entries 与仅含 salt 的 payload，
+            // 不置 null、不清 key，避免与服务端状态分叉并允许原地重试
+            retryCreate = true;
+            // 密码框已按安全习惯清空，重试走已派生的密钥，需绕过原生必填校验
+            save.formNoValidate = true;
+            error.setAttribute("role", "alert");
+            error.textContent = `${errorMessage(err)} 密码仍保留在本页，可直接重试，无需重新输入。`;
+            save.disabled = false;
+            save.textContent = "重试创建密码箱";
+            return;
           }
         }
         render();
@@ -2865,7 +2956,7 @@ async function loadDailyConfig() {
   const fallback = {
     vision: { enabled: false, model: "" },
     maxImages: 9,
-    maxUploadBytes: 25 * 1024 * 1024,
+    maxUploadBytes: MAX_UPLOAD_MB * 1024 * 1024,
     imageMimes: ["image/png", "image/jpeg", "image/gif", "image/webp"],
   };
   if (state.demo) {
@@ -2884,7 +2975,7 @@ async function loadDailyConfig() {
       });
   return dailyConfigPromise;
 }
-async function loadDailyEntries({ force = false } = {}) {
+async function loadDailyEntries() {
   if (!state.space) return;
   await loadDailyConfig();
   if (state.demo) {
@@ -2896,7 +2987,7 @@ async function loadDailyEntries({ force = false } = {}) {
     render();
     return;
   }
-  if (!force && state.daily.loadedSpace === state.space.id) {
+  if (state.daily.loadedSpace === state.space.id) {
     render();
     return;
   }
@@ -3043,6 +3134,7 @@ function renderDailyComposer() {
       : "图片识别待连接服务端模型，可先保存图片并手动填写摘要。",
   );
   card.append(picker, strip, note, bottom, hint);
+  strip._submit = submit;
   renderComposerStrip(strip, counter);
   card._strip = strip;
   card._counter = counter;
@@ -3060,26 +3152,46 @@ function renderComposerStrip(strip, counter) {
     const status = el("span", "daily-upload-status");
     if (item.status === "uploading") status.textContent = "上传中…";
     else if (item.status === "queued") status.textContent = "等待上传";
-    else if (item.status === "error")
+    else if (item.status === "error") {
       status.textContent = item.error || "上传失败";
-    else status.textContent = "已就绪";
-    const remove = iconButton("close", "移除这张图片", () =>
-      removeComposerImage(item.tempId),
-    );
-    remove.classList.add("daily-upload-remove");
-    tile.append(remove);
+      // 失败原因需要被辅助技术读出
+      status.setAttribute("role", "alert");
+    } else status.textContent = "已就绪";
     if (item.status === "error") {
+      // 失败瓦片给出明确的重试/移除操作，不再只靠右上角小图标
+      const actions = el("div", "daily-upload-actions");
       const retry = button("重试", "text-button", () =>
         uploadDailyImage(item).then(() => refreshComposerStrip()),
       );
-      tile.append(status, retry);
+      const remove = button(
+        "移除",
+        "text-button danger-text",
+        () => removeComposerImage(item.tempId),
+      );
+      actions.append(retry, remove);
+      tile.append(status, actions);
     } else {
-      tile.append(status);
+      const remove = iconButton("close", "移除这张图片", () =>
+        removeComposerImage(item.tempId),
+      );
+      remove.classList.add("daily-upload-remove");
+      tile.append(remove, status);
     }
     strip.append(tile);
   }
   counter.textContent = items.length
     ? `${items.length}/${state.daily.config?.maxImages || 9} 张`
+    : "";
+  syncComposerSubmit(strip, items);
+}
+// 任一瓦片未就绪（排队/上传中/失败）都暂时禁用提交，失败原因与重试入口直接显示在瓦片上
+function syncComposerSubmit(strip, items = state.daily.composer) {
+  const submit = strip?._submit;
+  if (!submit || state.demo) return;
+  const blocked = items.some((item) => item.status !== "ready");
+  submit.disabled = blocked;
+  submit.title = items.some((item) => item.status === "error")
+    ? "有图片上传失败，请重试或移除后再保存"
     : "";
 }
 function refreshComposerStrip() {
@@ -3109,7 +3221,10 @@ async function onDailyFiles(fileList) {
       continue;
     }
     if (file.size < 1 || file.size > config.maxUploadBytes) {
-      toast(`「${file.name}」须在 25 MB 以内`, true);
+      toast(
+        `「${file.name}」须在 ${Math.round(config.maxUploadBytes / 1048576)} MB 以内`,
+        true,
+      );
       continue;
     }
     const localURL = URL.createObjectURL(file);
@@ -3170,7 +3285,12 @@ async function submitDailyEntry(note, submit) {
     return;
   }
   if (!state.demo && items.some((item) => item.status !== "ready")) {
-    toast("图片还在上传，请稍等", true);
+    toast(
+      items.some((item) => item.status === "error")
+        ? "有图片上传失败，请重试或移除后再保存"
+        : "图片还在上传，请稍等",
+      true,
+    );
     return;
   }
   submit.disabled = true;
@@ -3252,35 +3372,51 @@ function buildDemoDailyEntry(items, body) {
 }
 function demoDailyEntries() {
   const now = new Date().toISOString();
-  return [
-    {
-      id: `local-demo-${crypto.randomUUID()}`,
-      spaceId: "demo-personal",
-      area: "work",
-      entryDate: dailyDateString(),
-      title: "演示：拍一张白板开始记录",
+  const demoMeta = () => ({
+    ai: {
+      status: "disabled",
+      model: "",
+      title: "",
       summary: "",
-      body: "演示模式下，拍照记录只保存在当前浏览器，不会上传或调用 AI。",
-      status: "active",
-      meta: {
-        ai: {
-          status: "disabled",
-          model: "",
-          title: "",
-          summary: "",
-          tags: [],
-          suggestions: [],
-          recognizedAt: "",
-          applied: false,
-        },
-        convertedSuggestions: [],
-        source: "daily",
-      },
-      createdBy: "demo-user",
-      createdAt: now,
-      updatedAt: now,
-      images: [],
+      tags: [],
+      suggestions: [],
+      recognizedAt: "",
+      applied: false,
     },
+    convertedSuggestions: [],
+    source: "daily",
+  });
+  const makeDemoEntry = (area, title, body) => ({
+    id: `local-demo-${crypto.randomUUID()}`,
+    spaceId: "demo-personal",
+    area,
+    entryDate: dailyDateString(),
+    title,
+    summary: "",
+    body,
+    status: "active",
+    meta: demoMeta(),
+    createdBy: "demo-user",
+    createdAt: now,
+    updatedAt: now,
+    images: [],
+  });
+  return [
+    makeDemoEntry(
+      "work",
+      "演示：拍一张白板开始记录",
+      "演示模式下，拍照记录只保存在当前浏览器，不会上传或调用 AI。",
+    ),
+    makeDemoEntry(
+      "life",
+      "周末散步时拍下的小路",
+      "路边的树影落在墙上，走慢一点才注意到。",
+    ),
+    makeDemoEntry(
+      "life",
+      "家里做的一顿晚饭",
+      "两菜一汤，认真吃饭也是生活里的小记录。",
+    ),
   ];
 }
 function renderDailyEntry(entry) {
@@ -3410,6 +3546,9 @@ function renderDailyEntryActions(entry, ai) {
 }
 function showDailyLightbox(images, index) {
   let current = index;
+  // Escape 已由 <dialog> 的 cancel 事件统一处理（见 modal 监听），这里只绑定
+  // 方向键；监听仅在灯箱打开期间生效，关闭时经 modalCleanup 移除，不泄漏到其他视图。
+  let onKeyDown = null;
   showModal("图片预览", (body) => {
     const wrap = el("div", "daily-lightbox");
     const img = el("img");
@@ -3424,17 +3563,30 @@ function showDailyLightbox(images, index) {
     wrap.append(img);
     body.append(wrap, counter);
     if (images.length > 1) {
-      const controls = el("div", "daily-lightbox-controls");
-      const prev = button("上一张", "button secondary", () => {
+      const goPrev = () => {
         current = (current - 1 + images.length) % images.length;
         renderImage();
-      });
-      const next = button("下一张", "button primary", () => {
+      };
+      const goNext = () => {
         current = (current + 1) % images.length;
         renderImage();
-      });
+      };
+      const controls = el("div", "daily-lightbox-controls");
+      const prev = button("上一张", "button secondary", goPrev);
+      const next = button("下一张", "button primary", goNext);
       controls.append(prev, next);
       body.append(controls);
+      onKeyDown = (event) => {
+        if (event.key === "ArrowLeft") {
+          event.preventDefault();
+          goPrev();
+        } else if (event.key === "ArrowRight") {
+          event.preventDefault();
+          goNext();
+        }
+      };
+      document.addEventListener("keydown", onKeyDown);
+      modalCleanup = () => document.removeEventListener("keydown", onKeyDown);
     }
   });
 }
@@ -3485,7 +3637,8 @@ async function convertSuggestion(entry, text) {
         area: entry.area,
         title: text,
         body: "",
-        status: "todo",
+        // 前端状态机与编辑器只产出 active/done，待办初始状态必须与之一致
+        status: "active",
         meta: { source: "daily-suggestion", entryId: entry.id },
       });
       const converted = [
@@ -3663,7 +3816,7 @@ function showVoice() {
     const explanation = el(
       "p",
       "voice-explanation",
-      "录音需要麦克风权限与 HTTPS 连接。音频只在点击保存时上传到当前空间，每份文件最大 25 MB。",
+      `录音需要麦克风权限与 HTTPS 连接。音频只在点击保存时上传到当前空间，每份文件最大 ${MAX_UPLOAD_MB} MB。`,
     );
     const transcriptWrap = el("div", "voice-transcript");
     const transcript = el("textarea");
@@ -3829,9 +3982,9 @@ function showVoice() {
           previewURL = URL.createObjectURL(blob);
           audio.src = previewURL;
           audio.hidden = false;
-          save.disabled = !blob.size || blob.size > 25 * 1024 * 1024;
+          save.disabled = !blob.size || blob.size > MAX_UPLOAD_MB * 1024 * 1024;
           status.textContent = save.disabled
-            ? "录音超过 25 MB，请缩短后重试"
+            ? `录音超过 ${MAX_UPLOAD_MB} MB，请缩短后重试`
             : "录音已就绪，可以预听后保存。";
         });
         recorder.start(1000);
@@ -3842,7 +3995,8 @@ function showVoice() {
         tick = window.setInterval(() => {
           const sec = Math.floor((Date.now() - startAt) / 1000);
           timer.textContent = `${String(Math.floor(sec / 60)).padStart(2, "0")}:${String(sec % 60).padStart(2, "0")}`;
-          if (chunks.reduce((sum, b) => sum + b.size, 0) > 24 * 1024 * 1024)
+          // 到达上限前 1 MB 自动停止，给编码收尾留出余量，避免录音超限
+          if (chunks.reduce((sum, b) => sum + b.size, 0) > (MAX_UPLOAD_MB - 1) * 1024 * 1024)
             stopRecording();
         }, 500);
         if (Recognition && transcriptWrap.dataset.enabled === "true") {

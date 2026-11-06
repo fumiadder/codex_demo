@@ -145,7 +145,15 @@
       configureCapabilities();
       return true;
     } catch (error) {
-      if (error.name !== "AbortError") expireSession("暂时无法确认空间访问权限，请返回工作台重新打开。");
+      // 只有明确的 401/403 HTTP 响应才结束会话；网络抖动、超时、AbortError
+      // 静默等待下一轮 30 秒轮询，避免朗读被不可逆地中断。
+      if (error.name === "AbortError") return false;
+      if (error.status === 401) { expireSession(); return false; }
+      if (error.status === 403) {
+        expireSession("这个空间已无法访问，请返回工作台。");
+        return false;
+      }
+      console.warn("成员资格轮询暂时失败，保留当前会话，等待下一次轮询。", error);
       return false;
     }
   }
