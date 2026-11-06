@@ -51,6 +51,12 @@ const state = {
 };
 // 单一事实源：/api/config 未下发上传上限时，与服务端 MAX_UPLOAD_BYTES 保持一致
 const MAX_UPLOAD_MB = 25;
+// 与注册表单 minlength 及服务端账号校验保持一致的密码最小长度
+const PASSWORD_MIN_LENGTH = 10;
+// 注销账号时必须逐字键入的确认短语
+const ACCOUNT_DELETE_PHRASE = "删除我的账号";
+// 进行中的导出请求，防止重复点击造成重入
+const exportPending = new Set();
 const names = {
   overview: "今天，也从容一点。",
   daily: "拍下来，就是今天的记录。",
@@ -492,6 +498,152 @@ function closeModal(restoreFocus = true) {
     modalReturnFocus.focus({ preventScroll: true });
   modalReturnFocus = null;
   updateVisualViewport();
+}
+
+// 从 Content-Disposition 解析下载文件名，兼容 filename* 与普通 filename
+function downloadFilename(disposition, fallback) {
+  if (typeof disposition !== "string") return fallback;
+  const star = /filename\*\s*=\s*(?:UTF-8'')?([^;]+)/i.exec(disposition);
+  if (star) {
+    try {
+      return decodeURIComponent(star[1].trim().replace(/^"|"$/g, ""));
+    } catch {
+      /* 编码异常时退回普通 filename */
+    }
+  }
+  const plain = /filename\s*=\s*"?([^";]+)"?/i.exec(disposition);
+  if (plain) return plain[1].trim();
+  return fallback;
+}
+
+// 用隐藏锚点触发 blob 下载，返回对象 URL 供调用方在 finally 中回收
+function triggerBlobDownload(blob, filename) {
+  const objectURL = URL.createObjectURL(blob);
+  state.objectURLs.add(objectURL);
+  const anchor = el("a");
+  anchor.href = objectURL;
+  anchor.download = filename;
+  anchor.rel = "noopener";
+  anchor.hidden = true;
+  document.body.append(anchor);
+  anchor.click();
+  anchor.remove();
+  return objectURL;
+}
+
+// 空间数据导出：GET 拿到 zip 二进制流，校验类型后落地为浏览器下载
+async function exportSpaceData(space, format, trigger) {
+  if (state.demo) {
+    toast("演示模式不提供导出", true);
+    return;
+  }
+  const key = `${space.id}:${format}`;
+  if (exportPending.has(key)) return;
+  const originalText = trigger.textContent;
+  exportPending.add(key);
+  trigger.disabled = true;
+  trigger.textContent = "导出中…";
+  let objectURL = "";
+  try {
+    const path = `/api/spaces/${encodeURIComponent(space.id)}/export?format=${encodeURIComponent(format)}`;
+    let response;
+    try {
+      response = await fetch(path, {
+        method: "GET",
+        credentials: "same-origin",
+        headers: {
+          Accept: "application/zip",
+          ...(state.user?.id ? { "X-Expected-User": state.user.id } : {}),
+        },
+      });
+    } catch {
+      throw new Error("无法连接工作台服务，请检查网络后重试。");
+    }
+    if (response.status === 401) {
+      showAuth();
+      throw new Error("登录已过期，请重新登录。");
+    }
+    const contentType = response.headers.get("Content-Type") || "";
+    if (!response.ok || !contentType.includes("zip")) {
+      let result = {};
+      try {
+        result = await response.json();
+      } catch {
+        /* 非 JSON 错误响应，交给通用状态文案 */
+      }
+      throw Object.assign(
+        new Error(apiStatusMessage(response.status, result, response)),
+        { status: response.status },
+      );
+    }
+    const blob = await response.blob();
+    const date = new Intl.DateTimeFormat("zh-CN", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      timeZone: "Asia/Shanghai",
+    })
+      .format(new Date())
+      .replace(/\//g, "-");
+    const fallback = `知序导出-${space.name}-${format}-${date}.zip`;
+    const filename = downloadFilename(
+      response.headers.get("Content-Disposition"),
+      fallback,
+    );
+    objectURL = triggerBlobDownload(blob, filename);
+    toast(`已开始导出 ${format.toUpperCase()} 文件`);
+  } catch (err) {
+    toast(errorMessage(err), true);
+  } finally {
+    if (objectURL) {
+      URL.revokeObjectURL(objectURL);
+      state.objectURLs.delete(objectURL);
+    }
+    exportPending.delete(key);
+    if (trigger.isConnected) {
+      trigger.disabled = state.demo;
+      trigger.textContent = originalText;
+    }
+  }
+}
+
+// 空间卡片内的「导出我的数据」分组与删除入口，仅 owner 可见完整操作
+function buildSpaceDataControls(space) {
+  const wrap = el("div", "space-data-actions");
+  if (space.role !== "owner") {
+    wrap.append(el("p", "export-note", "仅空间所有者可导出"));
+    return wrap;
+  }
+  const group = el("div", "export-group");
+  group.append(el("h4", "", "导出我的数据"));
+  const actions = el("div", "export-actions");
+  const formats = [
+    ["JSON", "json"],
+    ["Markdown", "markdown"],
+    ["HTML", "html"],
+  ];
+  formats.forEach(([label, format]) => {
+    const b = button(
+      label,
+      "button secondary",
+      (event) => exportSpaceData(space, format, event.currentTarget),
+    );
+    if (state.demo) b.disabled = true;
+    actions.append(b);
+  });
+  group.append(actions);
+  if (state.demo) {
+    group.append(el("p", "export-note", "演示模式不提供导出"));
+  } else {
+    group.append(
+      el("p", "helper", "导出内容打包为 ZIP 下载，包含该空间内你的工作与生活记录。"),
+    );
+  }
+  wrap.append(group);
+  wrap.append(
+    button("删除空间", "text-button danger-text", () => confirmDeleteSpace(space), "trash"),
+  );
+  return wrap;
 }
 
 function demoItems() {
@@ -1664,7 +1816,7 @@ function renderSpaces(content) {
     );
     if (space.id !== state.space.id)
       row.append(button("查看成员", "text-button", () => showMembers(space)));
-    card.append(row);
+    card.append(row, buildSpaceDataControls(space));
     grid.append(card);
   });
   content.append(grid);
@@ -2456,6 +2608,7 @@ function showProfile() {
     );
     body.append(
       actionsRow(
+        button("账号设置", "button soft", showAccountSettings, "settings"),
         button(
           state.demo ? "退出演示" : "退出登录",
           "button secondary",
@@ -2476,6 +2629,317 @@ function showProfile() {
         ),
       ),
     );
+  });
+}
+
+// 数据与账号设置中心：昵称、密码与注销账号
+function showAccountSettings() {
+  showModal(
+    "数据与账号",
+    (body) => {
+      body.append(
+        buildNicknameSection(),
+        buildPasswordSection(),
+        buildAccountDangerZone(),
+      );
+    },
+    "账号设置",
+  );
+}
+
+function modalAlertError(node, message) {
+  node.textContent = message;
+}
+
+function buildNicknameSection() {
+  const section = el("section", "account-section");
+  section.append(el("h3", "", "修改昵称"));
+  const form = el("form");
+  const name = input("text", "怎么称呼你", state.user?.name || "");
+  name.maxLength = 80;
+  name.autocomplete = "nickname";
+  name.required = true;
+  if (state.demo) name.disabled = true;
+  const error = el("p", "form-error");
+  error.setAttribute("role", "alert");
+  const save = el("button", "button primary", "保存昵称");
+  save.type = "submit";
+  if (state.demo) save.disabled = true;
+  form.append(
+    labelField("昵称", name),
+    error,
+    actionsRow(save),
+  );
+  if (state.demo)
+    form.append(el("p", "helper", "演示模式不连接账号服务，昵称与账号资料不会上传。"));
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const next = name.value.trim();
+    modalAlertError(error, "");
+    if (!next) {
+      modalAlertError(error, "请输入昵称");
+      return;
+    }
+    if (next === state.user.name) {
+      modalAlertError(error, "昵称没有变化");
+      return;
+    }
+    save.disabled = true;
+    try {
+      if (!state.demo) {
+        const result = await api("/api/me", "PATCH", { name: next });
+        state.user = { ...state.user, ...result.user };
+      } else {
+        state.user = { ...state.user, name: next };
+      }
+      if (!$("#modal").open) return;
+      $("#user-name").textContent = state.user.name || "我的账户";
+      $("#user-avatar").textContent = (state.user.name || "知").slice(0, 1);
+      name.value = state.user.name;
+      toast("昵称已更新");
+    } catch (err) {
+      if (!$("#modal").open) return;
+      modalAlertError(error, errorMessage(err));
+      save.disabled = false;
+    }
+  });
+  section.append(form);
+  return section;
+}
+
+function buildPasswordSection() {
+  const section = el("section", "account-section");
+  section.append(el("h3", "", "修改密码"));
+  if (state.demo) {
+    section.append(
+      el("p", "helper", "演示模式不提供账号密码修改，创建账户后可在此更新登录密码。"),
+    );
+    return section;
+  }
+  const form = el("form");
+  const current = input("password", "当前登录密码");
+  current.autocomplete = "current-password";
+  current.required = true;
+  // 不在 DOM 上设置 minLength：长度规则交给下方统一的中文校验，
+  // 避免浏览器原生提示绕过 role=alert 的错误文案
+  const next = input("password", `新密码，至少 ${PASSWORD_MIN_LENGTH} 位字符`);
+  next.autocomplete = "new-password";
+  next.required = true;
+  const confirm = input("password", "再次输入新密码");
+  confirm.autocomplete = "new-password";
+  confirm.required = true;
+  const error = el("p", "form-error");
+  error.setAttribute("role", "alert");
+  const save = el("button", "button primary", "更新密码");
+  save.type = "submit";
+  form.append(
+    labelField("当前密码", current),
+    labelField("新密码", next),
+    labelField("确认新密码", confirm),
+    error,
+    actionsRow(save),
+  );
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    modalAlertError(error, "");
+    if (!current.value) {
+      modalAlertError(error, "请输入当前密码");
+      return;
+    }
+    if (next.value.length < PASSWORD_MIN_LENGTH) {
+      modalAlertError(error, `新密码至少需要 ${PASSWORD_MIN_LENGTH} 位字符`);
+      return;
+    }
+    if (next.value !== confirm.value) {
+      modalAlertError(error, "两次输入的新密码不一致");
+      return;
+    }
+    save.disabled = true;
+    try {
+      // 后端事实契约：密码变更嵌套在 password 对象内，成功后服务端轮换会话
+      await api("/api/me", "PATCH", {
+        password: {
+          currentPassword: current.value,
+          newPassword: next.value,
+        },
+      });
+      if (!$("#modal").open) return;
+      current.value = "";
+      next.value = "";
+      confirm.value = "";
+      toast("密码已更新，下次登录请使用新密码");
+    } catch (err) {
+      if (!$("#modal").open) return;
+      modalAlertError(error, errorMessage(err));
+    } finally {
+      if ($("#modal").open) save.disabled = false;
+    }
+  });
+  section.append(form);
+  return section;
+}
+
+function buildAccountDangerZone() {
+  const section = el("section", "account-section danger-zone");
+  section.append(el("h3", "", "危险区"));
+  section.append(
+    el(
+      "p",
+      "helper",
+      "注销账号会删除你的登录身份与名下空间，操作无法恢复。需要保留的数据请先在空间与协作中导出。",
+    ),
+  );
+  if (state.demo) {
+    section.append(
+      el("p", "helper", "演示模式没有真实账号，直接退出演示即可清空本地样例。"),
+    );
+    return section;
+  }
+  section.append(
+    button("注销账号", "button danger", confirmDeleteAccount, "trash"),
+  );
+  return section;
+}
+
+// 注销账号二次确认：密码 + 逐字键入确认短语，缺一不可启用红色按钮
+function confirmDeleteAccount() {
+  showModal(
+    "注销账号",
+    (body) => {
+      body.append(
+        el(
+          "p",
+          "modal-body-note",
+          "注销后账号、名下空间与全部记录将被删除且无法恢复，当前登录会话会立即失效。",
+        ),
+      );
+      const form = el("form");
+      const password = input("password", "登录密码");
+      password.autocomplete = "current-password";
+      password.required = true;
+      const phrase = input("text", `请输入「${ACCOUNT_DELETE_PHRASE}」确认`);
+      phrase.autocomplete = "off";
+      phrase.autocapitalize = "none";
+      phrase.required = true;
+      const error = el("p", "form-error");
+      error.setAttribute("role", "alert");
+      const confirmBtn = el("button", "button danger", "确认注销账号");
+      confirmBtn.type = "submit";
+      confirmBtn.disabled = true;
+      const sync = () => {
+        confirmBtn.disabled =
+          !password.value || phrase.value.trim() !== ACCOUNT_DELETE_PHRASE;
+      };
+      password.addEventListener("input", sync);
+      phrase.addEventListener("input", sync);
+      form.append(
+        labelField("登录密码", password),
+        labelField("确认文字", phrase),
+        el(
+          "p",
+          "helper",
+          `请逐字键入「${ACCOUNT_DELETE_PHRASE}」六个字，注销按钮才会启用。`,
+        ),
+        error,
+        actionsRow(button("取消", "button secondary", closeModal), confirmBtn),
+      );
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        modalAlertError(error, "");
+        confirmBtn.disabled = true;
+        try {
+          await api("/api/me/account", "DELETE", { password: password.value });
+          // 成功即会话失效：复用退出登录的本地清理，回到登录页
+          for (const url of state.objectURLs) URL.revokeObjectURL(url);
+          state.objectURLs.clear();
+          state.demo = false;
+          state.demoStore = {};
+          state.demoVaults = {};
+          state.demoDaily = {};
+          closeModal();
+          showAuth();
+          toast("账号已注销");
+        } catch (err) {
+          if (!$("#modal").open) return;
+          modalAlertError(error, errorMessage(err));
+          confirmBtn.disabled = false;
+          password.focus();
+        }
+      });
+      body.append(form);
+    },
+    "危险区",
+  );
+}
+
+// 删除空间二次确认：键入空间全名才能启用删除；409 时原样展示后端说明
+function confirmDeleteSpace(space) {
+  showModal("删除这个空间？", (body) => {
+    body.append(
+      el(
+        "p",
+        "modal-body-note",
+        `「${space.name}」删除后无法恢复，空间内的记录、媒体与密码箱副本会一并删除。${
+          (space.member_count || 1) > 1
+            ? "该空间仍有其他成员，需要先移除全部成员。"
+            : ""
+        }`,
+      ),
+    );
+    const form = el("form");
+    const phrase = input("text", `请输入空间全名「${space.name}」以确认`);
+    phrase.autocomplete = "off";
+    phrase.autocapitalize = "none";
+    phrase.required = true;
+    const error = el("p", "form-error");
+    error.setAttribute("role", "alert");
+    const remove = el("button", "button danger", "确认删除空间");
+    remove.type = "submit";
+    remove.disabled = true;
+    phrase.addEventListener("input", () => {
+      remove.disabled = phrase.value !== space.name;
+    });
+    form.append(
+      labelField("空间全名", phrase),
+      error,
+      actionsRow(button("取消", "button secondary", closeModal), remove),
+    );
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (phrase.value !== space.name) return;
+      modalAlertError(error, "");
+      remove.disabled = true;
+      try {
+        if (state.demo) {
+          delete state.demoStore[space.id];
+          state.spaces = state.spaces.filter((s) => s.id !== space.id);
+        } else {
+          await api(`/api/spaces/${space.id}`, "DELETE");
+          const fresh = await api("/api/spaces");
+          state.spaces = fresh.spaces || fresh;
+        }
+        closeModal();
+        toast("空间已删除");
+        if (state.space?.id === space.id) {
+          if (state.spaces.length) {
+            await switchSpace(state.spaces[0].id);
+          } else {
+            state.space = null;
+            state.items = [];
+            render();
+            showCreateSpace();
+          }
+        } else {
+          render();
+        }
+      } catch (err) {
+        if (!$("#modal").open) return;
+        // 409 等后端中文消息已包含「先移除成员」等行动指引，原样展示
+        modalAlertError(error, errorMessage(err));
+        remove.disabled = false;
+      }
+    });
+    body.append(form);
   });
 }
 
@@ -4163,6 +4627,7 @@ $("#mobile-new").addEventListener("click", showNew);
 $("#space-switcher").addEventListener("click", showSpaceSwitcher);
 $("#search-button").addEventListener("click", showSearch);
 $("#profile-button").addEventListener("click", showProfile);
+$("#account-settings-button").addEventListener("click", showAccountSettings);
 $("#modal-close").addEventListener("click", closeModal);
 $("#modal").addEventListener("cancel", (event) => {
   event.preventDefault();
