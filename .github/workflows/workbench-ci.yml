@@ -85,16 +85,31 @@ jobs:
         env:
           PYTHONUNBUFFERED: '1'
         run: python scripts/bedtime_browser_qa.py
+      - name: Check shared-space collaboration and recording recovery
+        working-directory: workbench
+        env:
+          PYTHONUNBUFFERED: '1'
+        run: python scripts/collaboration_qa.py
       - name: Check life category and safe sign-in return links
         working-directory: workbench
         env:
           PYTHONUNBUFFERED: '1'
         run: python scripts/life_entry_browser_qa.py
+      - name: Check work and life navigation menus visually
+        working-directory: workbench
+        env:
+          PYTHONUNBUFFERED: '1'
+        run: python scripts/menu_visual_check.py
       - name: Check daily image capture and no-key vision degradation
         working-directory: workbench
         env:
           PYTHONUNBUFFERED: '1'
         run: python scripts/daily_browser_qa.py
+      - name: Check frontend error handling, vault retry and preview sandbox
+        working-directory: workbench
+        env:
+          PYTHONUNBUFFERED: '1'
+        run: python scripts/frontend_hardening_qa.py
       - name: Check desktop stories and voice upload links
         working-directory: workbench
         env:

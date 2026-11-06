@@ -1,5 +1,32 @@
 # 验证记录
 
+## 审计缺陷修复与安全加固（批次 0）
+
+本次修复来自四个只读审计（前端、后端、测试基线、市面对标）发现的 P1/P2，无数据库结构变化（无 ALTER/DROP、无新表），旧镜像可直接运行现有数据库。
+
+后端（`server.py`、`daily.py`、`bedtime.py`、`storage_jobs.py`）：
+
+- 今日记录暂存图片纳入存储配额：`storage_jobs.usage()` 统计表加入 `daily_uploads`，1 小时暂存窗口不再脱离配额；`linked()` 同时检查 `files`、`daily_uploads`、`daily_images`，慢 PUT 的迟到对象不会被误删。
+- 图片解压炸弹防护：模块级 `Image.MAX_IMAGE_PIXELS=6400 万`，检查与降采样路径都把 Pillow 警告提升为错误，超大尺寸图片在分配像素前返回 400 中文提示。
+- 晚安故事朗读合成的音色存在性、配额与磁盘检查全部前移到付费供应商调用之前，最坏 10MB 预检、保存时按真实大小二次校验，容量不足不再产生费用。
+- 深层嵌套 JSON 的 `RecursionError` 返回 400 而非 500；限流桶超 5000 个时淘汰最旧 25% 桶，不再对全部用户误伤 429；过期会话在启动与低频维护路径有界分批清扫（每批 1000 行）。
+- 今日记录图片上传增加每账号 60 次/小时限流，在读取大报文前生效。
+- 新增 9 项单元测试覆盖配额三态不双重计数、暂存拒绝无残留、上传限流不波及他人、炸弹 PNG 拦截、供应商零调用的配额预检、深嵌套 JSON、限流淘汰与会话清扫。
+
+前端（`public/app.js`、`public/bedtime.js`、`public/bedtime.html`、`public/styles.css`）：
+
+- 图片识别建议转待办的初始状态由 `todo` 改为 `active`，与编辑器和状态机一致，并有浏览器断言拦截请求载荷与持久化值。
+- 新建密码箱持久化失败时保留已派生密钥与表单上下文，页面给出「重试创建密码箱」原地重试（PUT 幂等），不再清空状态造成分叉。
+- 晚安故事成员资格轮询只在明确 401/403 时结束会话，网络抖动、超时与 AbortError 静默等待下一轮，不中断朗读。
+- 演示数据补齐生活区媒体与今日记录；失败上传瓦片提供「重试／移除」并联动提交按钮；灯箱支持左右方向键循环、Escape 关闭且监听随弹窗清理；PDF 预览 iframe 使用不含脚本权限的 sandbox；429 读取 Retry-After 给出倒计时文案、503 保留后端具体中文提示；移除上传大小死参数与全部 25MB 硬编码（单一常量）；故事分类栏说明古风、寓言为经典库专属。
+- 新增 `scripts/frontend_hardening_qa.py`（密码箱 503 重试、429/503 文案映射、PDF sandbox、无页面错误），`free_deploy_qa.py` 改为支持 `QA_CHROMIUM`。
+
+本地验证（2026-11-06，Asia/Shanghai）：
+
+- 后端 242 项单元测试：除 `test_large_base64_clone_owner_isolation_and_provider_id_not_exposed` 的 macOS 回环大报文偶发 BrokenPipe 外全部通过；该用例在改动前的 HEAD 基线上同概率偶发（对照 4 次 1 过 3 败），隔离复跑可通过，Linux CI 不受影响，15 项 Postgres 跳过项为配置门禁。
+- 浏览器 QA 独立复跑 8 套全部退出 0：life_entry（6）、mobile（9）、daily（5）、menu_visual（2）、frontend_hardening（4）、bedtime（11）、warm_story（11）、collaboration（7）。
+- `node --check`、`py_compile`、`bash -n` 全部通过；CI 工作流补登 collaboration、menu_visual、frontend_hardening 三个浏览器检查。
+
 ## 工作／生活分区菜单差异化
 
 生活区不再复用同一份菜单：晚安故事并入生活区主导航，私密密码箱仅保留在工作区，共有功能在两个分区使用不同名称（工作区：今日记录／待办事项／灵感与笔记／媒体资料库；生活区：今日瞬间／生活清单／心情笔记／回忆收藏），页面标题与说明文案同步切换，移动端底部导航文案随分区变化。处于工作专属视图时切换到生活区会自动回到总览，不会停留在不可达的视图上。

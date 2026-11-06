@@ -1,4 +1,5 @@
 """Check test-mode disclosure and fail-safe behavior with a disposable server."""
+import os
 import sys
 import tempfile
 import threading
@@ -19,7 +20,7 @@ def run():
         origin = f"http://127.0.0.1:{server.server_port}"
         try:
             with sync_playwright() as p:
-                browser = p.chromium.launch(executable_path="/usr/bin/chromium", headless=True, args=["--no-sandbox"])
+                browser = p.chromium.launch(executable_path=os.environ.get("QA_CHROMIUM", "/usr/bin/chromium"), headless=True, args=["--no-sandbox"])
                 context = browser.new_context(viewport={"width": 1280, "height": 900}, locale="zh-CN")
                 page = context.new_page()
                 errors = []
