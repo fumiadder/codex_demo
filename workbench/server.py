@@ -34,6 +34,7 @@ from urllib.parse import parse_qs, unquote, urlsplit
 
 import bedtime
 import daily
+import export
 import storage_jobs
 from media_storage import create_storage, MissingMedia, StorageError
 from persistence import Database
@@ -179,6 +180,7 @@ class FolioServer(ThreadingHTTPServer):
             conn.executescript(storage_jobs.SCHEMA)
         bedtime.initialize(self)
         daily.initialize(self)
+        export.initialize(self)
         self.cleanup_media()
         self.purge_expired_sessions()
         super().__init__(address, FolioHandler)
@@ -212,6 +214,13 @@ class FolioServer(ThreadingHTTPServer):
             if time.monotonic() - self.last_storage_cleanup >= 60:
                 self.last_storage_cleanup = time.monotonic()
                 self.cleanup_media()
+                try:
+                    # The export module swallows its own errors; keep this guard
+                    # so a contract fault can neither block the session sweep nor
+                    # prevent the maintenance lock from being released below.
+                    export.run_maintenance(self)
+                except Exception:
+                    logging.warning("Export maintenance deferred")
                 self.purge_expired_sessions()
         finally:
             self.storage_maintenance_lock.release()
@@ -600,6 +609,8 @@ class FolioHandler(BaseHTTPRequestHandler):
             return
         if daily.dispatch(self, path, query):
             return
+        if export.dispatch(self, path, query):
+            return
         with self.server.db() as conn:
             user = self.current_user(conn)
             conn.commit()
@@ -612,7 +623,7 @@ class FolioHandler(BaseHTTPRequestHandler):
                     self.membership(conn, upload_route[1], user["id"], write=True)
                     conn.commit()
                     self._prepared_upload = self.prepare_upload()
-                elif method in ("POST", "PATCH", "PUT") and path != "/api/auth/logout":
+                elif (method in ("POST", "PATCH", "PUT") and path != "/api/auth/logout") or (method == "DELETE" and path == "/api/me/account"):
                     self.read_json()
                 else:
                     self.read_body(MAX_JSON_BYTES)
@@ -624,6 +635,14 @@ class FolioHandler(BaseHTTPRequestHandler):
             uid = user["id"]
             if path == "/api/me" and method == "GET":
                 result = {"user": user}
+            elif path == "/api/me" and method == "PATCH":
+                result = self.update_me(conn, user)
+                if result is None:
+                    # The helper already responded with a rotated session cookie.
+                    return
+            elif path == "/api/me/account" and method == "DELETE":
+                self.close_account(conn, user)
+                return
             elif path == "/api/auth/logout" and method == "POST":
                 conn.execute("DELETE FROM sessions WHERE token_hash=?", (self.token_hash,))
                 conn.commit()
@@ -642,6 +661,22 @@ class FolioHandler(BaseHTTPRequestHandler):
                 conn.execute("INSERT INTO spaces VALUES (?,?,?,?)", (space_id, name, uid, stamp))
                 conn.execute("INSERT INTO members VALUES (?,?,?)", (space_id, uid, "owner"))
                 result = {"space": {"id": space_id, "name": name, "owner_id": uid, "created_at": stamp, "role": "owner", "member_count": 1}}
+            elif space_match := re.fullmatch(rf"/api/spaces/({ID_RE})$", path):
+                if method != "DELETE":
+                    raise APIError(405, "不支持此请求方法")
+                sid = space_match[1]
+                self.membership(conn, sid, uid, owner=True)
+                if conn.execute("SELECT 1 FROM members WHERE space_id=? AND user_id<>? LIMIT 1", (sid, uid)).fetchone():
+                    raise APIError(409, "空间仍有其他成员，请先移除成员后再删除空间")
+                # Queue every private object before the cascading space delete;
+                # the job rows live in the same writer transaction.
+                self.queue_space_media(conn, sid)
+                remote_voices = self.snapshot_remote_voices(conn, "space_id=?", (sid,))
+                conn.execute("DELETE FROM spaces WHERE id=?", (sid,))
+                conn.commit()
+                self.release_remote_voices(remote_voices)
+                self.server.cleanup_media()
+                result = {"ok": True}
             elif match := re.fullmatch(rf"/api/spaces/({ID_RE})/items", path):
                 sid = match[1]
                 self.membership(conn, sid, uid, write=method == "POST")
@@ -703,9 +738,25 @@ class FolioHandler(BaseHTTPRequestHandler):
                         raise APIError(404, "成员不存在")
                     if target["role"] == "owner":
                         raise APIError(400, "无法移除空间所有者")
+                    # AGENTS.md: revocation must clear the member's generated
+                    # stories and reading state in this space. Private TTS audio
+                    # objects are queued before their rows disappear; favorites,
+                    # history and cloned voices are personal state and vanish too.
+                    # items/daily_entries stay untouched: they are shared space
+                    # records that remaining members continue to rely on.
+                    for audio in conn.execute("SELECT id,size FROM bedtime_audio WHERE space_id=? AND user_id=?", (sid, member_id)).fetchall():
+                        storage_jobs.queue_delete(conn, "bedtime-audio", audio["id"], sid, audio["size"])
+                    remote_voices = self.snapshot_remote_voices(conn, "space_id=? AND user_id=?", (sid, member_id))
+                    conn.execute("DELETE FROM bedtime_audio WHERE space_id=? AND user_id=?", (sid, member_id))
+                    conn.execute("DELETE FROM bedtime_favorites WHERE space_id=? AND user_id=?", (sid, member_id))
+                    conn.execute("DELETE FROM bedtime_history WHERE space_id=? AND user_id=?", (sid, member_id))
+                    conn.execute("DELETE FROM bedtime_voices WHERE space_id=? AND user_id=?", (sid, member_id))
                     conn.execute("DELETE FROM members WHERE space_id=? AND user_id=?", (sid, member_id))
                     # Revoking membership removes their personal vault copy too.
                     conn.execute("DELETE FROM vaults WHERE space_id=? AND user_id=?", (sid, member_id))
+                    conn.commit()
+                    self.release_remote_voices(remote_voices)
+                    self.server.cleanup_media()
                     result = {"ok": True}
                 else:
                     raise APIError(405, "不支持此请求方法")
@@ -740,6 +791,129 @@ class FolioHandler(BaseHTTPRequestHandler):
             else:
                 raise APIError(404, "接口不存在")
         self.json_response(201 if method == "POST" else 200, result)
+
+    def queue_space_media(self, conn, sid):
+        """Queue every private object referenced by a space before rows are deleted.
+
+        Deletion jobs are written inside the caller's writer transaction, so a
+        rollback never leaves a dangling deletion record; actual object I/O runs
+        after commit through cleanup_media, mirroring item and daily-entry removal.
+        files and daily_images share the uploads private-object namespace.
+        """
+        for media in conn.execute("SELECT id,size FROM files WHERE space_id=?", (sid,)).fetchall():
+            storage_jobs.queue_delete(conn, "uploads", media["id"], sid, media["size"])
+        for media in conn.execute("SELECT id,size FROM daily_images WHERE space_id=?", (sid,)).fetchall():
+            storage_jobs.queue_delete(conn, "uploads", media["id"], sid, media["size"])
+        for media in conn.execute("SELECT id,size FROM bedtime_audio WHERE space_id=?", (sid,)).fetchall():
+            storage_jobs.queue_delete(conn, "bedtime-audio", media["id"], sid, media["size"])
+
+    @staticmethod
+    def snapshot_remote_voices(conn, condition, params):
+        # bedtime_voices rows hold no local private object; remember their remote
+        # cloned-profile identifiers while the rows still exist, for best-effort
+        # vendor cleanup after the database transaction commits.
+        return conn.execute(
+            "SELECT provider_voice,target_model FROM bedtime_voices WHERE "
+            + condition + " AND provider_voice<>''",
+            params,
+        ).fetchall()
+
+    def release_remote_voices(self, voices):
+        # Follow bedtime's own voice-deletion rule, but outside the DB lock:
+        # only call the vendor while a provider is configured, and never let a
+        # missing key or a failed vendor call block revocation or teardown.
+        provider = getattr(self.server, "bedtime_provider", None)
+        if provider is None or not getattr(provider, "voice_enabled", False):
+            return
+        for voice in voices:
+            try:
+                bedtime.delete_provider_voice(self, voice["provider_voice"], voice["target_model"])
+            except Exception:
+                logging.warning("Remote bedtime voice cleanup deferred")
+
+    def update_me(self, conn, user):
+        data = self.read_json()
+        new_name = None
+        if "name" in data:
+            new_name = self.string(data.get("name", ""), "姓名", 80, True)
+        rotating = False
+        if "password" in data:
+            change = data["password"]
+            if not isinstance(change, dict):
+                raise APIError(400, "密码变更参数无效")
+            current_password = change.get("currentPassword", "")
+            new_password = change.get("newPassword", "")
+            row = conn.execute("SELECT password_hash FROM users WHERE id=?", (user["id"],)).fetchone()
+            if not isinstance(current_password, str) or not verify_password(current_password, row["password_hash"]):
+                raise APIError(400, "当前密码错误，请重新输入")
+            if not isinstance(new_password, str) or not 10 <= len(new_password) <= 1024:
+                raise APIError(400, "新密码至少需要 10 个字符，且不得超过 1024 个字符")
+            conn.execute("UPDATE users SET password_hash=? WHERE id=?", (hash_password(new_password), user["id"]))
+            # Rotate every session, including the current one: old cookies stop
+            # working immediately and this response carries the replacement.
+            token = secrets.token_urlsafe(32)
+            token_hash = hashlib.sha256(token.encode()).hexdigest()
+            conn.execute("DELETE FROM sessions WHERE user_id=?", (user["id"],))
+            conn.execute("INSERT INTO sessions VALUES (?,?,?)",
+                         (token_hash, user["id"], int(time.time()) + SESSION_SECONDS))
+            rotating = True
+        if new_name is not None:
+            conn.execute("UPDATE users SET name=? WHERE id=?", (new_name, user["id"]))
+        if new_name is None and not rotating:
+            raise APIError(400, "没有需要更新的账号信息")
+        updated = dict(conn.execute(
+            "SELECT id,email,name,created_at FROM users WHERE id=?", (user["id"],)
+        ).fetchone())
+        if rotating:
+            conn.commit()
+            self.json_response(200, {"user": updated}, self.session_cookie(token))
+            return None
+        return {"user": updated}
+
+    def close_account(self, conn, user):
+        data = self.read_json()
+        password = data.get("password", "")
+        row = conn.execute("SELECT password_hash FROM users WHERE id=?", (user["id"],)).fetchone()
+        if not isinstance(password, str) or not verify_password(password, row["password_hash"]):
+            raise APIError(400, "密码错误，请重新输入")
+        uid = user["id"]
+        if conn.execute(
+            "SELECT 1 FROM spaces s WHERE s.owner_id=? AND EXISTS "
+            "(SELECT 1 FROM members m WHERE m.space_id=s.id AND m.user_id<>? LIMIT 1)",
+            (uid, uid),
+        ).fetchone():
+            raise APIError(409, "你拥有的空间仍有其他成员，请先移除成员或转让空间后再注销账号")
+        # created_by intentionally has no ON DELETE cascade: shared records belong
+        # to the space, so they must be resolved while the account still exists.
+        if conn.execute(
+            "SELECT 1 FROM items WHERE created_by=? AND space_id NOT IN (SELECT id FROM spaces WHERE owner_id=?) "
+            "UNION ALL SELECT 1 FROM daily_entries WHERE created_by=? AND space_id NOT IN (SELECT id FROM spaces WHERE owner_id=?) "
+            "UNION ALL SELECT 1 FROM daily_uploads WHERE created_by=? AND space_id NOT IN (SELECT id FROM spaces WHERE owner_id=?) "
+            "UNION ALL SELECT 1 FROM daily_digests WHERE created_by=? AND space_id NOT IN (SELECT id FROM spaces WHERE owner_id=?) "
+            "LIMIT 1",
+            (uid, uid) * 4,
+        ).fetchone():
+            raise APIError(409, "你在他人空间仍保留共享记录，请先联系空间所有者处理后再注销账号")
+        for owned in conn.execute("SELECT id FROM spaces WHERE owner_id=?", (uid,)).fetchall():
+            sid = owned["id"]
+            for media in conn.execute("SELECT id,size FROM files WHERE space_id=?", (sid,)).fetchall():
+                storage_jobs.queue_delete(conn, "uploads", media["id"], sid, media["size"])
+            for media in conn.execute("SELECT id,size FROM daily_images WHERE space_id=?", (sid,)).fetchall():
+                storage_jobs.queue_delete(conn, "uploads", media["id"], sid, media["size"])
+        # Private TTS audio is per-account; this also covers audio in spaces owned
+        # by someone else, whose bedtime_audio rows cascade with the user delete.
+        for audio in conn.execute("SELECT id,space_id,size FROM bedtime_audio WHERE user_id=?", (uid,)).fetchall():
+            storage_jobs.queue_delete(conn, "bedtime-audio", audio["id"], audio["space_id"], audio["size"])
+        remote_voices = self.snapshot_remote_voices(conn, "user_id=?", (uid,))
+        # spaces.owner_id does not cascade, so remove owned spaces first; their
+        # cascades clear members/items/files/vaults/daily and bedtime rows, then
+        # the user delete cascades remaining sessions/memberships/private state.
+        conn.execute("DELETE FROM spaces WHERE owner_id=?", (uid,))
+        conn.execute("DELETE FROM users WHERE id=?", (uid,))
+        conn.commit()
+        self.release_remote_voices(remote_voices)
+        self.server.cleanup_media()
+        self.json_response(200, {"ok": True}, self.session_cookie())
 
     @staticmethod
     def validate_vault(data):

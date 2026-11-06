@@ -18,6 +18,7 @@ from pathlib import Path
 from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import export
 from server import APIError, COOKIE_NAME, INVITATION_ERROR, MAX_UPLOAD_BYTES, FolioServer, verify_password
 from scripts.manage_access import issue_invitation, main as manage_access_main, revoke_invitation
 
@@ -795,6 +796,328 @@ class ServerTests(unittest.TestCase):
         self.server.maybe_cleanup()
         with self.server.db() as conn:
             self.assertEqual(conn.execute("SELECT count(*) FROM sessions").fetchone()[0], 1)
+
+
+    # ----- account / space lifecycle fixtures ---------------------------------
+
+    def seed_bedtime_state(self, sid, uid, *, audio_id=None, remote_voice=""):
+        """Create personal bedtime rows directly; clone needs a paid provider."""
+        stamp = "2026-01-01T00:00:00Z"
+        with self.server.db() as conn:
+            conn.execute("INSERT INTO bedtime_favorites VALUES (?,?,?,?,?)",
+                         (sid, uid, "seeded-story", json.dumps({"title": "种子故事"}), stamp))
+            conn.execute("INSERT INTO bedtime_history VALUES (?,?,?,?,?,?,?,?)",
+                         ("h" * 32, sid, uid, "seeded-story", json.dumps({"title": "种子故事"}),
+                          "system:local", 12.5, stamp))
+            conn.execute("INSERT INTO bedtime_voices VALUES (?,?,?,?,?,?,?,?)",
+                         ("v" * 32, sid, uid, "我的音色", "ready", remote_voice, "target-model", stamp))
+            if audio_id is not None:
+                conn.execute("INSERT INTO bedtime_audio VALUES (?,?,?,?,?)",
+                             (audio_id, sid, uid, 7, int(time.time())))
+
+    def seed_daily_entry(self, sid, uid, image_id):
+        stamp = "2026-01-01T00:00:00Z"
+        with self.server.db() as conn:
+            conn.execute(
+                "INSERT INTO daily_entries VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+                ("e" * 32, sid, "life", "2026-01-01", "速记", "摘要", "正文", "active",
+                 json.dumps({}), uid, stamp, stamp))
+            conn.execute(
+                "INSERT INTO daily_images (id,entry_id,space_id,name,mime,size,width,height,sort_order,created_at) "
+                "VALUES (?,?,?,?,?,?,?,?,?,?)",
+                (image_id, "e" * 32, sid, "note.jpg", "image/jpeg", 5, 8, 8, 0, stamp))
+
+    def table_count(self, table, where="", params=()):
+        with self.server.db() as conn:
+            return conn.execute("SELECT count(*) FROM " + table + (" WHERE " + where if where else ""), params).fetchone()[0]
+
+    def test_patch_me_updates_display_name(self):
+        cookie, user, _ = self.register()
+        status, body, headers = self.request("PATCH", "/api/me", {"name": "  新昵称  "}, cookie=cookie)
+        self.assertEqual(status, 200, body)
+        self.assertEqual(body["user"]["name"], "新昵称")
+        self.assertEqual(body["user"]["id"], user["id"])
+        self.assertNotIn("Set-Cookie", headers)
+        self.assertEqual(self.request("GET", "/api/me", cookie=cookie)[1]["user"]["name"], "新昵称")
+        self.assertEqual(self.request("PATCH", "/api/me", {}, cookie=cookie)[0], 400)
+        self.assertEqual(self.request("PATCH", "/api/me", {"name": "  "}, cookie=cookie)[0], 400)
+        self.assertEqual(self.request("PATCH", "/api/me", {"name": "x" * 81}, cookie=cookie)[0], 400)
+        # A name-only change must not touch existing sessions or the hash.
+        with self.server.db() as conn:
+            self.assertEqual(conn.execute("SELECT count(*) FROM sessions").fetchone()[0], 1)
+            self.assertTrue(verify_password("test-password-123",
+                                            conn.execute("SELECT password_hash FROM users WHERE id=?", (user["id"],)).fetchone()[0]))
+
+    def test_patch_me_password_rotation_invalidates_old_sessions(self):
+        cookie, user, _ = self.register()
+        second = self.request("POST", "/api/auth/login", {"email": "owner@example.com", "password": "test-password-123"})[2]["Set-Cookie"].split(";")[0]
+        bad = self.request("PATCH", "/api/me",
+                           {"password": {"currentPassword": "wrong-password", "newPassword": "new-password-456"}}, cookie=cookie)
+        self.assertEqual(bad[0], 400)
+        self.assertIn("当前密码", bad[1]["error"])
+        self.assertEqual(self.request("PATCH", "/api/me",
+                                      {"password": {"currentPassword": "test-password-123", "newPassword": "short"}}, cookie=cookie)[0], 400)
+        with self.server.db() as conn:
+            old_hash = conn.execute("SELECT password_hash FROM users WHERE id=?", (user["id"],)).fetchone()[0]
+        status, body, headers = self.request(
+            "PATCH", "/api/me",
+            {"name": "改名同时改密", "password": {"currentPassword": "test-password-123", "newPassword": "new-password-456"}},
+            cookie=cookie)
+        self.assertEqual(status, 200, body)
+        new_cookie = headers["Set-Cookie"].split(";")[0]
+        self.assertNotEqual(new_cookie, cookie)
+        self.assertEqual(body["user"]["name"], "改名同时改密")
+        # Every previous session, including the current and parallel logins, is dead.
+        self.assertEqual(self.request("GET", "/api/me", cookie=cookie)[0], 401)
+        self.assertEqual(self.request("GET", "/api/me", cookie=second)[0], 401)
+        self.assertEqual(self.request("GET", "/api/me", cookie=new_cookie)[0], 200)
+        self.assertEqual(self.request("POST", "/api/auth/login",
+                                      {"email": "owner@example.com", "password": "test-password-123"})[0], 401)
+        fresh = self.request("POST", "/api/auth/login",
+                             {"email": "owner@example.com", "password": "new-password-456"})
+        self.assertEqual(fresh[0], 200)
+        with self.server.db() as conn:
+            self.assertEqual(conn.execute("SELECT count(*) FROM sessions").fetchone()[0], 2)
+            self.assertNotEqual(conn.execute("SELECT password_hash FROM users WHERE id=?", (user["id"],)).fetchone()[0], old_hash)
+
+    def test_close_account_rejects_bad_password_and_shared_spaces(self):
+        owner, owner_user, space = self.register()
+        other, other_user, other_space = self.register("other@example.com")
+        self.member(owner, space["id"], "other@example.com")
+        denied = self.request("DELETE", "/api/me/account", {"password": "wrong-password"}, cookie=owner)
+        self.assertEqual(denied[:2], (400, {"error": "密码错误，请重新输入"}))
+        blocked = self.request("DELETE", "/api/me/account", {"password": "test-password-123"}, cookie=owner)
+        self.assertEqual(blocked[0], 409)
+        self.assertIn("成员", blocked[1]["error"])
+        # The blocked attempt changes nothing and queues no media jobs.
+        for table in ("users", "spaces", "members", "sessions"):
+            self.assertEqual(self.table_count(table), 2 if table != "members" else 3, table)
+        self.assertEqual(self.table_count("storage_jobs"), 0)
+        # A member's own shared record in someone else's space also blocks teardown,
+        # because created_by has no cascade and the record belongs to the space.
+        self.task(other, space["id"], title="协作者留下的共享任务")
+        shared_block = self.request("DELETE", "/api/me/account", {"password": "test-password-123"}, cookie=other)
+        self.assertEqual(shared_block[0], 409)
+        self.assertEqual(self.table_count("users"), 2)
+
+    def test_close_account_removes_all_rows_and_queues_private_media(self):
+        cookie, user, space = self.register()
+        sid = space["id"]
+        # Generic uploaded file (uploads namespace).
+        upload_status, upload_body, _ = self.upload(cookie, sid, b"private file bytes")
+        self.assertEqual(upload_status, 201, upload_body)
+        file_id = upload_body["item"]["meta"]["fileId"]
+        # Committed daily image, also an uploads-namespace private object.
+        image_id = "d" * 32
+        (self.server.upload_dir / image_id).write_bytes(b"image")
+        self.seed_daily_entry(sid, user["id"], image_id)
+        # Private bedtime audio object plus personal bedtime state.
+        audio_id = "b" * 32
+        (self.server.bedtime_audio_dir / audio_id).write_bytes(b"audio")
+        self.seed_bedtime_state(sid, user["id"], audio_id=audio_id)
+        self.request("PUT", f"/api/spaces/{sid}/vault", self.vault(), cookie=cookie)
+        deleted = []
+        real_delete = self.server.media_storage.delete
+        def record_delete(namespace, identifier):
+            deleted.append((namespace, identifier))
+            return real_delete(namespace, identifier)
+        with mock.patch.object(self.server.media_storage, "delete", side_effect=record_delete):
+            status, body, headers = self.request("DELETE", "/api/me/account", {"password": "test-password-123"}, cookie=cookie)
+        self.assertEqual(status, 200, body)
+        self.assertIn("Max-Age=0", headers["Set-Cookie"])
+        self.assertEqual(self.request("GET", "/api/me", cookie=cookie)[0], 401)
+        for table in ("users", "sessions", "spaces", "members", "items", "files", "vaults",
+                      "daily_entries", "daily_images", "daily_uploads", "daily_digests",
+                      "bedtime_favorites", "bedtime_history", "bedtime_voices", "bedtime_audio", "storage_jobs"):
+            self.assertEqual(self.table_count(table), 0, table)
+        self.assertEqual(sorted(deleted), sorted([("uploads", file_id), ("uploads", image_id), ("bedtime-audio", audio_id)]))
+        self.assertFalse((self.server.upload_dir / file_id).exists())
+        self.assertFalse((self.server.upload_dir / image_id).exists())
+        self.assertFalse((self.server.bedtime_audio_dir / audio_id).exists())
+
+    def test_close_account_storage_failure_keeps_durable_jobs_without_orphan_refs(self):
+        from media_storage import StorageError
+        import storage_jobs
+        cookie, user, space = self.register()
+        sid = space["id"]
+        _, upload_body, _ = self.upload(cookie, sid, b"orphan check")
+        file_id = upload_body["item"]["meta"]["fileId"]
+        image_id = "d" * 32
+        (self.server.upload_dir / image_id).write_bytes(b"image")
+        self.seed_daily_entry(sid, user["id"], image_id)
+        audio_id = "b" * 32
+        (self.server.bedtime_audio_dir / audio_id).write_bytes(b"audio")
+        self.seed_bedtime_state(sid, user["id"], audio_id=audio_id)
+        with mock.patch.object(self.server.media_storage, "delete",
+                               side_effect=StorageError("controlled storage outage")):
+            status, body, _ = self.request("DELETE", "/api/me/account", {"password": "test-password-123"}, cookie=cookie)
+        self.assertEqual(status, 200, body)
+        # All metadata references are gone; only durable retry jobs remain.
+        for table in ("users", "spaces", "items", "files", "daily_entries", "daily_images",
+                      "bedtime_audio", "bedtime_voices", "vaults", "sessions"):
+            self.assertEqual(self.table_count(table), 0, table)
+        with self.server.db() as conn:
+            jobs = conn.execute("SELECT namespace,id,state FROM storage_jobs").fetchall()
+        self.assertEqual(len(jobs), 3)
+        self.assertTrue(all(row["state"] == "delete" for row in jobs))
+        self.assertEqual({(row["namespace"], row["id"]) for row in jobs},
+                         {("uploads", file_id), ("uploads", image_id), ("bedtime-audio", audio_id)})
+        # The objects survive the outage, then the retryable jobs drain them.
+        self.assertTrue((self.server.upload_dir / file_id).exists())
+        # A failed deletion backs off by pushing created_at into the future; the
+        # existing retry contract resets the schedule before the next sweep.
+        with self.server.db() as conn:
+            conn.execute("UPDATE storage_jobs SET created_at=0")
+        storage_jobs.collect(self.server)
+        self.assertEqual(self.table_count("storage_jobs"), 0)
+        self.assertFalse((self.server.upload_dir / file_id).exists())
+        self.assertFalse((self.server.upload_dir / image_id).exists())
+        self.assertFalse((self.server.bedtime_audio_dir / audio_id).exists())
+
+    def test_delete_space_requires_owner_and_empty_membership(self):
+        owner, _, space = self.register()
+        editor, editor_user, _ = self.register("editor@example.com")
+        viewer, _, _ = self.register("viewer@example.com")
+        sid = space["id"]
+        self.member(owner, sid, "editor@example.com")
+        self.member(owner, sid, "viewer@example.com", "viewer")
+        self.assertEqual(self.request("DELETE", f"/api/spaces/{sid}", cookie=editor)[0], 403)
+        self.assertEqual(self.request("DELETE", f"/api/spaces/{sid}", cookie=viewer)[0], 403)
+        self.assertEqual(self.request("DELETE", f"/api/spaces/{'f' * 32}", cookie=owner)[0], 404)
+        blocked = self.request("DELETE", f"/api/spaces/{sid}", cookie=owner)
+        self.assertEqual(blocked[0], 409)
+        self.assertIn("成员", blocked[1]["error"])
+        self.request("DELETE", f"/api/spaces/{sid}/members/{editor_user['id']}", cookie=owner)
+        # The viewer still blocks deletion until the owner is alone.
+        self.assertEqual(self.request("DELETE", f"/api/spaces/{sid}", cookie=owner)[0], 409)
+
+    def test_delete_space_cascades_records_and_queues_media(self):
+        cookie, user, space = self.register()
+        sid = space["id"]
+        _, upload_body, _ = self.upload(cookie, sid, b"space file")
+        file_id = upload_body["item"]["meta"]["fileId"]
+        image_id = "d" * 32
+        (self.server.upload_dir / image_id).write_bytes(b"image")
+        self.seed_daily_entry(sid, user["id"], image_id)
+        audio_id = "b" * 32
+        (self.server.bedtime_audio_dir / audio_id).write_bytes(b"audio")
+        self.seed_bedtime_state(sid, user["id"], audio_id=audio_id)
+        self.task(cookie, sid, title="共享任务保留到空间消失为止")
+        self.request("PUT", f"/api/spaces/{sid}/vault", self.vault(), cookie=cookie)
+        deleted = []
+        real_delete = self.server.media_storage.delete
+        def record_delete(namespace, identifier):
+            deleted.append((namespace, identifier))
+            return real_delete(namespace, identifier)
+        with mock.patch.object(self.server.media_storage, "delete", side_effect=record_delete):
+            status, body, _ = self.request("DELETE", f"/api/spaces/{sid}", cookie=cookie)
+        self.assertEqual(status, 200, body)
+        for table in ("spaces", "members", "items", "files", "vaults", "daily_entries", "daily_images",
+                      "bedtime_favorites", "bedtime_history", "bedtime_voices", "bedtime_audio", "storage_jobs"):
+            self.assertEqual(self.table_count(table), 0, table)
+        # The account itself, its other session and personal space survive.
+        self.assertEqual(self.table_count("users"), 1)
+        self.assertEqual(self.request("GET", "/api/me", cookie=cookie)[0], 200)
+        self.assertEqual(sorted(deleted), sorted([("uploads", file_id), ("uploads", image_id), ("bedtime-audio", audio_id)]))
+        self.assertFalse((self.server.upload_dir / file_id).exists())
+        self.assertFalse((self.server.bedtime_audio_dir / audio_id).exists())
+
+    def test_member_revocation_clears_bedtime_state_but_keeps_shared_records(self):
+        owner, owner_user, space = self.register()
+        editor, editor_user, _ = self.register("editor@example.com")
+        sid = space["id"]
+        self.member(owner, sid, "editor@example.com")
+        prefix = f"/api/spaces/{sid}/bedtime"
+        self.assertEqual(self.request("PUT", prefix + "/favorites/moon-post-office", {}, editor)[0], 200)
+        self.assertEqual(self.request("POST", prefix + "/history",
+                                      {"storyId": "moon-post-office", "voiceId": "system:local", "positionSeconds": 3.0}, editor)[0], 200)
+        audio_id = "a" * 32
+        (self.server.bedtime_audio_dir / audio_id).write_bytes(b"audio")
+        self.seed_bedtime_state(sid, editor_user["id"], audio_id=audio_id)
+        self.request("PUT", f"/api/spaces/{sid}/vault", self.vault(), cookie=editor)
+        self.task(editor, sid, title="成员创建的共享任务")
+        deleted = []
+        real_delete = self.server.media_storage.delete
+        def record_delete(namespace, identifier):
+            deleted.append((namespace, identifier))
+            return real_delete(namespace, identifier)
+        with mock.patch.object(self.server.media_storage, "delete", side_effect=record_delete):
+            status, body, _ = self.request("DELETE", f"/api/spaces/{sid}/members/{editor_user['id']}", cookie=owner)
+        self.assertEqual(status, 200, body)
+        self.assertEqual(deleted, [("bedtime-audio", audio_id)])
+        self.assertFalse((self.server.bedtime_audio_dir / audio_id).exists())
+        for table in ("bedtime_favorites", "bedtime_history", "bedtime_voices", "bedtime_audio", "vaults"):
+            self.assertEqual(self.table_count(table, "space_id=? AND user_id=?", (sid, editor_user["id"])), 0, table)
+        self.assertEqual(self.table_count("members", "space_id=? AND user_id=?", (sid, editor_user["id"])), 0)
+        # The editor still owns their personal space and its membership row.
+        self.assertEqual(self.table_count("members", "user_id=?", (editor_user["id"],)), 1)
+        # Shared work/life records are intentionally retained for remaining members.
+        self.assertEqual(self.table_count("items"), 1)
+        self.assertEqual(self.request("GET", f"/api/spaces/{sid}/items", cookie=owner)[1]["items"][0]["title"], "成员创建的共享任务")
+        # The owner can never be removed through the membership endpoint.
+        self.assertEqual(self.request("DELETE", f"/api/spaces/{sid}/members/{owner_user['id']}", cookie=owner)[0], 400)
+        # Re-adding the member must not resurrect any personal bedtime state.
+        self.assertEqual(self.member(owner, sid, "editor@example.com")[0], 201)
+        self.assertEqual(self.request("GET", prefix + "/favorites", cookie=editor)[1]["favorites"], [])
+        self.assertEqual(self.request("GET", prefix + "/history", cookie=editor)[1]["history"], [])
+        self.assertEqual(self.request("GET", prefix + "/voices", cookie=editor)[1]["voices"], [])
+        self.assertEqual(self.table_count("bedtime_favorites"), 0)
+
+    def test_revocation_releases_remote_voice_only_when_provider_configured(self):
+        from types import SimpleNamespace
+        owner, _, space = self.register()
+        editor, editor_user, _ = self.register("editor@example.com")
+        sid = space["id"]
+        self.member(owner, sid, "editor@example.com")
+        self.seed_bedtime_state(sid, editor_user["id"], remote_voice="provider-voice-1")
+        removed = []
+        fake_provider = SimpleNamespace(
+            voice_enabled=True,
+            delete_voice=lambda voice: removed.append(voice),
+        )
+        self.server.bedtime_provider = fake_provider
+        try:
+            status, _, _ = self.request("DELETE", f"/api/spaces/{sid}/members/{editor_user['id']}", cookie=owner)
+            self.assertEqual(status, 200)
+        finally:
+            # Restore the default keyless provider for the remaining tests.
+            import bedtime
+            self.server.bedtime_provider = bedtime.HTTPProviders()
+        self.assertEqual(removed, ["provider-voice-1"])
+        self.assertEqual(self.table_count("bedtime_voices"), 0)
+
+    def test_export_module_wiring_initialize_dispatch_and_maintenance(self):
+        # initialize runs while FolioServer is constructed.
+        with tempfile.TemporaryDirectory() as directory:
+            with mock.patch.object(export, "initialize") as init_mock:
+                extra = FolioServer(("127.0.0.1", 0), data_dir=Path(directory) / "data",
+                                    public_dir=self.public, registration_mode="open", storage_persistence="unknown")
+                try:
+                    init_mock.assert_called_once_with(extra)
+                finally:
+                    extra.server_close()
+        # dispatch is consulted before authentication and owns the response when it returns True.
+        def handle(handler, path, query):
+            handler.json_response(200, {"exported": True})
+            return True
+        with mock.patch.object(export, "dispatch", side_effect=handle) as dispatch_mock:
+            status, body, _ = self.request("GET", f"/api/spaces/{'c' * 32}/export/archive")
+        self.assertEqual(status, 200)
+        self.assertTrue(body["exported"])
+        dispatch_mock.assert_called_once()
+        self.assertEqual(dispatch_mock.call_args.args[1], f"/api/spaces/{'c' * 32}/export/archive")
+        # run_maintenance is driven by authenticated traffic through maybe_cleanup.
+        cookie, _, _ = self.register()
+        with mock.patch.object(export, "run_maintenance") as maintenance_mock:
+            self.server.last_storage_cleanup = 0
+            self.assertEqual(self.request("GET", "/api/me", cookie=cookie)[0], 200)
+        maintenance_mock.assert_called_once_with(self.server)
+        # A fault inside export maintenance must not break housekeeping or the lock.
+        with mock.patch.object(export, "run_maintenance", side_effect=RuntimeError("controlled")):
+            self.server.last_storage_cleanup = 0
+            self.assertEqual(self.request("GET", "/api/me", cookie=cookie)[0], 200)
+            self.server.last_storage_cleanup = 0
+            self.assertEqual(self.request("GET", "/api/me", cookie=cookie)[0], 200)
 
 
 if __name__ == "__main__":
