@@ -48,8 +48,17 @@ def queue_delete(conn, namespace, identifier, sid, size):
 
 
 def linked(conn, namespace, identifier):
-    table = "files" if namespace == "uploads" else "bedtime_audio"
-    return conn.execute(f"SELECT 1 FROM {table} WHERE id=?", (identifier,)).fetchone() is not None
+    if namespace == "uploads":
+        # The uploads namespace backs both generic files and daily images. A
+        # staged daily_uploads row or a committed daily_images row means the
+        # private object is still referenced and must never be abandoned.
+        return conn.execute(
+            "SELECT 1 FROM files WHERE id=? "
+            "UNION ALL SELECT 1 FROM daily_uploads WHERE id=? "
+            "UNION ALL SELECT 1 FROM daily_images WHERE id=? LIMIT 1",
+            (identifier, identifier, identifier),
+        ).fetchone() is not None
+    return conn.execute("SELECT 1 FROM bedtime_audio WHERE id=?", (identifier,)).fetchone() is not None
 
 
 def abandon(server, namespace, identifier, sid, size):
@@ -71,7 +80,12 @@ def abandon(server, namespace, identifier, sid, size):
 
 def usage(conn, sid):
     space, total = 0, 0
-    for table in ("files", "bedtime_audio", "daily_images", "storage_jobs"):
+    # Staged daily uploads count while they hold a private object. The
+    # reservation row is deleted in the same transaction that inserts the
+    # daily_uploads row, and the staging row is replaced by daily_images in
+    # one entry-creation transaction, so each object is counted once in any
+    # committed state; transient in-flight overlap may only over-count.
+    for table in ("files", "bedtime_audio", "daily_images", "daily_uploads", "storage_jobs"):
         space += int(conn.execute(f"SELECT COALESCE(sum(size),0) FROM {table} WHERE space_id=?", (sid,)).fetchone()[0])
         total += int(conn.execute(f"SELECT COALESCE(sum(size),0) FROM {table}").fetchone()[0])
     return space, total

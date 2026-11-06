@@ -23,6 +23,7 @@ import ssl
 import threading
 import time
 import uuid
+import warnings
 from datetime import datetime, timedelta, timezone
 from email import policy
 from email.parser import BytesParser
@@ -56,6 +57,15 @@ RECOGNIZE_LONG_EDGE = 1600
 RECOGNIZE_FALLBACK_EDGE = 1280
 RECOGNIZE_BUDGET = 6 * 1024 * 1024
 MIN_SIDE = 16
+# Reject decompression bombs at inspection time. Pillow is optional, mirroring
+# the existing in-function import style; when present, cap decodable pixels.
+MAX_IMAGE_PIXELS = 64_000_000
+try:
+    from PIL import Image as _PILImage
+except ImportError:  # pragma: no cover - Pillow remains an optional dependency
+    _PILImage = None
+else:
+    _PILImage.MAX_IMAGE_PIXELS = MAX_IMAGE_PIXELS
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS daily_entries (
@@ -346,9 +356,16 @@ def inspect_image(payload):
         log_vision_failure("recognize", "image_processing")
         raise ProviderFailure("服务器缺少图片处理组件，请联系管理员") from None
     try:
-        with Image.open(io.BytesIO(payload)) as image:
-            width, height = image.size
-            image.verify()
+        with warnings.catch_warnings():
+            # Above MAX_IMAGE_PIXELS Pillow only emits a one-time warning and
+            # hard-fails at twice the limit. Promote the warning so the first
+            # oversized frame is rejected without allocating its pixels.
+            warnings.simplefilter("error", Image.DecompressionBombWarning)
+            with Image.open(io.BytesIO(payload)) as image:
+                width, height = image.size
+                image.verify()
+    except (Image.DecompressionBombError, Image.DecompressionBombWarning):
+        raise ValueError("图片像素超出限制，请压缩后再上传") from None
     except (UnidentifiedImageError, OSError, ValueError, SyntaxError):
         raise ValueError("图片内容无法识别，请转换为 JPEG、PNG 或 WebP 后重试") from None
     if width < MIN_SIDE or height < MIN_SIDE:
@@ -359,25 +376,30 @@ def inspect_image(payload):
 def _downscale(payload, long_edge, quality):
     from PIL import Image, UnidentifiedImageError
     try:
-        with Image.open(io.BytesIO(payload)) as image:
-            image.seek(0)
-            if image.mode in ("RGBA", "LA", "P"):
-                image = image.convert("RGBA")
-                background = Image.new("RGB", image.size, (255, 255, 255))
-                background.paste(image, mask=image.split()[-1] if image.mode == "RGBA" else None)
-                image = background
-            elif image.mode != "RGB":
-                image = image.convert("RGB")
-            width, height = image.size
-            scale = min(1.0, long_edge / max(width, height))
-            if scale < 1.0:
-                image = image.resize(
-                    (max(1, round(width * scale)), max(1, round(height * scale))),
-                    Image.LANCZOS,
-                )
-            buffer = io.BytesIO()
-            image.save(buffer, format="JPEG", quality=quality, optimize=True)
-            return buffer.getvalue()
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", Image.DecompressionBombWarning)
+            with Image.open(io.BytesIO(payload)) as image:
+                image.seek(0)
+                if image.mode in ("RGBA", "LA", "P"):
+                    image = image.convert("RGBA")
+                    background = Image.new("RGB", image.size, (255, 255, 255))
+                    background.paste(image, mask=image.split()[-1] if image.mode == "RGBA" else None)
+                    image = background
+                elif image.mode != "RGB":
+                    image = image.convert("RGB")
+                width, height = image.size
+                scale = min(1.0, long_edge / max(width, height))
+                if scale < 1.0:
+                    image = image.resize(
+                        (max(1, round(width * scale)), max(1, round(height * scale))),
+                        Image.LANCZOS,
+                    )
+                buffer = io.BytesIO()
+                image.save(buffer, format="JPEG", quality=quality, optimize=True)
+                return buffer.getvalue()
+    except (Image.DecompressionBombError, Image.DecompressionBombWarning):
+        log_vision_failure("recognize", "image_processing")
+        raise ProviderFailure("图片像素超出限制，请压缩后再试") from None
     except (UnidentifiedImageError, OSError, ValueError, SyntaxError):
         log_vision_failure("recognize", "image_processing")
         raise ProviderFailure("图片处理失败，请更换图片后重试") from None
@@ -550,6 +572,9 @@ def dispatch(handler, path, query):
     maybe_cleanup_staging(server)
     if method == "HEAD":
         fail(handler, 405, "不支持此请求方法")
+    if route == "uploads" and method == "POST":
+        # Per-account upload throttle, enforced before reading the large body.
+        server.throttle(("daily-upload-hour", user["id"]), 60, 3600)
     data = None
     if method in ("POST", "PATCH", "PUT"):
         if route == "uploads" and method == "POST":

@@ -576,6 +576,34 @@ class BedtimeTests(unittest.TestCase):
             status, _, _ = self.request("POST", self.prefix + "synthesize", {"text": "晚安", "voiceId": "cloud:Seren"}, self.owner)
         self.assertEqual(status, 507)
         self.assertEqual(list(self.server.bedtime_audio_dir.iterdir()), [])
+        # Capacity gates run before any paid provider synthesis.
+        self.assertEqual(self.provider.synth_calls, [])
+
+    def test_synthesis_quota_full_fails_before_provider_call(self):
+        self.provider.voice_enabled = True
+        self.server.max_space_storage = 1
+        status, body, _ = self.request("POST", self.prefix + "synthesize",
+                                       {"text": "晚安", "voiceId": "cloud:Seren"}, self.owner)
+        self.assertEqual(status, 413, body)
+        self.assertEqual(self.provider.synth_calls, [])
+        self.server.max_space_storage = 1024 ** 3
+        self.server.max_total_storage = 1
+        status, body, _ = self.request("POST", self.prefix + "synthesize",
+                                       {"text": "晚安", "voiceId": "cloud:Seren"}, self.owner)
+        self.assertEqual(status, 413, body)
+        self.assertEqual(self.provider.synth_calls, [])
+        self.server.max_total_storage = 10 * 1024 ** 3
+        with patch.object(bedtime.shutil, "disk_usage", return_value=SimpleNamespace(free=100 * 1024 * 1024)):
+            status, body, _ = self.request("POST", self.prefix + "synthesize",
+                                           {"text": "晚安", "voiceId": "cloud:Seren"}, self.owner)
+        self.assertEqual(status, 507, body)
+        self.assertEqual(self.provider.synth_calls, [])
+        self.assertEqual(list(self.server.bedtime_audio_dir.iterdir()), [])
+        # With capacity restored the same request reaches the provider normally.
+        status, body, _ = self.request("POST", self.prefix + "synthesize",
+                                       {"text": "晚安", "voiceId": "cloud:Seren"}, self.owner)
+        self.assertEqual(status, 200, body)
+        self.assertEqual(len(self.provider.synth_calls), 1)
 
     def test_delete_private_voice_deletes_provider_and_cannot_delete_other_user(self):
         voice = self.clone()

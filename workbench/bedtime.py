@@ -1156,6 +1156,26 @@ def dispatch(handler, path, query):
             # 100 requests × at most 600 characters bounds daily synthesis
             # input to 60,000 characters per account; this is not a free quota.
             server.throttle(("bedtime-tts-day", uid), 100, 86400)
+            # All permission, quota and capacity gates run before any paid
+            # provider call, mirroring the voice-enrollment path. Reuse the
+            # request's existing writer transaction instead of opening a
+            # second connection, which would block on its IMMEDIATE lock. The
+            # payload size is unknown until synthesis returns, so quota and
+            # disk are checked against the worst-case audio bound; the save
+            # transaction below rechecks the exact size against concurrent writes.
+            if not voice_id.startswith("cloud:") and not conn.execute(
+                "SELECT 1 FROM bedtime_voices WHERE id=? AND space_id=? AND user_id=? AND state='ready'",
+                (voice_id, sid, uid),
+            ).fetchone():
+                fail(handler, 404, "音色不存在或尚未就绪")
+            space_bytes, total_bytes = storage_jobs.usage(conn, sid)
+            if (space_bytes + MAX_AUDIO_BYTES > server.max_space_storage
+                    or total_bytes + MAX_AUDIO_BYTES > server.max_total_storage):
+                fail(handler, 413, "存储容量已满，请稍后重试或整理媒体文件")
+            if (server.media_storage.backend == "local"
+                    and shutil.disk_usage(server.data_dir).free < MAX_AUDIO_BYTES + 100 * 1024 * 1024):
+                fail(handler, 507, "服务器可用存储不足，请联系管理员")
+            # A slow provider must not hold the SQLite writer transaction.
             conn.commit()
             payload = provider_call(handler, provider.synthesize, text, remote_voice, target_model)
             if not isinstance(payload, bytes) or not 44 <= len(payload) <= MAX_AUDIO_BYTES or payload[:4] != b"RIFF" or payload[8:12] != b"WAVE":

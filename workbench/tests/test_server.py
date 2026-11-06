@@ -18,7 +18,7 @@ from pathlib import Path
 from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from server import COOKIE_NAME, INVITATION_ERROR, MAX_UPLOAD_BYTES, FolioServer, verify_password
+from server import APIError, COOKIE_NAME, INVITATION_ERROR, MAX_UPLOAD_BYTES, FolioServer, verify_password
 from scripts.manage_access import issue_invitation, main as manage_access_main, revoke_invitation
 
 
@@ -737,6 +737,64 @@ class ServerTests(unittest.TestCase):
         with self.server.db() as conn:
             self.assertEqual(conn.execute("SELECT count(*) FROM items").fetchone()[0], 0)
             self.assertEqual(conn.execute("SELECT count(*) FROM vaults").fetchone()[0], 0)
+
+    def test_deeply_nested_json_returns_400_not_500(self):
+        cookie, _, _ = self.register()
+        # 2,000 layers must never surface as a 500 even when parsed into a list.
+        raw = b"[" * 2000 + b"]" * 2000
+        status, body, _ = self.request("POST", "/api/spaces", cookie=cookie, raw=raw,
+                                       headers={"Content-Type": "application/json"})
+        self.assertEqual(status, 400)
+        # Deep enough to exhaust the interpreter recursion limit while decoding.
+        deep_raw = b"[" * 100000 + b"]" * 100000
+        status, body, _ = self.request("POST", "/api/spaces", cookie=cookie, raw=deep_raw,
+                                       headers={"Content-Type": "application/json"})
+        self.assertEqual(status, 400)
+        self.assertIn("嵌套", body["error"])
+
+    def test_throttle_evicts_oldest_buckets_without_blocking_new_keys(self):
+        for index in range(5005):
+            # First event per bucket is allowed; the overflow path must evict
+            # stale buckets instead of raising a global 429.
+            self.server.throttle(("attacker", index), 1, 3600)
+        self.assertLessEqual(len(self.server.rate_events), 5000)
+        normal_key = ("login", "normal-user")
+        self.server.throttle(normal_key, 30, 900)
+        self.assertIn(normal_key, self.server.rate_events)
+        # Per-bucket limits remain enforced after eviction.
+        for _ in range(29):
+            self.server.throttle(normal_key, 30, 900)
+        with self.assertRaises(APIError) as caught:
+            self.server.throttle(normal_key, 30, 900)
+        self.assertEqual(caught.exception.status, 429)
+
+    def test_purge_expired_sessions_is_bounded_and_keeps_active(self):
+        _, user, _ = self.register()
+        with self.server.db() as conn:
+            for index in range(2500):
+                conn.execute("INSERT INTO sessions VALUES(?,?,?)",
+                             (hashlib.sha256(f"expired-{index}".encode()).hexdigest(),
+                              user["id"], int(time.time()) - 60))
+            self.assertEqual(conn.execute("SELECT count(*) FROM sessions").fetchone()[0], 2501)
+        # Each maintenance pass removes at most 1000 expired rows.
+        self.server.purge_expired_sessions()
+        with self.server.db() as conn:
+            self.assertEqual(conn.execute("SELECT count(*) FROM sessions").fetchone()[0], 1501)
+            self.assertEqual(conn.execute("SELECT count(*) FROM sessions WHERE expires_at<=?",
+                                          (int(time.time()),)).fetchone()[0], 1500)
+        self.server.purge_expired_sessions()
+        with self.server.db() as conn:
+            self.assertEqual(conn.execute("SELECT count(*) FROM sessions").fetchone()[0], 501)
+        self.server.purge_expired_sessions()
+        with self.server.db() as conn:
+            rows = conn.execute("SELECT token_hash, expires_at FROM sessions").fetchall()
+        self.assertEqual(len(rows), 1)
+        self.assertGreater(rows[0]["expires_at"], int(time.time()))
+        # The low-frequency maintenance path drives the same sweep.
+        self.server.last_storage_cleanup = 0
+        self.server.maybe_cleanup()
+        with self.server.db() as conn:
+            self.assertEqual(conn.execute("SELECT count(*) FROM sessions").fetchone()[0], 1)
 
 
 if __name__ == "__main__":

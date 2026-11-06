@@ -3,17 +3,20 @@ import http.client
 import io
 import json
 import os
+import struct
 import sys
 import tempfile
 import threading
 import time
 import unittest
+import zlib
 from pathlib import Path
 from unittest.mock import patch
 from urllib.parse import urlsplit
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import daily
+import storage_jobs
 from server import FolioServer
 
 try:
@@ -26,6 +29,21 @@ def png_bytes(color=(120, 170, 130), size=(96, 64)):
     buffer = io.BytesIO()
     Image.new("RGB", size, color).save(buffer, format="PNG")
     return buffer.getvalue()
+
+
+def bomb_png_bytes(width=50000, height=50000):
+    """A tiny valid PNG whose IHDR declares an oversized frame (decompression bomb)."""
+    signature = b"\x89PNG\r\n\x1a\n"
+
+    def chunk(tag, data):
+        raw = tag + data
+        return struct.pack(">I", len(data)) + raw + struct.pack(">I", zlib.crc32(raw))
+
+    ihdr = struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0)
+    # One filtered scanline row is enough for Pillow to read the IHDR and fail
+    # on the declared pixel count before any large pixel buffer is allocated.
+    idat = zlib.compress(b"\x00" + b"\x00\x00\x00")
+    return signature + chunk(b"IHDR", ihdr) + chunk(b"IDAT", idat) + chunk(b"IEND", b"")
 
 
 class FakeVision:
@@ -415,6 +433,75 @@ class DailyTests(unittest.TestCase):
         rendered = json.dumps(body, ensure_ascii=False)
         for secret in ("dashscope", "aliyuncs", "Bearer", "http://", "https://"):
             self.assertNotIn(secret, rendered)
+
+    def test_staging_upload_rejected_when_quota_full_without_object_or_rows(self):
+        existing_objects = set(self.server.upload_dir.iterdir())
+        self.server.max_space_storage = 5
+        status, body, _ = self.upload_png()
+        self.assertEqual(status, 413, body)
+        self.server.max_space_storage = 1024
+        self.server.max_total_storage = 5
+        status, body, _ = self.upload_png()
+        self.assertEqual(status, 507, body)
+        with self.server.db() as conn:
+            self.assertEqual(conn.execute("SELECT count(*) FROM daily_uploads").fetchone()[0], 0)
+            self.assertEqual(conn.execute("SELECT count(*) FROM storage_jobs").fetchone()[0], 0)
+        self.assertEqual(set(self.server.upload_dir.iterdir()), existing_objects)
+
+    def test_staged_and_published_uploads_count_once_in_usage(self):
+        status, uploaded, _ = self.upload_png()
+        self.assertEqual(status, 201, uploaded)
+        size = uploaded["upload"]["size"]
+        with self.server.db() as conn:
+            # The reservation is deleted in the same transaction that inserts
+            # the staging row: a committed state never holds both rows.
+            self.assertEqual(conn.execute("SELECT count(*) FROM storage_jobs").fetchone()[0], 0)
+            self.assertEqual(conn.execute("SELECT count(*) FROM daily_uploads").fetchone()[0], 1)
+            space_bytes, total_bytes = storage_jobs.usage(conn, self.sid)
+        self.assertEqual(space_bytes, size)
+        self.assertEqual(total_bytes, size)
+        status, created, _ = self.request(
+            "POST", f"{self.prefix}/entries",
+            {"imageIds": [uploaded["upload"]["id"]], "body": "x"}, cookie=self.owner)
+        self.assertEqual(status, 201, created)
+        with self.server.db() as conn:
+            self.assertEqual(conn.execute("SELECT count(*) FROM daily_uploads").fetchone()[0], 0)
+            self.assertEqual(conn.execute("SELECT count(*) FROM daily_images").fetchone()[0], 1)
+            space_bytes, total_bytes = storage_jobs.usage(conn, self.sid)
+        # The entry swap replaces the staging row with the image row: still once.
+        self.assertEqual(space_bytes, size)
+        self.assertEqual(total_bytes, size)
+
+    def test_upload_throttle_returns_429_after_sixty_per_hour(self):
+        statuses = [self.upload_png()[0] for _ in range(61)]
+        self.assertEqual(statuses.count(201), 60)
+        self.assertEqual(statuses[-1], 429)
+        # The per-account bucket must not spill over to another account.
+        other_cookie, _, other_space = self.register("other@example.com")
+        status, body, _ = self.upload_png(cookie=other_cookie, sid=other_space["id"])
+        self.assertEqual(status, 201, body)
+
+    def test_decompression_bomb_png_rejected_with_400(self):
+        existing_objects = set(self.server.upload_dir.iterdir())
+        status, body, _ = self.upload_png(content=bomb_png_bytes(), name="bomb.png")
+        self.assertEqual(status, 400, body)
+        self.assertIn("像素", body["error"])
+        with self.server.db() as conn:
+            self.assertEqual(conn.execute("SELECT count(*) FROM daily_uploads").fetchone()[0], 0)
+            self.assertEqual(conn.execute("SELECT count(*) FROM storage_jobs").fetchone()[0], 0)
+        self.assertEqual(set(self.server.upload_dir.iterdir()), existing_objects)
+        # A normal small image still passes the same inspection path.
+        status, body, _ = self.upload_png()
+        self.assertEqual(status, 201, body)
+
+    def test_inspect_image_blocks_warning_level_pixel_bombs(self):
+        # 9000x9000 = 81M pixels, over the 64M cap but under Pillow's hard
+        # 2x limit: it only warns, and inspection must still reject it.
+        with self.assertRaises(ValueError):
+            daily.inspect_image(bomb_png_bytes(9000, 9000))
+        with self.assertRaises(ValueError):
+            daily.inspect_image(bomb_png_bytes(50000, 50000))
+        self.assertEqual(daily.inspect_image(png_bytes()), (96, 64))
 
 
 if __name__ == "__main__":

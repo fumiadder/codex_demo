@@ -180,6 +180,7 @@ class FolioServer(ThreadingHTTPServer):
         bedtime.initialize(self)
         daily.initialize(self)
         self.cleanup_media()
+        self.purge_expired_sessions()
         super().__init__(address, FolioHandler)
 
     def db(self):
@@ -211,8 +212,23 @@ class FolioServer(ThreadingHTTPServer):
             if time.monotonic() - self.last_storage_cleanup >= 60:
                 self.last_storage_cleanup = time.monotonic()
                 self.cleanup_media()
+                self.purge_expired_sessions()
         finally:
             self.storage_maintenance_lock.release()
+
+    def purge_expired_sessions(self, batch=1000):
+        """Bounded expired-session sweep sharing the login cleanup condition."""
+        try:
+            with self.db() as conn:
+                # The subquery keeps the deletion bounded on both SQLite and
+                # PostgreSQL, so maintenance never holds a long table lock.
+                conn.execute(
+                    "DELETE FROM sessions WHERE token_hash IN "
+                    "(SELECT token_hash FROM sessions WHERE expires_at<=? LIMIT ?)",
+                    (int(time.time()), batch),
+                )
+        except Exception:
+            logging.warning("Expired session sweep deferred")
 
     def throttle(self, key, limit, window=900):
         current = time.time()
@@ -221,7 +237,13 @@ class FolioServer(ThreadingHTTPServer):
             if len(self.rate_events) > 5000:
                 self.rate_events = {k: v for k, v in self.rate_events.items() if v and v[-1] > current-window}
                 if len(self.rate_events) > 5000:
-                    raise APIError(429, "请求过于频繁，请稍后重试")
+                    # Key rotation by an abuser must not rate-limit unrelated
+                    # accounts. Retire the oldest quarter of buckets by their
+                    # last event time, then let the current bucket proceed.
+                    stale_count = len(self.rate_events) // 4
+                    oldest = sorted(self.rate_events, key=lambda item: self.rate_events[item][-1])[:stale_count]
+                    for stale_key in oldest:
+                        self.rate_events.pop(stale_key, None)
             events = [value for value in self.rate_events.get(key, ()) if value > current-window]
             if len(events) >= limit:
                 raise APIError(429, "请求过于频繁，请 15 分钟后重试")
@@ -326,6 +348,8 @@ class FolioHandler(BaseHTTPRequestHandler):
             raise APIError(415, "请使用 JSON 请求")
         try:
             value = json.loads(self.read_body(MAX_JSON_BYTES))
+        except RecursionError:
+            raise APIError(400, "JSON 嵌套层级过深，请精简请求内容后重试")
         except (ValueError, UnicodeDecodeError):
             raise APIError(400, "JSON 格式无效")
         if not isinstance(value, dict):
