@@ -115,6 +115,16 @@ jobs:
         env:
           PYTHONUNBUFFERED: '1'
         run: python scripts/account_export_qa.py
+      - name: Check safe Markdown rendering and XSS defenses
+        working-directory: workbench
+        env:
+          PYTHONUNBUFFERED: '1'
+        run: python scripts/markdown_qa.py
+      - name: Check recurring tasks, subtasks, tags, search and calendar
+        working-directory: workbench
+        env:
+          PYTHONUNBUFFERED: '1'
+        run: python scripts/recur_calendar_qa.py
       - name: Check desktop stories and voice upload links
         working-directory: workbench
         env:

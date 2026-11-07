@@ -13,6 +13,7 @@
     />
     <title>知序 · 个人工作台</title>
     <link rel="stylesheet" href="/styles.css" />
+    <script src="/vendor/markdown.js" defer></script>
     <script src="/app.js" defer></script>
   </head>
   <body>
@@ -139,6 +140,10 @@
           d="m10 2-.8 3-2.5 1.4-3-.7L1.8 9l2.2 2.3v2.8L1.8 16l1.9 3.3 3-.7L9.2 20l.8 3h4l.8-3 2.5-1.4 3 .7 1.9-3.3-2.2-2.2v-2.9L22.2 9l-1.9-3.3-3 .7L14.8 5l-.8-3Z"
         />
         <circle cx="12" cy="12" r="3" />
+      </symbol>
+      <symbol id="i-calendar" viewBox="0 0 24 24">
+        <rect x="3" y="5" width="18" height="16" rx="3" />
+        <path d="M8 3v4m8-4v4M3 10h18" />
       </symbol>
     </svg>
 
@@ -292,6 +297,10 @@
             ><span data-label-work="今日记录" data-label-life="今日瞬间">今日记录</span
             ><span id="nav-daily-count" class="nav-count">0</span>
           </button>
+          <button class="nav-item" data-view="search" data-areas="work life">
+            <svg class="icon"><use href="#i-search" /></svg
+            ><span data-label-work="跨空间搜索" data-label-life="找一找">跨空间搜索</span>
+          </button>
           <button class="nav-item" data-view="bedtime" data-areas="life" hidden>
             <svg class="icon"><use href="#i-cloud" /></svg><span>晚安故事</span>
           </button>
@@ -299,6 +308,10 @@
             <svg class="icon"><use href="#i-task" /></svg
             ><span data-label-work="待办事项" data-label-life="生活清单">待办事项</span
             ><span id="nav-task-count" class="nav-count">0</span>
+          </button>
+          <button class="nav-item" data-view="calendar" data-areas="work life">
+            <svg class="icon"><use href="#i-calendar" /></svg
+            ><span data-label-work="日程月历" data-label-life="生活月历">日程月历</span>
           </button>
           <button class="nav-item" data-view="notes" data-areas="work life">
             <svg class="icon"><use href="#i-note" /></svg
@@ -388,7 +401,7 @@
             </div>
             <button id="search-button" class="search-button">
               <svg class="icon small"><use href="#i-search" /></svg
-              ><span>搜索空间</span><kbd>⌘ K</kbd></button
+              ><span>全局搜索</span><kbd>⌘ K</kbd></button
             ><button id="new-button" class="button primary compact">
               <svg class="icon small"><use href="#i-plus" /></svg>新建
             </button>

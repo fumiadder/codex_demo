@@ -1,5 +1,27 @@
 # 验证记录
 
+## 任务管理增强：重复任务、子任务、多标签、跨空间搜索、月历与 Markdown（批次 2a）
+
+本批零数据库结构变更：重复规则、子任务、多标签全部存于既有 `items.meta`，不新增表、不改列。`ops_backup.py` 计算的 schema 哈希仍为 `83d99f53…2838`，与生产一致，部署结构守卫直接通过；新模块 `recur.py` 无 SCHEMA 常量，按约定不进入哈希清单。三个 subagent 分波并行（后端、Markdown 渲染器文件独立先做，前端对着真实后端一次性接入），避免同改 app.js 冲突。
+
+后端：
+
+- 新增纯函数 `recur.py`（RRULE-lite：daily/weekly/monthly/yearly、interval、byday、until/count 互斥、completed），月末与闰年收敛、脏日期回退今天、RRULE COUNT 含首次语义；`server.py` 在 `item_input` 收口校验 recurrence/subtasks(≤20)/tags(≤8)，PATCH 置 done 时在同一事务内滚动到期日或标记 exhausted，非重复任务零影响。
+- 新增 `GET /api/spaces/:sid/tags` 标签聚合（兼容旧 meta.tag）与 `GET /api/search` 跨成员空间搜索：members JOIN 在 SQL 层限定空间、空集合不回退全库、LIKE 通配符转义、meta 命中 Python 二次收敛仅 tag/tags、密码箱/会话/凭据零参与，30 次/60 秒限流，结果上限 100。
+- `recur.py` 已登记进 package_release、Dockerfile COPY、render.yaml 三处清单，`test_package_release` 守卫全绿；新增 27 项后端测试（recur 19、server 8）。全量 294 项单测仅 `test_large_base64_clone` 的 macOS 回环 BrokenPipe 既有偶发失败（Linux CI 不受影响）。
+
+前端与渲染器：
+
+- 新增自研同站安全 Markdown 渲染器 `public/vendor/markdown.js`（MIT + LICENSE），仅 DOM API、无 HTML 透传、链接协议白名单、危险协议降级纯文本、异常降级 textContent。
+- app.js 接入七项能力：重复任务编辑器与中文描述/完成次数/耗尽态、子任务迷你清单、多标签芯片与筛选条、跨空间搜索视图（⌘K/顶栏/侧边三入口统一，旧单空间 modal 已删除）、周一起月历与重复落点、笔记与任务正文 Markdown 渲染；真实/演示双模式语义对齐。新视图在标题映射、areaViews、render 映射、导航、SVG sprite 全量注册。
+- 新增 `scripts/markdown_qa.py`（25 项）与 `scripts/recur_calendar_qa.py`（21 项），均支持 QA_CHROMIUM；CI 已登记这两个浏览器步骤。
+
+本地验证（2026-11-07，Asia/Shanghai）：
+
+- `node --check`、`py_compile` 通过；禁用 API（innerHTML/eval/alert 等）静态扫描零命中，新增 CSS 零硬编码颜色，全部使用既有 token。
+- 浏览器 QA：recur_calendar（21）、markdown（25）、mobile（9）、frontend_hardening（4）、life_entry（6）、account_export（15）、daily（5）、menu_visual（2）、bedtime（11）退出码均为 0。
+- 两个偶发失败已对照确认非本批回归：`collaboration_qa` 的录音按钮断言单次失败后连跑 3 次全绿，且本批未改任何录音/getUserMedia 代码、stash 到基线同样通过；`warm_story_qa` 语音事件断言 1 过 1 败，是批次 0/1 已记录的 bedtime 既有 headless 时序竞态（bedtime 文件本批未改）。生产部署与烟测在提交通过 CI 后另行记录。
+
 ## 数据主权与账号生命周期（批次 1）
 
 本批次新增数据导出、自动快照与账号/空间生命周期，无数据库结构变化（无新表、无 ALTER/DROP），旧镜像可直接运行现有数据库。三个 subagent 按冻结契约并行（导出模块、账号生命周期、设置中心），文件域不重叠。

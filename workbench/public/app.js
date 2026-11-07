@@ -20,6 +20,12 @@ const state = {
   registrationMode: null,
   taskFilter: "all",
   mediaFilter: "all",
+  tagFilter: null,
+  spaceTags: [],
+  tagsLoadedSpace: null,
+  tagsLoading: false,
+  search: { query: "", results: [], loading: false, request: 0, queried: "", error: "" },
+  calendar: { month: "", filter: null },
   register: false,
   request: 0,
   sessionEpoch: 0,
@@ -60,7 +66,9 @@ const exportPending = new Set();
 const names = {
   overview: "今天，也从容一点。",
   daily: "拍下来，就是今天的记录。",
+  search: "找一找，所有空间里的记录。",
   tasks: "把重要的事，向前推进。",
+  calendar: "一张月历，安顿每个到期日。",
   notes: "让灵感有个落脚的地方。",
   media: "所有资料，随手可得。",
   vault: "只属于你的私密空间。",
@@ -70,7 +78,9 @@ const names = {
 const descriptions = {
   overview: "让每个想法有去处，让每一步都算数。",
   daily: "拍照或选图快速记下今天，AI 帮你识别、总结并提出待办。",
+  search: "跨你加入的所有空间搜索待办、笔记与今日记录，密码箱不参与搜索。",
   tasks: "一步一步，把想做的变成已完成。",
+  calendar: "按日期查看计划与重复任务，点日期即可新建或筛选。",
   notes: "值得留下的念头，不必等到明天。",
   media: "图片、视频、音频与文档，收在同一个地方。",
   vault: "你的个人密码箱独立保存，空间成员无法看到其中内容。",
@@ -82,14 +92,18 @@ const descriptions = {
 const lifeNames = {
   overview: "给生活，留一点空白。",
   daily: "把今天的光，存进相册。",
+  search: "找一找，生活里记下的每件事。",
   tasks: "慢慢来，照顾好每一件小事。",
+  calendar: "日子有节奏，生活不慌张。",
   notes: "心情和念头，都值得被记下。",
   media: "收藏声音与画面，也收藏回忆。",
 };
 const lifeDescriptions = {
   overview: "记下喜欢的瞬间，照顾那些重要的小事。",
   daily: "拍照或选图留下此刻，AI 帮你识别、总结并提出待办。",
+  search: "跨你加入的所有空间搜索生活记录，私密密码箱不参与搜索。",
   tasks: "不慌不忙，把生活里的小事一一安顿。",
+  calendar: "按日期查看生活安排与重复提醒，点日期即可新建或筛选。",
   notes: "随手写下心情、灵感与想说的话。",
   media: "照片、声音和文件，替你收好每一段回忆。",
 };
@@ -381,6 +395,233 @@ async function api(path, method = "GET", data) {
   }
   return result;
 }
+// ---------------------------------------------------------------------------
+// 重复任务 / 子任务 / 标签 / Markdown / 月历：前端纯函数区
+// 日期语义与后端 recur.py 对齐，全部使用原生 Date、不做任何 IO，真实模式与
+// 演示模式共用；真实模式的滚动以服务端响应为准，这里仅用于演示模式兜底。
+// ---------------------------------------------------------------------------
+const RECUR_FREQ_OPTIONS = [
+  ["none", "不重复"],
+  ["daily", "每天"],
+  ["weekly", "每周"],
+  ["monthly", "每月"],
+  ["yearly", "每年"],
+];
+const RECUR_WEEKDAYS = ["MO", "TU", "WE", "TH", "FR", "SA", "SU"];
+const RECUR_WEEKDAY_CN = {
+  MO: "周一", TU: "周二", WE: "周三", TH: "周四",
+  FR: "周五", SA: "周六", SU: "周日",
+};
+const TAG_LIMIT = 8;
+const TAG_MAX_LENGTH = 20;
+const SUBTASK_LIMIT = 20;
+
+function isoDateString(date) {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Shanghai",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(date);
+}
+function parseISODate(value) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(value || ""));
+  if (!match) return null;
+  const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+function addCalendarMonths(date, months) {
+  const target = new Date(date.getTime());
+  const day = target.getDate();
+  target.setDate(1);
+  target.setMonth(target.getMonth() + months);
+  const lastDay = new Date(target.getFullYear(), target.getMonth() + 1, 0).getDate();
+  target.setDate(Math.min(day, lastDay));
+  return target;
+}
+function addCalendarYears(date, years) {
+  const target = new Date(date.getTime());
+  const day = target.getDate();
+  target.setDate(1);
+  target.setFullYear(target.getFullYear() + years);
+  const lastDay = new Date(target.getFullYear(), target.getMonth() + 1, 0).getDate();
+  target.setDate(Math.min(day, lastDay));
+  return target;
+}
+// JS getDay() 以周日为 0，转换成 MO=0..SU=6 的 weekday 下标
+function weekdayIndex(date) {
+  return (date.getDay() + 6) % 7;
+}
+// 与 recur.py next_due 同语义：以 fromDate 为当前到期日推算下一次，耗尽返回 null
+function nextDueDate(rec, fromDate) {
+  if (!rec || !rec.freq) return null;
+  const start = parseISODate(fromDate) || new Date();
+  const interval = Number.isInteger(rec.interval) && rec.interval >= 1 ? rec.interval : 1;
+  let candidate;
+  if (rec.freq === "daily") {
+    candidate = new Date(start.getTime());
+    candidate.setDate(candidate.getDate() + interval);
+  } else if (rec.freq === "weekly") {
+    if (Array.isArray(rec.byday) && rec.byday.length) {
+      const targets = new Set(
+        rec.byday.map((day) => RECUR_WEEKDAYS.indexOf(day)).filter((i) => i >= 0),
+      );
+      candidate = new Date(start.getTime());
+      candidate.setDate(candidate.getDate() + 1);
+      let guard = 0;
+      while (!targets.has(weekdayIndex(candidate)) && guard++ < 8)
+        candidate.setDate(candidate.getDate() + 1);
+    } else {
+      candidate = new Date(start.getTime());
+      candidate.setDate(candidate.getDate() + interval * 7);
+    }
+  } else if (rec.freq === "monthly") {
+    candidate = addCalendarMonths(start, interval);
+  } else if (rec.freq === "yearly") {
+    candidate = addCalendarYears(start, interval);
+  } else {
+    return null;
+  }
+  if (rec.until) {
+    const until = parseISODate(rec.until);
+    if (until && candidate.getTime() > until.getTime()) return null;
+  }
+  if (rec.count !== undefined && rec.count !== null) {
+    const completed = Number.isInteger(rec.completed) ? rec.completed : 0;
+    if (completed + 1 >= rec.count) return null;
+  }
+  return isoDateString(candidate);
+}
+// 与 recur.py describe_recurrence 同语义的中文人话描述
+function describeRecurrence(rec, due) {
+  if (!rec || !rec.freq) return "";
+  const interval = Number.isInteger(rec.interval) && rec.interval >= 1 ? rec.interval : 1;
+  const anchor = parseISODate(due);
+  let text;
+  if (rec.freq === "daily") {
+    text = interval === 1 ? "每天" : `每 ${interval} 天`;
+  } else if (rec.freq === "weekly") {
+    const prefix = interval === 1 ? "每周" : `每 ${interval} 周`;
+    if (Array.isArray(rec.byday) && rec.byday.length) {
+      const picked = new Set(rec.byday);
+      const names = RECUR_WEEKDAYS.filter((day) => picked.has(day)).map(
+        (day) => RECUR_WEEKDAY_CN[day],
+      );
+      text = `${prefix}的${names.join("、")}`;
+    } else text = prefix;
+  } else if (rec.freq === "monthly") {
+    if (anchor)
+      text = interval === 1
+        ? `每月 ${anchor.getDate()} 日`
+        : `每 ${interval} 个月的 ${anchor.getDate()} 日`;
+    else text = interval === 1 ? "每月" : `每 ${interval} 个月`;
+  } else {
+    if (anchor)
+      text = interval === 1
+        ? `每年 ${anchor.getMonth() + 1} 月 ${anchor.getDate()} 日`
+        : `每 ${interval} 年的 ${anchor.getMonth() + 1} 月 ${anchor.getDate()} 日`;
+    else text = interval === 1 ? "每年" : `每 ${interval} 年`;
+  }
+  const suffixes = [];
+  if (rec.until) suffixes.push(`直到 ${rec.until}`);
+  if (rec.count !== undefined && rec.count !== null)
+    suffixes.push(`共 ${rec.count} 次`);
+  if (suffixes.length) text += `，${suffixes.join("，")}`;
+  return text;
+}
+// 演示模式专用：复刻服务端 apply_recurrence_rollover 的滚动语义
+function rolloverRecurrence(item) {
+  const rec = item.meta?.recurrence;
+  if (!rec || item.status !== "done") return item;
+  const next = nextDueDate(rec, item.meta?.due);
+  if (next === null) {
+    return {
+      ...item,
+      status: "done",
+      meta: { ...item.meta, recurrence: { ...rec, exhausted: true } },
+    };
+  }
+  const previous = Number.isInteger(rec.completed) ? rec.completed : 0;
+  return {
+    ...item,
+    status: "active",
+    meta: {
+      ...item.meta,
+      due: next,
+      recurrence: { ...rec, completed: previous + 1 },
+      lastCompletedAt: new Date().toISOString(),
+    },
+  };
+}
+// 月历用：从当前 due 起（含本次）取未来若干次到期日，受 until/count 约束
+function nextOccurrences(item, limit = 3) {
+  const due = item.meta?.due;
+  const rec = item.meta?.recurrence;
+  if (!due) return [];
+  if (rec?.exhausted) return [due];
+  if (!rec || !rec.freq) return [due];
+  const remaining = Number.isInteger(rec.count)
+    ? Math.max(0, rec.count - (Number.isInteger(rec.completed) ? rec.completed : 0))
+    : Infinity;
+  const cap = Math.min(limit, remaining);
+  const dates = [];
+  let cursor = due;
+  let guard = 0;
+  while (dates.length < cap && guard++ < 400) {
+    dates.push(cursor);
+    const next = nextDueDate(rec, cursor);
+    if (next === null) break;
+    cursor = next;
+  }
+  return dates;
+}
+function makeSubtaskId() {
+  return crypto.randomUUID().replace(/-/g, "");
+}
+function itemTags(item) {
+  const tags = [];
+  const seen = new Set();
+  for (const tag of item?.meta?.tags || []) {
+    if (typeof tag === "string" && tag.trim() && !seen.has(tag.trim())) {
+      seen.add(tag.trim());
+      tags.push(tag.trim());
+    }
+  }
+  const legacy = item?.meta?.tag;
+  if (typeof legacy === "string" && legacy.trim() && !seen.has(legacy.trim()))
+    tags.push(legacy.trim());
+  return tags;
+}
+function itemMatchesTag(item, tagName) {
+  if (!tagName) return true;
+  return itemTags(item).includes(tagName);
+}
+function subtaskProgress(item) {
+  const list = Array.isArray(item.meta?.subtasks) ? item.meta.subtasks : [];
+  const done = list.filter((sub) => sub.done === true).length;
+  return { total: list.length, done };
+}
+function hasMarkdownMarkup(text) {
+  if (typeof text !== "string" || !text.trim()) return false;
+  return /(^|\n)\s{0,3}(#{1,6}\s|[-*+]\s|\d+\.\s|>\s)|(\*\*[^*]+\*\*|`[^`]+`|\[[^\]]+\]\([^)]+\)|:[a-z0-9_+-]+:)/.test(
+    text,
+  );
+}
+// 安全 Markdown 渲染：渲染器不可用或异常时降级 textContent 纯文本
+function renderMarkdownInto(container, text) {
+  container.replaceChildren();
+  const renderer = window.ZhixuMarkdown;
+  if (renderer && typeof renderer.render === "function") {
+    try {
+      container.append(renderer.render(text || ""));
+      return;
+    } catch {
+      /* 渲染异常时降级为纯文本，保证内容仍可读 */
+    }
+  }
+  container.textContent = text || "";
+}
+
 function measureEnvironmentBanner() {
   const banner = $("#test-environment-banner");
   document.documentElement.style.setProperty(
@@ -1085,6 +1326,12 @@ async function switchSpace(id) {
   state.daily.digests = {};
   state.daily.loadedSpace = null;
   state.daily.composer = [];
+  state.tagFilter = null;
+  state.spaceTags = [];
+  state.tagsLoadedSpace = null;
+  state.tagsLoading = false;
+  state.calendar = { month: "", filter: null };
+  state.search = { query: "", results: [], loading: false, request: 0, queried: "", error: "" };
   sessionStorage.setItem(`zhixu:space:${state.user.id}`, id);
   $("#current-space-name").textContent = space.name;
   $("#current-space-role").textContent =
@@ -1134,13 +1381,15 @@ function navigate(view) {
   if (view === "daily") loadDailyEntries();
 }
 const areaViews = {
-  work: ["overview", "daily", "tasks", "notes", "media", "vault", "spaces", "modules"],
-  life: ["overview", "daily", "bedtime", "tasks", "notes", "media", "spaces", "modules"],
+  work: ["overview", "daily", "search", "tasks", "calendar", "notes", "media", "vault", "spaces", "modules"],
+  life: ["overview", "daily", "search", "bedtime", "tasks", "calendar", "notes", "media", "spaces", "modules"],
 };
 function setArea(area) {
   state.area = area;
   state.taskFilter = "all";
   state.mediaFilter = "all";
+  state.tagFilter = null;
+  state.calendar.filter = null;
   if (!areaViews[area].includes(state.view)) state.view = "overview";
   closeModal();
   render();
@@ -1198,7 +1447,9 @@ function render() {
   ({
     overview: renderOverview,
     daily: renderDaily,
+    search: renderSearch,
     tasks: renderTasks,
+    calendar: renderCalendar,
     notes: renderNotes,
     media: renderMedia,
     vault: renderVault,
@@ -1518,6 +1769,48 @@ function renderBedtimeEntry(content) {
   entry.append(copy, illustration);
   content.append(entry);
 }
+// 卡片上的子任务迷你清单：勾选即 PATCH 整个 meta.subtasks；只读空间禁用
+function renderSubtaskMiniList(item) {
+  const list = Array.isArray(item.meta?.subtasks) ? item.meta.subtasks : [];
+  if (!list.length) return null;
+  const { total, done } = subtaskProgress(item);
+  const wrap = el("div", "subtask-mini");
+  wrap.append(
+    el("span", "subtask-mini-progress", `子任务已完成 ${done}/${total}`),
+  );
+  const items = el("div", "subtask-mini-list");
+  list.forEach((sub, index) => {
+    const line = el("div", `subtask-mini-row${sub.done ? " done" : ""}`);
+    const check = input("checkbox");
+    check.checked = sub.done === true;
+    check.disabled = !writable();
+    check.setAttribute("aria-label", `子任务 ${sub.title} 完成状态`);
+    check.addEventListener("change", async () => {
+      if (!ensureWrite()) {
+        check.checked = sub.done === true;
+        return;
+      }
+      const nextSubtasks = list.map((entry, entryIndex) =>
+        entryIndex === index ? { ...entry, done: check.checked } : entry,
+      );
+      check.disabled = true;
+      try {
+        await saveItem(
+          { ...item, meta: { ...item.meta, subtasks: nextSubtasks } },
+          item.id,
+        );
+      } catch (err) {
+        toast(errorMessage(err), true);
+        check.checked = sub.done === true;
+        check.disabled = false;
+      }
+    });
+    line.append(check, el("span", "subtask-mini-title", sub.title));
+    items.append(line);
+  });
+  wrap.append(items);
+  return wrap;
+}
 function taskRow(item) {
   const row = el("div", `task-row${item.status === "done" ? " done" : ""}`);
   const check = button(
@@ -1531,6 +1824,10 @@ function taskRow(item) {
           { ...item, status: item.status === "done" ? "active" : "done" },
           item.id,
         );
+        if (item.meta?.recurrence && item.status !== "done") {
+          // 滚动后的 due / 完成次数由 saveItem 回写的响应条目渲染，这里仅提示
+          toast("已记录本次完成，并安排了下一次到期");
+        }
       } catch (err) {
         toast(errorMessage(err), true);
         check.disabled = false;
@@ -1546,34 +1843,53 @@ function taskRow(item) {
   check.setAttribute("aria-pressed", String(item.status === "done"));
   check.disabled = !writable();
   if (item.status === "done") check.append(svg("check"));
+  const body = el("div", "task-body");
   const info = button("", "task-info", () => showEditor("task", item));
   info.append(el("strong", "", item.title));
   const meta = item.meta || {};
-  const sub = [
-    meta.due ? `计划 ${meta.due}` : "不赶时间，一步一步",
-    meta.tag ? ` · ${meta.tag}` : "",
-  ].join("");
-  info.append(el("small", "", sub));
-  row.append(check, info);
+  const metaParts = [meta.due ? `计划 ${meta.due}` : "不赶时间，一步一步"];
+  const rec = meta.recurrence;
+  if (rec?.freq) {
+    if (rec.exhausted) metaParts.push("重复已结束");
+    else {
+      metaParts.push(describeRecurrence(rec, meta.due));
+      if (Number.isInteger(rec.completed) && rec.completed > 0)
+        metaParts.push(`已完成 ${rec.completed} 次`);
+    }
+  }
+  info.append(el("small", "", metaParts.join(" · ")));
+  body.append(info);
+  const miniList = renderSubtaskMiniList(item);
+  if (miniList) body.append(miniList);
+  row.append(check, body);
   if (meta.priority === "high" && item.status !== "done")
     row.append(el("span", "tag orange priority-tag", "优先"));
-  row.append(
-    el(
-      "span",
-      `tag${state.area === "life" ? " orange" : ""}`,
-      meta.tag || (state.area === "life" ? "生活" : "工作"),
-    ),
-  );
+  const tags = itemTags(item);
+  if (tags.length) {
+    const tagWrap = el("span", "task-tag-wrap");
+    tags.slice(0, 3).forEach((tagName) =>
+      tagWrap.append(
+        el("span", `tag${state.area === "life" ? " orange" : ""}`, tagName),
+      ),
+    );
+    row.append(tagWrap);
+  }
   row.append(iconButton("more", "查看待办", () => showEditor("task", item)));
   return row;
 }
 function noteCard(item) {
   const card = button("", "note-card", () => showEditor("note", item));
+  const tags = itemTags(item);
   card.append(
-    el("span", "note-label", item.meta?.tag || "随手记"),
+    el("span", "note-label", tags[0] || "随手记"),
     el("h3", "", item.title),
     el("p", "", item.body || "点击查看这条记录"),
   );
+  if (tags.length > 1) {
+    const more = el("div", "note-tags");
+    tags.slice(1, 4).forEach((tagName) => more.append(el("span", "tag", tagName)));
+    card.append(more);
+  }
   const foot = el("div", "note-footer");
   foot.append(
     el("span", "", relativeDate(item.updated_at || item.created_at)),
@@ -1670,8 +1986,69 @@ function toolbar(content, actionText, action, iconName = "plus") {
   content.append(bar);
   return bar;
 }
+// 拉取当前空间标签聚合：真实模式走 GET /tags，演示模式从 demoStore 本地聚合
+async function loadSpaceTags() {
+  if (!state.space || state.tagsLoadedSpace === state.space.id) return;
+  if (state.tagsLoading) return;
+  state.tagsLoading = true;
+  try {
+    if (state.demo) {
+      const counts = new Map();
+      for (const item of state.demoStore[state.space.id] || []) {
+        for (const tagName of new Set(itemTags(item)))
+          counts.set(tagName, (counts.get(tagName) || 0) + 1);
+      }
+      state.spaceTags = [...counts.entries()]
+        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+        .map(([name, count]) => ({ name, count }));
+    } else {
+      const result = await api(`/api/spaces/${state.space.id}/tags`);
+      state.spaceTags = Array.isArray(result.tags) ? result.tags : [];
+    }
+    state.tagsLoadedSpace = state.space.id;
+    // 首次加载发生在 render 期间，拉取完成后补一次渲染让筛选条出现
+    if (["tasks", "notes"].includes(state.view)) render();
+  } catch (err) {
+    toast(errorMessage(err), true);
+  } finally {
+    state.tagsLoading = false;
+  }
+}
+// 标签筛选条：点标签筛选、再点取消；viewer 也可使用（读权限）
+function renderTagFilterBar(content) {
+  if (!state.spaceTags.length) return;
+  const bar = el("div", "tag-filter-bar");
+  bar.append(el("span", "tag-filter-label", "标签筛选"));
+  const all = button(
+    state.tagFilter ? "全部" : "全部 ·",
+    state.tagFilter ? "tag-filter-chip" : "tag-filter-chip active",
+    () => {
+      state.tagFilter = null;
+      render();
+    },
+  );
+  all.setAttribute("aria-pressed", String(!state.tagFilter));
+  bar.append(all);
+  state.spaceTags.forEach(({ name, count }) => {
+    const active = state.tagFilter === name;
+    const chip = button(
+      `${name} ${count}`,
+      active ? "tag-filter-chip active" : "tag-filter-chip",
+      () => {
+        state.tagFilter = active ? null : name;
+        render();
+      },
+    );
+    chip.setAttribute("aria-pressed", String(active));
+    bar.append(chip);
+  });
+  content.append(bar);
+}
 function renderTasks(content) {
-  const tasks = currentItems("task");
+  loadSpaceTags();
+  const tasks = currentItems("task").filter((item) =>
+    itemMatchesTag(item, state.tagFilter),
+  );
   const bar = toolbar(content, "添加待办", () => showEditor("task"));
   const tabs = el("div", "view-tabs");
   for (const [key, text] of [
@@ -1690,6 +2067,7 @@ function renderTasks(content) {
     tabs.append(b);
   }
   bar.replaceChild(tabs, bar.firstChild);
+  renderTagFilterBar(content);
   const card = el("section", "card");
   const list = el("div", "task-list");
   const filtered = tasks
@@ -1706,30 +2084,42 @@ function renderTasks(content) {
     emptyState(
       list,
       "task",
-      state.taskFilter === "done"
-        ? "完成的事情，会在这里"
-        : "从一件想做的事开始",
-      state.taskFilter === "done"
-        ? "完成待办之后，这里会留下你的进展。"
-        : "给待办设置标签和计划日期，找到自己的节奏。",
-      writable() && state.taskFilter !== "done" ? "添加待办" : null,
+      state.tagFilter
+        ? `没有带「${state.tagFilter}」标签的待办`
+        : state.taskFilter === "done"
+          ? "完成的事情，会在这里"
+          : "从一件想做的事开始",
+      state.tagFilter
+        ? "换一个标签，或再点一次标签取消筛选。"
+        : state.taskFilter === "done"
+          ? "完成待办之后，这里会留下你的进展。"
+          : "给待办设置标签和计划日期，找到自己的节奏。",
+      !state.tagFilter && writable() && state.taskFilter !== "done"
+        ? "添加待办"
+        : null,
       () => showEditor("task"),
     );
   card.append(list);
   content.append(card);
 }
 function renderNotes(content) {
+  loadSpaceTags();
   toolbar(content, "写一条笔记", () => showEditor("note"));
+  renderTagFilterBar(content);
   const grid = el("div", "notes-grid notes-full");
-  const notes = currentItems("note");
+  const notes = currentItems("note").filter((item) =>
+    itemMatchesTag(item, state.tagFilter),
+  );
   if (notes.length) notes.forEach((item) => grid.append(noteCard(item)));
   else
     emptyState(
       grid,
       "note",
-      "想法不必完整，先记下来",
-      "一句话、一段思考、一次语音，都能成为下一步的起点。",
-      writable() ? "留下第一条记录" : null,
+      state.tagFilter ? `没有带「${state.tagFilter}」标签的笔记` : "想法不必完整，先记下来",
+      state.tagFilter
+        ? "换一个标签，或再点一次标签取消筛选。"
+        : "一句话、一段思考、一次语音，都能成为下一步的起点。",
+      !state.tagFilter && writable() ? "留下第一条记录" : null,
       () => showEditor("note"),
     );
   content.append(grid);
@@ -1931,17 +2321,26 @@ async function saveItem(data, id) {
   );
   let result;
   if (state.demo) {
-    result = {
-      item: {
-        ...data,
-        id: id || `local-${crypto.randomUUID()}`,
-        space_id: sid,
-        created_at: data.created_at || new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-    };
     const store = state.demoStore[sid];
     const index = store.findIndex((item) => item.id === id);
+    const previous = index >= 0 ? store[index] : null;
+    let savedItem = {
+      ...data,
+      id: id || `local-${crypto.randomUUID()}`,
+      space_id: sid,
+      created_at: data.created_at || previous?.created_at || new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    // 复刻服务端 apply_recurrence_rollover：仅当本次把状态改成 done 时滚动
+    if (
+      previous &&
+      previous.status !== "done" &&
+      savedItem.status === "done" &&
+      savedItem.meta?.recurrence
+    ) {
+      savedItem = rolloverRecurrence(savedItem);
+    }
+    result = { item: savedItem };
     if (index >= 0) store[index] = result.item;
     else store.unshift(result.item);
   } else
@@ -1954,6 +2353,8 @@ async function saveItem(data, id) {
     const index = state.items.findIndex((item) => item.id === result.item.id);
     if (index >= 0) state.items[index] = result.item;
     else if (!state.demo) state.items.unshift(result.item);
+    // 标签可能变化，使下次渲染重新聚合 /tags
+    state.tagsLoadedSpace = null;
     render();
   }
   return result.item;
@@ -1971,6 +2372,7 @@ async function deleteItem(item) {
     URL.revokeObjectURL(item.meta.localURL);
     state.objectURLs.delete(item.meta.localURL);
   }
+  state.tagsLoadedSpace = null;
   if (state.space?.id === sid && state.sessionEpoch === session) {
     render();
     toast(demo ? "已从本地演示移除" : "已删除");
@@ -2002,7 +2404,298 @@ function confirmDelete(item) {
     );
   });
 }
-function showEditor(kind, item) {
+// 标签芯片编辑器：回车或逗号添加、× 删除、最多 8 个、每个 ≤20 字
+function buildTagEditor(initialTags) {
+  const tags = [];
+  for (const tag of initialTags || []) {
+    const value = String(tag || "").trim();
+    if (value && !tags.includes(value) && tags.length < TAG_LIMIT) tags.push(value);
+  }
+  const node = el("div", "tag-editor");
+  const chips = el("div", "tag-chips");
+  const tagInput = input("text", "回车或逗号添加标签，最多 8 个");
+  tagInput.setAttribute("aria-label", "添加标签");
+  tagInput.maxLength = TAG_MAX_LENGTH;
+  function renderChips() {
+    chips.replaceChildren();
+    tags.forEach((tag, index) => {
+      const chip = el("span", "tag-chip");
+      chip.append(el("span", "tag-chip-name", tag));
+      const remove = button("", "tag-chip-remove", () => {
+        tags.splice(index, 1);
+        tagInput.disabled = false;
+        renderChips();
+        tagInput.focus();
+      }, "close");
+      remove.setAttribute("aria-label", `移除标签 ${tag}`);
+      chip.append(remove);
+      chips.append(chip);
+    });
+  }
+  function addTag(raw) {
+    const value = String(raw || "").trim().replace(/^,+|,+$/g, "");
+    if (!value) return;
+    if (value.length > TAG_MAX_LENGTH) {
+      toast(`单个标签不能超过 ${TAG_MAX_LENGTH} 个字`, true);
+      return;
+    }
+    if (tags.includes(value)) return;
+    if (tags.length >= TAG_LIMIT) {
+      toast(`最多只能添加 ${TAG_LIMIT} 个标签`, true);
+      return;
+    }
+    tags.push(value);
+    tagInput.value = "";
+    renderChips();
+  }
+  tagInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === ",") {
+      event.preventDefault();
+      addTag(tagInput.value);
+    } else if (event.key === "Backspace" && !tagInput.value && tags.length) {
+      tags.pop();
+      renderChips();
+    }
+  });
+  tagInput.addEventListener("blur", () => addTag(tagInput.value));
+  node.append(chips, tagInput);
+  renderChips();
+  return {
+    node,
+    focus: () => tagInput.focus(),
+    getTags: () => [...tags],
+    setDisabled: (disabled) => {
+      tagInput.disabled = disabled;
+      $$(".tag-chip-remove", chips).forEach((b) => (b.disabled = disabled));
+    },
+  };
+}
+
+// 重复规则编辑器：仅 task 使用；返回 getRecurrence()，无规则时为 null
+function buildRecurrenceEditor(initialRec, getDue) {
+  const initial = initialRec && initialRec.freq ? initialRec : null;
+  const draft = initial
+    ? {
+        freq: initial.freq,
+        interval: Number.isInteger(initial.interval) ? initial.interval : 1,
+        byday: Array.isArray(initial.byday) ? [...initial.byday] : [],
+        until: initial.until || "",
+        count: Number.isInteger(initial.count) ? initial.count : "",
+        endMode: initial.until ? "until" : initial.count ? "count" : "never",
+      }
+    : {
+        freq: "none",
+        interval: 1,
+        byday: [],
+        until: "",
+        count: "",
+        endMode: "never",
+      };
+  const node = el("div", "recur-editor");
+  const freq = select(RECUR_FREQ_OPTIONS, draft.freq);
+  freq.setAttribute("aria-label", "重复频率");
+  const intervalWrap = el("div", "recur-field");
+  const interval = input("number", "间隔", String(draft.interval));
+  interval.setAttribute("aria-label", "重复间隔");
+  interval.min = "1";
+  interval.step = "1";
+  intervalWrap.append(labelField("间隔（次）", interval));
+  const weekdayWrap = el("div", "recur-field recur-weekdays");
+  weekdayWrap.append(el("span", "recur-label", "重复在星期"));
+  const weekdayGroup = el("div", "weekday-toggle-group");
+  const weekdayButtons = new Map();
+  RECUR_WEEKDAYS.forEach((day) => {
+    const toggle = button(RECUR_WEEKDAY_CN[day].slice(1), "weekday-toggle");
+    toggle.type = "button";
+    toggle.setAttribute("aria-pressed", String(draft.byday.includes(day)));
+    toggle.setAttribute("aria-label", RECUR_WEEKDAY_CN[day]);
+    toggle.addEventListener("click", () => {
+      const picked = new Set(draft.byday);
+      if (picked.has(day)) picked.delete(day);
+      else picked.add(day);
+      draft.byday = RECUR_WEEKDAYS.filter((name) => picked.has(name));
+      sync();
+    });
+    weekdayButtons.set(day, toggle);
+    weekdayGroup.append(toggle);
+  });
+  weekdayWrap.append(weekdayGroup);
+  const endWrap = el("div", "recur-field recur-end");
+  endWrap.append(el("span", "recur-label", "结束条件"));
+  const endGroup = el("div", "recur-end-options");
+  const endModes = [
+    ["never", "永不结束"],
+    ["until", "到指定日期"],
+    ["count", "固定次数"],
+  ];
+  const endRadios = [];
+  endModes.forEach(([key, text]) => {
+    const label = el("label", "recur-radio");
+    const radio = input("radio");
+    radio.name = "recur-end";
+    radio.value = key;
+    radio.checked = draft.endMode === key;
+    radio.addEventListener("change", () => {
+      draft.endMode = key;
+      sync();
+    });
+    label.append(radio, document.createTextNode(text));
+    endGroup.append(label);
+    endRadios.push(radio);
+  });
+  const untilWrap = el("div", "recur-end-detail");
+  const until = input("date", "", draft.until || "");
+  until.setAttribute("aria-label", "重复截止日期");
+  untilWrap.append(labelField("直到日期", until));
+  const countWrap = el("div", "recur-end-detail");
+  const count = input("number", "总次数", String(draft.count || ""));
+  count.setAttribute("aria-label", "重复总次数");
+  count.min = "1";
+  count.step = "1";
+  countWrap.append(labelField("共完成几次", count));
+  endWrap.append(endGroup, untilWrap, countWrap);
+  const caption = el("p", "recur-caption");
+  caption.setAttribute("aria-live", "polite");
+  node.append(
+    labelField("重复", freq),
+    intervalWrap,
+    weekdayWrap,
+    endWrap,
+    caption,
+  );
+  function currentSignature() {
+    return JSON.stringify([
+      draft.freq,
+      draft.interval,
+      [...draft.byday].sort(),
+      draft.endMode === "until" ? draft.until : "",
+      draft.endMode === "count" ? draft.count : "",
+    ]);
+  }
+  const initialSignature = currentSignature();
+  function sync() {
+    const enabled = draft.freq !== "none";
+    intervalWrap.hidden = !enabled;
+    weekdayWrap.hidden = !(enabled && draft.freq === "weekly");
+    endWrap.hidden = !enabled;
+    untilWrap.hidden = draft.endMode !== "until";
+    countWrap.hidden = draft.endMode !== "count";
+    weekdayButtons.forEach((toggle, day) =>
+      toggle.setAttribute("aria-pressed", String(draft.byday.includes(day))),
+    );
+    endRadios.forEach((radio) => (radio.checked = radio.value === draft.endMode));
+    const preview = enabled ? describeRecurrence(buildValue(false), getDue()) : "";
+    caption.textContent = preview ? `将按「${preview}」重复` : "";
+  }
+  function buildValue(keepState) {
+    if (draft.freq === "none") return null;
+    const value = { freq: draft.freq };
+    const intervalValue = Number.parseInt(interval.value, 10);
+    if (Number.isInteger(intervalValue) && intervalValue > 1)
+      value.interval = intervalValue;
+    if (draft.freq === "weekly" && draft.byday.length)
+      value.byday = [...draft.byday];
+    if (draft.endMode === "until" && until.value) value.until = until.value;
+    if (draft.endMode === "count") {
+      const countValue = Number.parseInt(count.value, 10);
+      if (Number.isInteger(countValue) && countValue >= 1)
+        value.count = countValue;
+    }
+    if (keepState && initial) {
+      if (Number.isInteger(initial.completed)) value.completed = initial.completed;
+      if (initial.exhausted === true) value.exhausted = true;
+    }
+    return value;
+  }
+  freq.addEventListener("change", () => {
+    draft.freq = freq.value;
+    sync();
+  });
+  until.addEventListener("change", () => {
+    draft.until = until.value;
+    sync();
+  });
+  count.addEventListener("input", () => {
+    draft.count = count.value;
+    sync();
+  });
+  interval.addEventListener("input", () => {
+    draft.interval = Number.parseInt(interval.value, 10) || 1;
+    sync();
+  });
+  sync();
+  return {
+    node,
+    refresh: sync,
+    // 规则字段被修改过就视为新规则，不再继承 completed/exhausted
+    getRecurrence: () =>
+      buildValue(currentSignature() === initialSignature),
+  };
+}
+
+// 子任务编辑器：勾选框 + 文本 + 删除，最多 20 项
+function buildSubtaskEditor(initialSubtasks) {
+  const rows = (Array.isArray(initialSubtasks) ? initialSubtasks : [])
+    .filter((sub) => sub && typeof sub.title === "string")
+    .slice(0, SUBTASK_LIMIT)
+    .map((sub) => ({
+      id: /^[a-f0-9]{32}$/.test(sub.id) ? sub.id : makeSubtaskId(),
+      title: sub.title.slice(0, 120),
+      done: sub.done === true,
+    }));
+  const node = el("div", "subtask-editor");
+  const list = el("div", "subtask-edit-list");
+  const add = button("添加子任务", "text-button", () => {
+    if (rows.length >= SUBTASK_LIMIT) {
+      toast(`最多只能添加 ${SUBTASK_LIMIT} 个子任务`, true);
+      return;
+    }
+    rows.push({ id: makeSubtaskId(), title: "", done: false });
+    renderRows(true);
+  }, "plus");
+  add.setAttribute("aria-label", "添加子任务");
+  function renderRows(focusNew) {
+    list.replaceChildren();
+    rows.forEach((row, index) => {
+      const line = el("div", "subtask-edit-row");
+      const check = input("checkbox");
+      check.checked = row.done;
+      check.setAttribute("aria-label", `标记子任务 ${row.title || "新条目"} 完成状态`);
+      check.addEventListener("change", () => {
+        row.done = check.checked;
+      });
+      const text = input("text", "子任务内容（1-120 字）", row.title);
+      text.maxLength = 120;
+      text.setAttribute("aria-label", `子任务 ${index + 1} 内容`);
+      text.addEventListener("input", () => {
+        row.title = text.value;
+      });
+      const remove = iconButton("trash", "删除子任务", () => {
+        rows.splice(index, 1);
+        renderRows();
+      });
+      line.append(check, text, remove);
+      list.append(line);
+      if (focusNew && index === rows.length - 1) text.focus();
+    });
+    add.disabled = rows.length >= SUBTASK_LIMIT;
+  }
+  node.append(list, add);
+  renderRows();
+  return {
+    node,
+    getSubtasks: () =>
+      rows
+        .filter((row) => row.title.trim())
+        .map((row) => ({ id: row.id, title: row.title.trim(), done: row.done })),
+    setDisabled: (disabled) => {
+      add.disabled = disabled || rows.length >= SUBTASK_LIMIT;
+      $$("input,button", list).forEach((control) => (control.disabled = disabled));
+    },
+  };
+}
+
+function showEditor(kind, item, prefill = {}) {
   if (!item && !ensureWrite()) return;
   const canEdit = writable();
   showModal(
@@ -2024,13 +2717,24 @@ function showEditor(kind, item) {
       title.maxLength = 200;
       const text = el("textarea");
       text.placeholder =
-        kind === "task" ? "补充说明、要点或参考…" : "一个想法，也值得留下来。";
+        kind === "task" ? "补充说明、要点或参考，支持 Markdown…" : "一个想法，也值得留下来，支持 Markdown。";
       text.value = item?.body || "";
       text.maxLength = 200000;
       form.append(
         labelField("标题", title),
         labelField(kind === "task" ? "补充说明" : "正文", text),
       );
+      // 详情区：笔记始终给 Markdown 预览；任务仅在正文含 Markdown 标记时出现
+      const previewWrap = el("div", "markdown-preview-wrap");
+      const preview = el("div", "markdown-body");
+      previewWrap.append(el("span", "recur-label", "Markdown 预览"), preview);
+      previewWrap.hidden = kind === "task" && !hasMarkdownMarkup(text.value);
+      renderMarkdownInto(preview, text.value);
+      text.addEventListener("input", () => {
+        if (kind === "task") previewWrap.hidden = !hasMarkdownMarkup(text.value);
+        renderMarkdownInto(preview, text.value);
+      });
+      form.append(previewWrap);
       const meta = el("div", "editor-meta");
       const area = select(
         [
@@ -2039,16 +2743,14 @@ function showEditor(kind, item) {
         ],
         item?.area || state.area,
       );
-      const tag = input(
-        "text",
-        "例如：项目、阅读、旅行",
-        item?.meta?.tag || "",
-      );
-      tag.maxLength = 40;
-      meta.append(labelField("所属分区", area), labelField("标签", tag));
-      let due, priority, status;
+      const tagEditor = buildTagEditor(itemTags(item));
+      meta.append(labelField("所属分区", area));
+      const tagField = labelField("标签（最多 8 个，每个 ≤20 字）", tagEditor.node);
+      tagField.classList.add("editor-meta-wide");
+      meta.append(tagField);
+      let due, priority, status, recurEditor, subtaskEditor;
       if (kind === "task") {
-        due = input("date", "", item?.meta?.due || "");
+        due = input("date", "", item?.meta?.due || prefill.due || "");
         priority = select(
           [
             ["normal", "普通"],
@@ -2068,9 +2770,30 @@ function showEditor(kind, item) {
           labelField("优先级", priority),
           labelField("当前状态", status),
         );
+        due.addEventListener("change", () => recurEditor?.refresh());
+        recurEditor = buildRecurrenceEditor(item?.meta?.recurrence, () => due.value);
+        const recurField = labelField("重复设置", recurEditor.node);
+        recurField.classList.add("editor-meta-wide");
+        const existingRec = item?.meta?.recurrence;
+        if (existingRec?.freq) {
+          const progress = el(
+            "p",
+            "recur-progress",
+            existingRec.exhausted
+              ? "该重复任务已结束。"
+              : `已完成 ${Number.isInteger(existingRec.completed) ? existingRec.completed : 0} 次。`,
+          );
+          recurEditor.node.append(progress);
+        }
+        meta.append(recurField);
+        subtaskEditor = buildSubtaskEditor(item?.meta?.subtasks);
+        const subtaskField = labelField("子任务（最多 20 项）", subtaskEditor.node);
+        subtaskField.classList.add("editor-meta-wide");
+        meta.append(subtaskField);
       }
       form.append(meta);
       const error = el("p", "form-error");
+      error.setAttribute("role", "alert");
       const save = el(
         "button",
         "button primary",
@@ -2094,27 +2817,38 @@ function showEditor(kind, item) {
           el("p", "helper", "你拥有当前空间的只读权限，可以查看记录。"),
         );
       form.append(error, actionsRow(...buttons));
-      if (!canEdit)
-        $$("input,textarea,select", form).forEach(
+      if (!canEdit) {
+        $$("input,textarea,select,button", form).forEach(
           (control) => (control.disabled = true),
         );
+        tagEditor.setDisabled(true);
+        subtaskEditor?.setDisabled(true);
+      }
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
         if (!canEdit) return;
         save.disabled = true;
         error.textContent = "";
         try {
+          const nextMeta = { ...(item?.meta || {}) };
+          nextMeta.tags = tagEditor.getTags();
           const fields = {
             kind,
             area: area.value,
             title: title.value.trim(),
             body: text.value,
             status: status?.value || item?.status || "active",
-            meta: { ...(item?.meta || {}), tag: tag.value.trim() },
+            meta: nextMeta,
           };
           if (kind === "task") {
-            fields.meta.due = due.value;
-            fields.meta.priority = priority.value;
+            nextMeta.due = due.value;
+            nextMeta.priority = priority.value;
+            const recurrence = recurEditor.getRecurrence();
+            if (recurrence) nextMeta.recurrence = recurrence;
+            else delete nextMeta.recurrence;
+            const subtasks = subtaskEditor.getSubtasks();
+            if (subtasks.length) nextMeta.subtasks = subtasks;
+            else delete nextMeta.subtasks;
           }
           await saveItem(fields, item?.id);
           closeModal();
@@ -2520,68 +3254,367 @@ function confirmRemoveMember(space, member) {
     );
   });
 }
-function showSearch() {
-  showModal("在当前空间寻找", (body) => {
-    const query = input("search", "搜索标题、正文或标签");
-    query.setAttribute("aria-label", "搜索记录");
-    const results = el("div", "search-results");
-    const update = () => {
-      results.replaceChildren();
-      const term = query.value.trim().toLocaleLowerCase();
-      const items = state.items
-        .filter(
-          (item) =>
-            !term ||
-            `${item.title}\n${item.body}\n${item.meta?.tag || ""}`
-              .toLocaleLowerCase()
-              .includes(term),
-        )
-        .slice(0, 30);
-      if (!items.length) {
-        emptyState(
-          results,
-          "search",
-          "还没找到这条记录",
-          "试试其他关键词。密码箱内容不会出现在搜索结果里。",
-        );
-        return;
-      }
-      items.forEach((item) => {
-        const b = button("", "search-result", () =>
-          item.kind === "media" ? showMedia(item) : showEditor(item.kind, item),
-        );
-        const info = el("span");
-        info.append(
-          el("strong", "", item.title),
-          el(
-            "small",
-            "",
-            `${item.area === "life" ? "生活" : "工作"} · ${kindNames[item.kind]}`,
-          ),
-        );
-        b.append(
-          svg(
-            item.kind === "media"
-              ? "folder"
-              : item.kind === "task"
-                ? "task"
-                : "note",
-          ),
-          info,
-          svg("arrow", true),
-        );
-        results.append(b);
+// 演示模式：在本地 demoStore 与 demoDaily 内跨空间做与后端同名字段的过滤
+function demoSearchAllSpaces(term) {
+  const keyword = term.toLocaleLowerCase();
+  const results = [];
+  for (const space of state.spaces) {
+    for (const item of state.demoStore[space.id] || []) {
+      const haystack = [
+        item.title || "",
+        item.body || "",
+        ...itemTags(item),
+      ]
+        .join("\n")
+        .toLocaleLowerCase();
+      if (!haystack.includes(keyword)) continue;
+      const snippetSource =
+        (item.title || "").toLocaleLowerCase().includes(keyword)
+          ? item.title
+          : item.body || itemTags(item)[0] || item.title;
+      results.push({
+        type: "item",
+        spaceId: space.id,
+        spaceName: space.name,
+        area: item.area,
+        id: item.id,
+        title: item.title,
+        snippet: (snippetSource || "").slice(0, 80),
+        due: item.meta?.due || null,
+        status: item.status,
+        updatedAt: item.updated_at || item.created_at,
       });
-    };
-    query.addEventListener("input", update);
-    body.append(
-      query,
-      el("p", "helper", "搜索当前空间的工作与生活记录，私密密码箱不参与搜索。"),
-      results,
-    );
-    update();
-  });
+    }
+    for (const entry of state.demoDaily[space.id] || []) {
+      const haystack = [entry.title || "", entry.summary || "", entry.body || ""]
+        .join("\n")
+        .toLocaleLowerCase();
+      if (!haystack.includes(keyword)) continue;
+      results.push({
+        type: "daily",
+        spaceId: space.id,
+        spaceName: space.name,
+        area: entry.area,
+        id: entry.id,
+        title: entry.title,
+        snippet: (entry.body || entry.summary || entry.title || "").slice(0, 80),
+        due: null,
+        status: entry.status || "active",
+        updatedAt: entry.updatedAt || entry.createdAt,
+      });
+    }
+  }
+  return results.sort((a, b) =>
+    String(b.updatedAt || "").localeCompare(String(a.updatedAt || "")),
+  );
 }
+// 统一入口：⌘K、顶栏搜索按钮与侧边导航都打开同一个跨空间搜索视图
+function openSearchView() {
+  if (!state.user) return;
+  state.view = "search";
+  state.search.error = "";
+  closeModal();
+  closeDrawer(false);
+  render();
+  window.setTimeout(() => {
+    const inputNode = $("#search-view-input");
+    if (inputNode && state.view === "search") inputNode.focus();
+  }, 60);
+}
+async function runSearch(term) {
+  const keyword = term.trim();
+  const token = ++state.search.request;
+  state.search.query = keyword;
+  if (!keyword) {
+    state.search.results = [];
+    state.search.queried = "";
+    state.search.loading = false;
+    state.search.error = "";
+    render();
+    return;
+  }
+  state.search.loading = true;
+  state.search.error = "";
+  render();
+  try {
+    let results;
+    if (state.demo) results = demoSearchAllSpaces(keyword);
+    else {
+      const result = await api(
+        `/api/search?q=${encodeURIComponent(keyword)}`,
+      );
+      results = Array.isArray(result.results) ? result.results : [];
+    }
+    if (token !== state.search.request) return;
+    state.search.results = results;
+    state.search.queried = keyword;
+  } catch (err) {
+    if (token !== state.search.request) return;
+    state.search.results = [];
+    state.search.queried = keyword;
+    state.search.error = errorMessage(err);
+    toast(errorMessage(err), true);
+  } finally {
+    if (token === state.search.request) state.search.loading = false;
+    render();
+  }
+}
+async function openSearchResult(result) {
+  if (result.spaceId && result.spaceId !== state.space?.id) {
+    const target = state.spaces.find((space) => space.id === result.spaceId);
+    if (!target) {
+      toast("无法打开该空间的记录", true);
+      return;
+    }
+    await switchSpace(result.spaceId);
+  }
+  if (result.type === "daily") {
+    state.area = result.area === "life" ? "life" : "work";
+    navigate("daily");
+    return;
+  }
+  const found = state.items.find((item) => item.id === result.id);
+  if (!found) {
+    toast("记录可能已被移动或删除", true);
+    return;
+  }
+  showEditor(found.kind, found);
+}
+function renderSearch(content) {
+  const card = el("section", "card search-view-card");
+  const searchInput = input("search", "输入关键词，搜索所有你加入的空间");
+  searchInput.id = "search-view-input";
+  searchInput.value = state.search.query;
+  searchInput.setAttribute("aria-label", "跨空间搜索关键词");
+  let debounce = 0;
+  searchInput.addEventListener("input", () => {
+    window.clearTimeout(debounce);
+    const value = searchInput.value;
+    debounce = window.setTimeout(() => runSearch(value), 300);
+  });
+  searchInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      window.clearTimeout(debounce);
+      runSearch(searchInput.value);
+    }
+  });
+  card.append(searchInput);
+  card.append(
+    el(
+      "p",
+      "helper",
+      "覆盖你加入的所有空间内的待办、笔记与今日记录；私密密码箱不参与搜索。",
+    ),
+  );
+  const resultWrap = el("div", "search-view-results");
+  const keyword = state.search.query.trim();
+  if (!keyword) {
+    emptyState(
+      resultWrap,
+      "search",
+      "输入关键词，跨空间找记录",
+      "回车或稍等片刻自动搜索，结果会按空间分组展示。",
+    );
+  } else if (state.search.loading) {
+    const row = el("div", "loading-panel");
+    row.append(el("span", "spinner"), el("span", "", "正在跨空间搜索…"));
+    resultWrap.append(row);
+  } else if (state.search.error) {
+    const error = el("p", "form-error", state.search.error);
+    error.setAttribute("role", "alert");
+    resultWrap.append(error);
+  } else if (!state.search.results.length) {
+    emptyState(
+      resultWrap,
+      "search",
+      `没有找到与「${state.search.queried}」相关的记录`,
+      "试试更短或其他关键词。密码箱内容不会出现在搜索结果里。",
+    );
+  } else {
+    const groups = new Map();
+    for (const result of state.search.results) {
+      if (!groups.has(result.spaceId))
+        groups.set(result.spaceId, { name: result.spaceName, list: [] });
+      groups.get(result.spaceId).list.push(result);
+    }
+    for (const [spaceId, group] of groups) {
+      const section = el("section", "search-space-group");
+      const heading = el("h3", "search-space-title", group.name);
+      heading.append(
+        el("span", "search-space-count", `${group.list.length} 条`),
+      );
+      section.append(heading);
+      group.list.forEach((result) => {
+        const row = button("", "search-result", () => openSearchResult(result));
+        const iconName =
+          result.type === "daily"
+            ? "camera"
+            : result.due
+              ? "task"
+              : "note";
+        const info = el("span");
+        const metaLine = [
+          result.area === "life" ? "生活" : "工作",
+          result.type === "daily" ? "今日记录" : "条目",
+          result.due ? `计划 ${result.due}` : "",
+        ]
+          .filter(Boolean)
+          .join(" · ");
+        info.append(
+          el("strong", "", result.title),
+          el("small", "", metaLine),
+          result.snippet ? el("small", "search-snippet", result.snippet) : null,
+        );
+        row.append(svg(iconName), info, svg("arrow", true));
+        section.append(row);
+      });
+      resultWrap.append(section);
+    }
+  }
+  card.append(resultWrap);
+  content.append(card);
+}
+// ---------------------------------------------------------------------------
+// 月历视图：周一到周日的当月月格，重复任务展示未来 3 次到期
+// ---------------------------------------------------------------------------
+function calendarMonthLabel(monthValue) {
+  const [year, month] = monthValue.split("-").map(Number);
+  return `${year} 年 ${month} 月`;
+}
+function shiftMonth(monthValue, delta) {
+  const [year, month] = monthValue.split("-").map(Number);
+  const date = new Date(year, month - 1 + delta, 1);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+}
+function renderCalendar(content) {
+  if (!state.calendar.month)
+    state.calendar.month = dailyDateString().slice(0, 7);
+  const monthValue = state.calendar.month;
+  const [year, month] = monthValue.split("-").map(Number);
+  const firstDay = new Date(year, month - 1, 1);
+  const offset = weekdayIndex(firstDay);
+  const gridStart = new Date(year, month - 1, 1 - offset);
+  const today = dailyDateString();
+  // 收集月格内每个日期对应的任务
+  const byDate = new Map();
+  currentItems("task").forEach((item) => {
+    if (!item.meta?.due) return;
+    nextOccurrences(item, 3).forEach((dateString) => {
+      if (!dateString.startsWith(monthValue)) return;
+      if (!byDate.has(dateString)) byDate.set(dateString, []);
+      byDate.get(dateString).push(item);
+    });
+  });
+  const card = el("section", "card calendar-card");
+  const nav = el("div", "calendar-nav");
+  nav.append(
+    button("上一月", "button secondary calendar-nav-btn", () => {
+      state.calendar.month = shiftMonth(monthValue, -1);
+      render();
+    }, "arrow"),
+    el("h2", "calendar-title", calendarMonthLabel(monthValue)),
+    button("今天", "button secondary calendar-nav-btn", () => {
+      state.calendar.month = today.slice(0, 7);
+      state.calendar.filter = null;
+      render();
+    }),
+    button("下一月", "button secondary calendar-nav-btn", () => {
+      state.calendar.month = shiftMonth(monthValue, 1);
+      render();
+    }, "arrow"),
+  );
+  // 上一月按钮的箭头反向
+  nav.firstChild.querySelector(".icon")?.style.setProperty("transform", "rotate(180deg)");
+  card.append(nav);
+  const weekdayHeader = el("div", "calendar-weekdays");
+  ["周一", "周二", "周三", "周四", "周五", "周六", "周日"].forEach((name) =>
+    weekdayHeader.append(el("span", "", name)),
+  );
+  card.append(weekdayHeader);
+  const grid = el("div", "calendar-grid");
+  for (let index = 0; index < 42; index++) {
+    const cellDate = new Date(
+      gridStart.getFullYear(),
+      gridStart.getMonth(),
+      gridStart.getDate() + index,
+    );
+    const dateString = isoDateString(cellDate);
+    const inMonth = cellDate.getMonth() === month - 1;
+    const isToday = dateString === today;
+    const isPicked = state.calendar.filter === dateString;
+    const cell = el(
+      "div",
+      `calendar-cell${inMonth ? "" : " muted"}${isToday ? " today" : ""}${
+        isPicked ? " picked" : ""
+      }`,
+    );
+    cell.tabIndex = 0;
+    cell.setAttribute("role", "button");
+    cell.setAttribute(
+      "aria-label",
+      `${dateString}${isToday ? "（今天）" : ""}，点击新建或筛选任务`,
+    );
+    const dayNumber = el("span", "calendar-day", String(cellDate.getDate()));
+    cell.append(dayNumber);
+    const entries = byDate.get(dateString) || [];
+    const entryWrap = el("div", "calendar-entries");
+    entries.slice(0, 3).forEach((item) => {
+      const entry = button("", "calendar-entry", (event) => {
+        event.stopPropagation();
+        showEditor("task", item);
+      });
+      if (item.status === "done") entry.classList.add("is-done");
+      if (item.meta?.recurrence?.freq) entry.classList.add("is-recurring");
+      entry.append(el("span", "calendar-entry-dot"), el("span", "", item.title));
+      entryWrap.append(entry);
+    });
+    if (entries.length > 3)
+      entryWrap.append(el("span", "calendar-more", `+${entries.length - 3}`));
+    cell.append(entryWrap);
+    const activate = () => {
+      state.calendar.filter = isPicked ? null : dateString;
+      render();
+    };
+    cell.addEventListener("click", activate);
+    cell.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        activate();
+      }
+    });
+    grid.append(cell);
+  }
+  card.append(grid);
+  content.append(card);
+  if (state.calendar.filter) {
+    const detail = el("section", "card calendar-day-detail");
+    const head = el("div", "calendar-day-head");
+    head.append(
+      el("h2", "", `${state.calendar.filter} 的安排`),
+      writable()
+        ? button("新建这一天的待办", "button primary", () => {
+            showEditor("task", null, { due: state.calendar.filter });
+          }, "plus")
+        : el("span", "readonly-pill", "这个空间为只读"),
+    );
+    detail.append(head);
+    const dayTasks = byDate.get(state.calendar.filter) || [];
+    const list = el("div", "task-list");
+    if (dayTasks.length) dayTasks.forEach((item) => list.append(taskRow(item)));
+    else
+      emptyState(
+        list,
+        "calendar",
+        "这一天还没有安排",
+        "新建一件待办，或点击其他日期查看。",
+        writable() ? "新建待办" : null,
+        () => showEditor("task", null, { due: state.calendar.filter }),
+      );
+    detail.append(list);
+    content.append(detail);
+  }
+}
+
 function showProfile() {
   showModal("我的账户", (body) => {
     const info = el("div", "profile-details");
@@ -4625,7 +5658,7 @@ $(".sidebar .brand").addEventListener("click", (event) => {
 $("#new-button").addEventListener("click", showNew);
 $("#mobile-new").addEventListener("click", showNew);
 $("#space-switcher").addEventListener("click", showSpaceSwitcher);
-$("#search-button").addEventListener("click", showSearch);
+$("#search-button").addEventListener("click", openSearchView);
 $("#profile-button").addEventListener("click", showProfile);
 $("#account-settings-button").addEventListener("click", showAccountSettings);
 $("#modal-close").addEventListener("click", closeModal);
@@ -4690,7 +5723,7 @@ document.addEventListener("keydown", (event) => {
     state.user
   ) {
     event.preventDefault();
-    showSearch();
+    openSearchView();
   }
   if ((event.metaKey || event.ctrlKey) && event.key === "1" && state.user) {
     event.preventDefault();
