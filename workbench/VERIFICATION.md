@@ -20,7 +20,15 @@
 
 - `node --check`、`py_compile` 通过；禁用 API（innerHTML/eval/alert 等）静态扫描零命中，新增 CSS 零硬编码颜色，全部使用既有 token。
 - 浏览器 QA：recur_calendar（21）、markdown（25）、mobile（9）、frontend_hardening（4）、life_entry（6）、account_export（15）、daily（5）、menu_visual（2）、bedtime（11）退出码均为 0。
-- 两个偶发失败已对照确认非本批回归：`collaboration_qa` 的录音按钮断言单次失败后连跑 3 次全绿，且本批未改任何录音/getUserMedia 代码、stash 到基线同样通过；`warm_story_qa` 语音事件断言 1 过 1 败，是批次 0/1 已记录的 bedtime 既有 headless 时序竞态（bedtime 文件本批未改）。生产部署与烟测在提交通过 CI 后另行记录。
+- 两个偶发失败已对照确认非本批回归：`collaboration_qa` 的录音按钮断言单次失败后连跑 3 次全绿，且本批未改任何录音/getUserMedia 代码、stash 到基线同样通过；`warm_story_qa` 语音事件断言 1 过 1 败，是批次 0/1 已记录的 bedtime 既有 headless 时序竞态（bedtime 文件本批未改）。
+
+生产部署与烟测（2026-11-07，提交 6066ca3，CI run 42335198191 全绿）：
+
+- 发布包含 recur.py、export.py、public/vendor 与两个新 QA，SOURCE_SHA 校验一致、无 .env/数据库/备份等敏感物；服务器上对发布副本的 Dockerfile 仅 sed 阿里云 pip 镜像，与 current 的差异只有新增 recur.py。
+- 预飞（compose 构建一次性容器、临时 /data，不触生产）：schema 哈希仍为 `83d99f53…2838`，全部模块导入成功（含 recur 中文描述），`/api/health` 健康，`/vendor/markdown.js` 以 text/javascript 返回，`/api/search` 与 `/api/spaces/:id/tags` 未认证返回 401（已接线而非 404）；验证后容器、镜像与临时目录已清理。
+- `deploy.sh` 部署：镜像 `zhixu-app:6066ca3…` healthy，current 软链与 current-sha 切换，网关正常，schema 标签保持 `83d99f53…2838`（结构守卫按零变更直接通过），自动备份 `20261107T035247Z-00b04a1f` 生成；外部 HTTPS 复查安全头（CSP `script-src 'self'`、HSTS、nosniff、DENY 等）齐全，app.js 含新函数、vendor 200、搜索 401。
+- 端到端烟测 26/26 通过（一次性邀请注册的临时账号，结束后密码门控注销）：每日任务完成后回到 active 且 due 前进到次日、completed=1、子任务与标签保留；count=1 任务完成即 done+exhausted；非法子任务 id 返回 400；`/tags` 聚合新标签并兼容旧 meta.tag；跨两个空间搜索同时命中 item 与 daily、含空间名与纯文本片段、密码箱专属词无结果、空关键词 400、未认证 401。
+- 残留与数据完好：注销后 users 仅余真实用户 fuminer（1 个成员关系完好），烟测账号在 items/daily_entries/sessions/spaces 等表零残留；维护流量生成的当日快照 `folio-20261107-040209.db` 正常落盘。
 
 ## 数据主权与账号生命周期（批次 1）
 
