@@ -25,7 +25,10 @@ const state = {
   tagsLoadedSpace: null,
   tagsLoading: false,
   search: { query: "", results: [], loading: false, request: 0, queried: "", error: "" },
-  calendar: { month: "", filter: null },
+  calendar: { month: "", filter: null, mode: "month" },
+  notifications: { items: [], unread: 0, loaded: false, loading: false },
+  shortcuts: null,
+  templates: { list: [], loaded: false, loading: false },
   register: false,
   request: 0,
   sessionEpoch: 0,
@@ -578,16 +581,17 @@ function nextOccurrences(item, limit = 3) {
 function makeSubtaskId() {
   return crypto.randomUUID().replace(/-/g, "");
 }
-function itemTags(item) {
+function itemTags(item, prefillMeta) {
+  const source = item ? item.meta : prefillMeta;
   const tags = [];
   const seen = new Set();
-  for (const tag of item?.meta?.tags || []) {
+  for (const tag of source?.tags || []) {
     if (typeof tag === "string" && tag.trim() && !seen.has(tag.trim())) {
       seen.add(tag.trim());
       tags.push(tag.trim());
     }
   }
-  const legacy = item?.meta?.tag;
+  const legacy = source?.tag;
   if (typeof legacy === "string" && legacy.trim() && !seen.has(legacy.trim()))
     tags.push(legacy.trim());
   return tags;
@@ -622,6 +626,304 @@ function renderMarkdownInto(container, text) {
   container.textContent = text || "";
 }
 
+// ---------------------------------------------------------------------------
+// 通知铃铛：登录后按会话拉取，进入应用/切空间/保存条目后顺带刷新，不轮询
+// ---------------------------------------------------------------------------
+async function loadNotifications(force = false) {
+  if (state.demo) {
+    // 演示模式用本地 mock 数据，便于离线体验完整界面
+    if (!state.notifications.loaded || force) {
+      state.notifications.items = demoNotifications();
+      state.notifications.unread = state.notifications.items.filter((n) => !n.read).length;
+      state.notifications.loaded = true;
+    }
+    updateNotifyBadge();
+    return;
+  }
+  if (!state.user || (state.notifications.loading && !force)) return;
+  state.notifications.loading = true;
+  const session = state.sessionEpoch;
+  try {
+    const result = await api("/api/notifications?limit=20");
+    if (state.sessionEpoch !== session) return;
+    state.notifications.items = Array.isArray(result.notifications) ? result.notifications : [];
+    state.notifications.unread = Number(result.unreadCount) || 0;
+    state.notifications.loaded = true;
+  } catch {
+    /* 铃铛静默失败，不打扰主流程 */
+  } finally {
+    if (state.sessionEpoch === session) state.notifications.loading = false;
+  }
+  updateNotifyBadge();
+}
+function updateNotifyBadge() {
+  const badge = $("#notify-badge");
+  if (!badge) return;
+  const count = state.demo
+    ? state.notifications.items.filter((n) => !n.read).length
+    : state.notifications.unread;
+  badge.hidden = count <= 0;
+  badge.textContent = count > 99 ? "99+" : String(count);
+  $("#notify-button")?.setAttribute(
+    "aria-label",
+    count > 0 ? `通知，${count} 条未读` : "通知",
+  );
+}
+function notificationTime(stamp) {
+  const then = new Date(stamp).getTime();
+  if (!Number.isFinite(then)) return "";
+  const diff = Date.now() - then;
+  const minute = 60000;
+  if (diff < minute) return "刚刚";
+  if (diff < 60 * minute) return `${Math.floor(diff / minute)} 分钟前`;
+  if (diff < 24 * 60 * minute) return `${Math.floor(diff / (60 * minute))} 小时前`;
+  if (diff < 48 * 60 * minute) return "昨天";
+  return new Date(stamp).toLocaleDateString("zh-CN", { month: "numeric", day: "numeric" });
+}
+function demoNotifications() {
+  const now = Date.now();
+  return [
+    {
+      id: "demo-n1",
+      type: "task.due",
+      title: "整理家庭相册",
+      body: "任务「整理家庭相册」已于今天到期，请及时处理。",
+      data: {},
+      read: 0,
+      createdAt: new Date(now - 32 * 60000).toISOString(),
+    },
+    {
+      id: "demo-n2",
+      type: "task.due",
+      title: "给妈妈回电话",
+      body: "任务「给妈妈回电话」已于昨天到期，请及时处理。",
+      data: {},
+      read: 1,
+      createdAt: new Date(now - 26 * 3600000).toISOString(),
+    },
+  ];
+}
+function showNotifications() {
+  loadNotifications();
+  showModal("通知", (body) => {
+    const list = el("div", "notify-list");
+    const render = () => {
+      list.replaceChildren();
+      const items = state.notifications.items;
+      if (!state.notifications.loaded && !state.demo) {
+        const row = el("div", "loading-panel");
+        row.append(el("span", "spinner"), el("span", "", "正在加载通知…"));
+        list.append(row);
+        return;
+      }
+      if (!items.length) {
+        emptyState(list, "bell", "暂时没有新通知", "任务到期时会在这里提醒你。");
+        return;
+      }
+      for (const n of items) {
+        const rowItem = el("div", `notify-item${n.read ? "" : " unread"}`);
+        const iconWrap = el("span", "notify-item-icon");
+        iconWrap.append(svg("task"));
+        const textWrap = el("button", "notify-item-main", () => openNotification(n));
+        textWrap.type = "button";
+        textWrap.append(
+          el("strong", "", n.title || "提醒"),
+          el("small", "", n.body || ""),
+          el("small", "notify-time", notificationTime(n.createdAt)),
+        );
+        rowItem.append(iconWrap, textWrap);
+        if (!n.read) {
+          const mark = button("标为已读", "button soft compact", async () => {
+            await markNotificationRead(n.id);
+            render();
+          });
+          rowItem.append(mark);
+        }
+        list.append(rowItem);
+      }
+    };
+    render();
+    const footer = actionsRow(
+      button("全部已读", "button soft", async () => {
+        await markAllNotificationsRead();
+        render();
+      }),
+    );
+    body.append(list, footer);
+  }, "提醒与待办");
+}
+async function markNotificationRead(id) {
+  if (state.demo) {
+    const target = state.notifications.items.find((n) => n.id === id);
+    if (target) target.read = 1;
+    state.notifications.unread = state.notifications.items.filter((n) => !n.read).length;
+    updateNotifyBadge();
+    return;
+  }
+  try {
+    await api("/api/notifications/read", "POST", { id });
+    const target = state.notifications.items.find((n) => n.id === id);
+    if (target) target.read = 1;
+    state.notifications.unread = Math.max(0, state.notifications.unread - 1);
+    updateNotifyBadge();
+  } catch (err) {
+    toast(errorMessage(err), true);
+  }
+}
+async function markAllNotificationsRead() {
+  if (state.demo) {
+    state.notifications.items.forEach((n) => (n.read = 1));
+    state.notifications.unread = 0;
+    updateNotifyBadge();
+    return;
+  }
+  try {
+    await api("/api/notifications/read", "POST", { all: true });
+    state.notifications.items.forEach((n) => (n.read = 1));
+    state.notifications.unread = 0;
+    updateNotifyBadge();
+  } catch (err) {
+    toast(errorMessage(err), true);
+  }
+}
+async function openNotification(n) {
+  closeModal();
+  if (n.type === "task.due" && n.data?.itemId) {
+    const sid = n.data.spaceId;
+    if (sid && state.space?.id !== sid && !state.demo) {
+      try {
+        await switchSpace(sid);
+      } catch {
+        /* 空间可能已无权限，继续尝试本地查找 */
+      }
+    }
+    const item = state.items.find((candidate) => candidate.id === n.data.itemId);
+    if (item) showEditor("task", item);
+    else toast("这条任务可能已被删除或移动。");
+    return;
+  }
+}
+// 首页快捷方式（2b P5）在下方区块完整实现；此处先提供安全空实现，避免
+// enterApp 在功能完成前引用未定义函数。
+// 首页快捷方式：服务端 /api/settings 持久化（按账号隔离），演示模式存内存。
+// 可选的页面白名单与服务端 settings.SHORTCUT_VIEWS 保持一致。
+const SHORTCUT_VIEWS = [
+  ["overview", "总览", "grid"],
+  ["daily", "今日记录", "camera"],
+  ["tasks", "待办事项", "task"],
+  ["calendar", "日历日程", "calendar"],
+  ["notes", "灵感笔记", "note"],
+  ["media", "媒体资料", "folder"],
+  ["search", "全局搜索", "search"],
+  ["vault", "私密密码箱", "lock"],
+  ["spaces", "空间与协作", "users"],
+  ["modules", "模块库", "puzzle"],
+  ["bedtime", "晚安故事", "cloud"],
+];
+const MAX_SHORTCUTS = 8;
+function shortcutLabel(view) {
+  const found = SHORTCUT_VIEWS.find(([id]) => id === view);
+  return found ? { label: found[1], icon: found[2] } : { label: view, icon: "grid" };
+}
+function demoShortcuts() {
+  return ["tasks", "calendar", "daily"];
+}
+async function loadShortcuts(force = false) {
+  if (state.demo) {
+    if (!state.shortcuts || force) state.shortcuts = demoShortcuts();
+    return;
+  }
+  if (!state.user || (state.shortcutsLoading && !force)) return;
+  state.shortcutsLoading = true;
+  const session = state.sessionEpoch;
+  try {
+    const result = await api("/api/settings");
+    if (state.sessionEpoch !== session) return;
+    state.shortcuts = Array.isArray(result.shortcuts) ? result.shortcuts : [];
+  } catch {
+    if (state.sessionEpoch === session && state.shortcuts === null) state.shortcuts = [];
+  } finally {
+    if (state.sessionEpoch === session) state.shortcutsLoading = false;
+  }
+}
+async function saveShortcuts(next) {
+  const cleaned = Array.from(new Set(next)).slice(0, MAX_SHORTCUTS);
+  if (state.demo) {
+    state.shortcuts = cleaned;
+    return true;
+  }
+  try {
+    const result = await api("/api/settings", "PATCH", { shortcuts: cleaned });
+    state.shortcuts = Array.isArray(result.shortcuts) ? result.shortcuts : cleaned;
+    return true;
+  } catch (err) {
+    toast(errorMessage(err), true);
+    return false;
+  }
+}
+function renderShortcutBar(content) {
+  const views = state.shortcuts === null ? [] : state.shortcuts;
+  if (!views.length) return;
+  const bar = el("section", "card shortcut-bar");
+  const head = el("div", "shortcut-head");
+  head.append(el("span", "shortcut-label", "常用功能"));
+  head.append(
+    button("调整", "text-button", showShortcutSettings, "settings"),
+  );
+  bar.append(head);
+  const row = el("div", "shortcut-row");
+  for (const view of views) {
+    const { label, icon } = shortcutLabel(view);
+    const item = button("", "shortcut-item", () => navigate(view));
+    item.append(svg(icon), el("span", "", label));
+    row.append(item);
+  }
+  bar.append(row);
+  content.append(bar);
+}
+function showShortcutSettings() {
+  showModal("首页快捷方式", (body) => {
+    body.append(
+      el(
+        "p",
+        "helper",
+        `最多 ${MAX_SHORTCUTS} 个。选中的功能会出现在首页顶部，一键直达。`,
+      ),
+    );
+    const current = new Set(state.shortcuts || []);
+    const grid = el("div", "shortcut-picker");
+    const boxes = [];
+    for (const [view, label, icon] of SHORTCUT_VIEWS) {
+      const row = el("label", "shortcut-choice");
+      const box = el("input");
+      box.type = "checkbox";
+      box.checked = current.has(view);
+      box.value = view;
+      boxes.push(box);
+      const text = el("span", "shortcut-choice-text");
+      text.append(svg(icon), document.createTextNode(label));
+      row.append(box, text);
+      grid.append(row);
+    }
+    const error = el("p", "form-error");
+    error.setAttribute("role", "alert");
+    const save = button("保存", "button primary", async () => {
+      const picked = boxes.filter((box) => box.checked).map((box) => box.value);
+      if (picked.length > MAX_SHORTCUTS) {
+        error.textContent = `最多选择 ${MAX_SHORTCUTS} 个`;
+        return;
+      }
+      save.disabled = true;
+      if (await saveShortcuts(picked)) {
+        closeModal();
+        render();
+        toast("快捷方式已更新");
+      }
+      save.disabled = false;
+    });
+    body.append(grid, error, actionsRow(save));
+  }, "个性化");
+}
 function measureEnvironmentBanner() {
   const banner = $("#test-environment-banner");
   document.documentElement.style.setProperty(
@@ -1204,6 +1506,9 @@ async function enterApp() {
       return;
     }
   }
+  // 进入应用即刷新通知铃铛与快捷方式（此后在保存/切空间等动作时顺带刷新，不轮询）
+  loadNotifications();
+  loadShortcuts();
   if (!state.spaces.length) {
     showCreateSpace();
     render();
@@ -1509,6 +1814,7 @@ function renderOverview(content) {
     stats.append(card);
   }
   content.append(stats);
+  renderShortcutBar(content);
   const grid = el("div", "overview-grid");
   const taskCard = el("section", "card");
   taskCard.append(
@@ -2299,6 +2605,19 @@ function renderModules(content) {
     else card.append(el("div", "helper", "需要配置模型服务与独立 API 密钥"));
     grid.append(card);
   });
+  // 模板库卡片：登记基于常用表单固化的可复用模板。
+  const templateCard = el("section", "card module-card");
+  const templateTop = el("div");
+  const templateIcon = el("span", "module-icon");
+  templateIcon.append(svg("note"));
+  templateTop.append(templateIcon, el("span", "tag", "已可使用"));
+  templateCard.append(
+    templateTop,
+    el("h3", "", "模板库"),
+    el("p", "", "站会、周报、读书清单等常用任务与笔记，一键套用。"),
+    button("管理模板", "text-button", showTemplateManagement),
+  );
+  grid.append(templateCard);
   content.append(grid);
   const note = el("div", "module-note");
   note.append(
@@ -2711,14 +3030,14 @@ function showEditor(kind, item, prefill = {}) {
       const title = input(
         "text",
         kind === "task" ? "想推进哪件事？" : "给这条记录起个名字",
-        item?.title || "",
+        item?.title || prefill.title || "",
       );
       title.required = true;
       title.maxLength = 200;
       const text = el("textarea");
       text.placeholder =
         kind === "task" ? "补充说明、要点或参考，支持 Markdown…" : "一个想法，也值得留下来，支持 Markdown。";
-      text.value = item?.body || "";
+      text.value = item?.body || prefill.body || "";
       text.maxLength = 200000;
       form.append(
         labelField("标题", title),
@@ -2741,22 +3060,23 @@ function showEditor(kind, item, prefill = {}) {
           ["work", "工作"],
           ["life", "生活"],
         ],
-        item?.area || state.area,
+        item?.area || prefill.area || state.area,
       );
-      const tagEditor = buildTagEditor(itemTags(item));
+      const tagEditor = buildTagEditor(itemTags(item, prefill.meta));
       meta.append(labelField("所属分区", area));
       const tagField = labelField("标签（最多 8 个，每个 ≤20 字）", tagEditor.node);
       tagField.classList.add("editor-meta-wide");
       meta.append(tagField);
-      let due, priority, status, recurEditor, subtaskEditor;
+      let due, priority, status, recurEditor, subtaskEditor, startTime, endTime;
       if (kind === "task") {
-        due = input("date", "", item?.meta?.due || prefill.due || "");
+        const prefillMeta = prefill.meta || {};
+        due = input("date", "", item?.meta?.due || prefillMeta.due || prefill.due || "");
         priority = select(
           [
             ["normal", "普通"],
             ["high", "优先"],
           ],
-          item?.meta?.priority || "normal",
+          item?.meta?.priority || prefillMeta.priority || "normal",
         );
         status = select(
           [
@@ -2765,16 +3085,24 @@ function showEditor(kind, item, prefill = {}) {
           ],
           item?.status === "done" ? "done" : "active",
         );
+        // 可选时间段：为空表示「全天」，日程视图据此显示时间范围。
+        startTime = input("time", "", item?.meta?.startTime || prefillMeta.startTime || "");
+        endTime = input("time", "", item?.meta?.endTime || prefillMeta.endTime || "");
         meta.append(
           labelField("计划日期", due),
           labelField("优先级", priority),
           labelField("当前状态", status),
+          labelField("开始时间（可选）", startTime),
+          labelField("结束时间（可选）", endTime),
         );
         due.addEventListener("change", () => recurEditor?.refresh());
-        recurEditor = buildRecurrenceEditor(item?.meta?.recurrence, () => due.value);
+        recurEditor = buildRecurrenceEditor(
+          item?.meta?.recurrence || prefillMeta.recurrence,
+          () => due.value,
+        );
         const recurField = labelField("重复设置", recurEditor.node);
         recurField.classList.add("editor-meta-wide");
-        const existingRec = item?.meta?.recurrence;
+        const existingRec = item?.meta?.recurrence || prefillMeta.recurrence;
         if (existingRec?.freq) {
           const progress = el(
             "p",
@@ -2786,7 +3114,9 @@ function showEditor(kind, item, prefill = {}) {
           recurEditor.node.append(progress);
         }
         meta.append(recurField);
-        subtaskEditor = buildSubtaskEditor(item?.meta?.subtasks);
+        subtaskEditor = buildSubtaskEditor(
+          item?.meta?.subtasks || prefillMeta.subtasks,
+        );
         const subtaskField = labelField("子任务（最多 20 项）", subtaskEditor.node);
         subtaskField.classList.add("editor-meta-wide");
         meta.append(subtaskField);
@@ -2816,6 +3146,32 @@ function showEditor(kind, item, prefill = {}) {
         form.append(
           el("p", "helper", "你拥有当前空间的只读权限，可以查看记录。"),
         );
+      // 新建记录时提供「保存为模板」，把当前表单固化为可复用模板。
+      if (!item && canEdit) {
+        buttons.push(
+          button(
+            "保存为模板",
+            "button soft compact template-save",
+            async () => {
+              const nextMeta = { ...(item?.meta || {}) };
+              nextMeta.tags = tagEditor.getTags();
+              if (kind === "task") {
+                nextMeta.due = due.value;
+                nextMeta.priority = priority.value;
+                nextMeta.recurrence = recurEditor?.getRecurrence() || undefined;
+                const subtasks = subtaskEditor?.getSubtasks() || [];
+                if (subtasks.length) nextMeta.subtasks = subtasks;
+              }
+              await saveCurrentAsTemplate(kind, {
+                title: title.value.trim(),
+                body: text.value,
+                area: area.value,
+                meta: nextMeta,
+              });
+            },
+          ),
+        );
+      }
       form.append(error, actionsRow(...buttons));
       if (!canEdit) {
         $$("input,textarea,select,button", form).forEach(
@@ -2843,6 +3199,18 @@ function showEditor(kind, item, prefill = {}) {
           if (kind === "task") {
             nextMeta.due = due.value;
             nextMeta.priority = priority.value;
+            // 时间段：两端都为空表示全天；同时给出时要求开始早于结束。
+            const startValue = startTime.value;
+            const endValue = endTime.value;
+            if (startValue && endValue && startValue >= endValue) {
+              error.textContent = "结束时间需要晚于开始时间";
+              save.disabled = false;
+              return;
+            }
+            if (startValue) nextMeta.startTime = startValue;
+            else delete nextMeta.startTime;
+            if (endValue) nextMeta.endTime = endValue;
+            else delete nextMeta.endTime;
             const recurrence = recurEditor.getRecurrence();
             if (recurrence) nextMeta.recurrence = recurrence;
             else delete nextMeta.recurrence;
@@ -2877,6 +3245,15 @@ function showNew() {
       b.append(svg(iconName), el("strong", "", title), el("small", "", text));
       options.append(b);
     }
+    const fromTemplate = button("", "new-option new-option-template", () =>
+      showTemplatePicker(),
+    );
+    fromTemplate.append(
+      svg("note"),
+      el("strong", "", "从模板新建"),
+      el("small", "", "站会、周报、读书清单…"),
+    );
+    options.append(fromTemplate);
     body.append(options);
   });
 }
@@ -3486,7 +3863,240 @@ function shiftMonth(monthValue, delta) {
   const date = new Date(year, month - 1 + delta, 1);
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
 }
+// ---------------------------------------------------------------------------
+// 农历换算：纯前端、零网络。使用 1900–2100 年的压缩编码表
+// （每年一个整数，记录大小月与闰月；春节基准日另行给出）。
+// ---------------------------------------------------------------------------
+const LUNAR_INFO = [
+  0x04bd8, 0x04ae0, 0x0a570, 0x054d5, 0x0d260, 0x0d950, 0x16554, 0x056a0, 0x09ad0, 0x055d2,
+  0x04ae0, 0x0a5b6, 0x0a4d0, 0x0d250, 0x1d255, 0x0b540, 0x0d6a0, 0x0ada2, 0x095b0, 0x14977,
+  0x04970, 0x0a4b0, 0x0b4b5, 0x06a50, 0x06d40, 0x1ab54, 0x02b60, 0x09570, 0x052f2, 0x04970,
+  0x06566, 0x0d4a0, 0x0ea50, 0x06e95, 0x05ad0, 0x02b60, 0x186e3, 0x092e0, 0x1c8d7, 0x0c950,
+  0x0d4a0, 0x1d8a6, 0x0b550, 0x056a0, 0x1a5b4, 0x025d0, 0x092d0, 0x0d2b2, 0x0a950, 0x0b557,
+  0x06ca0, 0x0b550, 0x15355, 0x04da0, 0x0a5b0, 0x14573, 0x052b0, 0x0a9a8, 0x0e950, 0x06aa0,
+  0x0aea6, 0x0ab50, 0x04b60, 0x0aae4, 0x0a570, 0x05260, 0x0f263, 0x0d950, 0x05b57, 0x056a0,
+  0x096d0, 0x04dd5, 0x04ad0, 0x0a4d0, 0x0d4d4, 0x0d250, 0x0d558, 0x0b540, 0x0b6a0, 0x195a6,
+  0x095b0, 0x049b0, 0x0a974, 0x0a4b0, 0x0b27a, 0x06a50, 0x06d40, 0x0af46, 0x0ab60, 0x09570,
+  0x04af5, 0x04970, 0x064b0, 0x074a3, 0x0ea50, 0x06b58, 0x05ac0, 0x0ab60, 0x096d5, 0x092e0,
+  0x0c960, 0x0d954, 0x0d4a0, 0x0da50, 0x07552, 0x056a0, 0x0abb7, 0x025d0, 0x092d0, 0x0cab5,
+  0x0a950, 0x0b4a0, 0x0baa4, 0x0ad50, 0x055d9, 0x04ba0, 0x0a5b0, 0x15176, 0x052b0, 0x0a930,
+  0x07954, 0x06aa0, 0x0ad50, 0x05b52, 0x04b60, 0x0a6e6, 0x0a4e0, 0x0d260, 0x0ea65, 0x0d530,
+  0x05aa0, 0x076a3, 0x096d0, 0x04afb, 0x04ad0, 0x0a4d0, 0x1d0b6, 0x0d250, 0x0d520, 0x0dd45,
+  0x0b5a0, 0x056d0, 0x055b2, 0x049b0, 0x0a577, 0x0a4b0, 0x0aa50, 0x1b255, 0x06d20, 0x0ada0,
+];
+const LUNAR_MONTH_CN = ["正", "二", "三", "四", "五", "六", "七", "八", "九", "十", "冬", "腊"];
+const LUNAR_DAY_CN = [
+  "初一", "初二", "初三", "初四", "初五", "初六", "初七", "初八", "初九", "初十",
+  "十一", "十二", "十三", "十四", "十五", "十六", "十七", "十八", "十九", "二十",
+  "廿一", "廿二", "廿三", "廿四", "廿五", "廿六", "廿七", "廿八", "廿九", "三十",
+];
+// 每年春节对应的公历日期基准（与 LUNAR_INFO 同年序一一对应）。
+const LUNAR_BASE_YEAR = 1900;
+const LUNAR_BASE_DATE = Date.UTC(1900, 0, 31);
+
+function lunarLeapMonth(year) {
+  return LUNAR_INFO[year - LUNAR_BASE_YEAR] & 0xf;
+}
+function lunarLeapDays(year) {
+  if (!lunarLeapMonth(year)) return 0;
+  return LUNAR_INFO[year - LUNAR_BASE_YEAR] & 0x10000 ? 30 : 29;
+}
+function lunarMonthDays(year, month) {
+  return LUNAR_INFO[year - LUNAR_BASE_YEAR] & (0x10000 >> month) ? 30 : 29;
+}
+function lunarYearDays(year) {
+  let sum = 348;
+  for (let mask = 0x8000; mask > 0x8; mask >>= 1) {
+    if (LUNAR_INFO[year - LUNAR_BASE_YEAR] & mask) sum += 1;
+  }
+  return sum + lunarLeapDays(year);
+}
+// 返回形如「农历九月初三」的文本；超出数据范围时返回空串。
+function lunarText(dateString) {
+  const [y, m, d] = dateString.split("-").map(Number);
+  const target = Date.UTC(y, m - 1, d);
+  let offset = Math.floor((target - LUNAR_BASE_DATE) / 86400000);
+  if (!Number.isFinite(offset) || offset < 0) return "";
+  let year = LUNAR_BASE_YEAR;
+  const maxYear = LUNAR_BASE_YEAR + LUNAR_INFO.length - 1;
+  while (year <= maxYear) {
+    const days = lunarYearDays(year);
+    if (offset < days) break;
+    offset -= days;
+    year += 1;
+  }
+  if (year > maxYear) return "";
+  const leap = lunarLeapMonth(year);
+  let month = 1;
+  let isLeap = false;
+  while (month <= 12) {
+    const days = isLeap ? lunarLeapDays(year) : lunarMonthDays(year, month);
+    if (offset < days) break;
+    offset -= days;
+    if (leap === month && !isLeap) isLeap = true;
+    else {
+      isLeap = false;
+      month += 1;
+    }
+  }
+  const day = offset + 1;
+  if (month < 1 || month > 12 || day < 1 || day > 30) return "";
+  return `农历${isLeap ? "闰" : ""}${LUNAR_MONTH_CN[month - 1]}月${LUNAR_DAY_CN[day - 1]}`;
+}
+function weekdayCn(dateString) {
+  const [y, m, d] = dateString.split("-").map(Number);
+  return ["周日", "周一", "周二", "周三", "周四", "周五", "周六"][
+    new Date(y, m - 1, d).getDay()
+  ];
+}
+function addDays(dateString, delta) {
+  const [y, m, d] = dateString.split("-").map(Number);
+  const next = new Date(y, m - 1, d + delta);
+  return isoDateString(next);
+}
+// 任务的时间段文案：有开始/结束显示区间，否则「全天」。
+function taskTimeLabel(item) {
+  const start = item.meta?.startTime;
+  const end = item.meta?.endTime;
+  if (start && end) return `${start}-${end}`;
+  if (start) return `${start} 起`;
+  return "全天";
+}
+// 某一天的日程条目：任务（含重复任务落点）+ 今日记录。
+function agendaEntriesFor(dateString) {
+  const tasks = [];
+  currentItems("task").forEach((item) => {
+    if (!item.meta?.due) return;
+    if (nextOccurrences(item, 3).includes(dateString)) tasks.push(item);
+  });
+  tasks.sort((a, b) => {
+    const sa = a.meta?.startTime || "99:99";
+    const sb = b.meta?.startTime || "99:99";
+    return sa.localeCompare(sb);
+  });
+  const entries = [];
+  for (const entry of state.daily.entries || []) {
+    // 接口返回 camelCase 的 entryDate；兼容 snake_case 以防内部结构变化。
+    const entryDate = entry.entryDate || entry.entry_date;
+    if (entryDate === dateString) entries.push(entry);
+  }
+  return { tasks, daily: entries };
+}
+function renderAgenda(content) {
+  const today = dailyDateString();
+  const state_ = state.calendar;
+  if (!state_.agendaFrom) state_.agendaFrom = addDays(today, -7);
+  if (!state_.agendaDays) state_.agendaDays = 37;
+  const from = state_.agendaFrom;
+  const days = state_.agendaDays;
+  const card = el("section", "card agenda-card");
+  const nav = el("div", "calendar-nav");
+  nav.append(
+    button("更早", "button secondary calendar-nav-btn", () => {
+      state_.agendaFrom = addDays(from, -14);
+      state_.agendaDays += 14;
+      render();
+    }),
+    el("h2", "calendar-title", "日程"),
+    button("回到本周", "button secondary calendar-nav-btn", () => {
+      state_.agendaFrom = addDays(today, -7);
+      state_.agendaDays = 37;
+      render();
+    }),
+    button("更晚", "button secondary calendar-nav-btn", () => {
+      state_.agendaDays += 14;
+      render();
+    }),
+  );
+  card.append(nav);
+  const list = el("div", "agenda-list");
+  let renderedGroups = 0;
+  for (let index = 0; index < days; index++) {
+    const dateString = addDays(from, index);
+    const { tasks, daily } = agendaEntriesFor(dateString);
+    if (!tasks.length && !daily.length && dateString !== today) continue;
+    renderedGroups += 1;
+    const group = el("section", "agenda-group");
+    const head = el("div", "agenda-head");
+    const [y, m, d] = dateString.split("-").map(Number);
+    head.append(
+      el("div", "agenda-date", `${m}月${d}日 ${weekdayCn(dateString)}`),
+      el("div", "agenda-lunar", lunarText(dateString)),
+    );
+    if (dateString === today) head.append(el("span", "agenda-today", "今天"));
+    group.append(head);
+    const body = el("div", "agenda-items");
+    if (!tasks.length && !daily.length) {
+      body.append(el("p", "agenda-empty", "暂无日程安排"));
+      // 今天没有安排也允许快速新建
+      if (writable())
+        body.append(
+          button("新建这一天的待办", "text-button", () =>
+            showEditor("task", null, { due: dateString }),
+          ),
+        );
+    }
+    tasks.forEach((item) => {
+      const row = button("", "agenda-item", () => showEditor("task", item));
+      row.type = "button";
+      if (item.status === "done") row.classList.add("is-done");
+      const time = el("span", "agenda-time", taskTimeLabel(item));
+      const title = el("strong", "agenda-title", item.title);
+      row.append(time, title);
+      if (item.meta?.recurrence?.freq)
+        row.append(el("span", "agenda-badge", "重复"));
+      body.append(row);
+    });
+    daily.forEach((entry) => {
+      const row = button("", "agenda-item agenda-daily", () => {
+        navigate("daily");
+      });
+      row.type = "button";
+      row.append(
+        el("span", "agenda-time", "记录"),
+        el("strong", "agenda-title", entry.title || "今日记录"),
+      );
+      body.append(row);
+    });
+    group.append(body);
+    list.append(group);
+  }
+  if (!renderedGroups) {
+    emptyState(
+      list,
+      "calendar",
+      "这段时间没有日程",
+      "点击「更早」或「更晚」查看其他日期。",
+    );
+  }
+  card.append(list);
+  content.append(card);
+}
 function renderCalendar(content) {
+  // 顶部模式切换：日历（月视图）/ 日程（时间线）
+  const switcher = el("div", "calendar-mode-switch");
+  const mode = state.calendar.mode === "agenda" ? "agenda" : "month";
+  for (const [value, label] of [
+    ["month", "日历"],
+    ["agenda", "日程"],
+  ]) {
+    const btn = button(label, `calendar-mode-btn${mode === value ? " active" : ""}`, () => {
+      state.calendar.mode = value;
+      render();
+    });
+    btn.setAttribute("aria-pressed", String(mode === value));
+    switcher.append(btn);
+  }
+  content.append(switcher);
+  if (mode === "agenda") {
+    // 日程需要「今日记录」数据；若当前空间尚未加载过，触发一次加载
+    // （loadDailyEntries 自带重入守卫，不会递归）。
+    if (state.space && state.daily.loadedSpace !== state.space.id && !state.daily.loading) {
+      loadDailyEntries();
+    }
+    renderAgenda(content);
+    return;
+  }
   if (!state.calendar.month)
     state.calendar.month = dailyDateString().slice(0, 7);
   const monthValue = state.calendar.month;
@@ -3673,6 +4283,7 @@ function showAccountSettings() {
       body.append(
         buildNicknameSection(),
         buildPasswordSection(),
+        buildWebhookSection(),
         buildAccountDangerZone(),
       );
     },
@@ -3680,8 +4291,397 @@ function showAccountSettings() {
   );
 }
 
+// ---------------------------------------------------------------------------
+// 出站提醒（Webhook）：列表 / 添加 / 启停 / 测试 / 轮转 secret / 删除。
+// secret 仅在创建与轮转的响应里出现一次，前端用一次性提示条展示。
+// ---------------------------------------------------------------------------
+function webhookHost(url) {
+  try {
+    return new URL(url).host;
+  } catch {
+    return url;
+  }
+}
+function buildWebhookSection() {
+  const section = el("section", "account-section webhook-section");
+  section.append(el("h3", "", "出站提醒（Webhook）"));
+  section.append(
+    el(
+      "p",
+      "helper",
+      "任务到期时，除了站内通知，还可以推送到你自己的 Webhook（如 Bark、Server酱、企业微信、飞书的自定义机器人）。仅允许公网 https 地址，内网与保留地址会被拒绝。",
+    ),
+  );
+  if (state.demo) {
+    section.append(el("p", "helper", "演示模式不连接账号服务，Webhook 需在登录后配置。"));
+    return section;
+  }
+  const listWrap = el("div", "webhook-list");
+  const secretBox = el("div", "webhook-secret");
+  secretBox.hidden = true;
+  const error = el("p", "form-error");
+  error.setAttribute("role", "alert");
+  const showSecret = (secret, note) => {
+    secretBox.hidden = false;
+    secretBox.replaceChildren();
+    const code = el("code", "webhook-secret-value", secret);
+    const tip = el(
+      "p",
+      "helper",
+      `${note}这是签名密钥，只显示这一次，请立即复制保存，之后无法再次查看。`,
+    );
+    const copy = button("复制密钥", "button soft compact", async () => {
+      try {
+        await navigator.clipboard.writeText(secret);
+        toast("密钥已复制");
+      } catch {
+        toast("复制失败，请手动选择密钥复制", true);
+      }
+    });
+    secretBox.append(code, tip, copy);
+  };
+  const refresh = async () => {
+    listWrap.replaceChildren();
+    let hooks;
+    try {
+      const result = await api("/api/webhooks");
+      hooks = Array.isArray(result.webhooks) ? result.webhooks : [];
+    } catch (err) {
+      error.textContent = errorMessage(err);
+      return;
+    }
+    error.textContent = "";
+    if (!hooks.length) {
+      listWrap.append(el("p", "helper", "还没有配置 Webhook。"));
+      return;
+    }
+    for (const hook of hooks) {
+      const row = el("div", "webhook-row");
+      const head = el("div", "webhook-row-head");
+      head.append(
+        el("strong", "", hook.name || "Webhook"),
+        el("small", "", webhookHost(hook.url)),
+      );
+      const toggle = el("button", `switch${hook.enabled ? " on" : ""}`);
+      toggle.type = "button";
+      toggle.setAttribute("role", "switch");
+      toggle.setAttribute("aria-checked", String(!!hook.enabled));
+      toggle.setAttribute("aria-label", hook.enabled ? "停用" : "启用");
+      toggle.append(el("span"));
+      toggle.addEventListener("click", async () => {
+        try {
+          await api(`/api/webhooks/${hook.id}`, "PATCH", { enabled: !hook.enabled });
+          await refresh();
+        } catch (err) {
+          toast(errorMessage(err), true);
+        }
+      });
+      head.append(toggle);
+      const actions = el("div", "webhook-row-actions");
+      const testBtn = button("测试", "button soft compact", async () => {
+        testBtn.disabled = true;
+        try {
+          const result = await api(`/api/webhooks/${hook.id}/test`, "POST");
+          if (result.ok) toast(`测试成功，对方返回 ${result.status}`);
+          else toast(result.error || "测试失败", true);
+        } catch (err) {
+          toast(errorMessage(err), true);
+        } finally {
+          testBtn.disabled = false;
+        }
+      });
+      const rotateBtn = button("轮转密钥", "button soft compact", async () => {
+        try {
+          const result = await api(`/api/webhooks/${hook.id}/rotate-secret`, "POST");
+          if (result.webhook?.secret) showSecret(result.webhook.secret, "已生成新的签名密钥。");
+        } catch (err) {
+          toast(errorMessage(err), true);
+        }
+      });
+      const delBtn = button("删除", "button soft compact danger", () => {
+        showModal("删除这个 Webhook？", (b2) => {
+          b2.append(el("p", "helper", `「${hook.name || "Webhook"}」删除后不再接收提醒推送。`));
+          b2.append(
+            actionsRow(
+              button("确认删除", "button danger", async () => {
+                try {
+                  await api(`/api/webhooks/${hook.id}`, "DELETE");
+                  closeModal();
+                  await refresh();
+                  toast("已删除 Webhook");
+                } catch (err) {
+                  closeModal();
+                  toast(errorMessage(err), true);
+                }
+              }),
+            ),
+          );
+        });
+      });
+      actions.append(testBtn, rotateBtn, delBtn);
+      row.append(head, actions);
+      listWrap.append(row);
+    }
+  };
+  // 添加表单
+  const form = el("form", "webhook-form");
+  const nameInput = input("text", "名称，如 我的 Bark", "");
+  nameInput.maxLength = 60;
+  const urlInput = input("url", "https://… 的 Webhook 地址", "");
+  urlInput.maxLength = 300;
+  urlInput.autocapitalize = "none";
+  urlInput.spellcheck = false;
+  const submit = el("button", "button primary", "添加 Webhook");
+  submit.type = "submit";
+  form.append(
+    labelField("名称", nameInput),
+    labelField("地址（公网 https）", urlInput),
+    actionsRow(submit),
+  );
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    error.textContent = "";
+    submit.disabled = true;
+    try {
+      const result = await api("/api/webhooks", "POST", {
+        name: nameInput.value.trim(),
+        url: urlInput.value.trim(),
+        events: ["task.due"],
+      });
+      nameInput.value = "";
+      urlInput.value = "";
+      if (result.webhook?.secret) showSecret(result.webhook.secret, "Webhook 已创建。");
+      await refresh();
+    } catch (err) {
+      error.textContent = errorMessage(err);
+    } finally {
+      submit.disabled = false;
+    }
+  });
+  section.append(secretBox, error, listWrap, form);
+  refresh();
+  return section;
+}
+
 function modalAlertError(node, message) {
   node.textContent = message;
+}
+
+// ---------------------------------------------------------------------------
+// 任务/笔记模板库：内置模板 + 本人自定义模板。真实模式读 /api/templates，
+// 演示模式回退到一套本地常量，保证新建流程在任何模式下可体验。
+// ---------------------------------------------------------------------------
+function demoTemplateSet() {
+  return [
+    { id: "builtin-daily-standup", builtin: true, name: "每日站会", kind: "task", area: "work",
+      title: "每日站会", body: "## 昨天\n- 已完成的事项\n\n## 今天\n- 待推进的事\n\n## 阻塞\n- 需要协调的点", meta: { tags: ["站会"] } },
+    { id: "builtin-weekly-report", builtin: true, name: "周报", kind: "note", area: "work",
+      title: "周报", body: "## 本周进展\n\n## 下周计划\n\n## 需要支持", meta: { tags: ["周报"] } },
+    { id: "builtin-reading-list", builtin: true, name: "读书清单", kind: "task", area: "life",
+      title: "在读清单", body: "", meta: { tags: ["阅读"] } },
+    { id: "builtin-travel-prep", builtin: true, name: "旅行准备", kind: "task", area: "life",
+      title: "旅行清单", body: "证件、衣物、充电器、药品…", meta: { tags: ["旅行"] } },
+  ];
+}
+async function loadTemplates(force = false) {
+  if (state.demo) {
+    if (!state.templates.loaded || force) {
+      state.templates.list = demoTemplateSet();
+      state.templates.loaded = true;
+    }
+    return;
+  }
+  if (!state.user || (state.templates.loading && !force)) return;
+  state.templates.loading = true;
+  const session = state.sessionEpoch;
+  try {
+    const result = await api("/api/templates");
+    if (state.sessionEpoch !== session) return;
+    state.templates.list = Array.isArray(result.templates) ? result.templates : [];
+    state.templates.loaded = true;
+  } catch {
+    /* 静默失败，新建流程不受影响，仅模板选择暂不可用 */
+  } finally {
+    if (state.sessionEpoch === session) state.templates.loading = false;
+  }
+}
+function kindLabel(kind) {
+  return { task: "待办", note: "笔记", media: "媒体" }[kind] || kind;
+}
+function areaLabel(area) {
+  return area === "life" ? "生活" : "工作";
+}
+// 模板项文案：名称 + 类型·分区。注意 el() 的第三个参数只能是文本，
+// 所以子元素必须先建容器再 append，不能直接把数组传进去。
+function templateOptionText(t) {
+  const info = el("div", "template-option-text");
+  info.append(
+    el("strong", "", t.name),
+    el("small", "", `${kindLabel(t.kind)} · ${areaLabel(t.area)}`),
+  );
+  return info;
+}
+function showTemplatePicker(kind) {
+  showModal("从模板新建", (body) => {
+    const wrap = el("div", "template-picker");
+    const render = () => {
+      wrap.replaceChildren();
+      const builtins = state.templates.list.filter((t) => t.builtin);
+      const mine = state.templates.list.filter((t) => !t.builtin);
+      if (builtins.length) {
+        wrap.append(el("h4", "template-group", "内置推荐"));
+        builtins.forEach((t) => {
+          const row = button("", "template-option", () => {
+            closeModal();
+            showEditorFromTemplate(t);
+          });
+          row.type = "button";
+          row.append(
+            svg(t.kind === "task" ? "task" : "note"),
+            templateOptionText(t),
+            svg("arrow", true),
+          );
+          wrap.append(row);
+        });
+      }
+      if (mine.length) {
+        wrap.append(el("h4", "template-group", "我的模板"));
+        mine.forEach((t) => {
+          const row = button("", "template-option", () => {
+            closeModal();
+            showEditorFromTemplate(t);
+          });
+          row.type = "button";
+          row.append(
+            svg(t.kind === "task" ? "task" : "note"),
+            templateOptionText(t),
+            svg("arrow", true),
+          );
+          wrap.append(row);
+        });
+      }
+      if (!builtins.length && !mine.length) {
+        wrap.append(
+          el(
+            "p",
+            "helper",
+            state.templates.loaded
+              ? "还没有自定义模板，可在新建后选择「保存为模板」。"
+              : "模板加载中…",
+          ),
+        );
+      }
+    };
+    render();
+    body.append(wrap);
+    // loadTemplates 是异步的：数据回来后再重绘，避免首次渲染空白。
+    loadTemplates().then(() => {
+      if (!$("#modal").open) return;
+      render();
+    });
+  }, "模板");
+}
+function showEditorFromTemplate(t) {
+  // 内置模板常量的 area 优先于当前分区，避免把生活模板建到工作区。
+  const meta = t.meta || {};
+  const targetKind = t.kind || "task";
+  showEditor(targetKind, null, {
+    title: t.title || "",
+    body: t.body || "",
+    area: t.area,
+    meta,
+  });
+}
+function showTemplateManagement() {
+  showModal("模板库", (body) => {
+    const wrap = el("div", "template-manage");
+    const render = () => {
+      wrap.replaceChildren();
+      const builtins = state.templates.list.filter((t) => t.builtin);
+      const mine = state.templates.list.filter((t) => !t.builtin);
+      if (builtins.length)
+        wrap.append(el("h4", "template-group", "内置推荐（只读）"));
+      builtins.forEach((t) => {
+        const row = el("div", "template-row");
+        const info = el("div", "template-option-text");
+        info.append(
+          el("strong", "", t.name),
+          el("small", "", `${kindLabel(t.kind)} · ${areaLabel(t.area)}`),
+        );
+        row.append(
+          svg(t.kind === "task" ? "task" : "note"),
+          info,
+          el("span", "builtin-badge", "内置"),
+        );
+        wrap.append(row);
+      });
+      if (mine.length) {
+        wrap.append(el("h4", "template-group", "我的模板"));
+        mine.forEach((t) => {
+          const row = el("div", "template-row");
+          const info = el("div", "template-option-text");
+          info.append(
+            el("strong", "", t.name),
+            el("small", "", `${kindLabel(t.kind)} · ${areaLabel(t.area)}`),
+          );
+          const editBtn = button("编辑", "button soft compact", () =>
+            showEditor("task", null, { title: t.title, body: t.body, area: t.area, meta: t.meta }),
+          );
+          const delBtn = button("删除", "button soft compact danger", () => {
+            showModal("删除这个模板？", (b2) => {
+              b2.append(el("p", "helper", `「${t.name}」删除后不可恢复，已有的记录不受影响。`));
+              b2.append(actionsRow(button("确认删除", "button danger", async () => {
+                try {
+                  await api(`/api/templates/${t.id}`, "DELETE");
+                  closeModal();
+                  state.templates.loaded = false;
+                  await loadTemplates(true);
+                  render();
+                  toast("已删除模板");
+                } catch (err) {
+                  closeModal();
+                  toast(errorMessage(err), true);
+                }
+              })));
+            });
+          });
+          const actions = el("div", "template-row-actions");
+          actions.append(editBtn, delBtn);
+          row.append(svg(t.kind === "task" ? "task" : "note"), info, actions);
+          wrap.append(row);
+        });
+      } else {
+        wrap.append(el("p", "helper", "还没有自定义模板。新建一条记录后，可在编辑器「保存为模板」。"));
+      }
+    };
+    render();
+    body.append(wrap);
+    // 异步加载完成后再重绘，避免首次渲染只有空态。
+    loadTemplates().then(() => {
+      if (!$("#modal").open) return;
+      render();
+    });
+  }, "我的模板");
+}
+async function saveCurrentAsTemplate(kind, fields) {
+  if (!kind) return;
+  try {
+    const result = await api("/api/templates", "POST", {
+      name: fields.title?.slice(0, 60) || `${kindLabel(kind)}模板`,
+      kind,
+      area: fields.area || "work",
+      title: fields.title || "",
+      body: fields.body || "",
+      meta: fields.meta || {},
+    });
+    state.templates.loaded = false;
+    await loadTemplates(true);
+    if (result.template?.id) toast("已保存为模板");
+    return result.template;
+  } catch (err) {
+    toast(errorMessage(err), true);
+    return null;
+  }
 }
 
 function buildNicknameSection() {
@@ -5659,6 +6659,7 @@ $("#new-button").addEventListener("click", showNew);
 $("#mobile-new").addEventListener("click", showNew);
 $("#space-switcher").addEventListener("click", showSpaceSwitcher);
 $("#search-button").addEventListener("click", openSearchView);
+$("#notify-button").addEventListener("click", showNotifications);
 $("#profile-button").addEventListener("click", showProfile);
 $("#account-settings-button").addEventListener("click", showAccountSettings);
 $("#modal-close").addEventListener("click", closeModal);
