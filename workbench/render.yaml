@@ -7,7 +7,7 @@ services:
     plan: free
     region: singapore
     rootDir: workbench
-    buildCommand: pip install -r requirements.txt && python -m py_compile server.py bedtime.py daily.py export.py persistence.py neon_transport.py media_storage.py storage_jobs.py
+    buildCommand: pip install -r requirements.txt && python -m py_compile server.py bedtime.py daily.py export.py persistence.py recur.py neon_transport.py media_storage.py storage_jobs.py
     startCommand: python server.py
     healthCheckPath: /api/health
     autoDeployTrigger: "off"

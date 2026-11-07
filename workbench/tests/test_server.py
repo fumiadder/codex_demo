@@ -13,7 +13,8 @@ import tempfile
 import threading
 import time
 import unittest
-from urllib.parse import urlsplit
+import uuid
+from urllib.parse import quote, urlsplit
 from pathlib import Path
 from unittest import mock
 
@@ -1118,6 +1119,285 @@ class ServerTests(unittest.TestCase):
             self.assertEqual(self.request("GET", "/api/me", cookie=cookie)[0], 200)
             self.server.last_storage_cleanup = 0
             self.assertEqual(self.request("GET", "/api/me", cookie=cookie)[0], 200)
+
+
+    # ---------- 重复任务 / 子任务 / 多标签 meta 扩展 ----------
+
+    def post_item(self, cookie, sid, **fields):
+        payload = {"kind": "task", "area": "work", "title": "一条任务", **fields}
+        return self.request("POST", f"/api/spaces/{sid}/items", payload, cookie=cookie)
+
+    def recurring_item(self, cookie, sid, recurrence, due="2026-11-10", title="重复任务", meta=None):
+        merged = {"due": due, "recurrence": recurrence}
+        if meta:
+            merged.update(meta)
+        status, body, _ = self.post_item(cookie, sid, title=title, meta=merged)
+        self.assertEqual(status, 201, body)
+        return body["item"]
+
+    def test_recurring_task_rolls_forward_and_returns_to_active(self):
+        cookie, _, space = self.register()
+        sid = space["id"]
+        item = self.recurring_item(cookie, sid, {"freq": "daily"})
+        status, body, _ = self.request("PATCH", f"/api/items/{item['id']}",
+                                       {"status": "done"}, cookie=cookie)
+        self.assertEqual(status, 200, body)
+        rolled = body["item"]
+        # 滚动后响应体体现 active 而不是 done，due 前进一天、completed 加一。
+        self.assertEqual(rolled["status"], "active")
+        self.assertEqual(rolled["meta"]["due"], "2026-11-11")
+        self.assertEqual(rolled["meta"]["recurrence"]["completed"], 1)
+        self.assertIn("lastCompletedAt", rolled["meta"])
+        # 再次完成继续滚动；列表接口读到的是同一份滚动后状态。
+        status, body, _ = self.request("PATCH", f"/api/items/{item['id']}",
+                                       {"status": "done"}, cookie=cookie)
+        self.assertEqual(status, 200, body)
+        self.assertEqual(body["item"]["status"], "active")
+        self.assertEqual(body["item"]["meta"]["due"], "2026-11-12")
+        self.assertEqual(body["item"]["meta"]["recurrence"]["completed"], 2)
+        _, listing, _ = self.request("GET", f"/api/spaces/{sid}/items", cookie=cookie)
+        stored = listing["items"][0]
+        self.assertEqual(stored["status"], "active")
+        self.assertEqual(stored["meta"]["due"], "2026-11-12")
+        # 不改成 done 的 PATCH（如改名）不触发滚动。
+        status, body, _ = self.request("PATCH", f"/api/items/{item['id']}",
+                                       {"title": "重复任务改名"}, cookie=cookie)
+        self.assertEqual(status, 200, body)
+        self.assertEqual(body["item"]["meta"]["due"], "2026-11-12")
+        self.assertEqual(body["item"]["meta"]["recurrence"]["completed"], 2)
+
+    def test_recurring_task_exhausts_with_count_and_until(self):
+        cookie, _, space = self.register()
+        sid = space["id"]
+        # count=1：首次完成即耗尽，正常置 done 并标记 exhausted，due 不变。
+        item = self.recurring_item(cookie, sid, {"freq": "daily", "count": 1})
+        status, body, _ = self.request("PATCH", f"/api/items/{item['id']}",
+                                       {"status": "done"}, cookie=cookie)
+        self.assertEqual(status, 200, body)
+        exhausted = body["item"]
+        self.assertEqual(exhausted["status"], "done")
+        self.assertTrue(exhausted["meta"]["recurrence"]["exhausted"])
+        self.assertEqual(exhausted["meta"]["due"], "2026-11-10")
+        # until 边界：11-10 加 5 天为 11-15，晚于 until 11-14，耗尽。
+        item2 = self.recurring_item(cookie, sid,
+                                    {"freq": "daily", "interval": 5, "until": "2026-11-14"},
+                                    title="截止重复任务")
+        status, body, _ = self.request("PATCH", f"/api/items/{item2['id']}",
+                                       {"status": "done"}, cookie=cookie)
+        self.assertEqual(status, 200, body)
+        self.assertEqual(body["item"]["status"], "done")
+        self.assertTrue(body["item"]["meta"]["recurrence"]["exhausted"])
+        # count=3：前两次滚动、第三次耗尽。
+        item3 = self.recurring_item(cookie, sid, {"freq": "daily", "count": 3}, title="三次任务")
+        for expected_completed, expected_due in ((1, "2026-11-11"), (2, "2026-11-12")):
+            status, body, _ = self.request("PATCH", f"/api/items/{item3['id']}",
+                                           {"status": "done"}, cookie=cookie)
+            self.assertEqual(status, 200, body)
+            self.assertEqual(body["item"]["status"], "active")
+            self.assertEqual(body["item"]["meta"]["recurrence"]["completed"], expected_completed)
+            self.assertEqual(body["item"]["meta"]["due"], expected_due)
+        status, body, _ = self.request("PATCH", f"/api/items/{item3['id']}",
+                                       {"status": "done"}, cookie=cookie)
+        self.assertEqual(status, 200, body)
+        self.assertEqual(body["item"]["status"], "done")
+        self.assertTrue(body["item"]["meta"]["recurrence"]["exhausted"])
+        # 已 done 的耗尽条目再次 PATCH done 不会被“复活”。
+        status, body, _ = self.request("PATCH", f"/api/items/{item3['id']}",
+                                       {"status": "done"}, cookie=cookie)
+        self.assertEqual(status, 200, body)
+        self.assertEqual(body["item"]["status"], "done")
+
+    def test_non_recurring_completion_keeps_legacy_behavior(self):
+        cookie, _, space = self.register()
+        sid = space["id"]
+        status, body, _ = self.post_item(cookie, sid, title="普通任务")
+        self.assertEqual(status, 201, body)
+        iid = body["item"]["id"]
+        status, body, _ = self.request("PATCH", f"/api/items/{iid}",
+                                       {"status": "done"}, cookie=cookie)
+        self.assertEqual(status, 200, body)
+        self.assertEqual(body["item"]["status"], "done")
+        self.assertNotIn("recurrence", body["item"]["meta"])
+        self.assertNotIn("lastCompletedAt", body["item"]["meta"])
+
+    def test_invalid_recurrence_subtasks_tags_meta_rejected(self):
+        cookie, _, space = self.register()
+        sid = space["id"]
+        valid_subtask = {"id": "a" * 32, "title": "子任务", "done": False}
+        bad_cases = [
+            {"recurrence": {"freq": "hourly"}},
+            {"recurrence": {"freq": "weekly", "byday": ["XX"]}},
+            {"recurrence": {"freq": "daily", "until": "2026-12-31", "count": 3}},
+            {"recurrence": {"freq": "daily", "interval": 0}},
+            {"subtasks": "not-a-list"},
+            {"subtasks": [{"id": "z" * 32, "title": "x", "done": False}]},
+            {"subtasks": [{"id": "a" * 32, "title": "", "done": False}]},
+            {"subtasks": [{"id": "a" * 32, "title": "x", "done": "yes"}]},
+            {"subtasks": [dict(valid_subtask) for _ in range(21)]},
+            {"tags": "工作"},
+            {"tags": ["", "x"]},
+            {"tags": ["x" * 21]},
+            {"tags": [f"标签{i}" for i in range(9)]},
+        ]
+        for bad_meta in bad_cases:
+            with self.subTest(bad_meta=bad_meta):
+                self.assertEqual(self.post_item(cookie, sid, meta=bad_meta)[0], 400)
+        # 合法组合整体放行：8 个去重标签、20 个子任务、完整重复规则。
+        good = {
+            "recurrence": {"freq": "weekly", "interval": 2, "byday": ["MO", "WE"]},
+            "subtasks": [dict(valid_subtask, id=f"{i:032x}") for i in range(20)],
+            "tags": [f"标签{i}" for i in range(8)],
+        }
+        status, body, _ = self.post_item(cookie, sid, title="合法扩展", meta=good)
+        self.assertEqual(status, 201, body)
+        self.assertEqual(len(body["item"]["meta"]["subtasks"]), 20)
+        # PATCH 写入非法 recurrence 同样 400，且原 meta 不被破坏。
+        iid = body["item"]["id"]
+        status, _, _ = self.request("PATCH", f"/api/items/{iid}",
+                                    {"meta": {"recurrence": {"freq": "nope"}}}, cookie=cookie)
+        self.assertEqual(status, 400)
+        _, listing, _ = self.request("GET", f"/api/spaces/{sid}/items", cookie=cookie)
+        self.assertEqual(listing["items"][0]["meta"]["recurrence"]["freq"], "weekly")
+        # 旧的单值 meta.tag 字段不受新校验影响。
+        status, body, _ = self.post_item(cookie, sid, title="旧标签", meta={"tag": "旧版单标签"})
+        self.assertEqual(status, 201, body)
+        self.assertEqual(body["item"]["meta"]["tag"], "旧版单标签")
+
+    def test_space_tags_aggregation_including_legacy_tag(self):
+        cookie, user, space = self.register()
+        sid = space["id"]
+        self.post_item(cookie, sid, title="甲", meta={"tags": ["工作", "周报"]})
+        self.post_item(cookie, sid, title="乙", meta={"tags": ["周报"]})
+        self.post_item(cookie, sid, title="丙", meta={"tags": ["工作"]})
+        self.post_item(cookie, sid, title="丁", meta={"tag": "旧标签"})
+        status, body, _ = self.request("GET", f"/api/spaces/{sid}/tags", cookie=cookie)
+        self.assertEqual(status, 200, body)
+        pairs = [(tag["name"], tag["count"]) for tag in body["tags"]]
+        self.assertEqual(dict(pairs), {"工作": 2, "周报": 2, "旧标签": 1})
+        # count 降序、同名按名称排序的契约。
+        self.assertEqual(pairs, sorted(pairs, key=lambda item: (-item[1], item[0])))
+        # 查看者成员可读；非成员 404；只接受 GET。
+        other, other_user, other_space = self.register("viewer@example.com")
+        self.member(cookie, sid, "viewer@example.com", role="viewer")
+        self.assertEqual(self.request("GET", f"/api/spaces/{sid}/tags", cookie=other)[0], 200)
+        self.assertEqual(self.request("GET", f"/api/spaces/{other_space['id']}/tags",
+                                      cookie=cookie)[0], 404)
+        self.assertEqual(self.request("POST", f"/api/spaces/{sid}/tags", {}, cookie=cookie)[0], 405)
+
+    # ---------- 跨空间搜索 ----------
+
+    def seed_daily_row(self, sid, uid, title, summary="摘要", body="正文", entry_id=None):
+        entry_id = entry_id or uuid.uuid4().hex
+        stamp = "2026-01-01T00:00:00Z"
+        with self.server.db() as conn:
+            conn.execute(
+                "INSERT INTO daily_entries VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+                (entry_id, sid, "life", "2026-01-02", title, summary, body, "active",
+                 json.dumps({}), uid, stamp, stamp),
+            )
+        return entry_id
+
+    def search(self, cookie, keyword):
+        return self.request("GET", "/api/search?q=" + quote(keyword), cookie=cookie)
+
+    def test_search_across_member_spaces_matches_items_and_daily(self):
+        a, user_a, space_a = self.register()
+        b, user_b, space_b = self.register("member-b@example.com")
+        c, _, space_c = self.register("outsider-c@example.com")
+        # A 加入 B 的空间，成为编辑者；A、B 两个空间都应被搜索。
+        self.member(b, space_b["id"], "owner@example.com")
+        keyword = "星河计划"
+        self.post_item(a, space_a["id"], title=f"{keyword}启动会", body="普通正文")
+        self.post_item(b, space_b["id"], title="空间B任务", body=f"正文包含{keyword}内容")
+        daily_id = self.seed_daily_row(space_b["id"], user_b["id"], f"{keyword}图片速记")
+        # 非成员空间里的同名内容绝不能泄露。
+        self.post_item(c, space_c["id"], title=f"{keyword}机密")
+        # 密码箱内容绝不参与搜索。
+        with self.server.db() as conn:
+            conn.execute("INSERT INTO vaults VALUES (?,?,?,?)",
+                         (space_a["id"], user_a["id"],
+                          json.dumps({"private": "保险箱密语独一字"}), "2026-01-03T00:00:00Z"))
+        status, body, _ = self.search(a, keyword)
+        self.assertEqual(status, 200, body)
+        self.assertEqual(len(body["results"]), 3)
+        self.assertEqual({(r["type"], r["spaceId"]) for r in body["results"]},
+                         {("item", space_a["id"]), ("item", space_b["id"]),
+                          ("daily", space_b["id"])})
+        # 结果字段契约与空间名映射。
+        first = body["results"][0]
+        self.assertEqual(set(first),
+                         {"type", "spaceId", "spaceName", "area", "id", "title",
+                          "snippet", "due", "status", "updatedAt"})
+        daily_hit = next(r for r in body["results"] if r["type"] == "daily")
+        self.assertEqual(daily_hit["id"], daily_id)
+        self.assertEqual(daily_hit["spaceName"], space_b["name"])
+        self.assertIsNone(daily_hit["due"])
+        # 全部按 updatedAt 降序。
+        stamps = [r["updatedAt"] for r in body["results"]]
+        self.assertEqual(stamps, sorted(stamps, reverse=True))
+        # 每个片段都是纯文本且包含关键词。
+        for result in body["results"]:
+            self.assertIn(keyword, result["snippet"])
+            self.assertNotIn("<", result["snippet"])
+        # 密码箱专属词搜不到任何结果。
+        status, body, _ = self.search(a, "保险箱密语独一字")
+        self.assertEqual(status, 200)
+        self.assertEqual(body["results"], [])
+
+    def test_search_meta_tag_scope_snippet_and_wildcards(self):
+        cookie, _, space = self.register()
+        sid = space["id"]
+        # meta.tag / meta.tags 命中；其他 meta 字段不在搜索范围。
+        self.post_item(cookie, sid, title="无关标题甲", meta={"tag": "项目标签词"})
+        self.post_item(cookie, sid, title="无关标题乙", meta={"tags": ["数组标签词"]})
+        self.post_item(cookie, sid, title="无关标题丙", meta={"url": "https://example.test/范围外词"})
+        status, body, _ = self.search(cookie, "项目标签词")
+        self.assertEqual(status, 200)
+        self.assertEqual(len(body["results"]), 1)
+        self.assertEqual(body["results"][0]["snippet"], "项目标签词")
+        status, body, _ = self.search(cookie, "数组标签词")
+        self.assertEqual(status, 200)
+        self.assertEqual(len(body["results"]), 1)
+        status, body, _ = self.search(cookie, "范围外词")
+        self.assertEqual(status, 200)
+        self.assertEqual(body["results"], [])
+        # snippet 取命中字段周边约 80 字，纯文本、带省略号。
+        long_body = "前" * 60 + "中心词" + "后" * 60
+        self.post_item(cookie, sid, title="长文任务", body=long_body)
+        status, body, _ = self.search(cookie, "中心词")
+        self.assertEqual(status, 200)
+        hit = next(r for r in body["results"] if r["title"] == "长文任务")
+        self.assertIn("中心词", hit["snippet"])
+        self.assertTrue(hit["snippet"].startswith("…") and hit["snippet"].endswith("…"))
+        self.assertLessEqual(len(hit["snippet"]), 86)
+        # LIKE 通配符按字面量处理，不放大匹配。
+        self.post_item(cookie, sid, title="100%完成度复盘", body="a_b_c 下划线")
+        status, body, _ = self.search(cookie, "100%完")
+        self.assertEqual(status, 200)
+        self.assertTrue(any(r["title"] == "100%完成度复盘" for r in body["results"]))
+        status, body, _ = self.search(cookie, "100%X")
+        self.assertEqual(status, 200)
+        self.assertEqual(body["results"], [])
+        status, body, _ = self.search(cookie, "aXb")
+        self.assertEqual(status, 200)
+        self.assertEqual(body["results"], [])
+
+    def test_search_requires_query_and_is_rate_limited(self):
+        cookie, _, _ = self.register()
+        # 未登录 401。
+        self.assertEqual(self.request("GET", "/api/search?q=abc")[0], 401)
+        # 空 q、纯空白、超长 q 一律 400。
+        self.assertEqual(self.request("GET", "/api/search", cookie=cookie)[0], 400)
+        self.assertEqual(self.request("GET", "/api/search?q=" + quote("   "), cookie=cookie)[0], 400)
+        self.assertEqual(self.request("GET", "/api/search?q=" + "x" * 101, cookie=cookie)[0], 400)
+        # 每账号 60 秒 30 次：第 31 次 429。
+        self.server.rate_events.clear()
+        for _ in range(30):
+            status, _, _ = self.search(cookie, "限流探针")
+            self.assertEqual(status, 200)
+        status, body, _ = self.search(cookie, "限流探针")
+        self.assertEqual(status, 429)
+        self.assertIn("频繁", body["error"])
 
 
 if __name__ == "__main__":

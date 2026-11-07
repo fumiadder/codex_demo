@@ -7,7 +7,7 @@ import re
 import tarfile
 from pathlib import Path
 
-ALLOW_FILES = ('server.py', 'bedtime.py', 'daily.py', 'export.py', 'persistence.py', 'neon_transport.py', 'media_storage.py', 'storage_jobs.py', 'requirements.txt', 'stories_data.json', 'Dockerfile', 'compose.yaml', 'Caddyfile', '.dockerignore')
+ALLOW_FILES = ('server.py', 'bedtime.py', 'daily.py', 'export.py', 'persistence.py', 'recur.py', 'neon_transport.py', 'media_storage.py', 'storage_jobs.py', 'requirements.txt', 'stories_data.json', 'Dockerfile', 'compose.yaml', 'Caddyfile', '.dockerignore')
 ALLOW_TREES = ('public', 'scripts')
 
 

@@ -35,6 +35,7 @@ from urllib.parse import parse_qs, unquote, urlsplit
 import bedtime
 import daily
 import export
+import recur
 import storage_jobs
 from media_storage import create_storage, MissingMedia, StorageError
 from persistence import Database
@@ -458,6 +459,8 @@ class FolioHandler(BaseHTTPRequestHandler):
         meta = data.get("meta", current.get("meta", {}))
         if not isinstance(meta, dict):
             raise APIError(400, "meta 必须为对象")
+        # 重复任务/子任务/多标签的唯一校验收口：零数据库结构变更，全部存 meta 自由 JSON。
+        self.validate_meta_extensions(meta)
         meta_str = json.dumps(meta, ensure_ascii=False, separators=(",", ":"), allow_nan=False)
         if len(meta_str.encode()) > 16_384:
             raise APIError(400, "附加信息超过大小限制")
@@ -465,6 +468,208 @@ class FolioHandler(BaseHTTPRequestHandler):
             # File access never relies on caller-provided metadata.
             meta_str = json.dumps(current["meta"], ensure_ascii=False, separators=(",", ":"))
         return kind, area, title, body, status, meta_str
+
+    @staticmethod
+    def validate_meta_extensions(meta):
+        """校验 meta 内的 recurrence/subtasks/tags；旧的单值 meta.tag 不受影响。"""
+        if "recurrence" in meta:
+            try:
+                recur.validate_recurrence(meta["recurrence"])
+            except ValueError as exc:
+                raise APIError(400, f"重复规则无效：{exc}") from None
+        if "subtasks" in meta:
+            subtasks = meta["subtasks"]
+            if not isinstance(subtasks, list) or len(subtasks) > 20:
+                raise APIError(400, "子任务必须是不超过 20 项的数组")
+            hex32 = re.compile(r"^[a-f0-9]{32}$")
+            for index, subtask in enumerate(subtasks):
+                position = f"第 {index + 1} 个子任务"
+                if not isinstance(subtask, dict):
+                    raise APIError(400, f"{position}格式无效")
+                sub_id, sub_title, done = subtask.get("id"), subtask.get("title"), subtask.get("done")
+                if not isinstance(sub_id, str) or not hex32.fullmatch(sub_id):
+                    raise APIError(400, f"{position}的 id 必须是 32 位小写十六进制字符")
+                if not isinstance(sub_title, str) or not 1 <= len(sub_title) <= 120:
+                    raise APIError(400, f"{position}的标题需为 1 至 120 个字符")
+                if not isinstance(done, bool):
+                    raise APIError(400, f"{position}的完成状态必须是布尔值")
+        if "tags" in meta:
+            tags = meta["tags"]
+            if not isinstance(tags, list):
+                raise APIError(400, "标签必须是数组")
+            for tag in tags:
+                if not isinstance(tag, str) or not 1 <= len(tag) <= 20:
+                    raise APIError(400, "每个标签需为 1 至 20 个字符的字符串")
+            # 先逐项校验再去重，避免集合计算遇到不可哈希元素时报非业务错误。
+            if len(set(tags)) > 8:
+                raise APIError(400, "去重后的标签不能超过 8 个")
+
+    @staticmethod
+    def apply_recurrence_rollover(meta):
+        """重复任务被标记完成时计算滚动结果，返回 (keep_active, new_meta)。
+
+        - 非重复条目：(False, None)，调用方沿用原 meta 与原有置 done 流程；
+        - 还有下一到期日：(True, 新 meta)，条目保持 active、due 前进、completed 加一；
+        - until/count 耗尽：(False, 新 meta)，条目置 done 并写 recurrence.exhausted=true。
+        纯 dict 计算，不做任何 IO；meta.due 缺失或为脏值时 recur 内部退回今天。
+        """
+        recurrence = meta.get("recurrence")
+        if not isinstance(recurrence, dict):
+            return False, None
+        next_date = recur.next_due(recurrence, meta.get("due"))
+        if next_date is None:
+            return False, {**meta, "recurrence": {**recurrence, "exhausted": True}}
+        previous = recurrence.get("completed")
+        if isinstance(previous, int) and not isinstance(previous, bool) and previous >= 0:
+            completed = previous + 1
+        else:
+            completed = 1
+        new_recurrence = {**recurrence, "completed": completed}
+        new_meta = {**meta, "due": next_date, "recurrence": new_recurrence,
+                    "lastCompletedAt": now_iso()}
+        return True, new_meta
+
+    @staticmethod
+    def space_tags(conn, sid):
+        """聚合空间内条目标签：meta.tags 数组为主，兼容旧 meta.tag 单值。"""
+        counts = {}
+        rows = conn.execute("SELECT meta FROM items WHERE space_id=?", (sid,)).fetchall()
+        for row in rows:
+            try:
+                meta = json.loads(row["meta"])
+            except (ValueError, TypeError):
+                continue
+            if not isinstance(meta, dict):
+                continue
+            tags = meta.get("tags")
+            if isinstance(tags, list):
+                for tag in tags:
+                    if isinstance(tag, str) and tag:
+                        counts[tag] = counts.get(tag, 0) + 1
+            legacy = meta.get("tag")
+            if isinstance(legacy, str) and legacy:
+                counts[legacy] = counts.get(legacy, 0) + 1
+        ordered = sorted(counts.items(), key=lambda item: (-item[1], item[0]))[:50]
+        return {"tags": [{"name": name, "count": count} for name, count in ordered]}
+
+    @staticmethod
+    def _like_term(keyword):
+        """转义 LIKE 通配符，使用两方言都支持的 ESCAPE '/' 语法；值仍走参数绑定。"""
+        escaped = keyword.replace("/", "//").replace("%", "/%").replace("_", "/_")
+        return "%" + escaped + "%"
+
+    @staticmethod
+    def _item_tag_hit(meta, keyword):
+        """仅在 meta.tag 单值与 meta.tags 数组内确认命中，其他 meta 字段不在搜索范围。"""
+        legacy = meta.get("tag")
+        if isinstance(legacy, str) and keyword in legacy:
+            return legacy
+        tags = meta.get("tags")
+        if isinstance(tags, list):
+            for tag in tags:
+                if isinstance(tag, str) and keyword in tag:
+                    return tag
+        return None
+
+    @staticmethod
+    def _snippet(text, keyword):
+        """命中字段周边约 80 字的纯文本片段；只压空白，不拼接、不转义 HTML。"""
+        if not isinstance(text, str):
+            return ""
+        flat = " ".join(text.split())
+        index = flat.find(keyword)
+        if index < 0:
+            return flat[:80]
+        start = max(0, index - 40)
+        end = min(len(flat), index + len(keyword) + 40)
+        return ("…" if start > 0 else "") + flat[start:end] + ("…" if end < len(flat) else "")
+
+    def search_space_records(self, conn, uid, query):
+        """跨成员空间搜索 items 与 daily_entries；vaults/sessions/users 绝不参与。"""
+        keyword = (query.get("q", [""])[0] or "").strip()
+        if not 1 <= len(keyword) <= 100:
+            raise APIError(400, "搜索关键词需为 1 至 100 个字符")
+        # 按账号限流，防止参数化 LIKE 全表扫描被滥用。
+        self.server.throttle(("search", uid), 30, 60)
+        space_rows = conn.execute(
+            "SELECT s.id,s.name FROM spaces s JOIN members m ON m.space_id=s.id WHERE m.user_id=?",
+            (uid,),
+        ).fetchall()
+        if not space_rows:
+            # 没有任何成员空间时直接返回空集合，绝不回退到全库搜索。
+            return {"results": []}
+        space_map = {row["id"]: row["name"] for row in space_rows}
+        space_ids = list(space_map)
+        placeholders = ",".join("?" for _ in space_ids)
+        like = self._like_term(keyword)
+        results = []
+        # SQL 先用 title/body/meta 文本做参数化 LIKE 预筛（meta 为紧凑 JSON 文本，
+        # tag/tags 都在其中），再在 Python 内把命中范围严格收敛回契约字段。
+        item_rows = conn.execute(
+            "SELECT id,space_id,area,title,body,meta,status,updated_at FROM items "
+            f"WHERE space_id IN ({placeholders}) AND (title LIKE ? ESCAPE '/' OR body LIKE ? ESCAPE '/' OR meta LIKE ? ESCAPE '/') "
+            "ORDER BY updated_at DESC,id DESC LIMIT 500",
+            (*space_ids, like, like, like),
+        ).fetchall()
+        for row in item_rows:
+            meta = {}
+            try:
+                parsed = json.loads(row["meta"])
+                if isinstance(parsed, dict):
+                    meta = parsed
+            except (ValueError, TypeError):
+                pass
+            if keyword in row["title"]:
+                snippet = self._snippet(row["title"], keyword)
+            elif keyword in row["body"]:
+                snippet = self._snippet(row["body"], keyword)
+            else:
+                tag_hit = self._item_tag_hit(meta, keyword)
+                if tag_hit is None:
+                    # 命中的是 tag/tags 之外的 meta 内容，按契约排除。
+                    continue
+                snippet = self._snippet(tag_hit, keyword)
+            due = meta.get("due")
+            results.append({
+                "type": "item",
+                "spaceId": row["space_id"],
+                "spaceName": space_map[row["space_id"]],
+                "area": row["area"],
+                "id": row["id"],
+                "title": row["title"],
+                "snippet": snippet,
+                "due": due if isinstance(due, str) else None,
+                "status": row["status"],
+                "updatedAt": row["updated_at"],
+            })
+        # 今日记录只搜明文的 title/summary/body，不解析其 meta。
+        daily_rows = conn.execute(
+            "SELECT id,space_id,area,title,summary,body,status,updated_at FROM daily_entries "
+            f"WHERE space_id IN ({placeholders}) AND (title LIKE ? ESCAPE '/' OR summary LIKE ? ESCAPE '/' OR body LIKE ? ESCAPE '/') "
+            "ORDER BY updated_at DESC,id DESC LIMIT 500",
+            (*space_ids, like, like, like),
+        ).fetchall()
+        for row in daily_rows:
+            if keyword in row["title"]:
+                snippet = self._snippet(row["title"], keyword)
+            elif keyword in row["summary"]:
+                snippet = self._snippet(row["summary"], keyword)
+            else:
+                snippet = self._snippet(row["body"], keyword)
+            results.append({
+                "type": "daily",
+                "spaceId": row["space_id"],
+                "spaceName": space_map[row["space_id"]],
+                "area": row["area"],
+                "id": row["id"],
+                "title": row["title"],
+                "snippet": snippet,
+                "due": None,
+                "status": row["status"],
+                "updatedAt": row["updated_at"],
+            })
+        results.sort(key=lambda item: item["updatedAt"], reverse=True)
+        return {"results": results[:100]}
 
     def do_GET(self):
         self.dispatch()
@@ -648,6 +853,9 @@ class FolioHandler(BaseHTTPRequestHandler):
                 conn.commit()
                 self.json_response(200, {"ok": True}, self.session_cookie())
                 return
+            elif path == "/api/search" and method == "GET":
+                # 登录态已在进入本分发块前校验；成员空间过滤在 helper 内完成。
+                result = self.search_space_records(conn, uid, query)
             elif path == "/api/spaces" and method == "GET":
                 rows = conn.execute("SELECT s.*,m.role,(SELECT count(*) FROM members x WHERE x.space_id=s.id) AS member_count FROM spaces s JOIN members m ON m.space_id=s.id WHERE m.user_id=? ORDER BY s.created_at,s.id", (uid,)).fetchall()
                 result = {"spaces": [dict(row) for row in rows]}
@@ -694,6 +902,13 @@ class FolioHandler(BaseHTTPRequestHandler):
                     result = {"item": self.item_json(conn.execute("SELECT * FROM items WHERE id=?", (iid,)).fetchone())}
                 else:
                     raise APIError(405, "不支持此请求方法")
+            elif match := re.fullmatch(rf"/api/spaces/({ID_RE})/tags", path):
+                if method != "GET":
+                    raise APIError(405, "不支持此请求方法")
+                sid = match[1]
+                # 读权限即可：成员（含查看者）都能看到空间共享条目的标签聚合。
+                self.membership(conn, sid, uid)
+                result = self.space_tags(conn, sid)
             elif match := re.fullmatch(rf"/api/items/({ID_RE})", path):
                 row = conn.execute("SELECT * FROM items WHERE id=?", (match[1],)).fetchone()
                 if not row:
@@ -701,8 +916,18 @@ class FolioHandler(BaseHTTPRequestHandler):
                 self.membership(conn, row["space_id"], uid, write=True)
                 if method == "PATCH":
                     current = self.item_json(row)
-                    values = self.item_input(self.read_json(), current)
-                    conn.execute("UPDATE items SET kind=?,area=?,title=?,body=?,status=?,meta=?,updated_at=? WHERE id=?", (*values, now_iso(), row["id"]))
+                    kind, area, title, body, status, meta_str = self.item_input(self.read_json(), current)
+                    # 重复任务仅在本次请求把状态“改成 done”时触发滚动；
+                    # 非重复条目或未改成 done 的请求完全保持原有行为。
+                    if status == "done" and current["status"] != "done":
+                        keep_active, rolled_meta = self.apply_recurrence_rollover(json.loads(meta_str))
+                        if rolled_meta is not None:
+                            # 重复条目：滚动（active + 新 due）或耗尽（done + exhausted）。
+                            meta_str = json.dumps(rolled_meta, ensure_ascii=False, separators=(",", ":"))
+                            if keep_active:
+                                status = "active"
+                    conn.execute("UPDATE items SET kind=?,area=?,title=?,body=?,status=?,meta=?,updated_at=? WHERE id=?",
+                                 (kind, area, title, body, status, meta_str, now_iso(), row["id"]))
                     result = {"item": self.item_json(conn.execute("SELECT * FROM items WHERE id=?", (row["id"],)).fetchone())}
                 elif method == "DELETE":
                     for file in conn.execute("SELECT * FROM files WHERE item_id=?", (row["id"],)).fetchall():
