@@ -2587,7 +2587,13 @@ form label + label {
     margin-left: -5px;
   }
   .topbar-actions {
-    gap: 9px;
+    gap: 6px;
+  }
+  .notify-button {
+    width: 40px;
+    height: 40px;
+    border: 0;
+    background: transparent;
   }
   .search-button {
     padding: 7px;
@@ -3751,6 +3757,14 @@ form label + label {
   }
   .auth-story {
     padding-top: calc(25px + var(--shell-safe-top));
+  }
+}
+/* 顶栏操作区新增通知铃铛后共 3 个按钮。原 .topbar #new-button 的图标收缩
+   规则只在 ≤350px 生效，导致 351–600px 区间顶栏溢出；这里从 ≤600px 起
+   直接隐藏文字版「新建」，与原有 ≤350px 的规则衔接，桌面端不受影响。 */
+@media (max-width: 600px) {
+  .topbar #new-button {
+    display: none;
   }
 }
 @media (max-width: 350px) {
@@ -5054,5 +5068,504 @@ form label + label {
   }
   .search-view-card {
     padding: 14px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   通知铃铛与通知面板（2b）
+--------------------------------------------------------------------------- */
+.notify-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+.notify-button:hover,
+.notify-button:focus-visible {
+  border-color: var(--green);
+}
+.notify-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: var(--red);
+  color: var(--card);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 18px;
+  text-align: center;
+  pointer-events: none;
+}
+.notify-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.notify-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--card);
+}
+.notify-item.unread {
+  border-color: var(--green);
+  background: var(--soft-green);
+}
+.notify-item-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--green);
+}
+.notify-item.unread .notify-item-icon {
+  background: var(--card);
+}
+.notify-item-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  color: var(--text);
+  font: inherit;
+}
+.notify-item-main strong {
+  color: var(--ink);
+  font-size: 15px;
+}
+.notify-item-main small {
+  color: var(--muted);
+  line-height: 1.5;
+}
+.notify-time {
+  font-size: 12px;
+}
+@media (max-width: 480px) {
+  .notify-item {
+    padding: 10px 12px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   出站提醒 Webhook 设置（2b）
+--------------------------------------------------------------------------- */
+.webhook-secret {
+  margin: 0 0 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--green);
+  border-radius: 12px;
+  background: var(--soft-green);
+}
+.webhook-secret-value {
+  display: block;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--ink);
+  font-size: 13px;
+  word-break: break-all;
+  user-select: all;
+}
+.webhook-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.webhook-row {
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+}
+.webhook-row-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.webhook-row-head strong {
+  color: var(--ink);
+  flex-shrink: 0;
+}
+.webhook-row-head small {
+  color: var(--muted);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+.webhook-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.switch {
+  flex-shrink: 0;
+  width: 44px;
+  height: 26px;
+  border-radius: 13px;
+  border: 1px solid var(--line);
+  background: var(--line);
+  cursor: pointer;
+  position: relative;
+  padding: 0;
+  transition: background 0.15s ease;
+}
+.switch span {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  transition: left 0.15s ease;
+}
+.switch.on {
+  background: var(--green);
+  border-color: var(--green);
+}
+.switch.on span {
+  left: 20px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .switch,
+  .switch span {
+    transition: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   模板库（2b P3）
+--------------------------------------------------------------------------- */
+.template-picker,
+.template-manage {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.template-group {
+  margin: 10px 0 4px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+.template-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  transition: border-color 0.15s ease;
+}
+.template-option:hover,
+.template-option:focus-visible {
+  border-color: var(--green);
+}
+.template-option svg {
+  color: var(--green);
+  flex-shrink: 0;
+}
+.template-option-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.template-option-text strong {
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.template-option-text small {
+  color: var(--muted);
+}
+.template-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+}
+.template-row svg {
+  color: var(--green);
+  flex-shrink: 0;
+}
+.template-row .template-option-text {
+  flex: 1;
+}
+.builtin-badge {
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.template-row-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.new-option-template {
+  margin-top: 2px;
+}
+.template-save {
+  margin-left: auto;
+}
+
+/* ---------------------------------------------------------------------------
+   日程（Agenda）视图与日历模式切换（2b P4）
+--------------------------------------------------------------------------- */
+.calendar-mode-switch {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+}
+.calendar-mode-btn {
+  min-height: 36px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  cursor: pointer;
+}
+.calendar-mode-btn.active {
+  background: var(--soft-green);
+  color: var(--green);
+  font-weight: 600;
+}
+.agenda-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.agenda-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.agenda-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--line);
+}
+.agenda-date {
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 15px;
+}
+.agenda-lunar {
+  color: var(--muted);
+  font-size: 13px;
+}
+.agenda-today {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--soft-green);
+  color: var(--green);
+  font-size: 12px;
+}
+.agenda-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.agenda-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--mint);
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--text);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+.agenda-item:hover,
+.agenda-item:focus-visible {
+  border-color: var(--green);
+}
+.agenda-item.is-done {
+  opacity: 0.62;
+}
+.agenda-item.is-done .agenda-title {
+  text-decoration: line-through;
+}
+.agenda-daily {
+  border-left-color: var(--orange);
+}
+.agenda-time {
+  flex-shrink: 0;
+  min-width: 78px;
+  color: var(--muted);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.agenda-title {
+  flex: 1;
+  min-width: 0;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.agenda-badge {
+  flex-shrink: 0;
+  padding: 1px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.agenda-empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+@media (max-width: 480px) {
+  .agenda-time {
+    min-width: 58px;
+    font-size: 12px;
+  }
+  .agenda-badge {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   首页常用功能快捷方式（2b P5）
+--------------------------------------------------------------------------- */
+.shortcut-bar {
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+.shortcut-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.shortcut-label {
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+}
+.shortcut-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.shortcut-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+.shortcut-item:hover,
+.shortcut-item:focus-visible {
+  border-color: var(--green);
+}
+.shortcut-item svg {
+  color: var(--green);
+}
+.shortcut-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 8px;
+  margin: 12px 0;
+}
+.shortcut-choice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--card);
+  cursor: pointer;
+}
+.shortcut-choice:has(input:checked) {
+  border-color: var(--green);
+  background: var(--soft-green);
+}
+.shortcut-choice-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--text);
+  font-size: 14px;
+}
+.shortcut-choice-text svg {
+  color: var(--green);
+}
+@media (max-width: 480px) {
+  .shortcut-item {
+    padding: 7px 11px;
+    font-size: 13px;
   }
 }

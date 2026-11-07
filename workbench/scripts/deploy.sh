@@ -44,7 +44,7 @@ if [[ -n "$container" ]]; then
   previous_schema=$(docker image inspect --format '{{index .Config.Labels "io.zhixu.schema"}}' "$previous_image")
   if [[ ! "$previous_schema" =~ ^[a-f0-9]{64}$ ]]; then
     previous_schema=$(docker run --rm --network none --entrypoint python "$previous_image" -c 'import server,hashlib,importlib.util; parts=[server.SCHEMA];
-for name in ("bedtime","daily","storage_jobs"):
+for name in ("bedtime","daily","storage_jobs","notify","templates","settings"):
     spec=importlib.util.find_spec(name)
     if spec: parts.append(__import__(name).SCHEMA)
 print(hashlib.sha256("\n--module-schema--\n".join(parts).encode()).hexdigest())')

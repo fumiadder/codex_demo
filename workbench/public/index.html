@@ -64,6 +64,10 @@
         <circle cx="10.5" cy="10.5" r="6.5" />
         <path d="m16 16 5 5" />
       </symbol>
+      <symbol id="i-bell" viewBox="0 0 24 24">
+        <path d="M12 4a5.5 5.5 0 0 0-5.5 5.5c0 4-1.2 5.8-2 6.7-.3.4 0 1 .5 1h14c.5 0 .8-.6.5-1-.8-.9-2-2.7-2-6.7A5.5 5.5 0 0 0 12 4Z" />
+        <path d="M9.8 19.5a2.3 2.3 0 0 0 4.4 0" />
+      </symbol>
       <symbol id="i-plus" viewBox="0 0 24 24">
         <path d="M12 5v14M5 12h14" />
       </symbol>
@@ -402,6 +406,14 @@
             <button id="search-button" class="search-button">
               <svg class="icon small"><use href="#i-search" /></svg
               ><span>全局搜索</span><kbd>⌘ K</kbd></button
+            ><button
+              id="notify-button"
+              class="notify-button"
+              aria-label="通知"
+              title="通知"
+              ><svg class="icon small"><use href="#i-bell" /></svg
+              ><span id="notify-badge" class="notify-badge" hidden></span
+            ></button
             ><button id="new-button" class="button primary compact">
               <svg class="icon small"><use href="#i-plus" /></svg>新建
             </button>
