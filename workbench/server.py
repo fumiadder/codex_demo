@@ -35,8 +35,11 @@ from urllib.parse import parse_qs, unquote, urlsplit
 import bedtime
 import daily
 import export
+import notify
+import settings
 import recur
 import storage_jobs
+import templates
 from media_storage import create_storage, MissingMedia, StorageError
 from persistence import Database
 
@@ -179,9 +182,15 @@ class FolioServer(ThreadingHTTPServer):
             conn.execute("BEGIN IMMEDIATE")
             conn.executescript(SCHEMA)
             conn.executescript(storage_jobs.SCHEMA)
+            conn.executescript(notify.SCHEMA)
+            conn.executescript(templates.SCHEMA)
+            conn.executescript(settings.SCHEMA)
         bedtime.initialize(self)
         daily.initialize(self)
         export.initialize(self)
+        notify.initialize(self)
+        templates.initialize(self)
+        settings.initialize(self)
         self.cleanup_media()
         self.purge_expired_sessions()
         super().__init__(address, FolioHandler)
@@ -222,6 +231,12 @@ class FolioServer(ThreadingHTTPServer):
                     export.run_maintenance(self)
                 except Exception:
                     logging.warning("Export maintenance deferred")
+                try:
+                    # Notifications/webhooks own their throttle and exceptions;
+                    # a fault here must not affect the session sweep either.
+                    notify.run_maintenance(self)
+                except Exception:
+                    logging.warning("Notify maintenance deferred")
                 self.purge_expired_sessions()
         finally:
             self.storage_maintenance_lock.release()
@@ -815,6 +830,12 @@ class FolioHandler(BaseHTTPRequestHandler):
         if daily.dispatch(self, path, query):
             return
         if export.dispatch(self, path, query):
+            return
+        if notify.dispatch(self, path, query):
+            return
+        if templates.dispatch(self, path, query):
+            return
+        if settings.dispatch(self, path, query):
             return
         with self.server.db() as conn:
             user = self.current_user(conn)

@@ -53,7 +53,10 @@ class ServerTests(unittest.TestCase):
 
     def setUp(self):
         with self.server.db() as conn:
-            for table in ("storage_jobs", "vaults", "files", "items", "members", "spaces", "sessions", "users", "registration_invites"):
+            conn.execute("DELETE FROM item_templates")
+            for table in ("webhook_deliveries", "notifications", "user_webhooks",
+                          "storage_jobs", "vaults", "files", "items", "members", "spaces",
+                          "sessions", "users", "registration_invites"):
                 conn.execute("DELETE FROM " + table)
         self.server.rate_events.clear()
         self.server.trust_proxy = False
@@ -917,6 +920,14 @@ class ServerTests(unittest.TestCase):
         (self.server.bedtime_audio_dir / audio_id).write_bytes(b"audio")
         self.seed_bedtime_state(sid, user["id"], audio_id=audio_id)
         self.request("PUT", f"/api/spaces/{sid}/vault", self.vault(), cookie=cookie)
+        # 自定义模板挂 users 外键 ON DELETE CASCADE，注销后应随用户行一并清零。
+        template_status, template_body, _ = self.request(
+            "POST", "/api/templates",
+            {"name": "注销随删模板", "kind": "task", "area": "work", "title": "T", "meta": {}},
+            cookie=cookie,
+        )
+        self.assertEqual(template_status, 201, template_body)
+        self.assertEqual(self.table_count("item_templates"), 1)
         deleted = []
         real_delete = self.server.media_storage.delete
         def record_delete(namespace, identifier):
@@ -929,8 +940,11 @@ class ServerTests(unittest.TestCase):
         self.assertEqual(self.request("GET", "/api/me", cookie=cookie)[0], 401)
         for table in ("users", "sessions", "spaces", "members", "items", "files", "vaults",
                       "daily_entries", "daily_images", "daily_uploads", "daily_digests",
-                      "bedtime_favorites", "bedtime_history", "bedtime_voices", "bedtime_audio", "storage_jobs"):
+                      "bedtime_favorites", "bedtime_history", "bedtime_voices", "bedtime_audio",
+                      "notifications", "user_webhooks", "webhook_deliveries", "storage_jobs"):
             self.assertEqual(self.table_count(table), 0, table)
+        # item_templates 通过 users 外键 ON DELETE CASCADE 随注销清零。
+        self.assertEqual(self.table_count("item_templates"), 0, "item_templates")
         self.assertEqual(sorted(deleted), sorted([("uploads", file_id), ("uploads", image_id), ("bedtime-audio", audio_id)]))
         self.assertFalse((self.server.upload_dir / file_id).exists())
         self.assertFalse((self.server.upload_dir / image_id).exists())
@@ -1398,6 +1412,102 @@ class ServerTests(unittest.TestCase):
         status, body, _ = self.search(cookie, "限流探针")
         self.assertEqual(status, 429)
         self.assertIn("频繁", body["error"])
+
+
+    def test_close_account_cascades_notifications_and_webhooks(self):
+        import notify
+        cookie, user, space = self.register()
+        uid, sid = user["id"], space["id"]
+        stamp = "2026-01-01T00:00:00Z"
+        with self.server.db() as conn:
+            hook_id = "h" * 32
+            conn.execute(
+                "INSERT INTO user_webhooks (id,user_id,name,url,secret,events,enabled,created_at,updated_at) "
+                "VALUES (?,?,?,?,?,?,?,?,?)",
+                (hook_id, uid, "通道", "https://hooks.example.com/zhixu", "secret-value",
+                 json.dumps(["task.due"]), 1, stamp, stamp))
+            conn.execute(
+                "INSERT INTO notifications (id,user_id,space_id,type,title,body,data,dedup_key,read,created_at) "
+                "VALUES (?,?,?,?,?,?,?,?,0,?)",
+                ("n" * 32, uid, sid, "task.due", "到期任务", "任务已到期",
+                 json.dumps({"itemId": "i" * 32}), "task-due:" + "i" * 32 + ":2026-01-01", stamp))
+            conn.execute(
+                "INSERT INTO webhook_deliveries "
+                "(id,webhook_id,user_id,event,payload,state,attempts,next_attempt_at,last_error,created_at) "
+                "VALUES (?,?,?,?,?,'pending',0,0,'',0)",
+                ("d" * 32, hook_id, uid, "task.due", json.dumps({"event": "task.due"})))
+        for table in ("notifications", "user_webhooks", "webhook_deliveries"):
+            self.assertEqual(self.table_count(table), 1, table)
+        status, body, _ = self.request("DELETE", "/api/me/account",
+                                       {"password": "test-password-123"}, cookie=cookie)
+        self.assertEqual(status, 200, body)
+        # 三张表全部挂 users 外键 ON DELETE CASCADE，账号注销后必须清零。
+        for table in ("notifications", "user_webhooks", "webhook_deliveries"):
+            self.assertEqual(self.table_count(table), 0, table)
+
+    def test_notify_routes_wired_with_isolation_and_ssrf(self):
+        import notify
+        import socket as _socket
+
+        def fake_resolve(host, port, type=0):
+            return [(_socket.AF_INET, _socket.SOCK_STREAM, 6, "", ("93.184.216.34", port or 443))]
+
+        class FakeResponse:
+            status = 200
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *args):
+                pass
+
+            def read(self, size=-1):
+                return b"{}"
+
+        class FakeOpener:
+            def __init__(self):
+                self.requests = []
+
+            def open(self, request, timeout=None):
+                self.requests.append((request, timeout))
+                return FakeResponse()
+
+        # 未登录 401。
+        self.assertEqual(self.request("GET", "/api/notifications")[0], 401)
+        self.assertEqual(self.request("GET", "/api/webhooks")[0], 401)
+        cookie_a, _, _ = self.register()
+        cookie_b, _, _ = self.register("member-b@example.com")
+        opener = FakeOpener()
+        with mock.patch.object(notify, "_resolve", side_effect=fake_resolve), \
+                mock.patch.object(notify, "build_safe_opener", return_value=opener):
+            status, body, _ = self.request("POST", "/api/webhooks", {
+                "name": "主通道", "url": "https://hooks.example.com/zhixu",
+                "events": ["task.due"], "enabled": True}, cookie=cookie_a)
+            self.assertEqual(status, 201, body)
+            hook = body["webhook"]
+            self.assertIn("secret", hook)
+            self.assertNotIn("secret", self.request("GET", "/api/webhooks", cookie=cookie_a)[1]["webhooks"][0])
+            # SSRF：内网地址在服务端路由上同样被拒。
+            def intranet_resolve(host, port, type=0):
+                return [(_socket.AF_INET, _socket.SOCK_STREAM, 6, "", ("10.0.0.8", port or 443))]
+            with mock.patch.object(notify, "_resolve", side_effect=intranet_resolve):
+                status, body, _ = self.request("POST", "/api/webhooks", {
+                    "name": "内网", "url": "https://lan.example.com/hook",
+                    "events": ["*"]}, cookie=cookie_a)
+                self.assertEqual(status, 400)
+            # 同步测试请求走 fake opener，无真实网络。
+            status, body, _ = self.request("POST", f"/api/webhooks/{hook['id']}/test",
+                                           {}, cookie=cookie_a)
+            self.assertEqual(status, 200, body)
+            self.assertEqual(body["ok"], True)
+            self.assertEqual(len(opener.requests), 1)
+        # 账号隔离：B 看不到也操作不了 A 的 webhook。
+        self.assertEqual(self.request("GET", "/api/webhooks", cookie=cookie_b)[1]["webhooks"], [])
+        self.assertEqual(self.request("DELETE", f"/api/webhooks/{hook['id']}",
+                                      cookie=cookie_b)[0], 404)
+        # A 自己删除成功且待发 delivery 级联清除。
+        status, _, _ = self.request("DELETE", f"/api/webhooks/{hook['id']}", cookie=cookie_a)
+        self.assertEqual(status, 200)
 
 
 if __name__ == "__main__":
