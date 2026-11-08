@@ -1,5 +1,39 @@
 # 验证记录
 
+## 通知、Webhook、模板库、日程与快捷方式（批次 2b）
+
+本批引入了结构变更：新增 `notify.py`（notifications / user_webhooks / webhook_deliveries）、`templates.py`（item_templates）与 `settings.py`（user_settings）三个模块，共 5 张新表，全部为 `CREATE TABLE IF NOT EXISTS` 增量且挂 `users` 外键 `ON DELETE CASCADE`。schema 哈希由 `83d99f53…` 变为 `cfc70bbf…`，`ops_backup.py` 与 `deploy.sh` 的模块清单已同序加入 notify/templates/settings，两处计算结果一致。
+
+后端：
+
+- `notify.py`：到期任务扫描挂在既有 `maybe_cleanup` 维护锁内、请求驱动、60 秒节流，按 `task-due:{item_id}:{due}` 去重（写事务内复查）；Webhook 发送器强制 https、拒绝 userinfo、对 `getaddrinfo` 的每个地址做 ipaddress 判定（环回/私网/链路本地/保留/组播/未指定/`fc00::/7`）、拒绝一切 3xx 重定向、8 秒超时、HMAC-SHA256 签名，仅 2xx 成功、429/5xx/超时可重试并按 60/300/900/3600 退避、5 次置 failed，日志只记 id/event/状态码。发送泵为模块锁 + 单守护线程，线程内异常仅告警。
+- `templates.py`：10 个内置模板常量（不落库）+ 每账号自定义模板，meta 复用 `validate_meta_extensions` 收口、16KB 上限、50 个上限，builtin 与他人资源统一 404。
+- `settings.py`：`user_settings` 存每账号快捷方式，服务端白名单 `SHORTCUT_VIEWS` 校验，最多 8 个，去重。
+- 三个模块均登记进 `package_release.py`、`Dockerfile`、`render.yaml`，`test_package_release` 守卫全绿。
+
+前端（真实与演示双模式语义一致）：
+
+- 通知铃铛：顶栏未读角标、面板列出 task.due 通知、单条/全部已读、点击跳转对应空间并打开任务；演示模式用本地 mock。
+- Webhook 设置：账号设置内新增「出站提醒」区块，添加（公网 https）、一次性 secret 展示与复制、启用开关、测试、轮转 secret、二次确认删除。
+- 模板库：新建流程新增「从模板新建」，选中后预填标题/正文/分区/meta（含标签、重复规则、子任务）；模块库新增「模板库」卡片，内置只读、自定义可编辑/删除；编辑器新建时提供「保存为模板」。
+- 日程视图：月历新增「日历 / 日程」双模式切换，日程按日期分组（含星期、农历、今天徽标），任务显示时间段（`meta.startTime/endTime`，缺省「全天」），今日记录归入对应日期，支持「更早/回到本周/更晚」。
+- 首页快捷方式：stats 下方「常用功能」条 + 「调整」面板，服务端按账号持久化。
+- 农历换算为纯前端查表（1900–2100 压缩表），零网络零依赖；Node 单测 6/6 覆盖三个春节基准年。
+
+关键修复：`settings.py` 原用 `from server import APIError` 取异常类，在 `python server.py` 启动时运行模块是 `__main__`，拿到的是另一个类对象，导致校验错误变成 500；改为与 notify/templates 一致的 `sys.modules.get(type(server).__module__)` 后，生产模式下非法快捷方式正确返回 400（提交 bd5caa0）。
+
+本地验证（2026-11-08，Asia/Shanghai）：
+
+- `node --check`、`py_compile`、`bash -n` 通过；全量 `unittest discover -s tests` 344 项仅已知 macOS `test_large_base64_clone` BrokenPipe 偶发。
+- 浏览器回归：recur_calendar 21、mobile 9、frontend_hardening 4、account_export 15、daily 5、menu_visual 2、life_entry 6、collaboration 7、bedtime 11 全部通过；新增功能在真实模式与演示模式均逐步实操验证（通知角标/面板/已读、Webhook 全流程含 SSRF 拒绝、模板预填与保存、日程时间段与农历、快捷方式持久化），320px 无横向溢出、无 pageerror。
+
+部署（提交 6a22f4c + 修复 bd5caa0，CI run 42387047326 / 42460207893 均全绿）：
+
+- 2b 首版因 schema 变更走审查式迁移：`backup.sh --leave-stopped` 先做一致性备份（`20261107T160245Z-a5dc35dc`，checksums/SQLite integrity/上传引用均 PASS），预飞容器验证模块导入与哈希 `cfc70bbf`，再由 compose 构建启动、wait_healthy、配置断言（testMode=False/persistent/invite）、软链切换，5 张新表确认创建、真实用户数据完好。
+- 修复版 bd5caa0 哈希不变，走标准 `deploy.sh`（备份→构建→健康→网关→HTTPS 验证 PASS），current 指向 `bd5caa0`。
+- 端到端生产烟测 26/26 通过：快捷方式（保存/读取/非法 400/未登录 401）、模板（内置 10/创建/列表/编辑/内置只读 404/删除）、通知（到期生成/关联正确/全部已读）、Webhook（一次性 secret/列表不回传/内网 SSRF 拒绝/非 https 拒绝/轮转/停用/删除）、账号注销（密码门控/凭证失效）。
+- 清理：烟测临时账号（含此前两次失败尝试留下的 3 个）已全部删除，复核后仅剩真实用户 fuminer 与其 1 条真实「今日记录」，notifications/user_webhooks/webhook_deliveries/item_templates/user_settings 均为 0。
+
 ## 任务管理增强：重复任务、子任务、多标签、跨空间搜索、月历与 Markdown（批次 2a）
 
 本批零数据库结构变更：重复规则、子任务、多标签全部存于既有 `items.meta`，不新增表、不改列。`ops_backup.py` 计算的 schema 哈希仍为 `83d99f53…2838`，与生产一致，部署结构守卫直接通过；新模块 `recur.py` 无 SCHEMA 常量，按约定不进入哈希清单。三个 subagent 分波并行（后端、Markdown 渲染器文件独立先做，前端对着真实后端一次性接入），避免同改 app.js 冲突。
