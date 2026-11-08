@@ -7,6 +7,7 @@
 - 真实后端浏览器 QA：`daily_browser_qa.py` 全部通过，覆盖今日记录只在本月日程出现一次、首页与日程页点击 URL 不变、正文／摘要／两张图片、Escape 与关闭按钮、键盘 Enter 打开；320px、390px 竖屏和 844×390 横屏弹窗均在视口内且无页面横向溢出。截图：`artifacts/workbench-month-agenda.png`、`artifacts/workbench-agenda-dialog-mobile.png`。
 - `recur_calendar_qa.py`：21 项通过，无 pageerror；`node --check public/app.js` 与 `git diff --check` 通过。
 - 后端未改动。全量 344 项 unittest 中，已有文档记录的 macOS `test_large_base64_clone` 网络 BrokenPipe／ConnectionReset 仍复现，与本次纯前端修改无关；排除该已知平台用例后 343 项通过（15 项按环境跳过），正式 CI 仍需全绿后才允许生产发布。
+- 首轮 CI run 42498162095 在既有 `mobile_qa.py` 跨标签断言失败：测试仍从首页找笔记标题，未跟随此前首页改版先进入笔记页。已仅修正测试导航，真实本地重跑全部 9 项通过；未恢复旧首页卡片、未放宽断言。
 
 ## 用户名 / 手机号登录（第二批）
 
