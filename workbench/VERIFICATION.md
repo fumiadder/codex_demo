@@ -8,6 +8,7 @@
 - `recur_calendar_qa.py`：21 项通过，无 pageerror；`node --check public/app.js` 与 `git diff --check` 通过。
 - 后端未改动。全量 344 项 unittest 中，已有文档记录的 macOS `test_large_base64_clone` 网络 BrokenPipe／ConnectionReset 仍复现，与本次纯前端修改无关；排除该已知平台用例后 343 项通过（15 项按环境跳过），正式 CI 仍需全绿后才允许生产发布。
 - 首轮 CI run 42498162095 在既有 `mobile_qa.py` 跨标签断言失败：测试仍从首页找笔记标题，未跟随此前首页改版先进入笔记页。已仅修正测试导航，真实本地重跑全部 9 项通过；未恢复旧首页卡片、未放宽断言。
+- 同类旧断言也存在于 `collaboration_qa.py`：保存笔记、切换共享空间和刷新后未进入笔记页。已补齐真实导航，所有协作权限、移除成员、录音失败重试检查本地通过。
 
 ## 用户名 / 手机号登录（第二批）
 

@@ -46,6 +46,7 @@ def new_note(page, title, body):
     page.get_by_label("正文", exact=True).fill(body)
     page.locator("#modal").get_by_role("button", name="保存记录", exact=True).click()
     expect(page.locator("#modal")).not_to_be_visible()
+    page.locator('[data-view="notes"]').click()
     expect(page.locator("#view-content")).to_contain_text(title)
 
 
@@ -82,9 +83,9 @@ def check_collaboration(owner, member, base, member_email):
     member.locator("#space-switcher").click()
     member.locator(".space-choice").filter(has_text=SHARED_NAME).click()
     expect(member.locator("#current-space-name")).to_have_text(SHARED_NAME)
+    member.locator('[data-view="notes"]').click()
     expect(member.locator("#view-content")).to_contain_text(OWNER_NOTE)
     expect(member.locator("#new-button")).to_be_disabled()
-    member.locator('[data-view="notes"]').click()
     member.locator(".note-card").filter(has_text=OWNER_NOTE).click()
     expect(member.get_by_label("正文", exact=True)).to_have_value(
         "共享记录可以查看，只读成员不能编辑。"
@@ -100,6 +101,7 @@ def check_collaboration(owner, member, base, member_email):
     new_note(member, EDITOR_NOTE, "从只读升级后，通过真实界面写入。")
     owner.locator("#modal-close").click()
     owner.reload(wait_until="networkidle")
+    owner.locator('[data-view="notes"]').click()
     expect(owner.locator("#view-content")).to_contain_text(EDITOR_NOTE)
     report("所有者升级编辑权限后，成员写入成功且所有者刷新可以看到")
 
