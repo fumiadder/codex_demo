@@ -1,5 +1,26 @@
 # 验证记录
 
+## 用户名 / 手机号登录（第二批）
+
+登录标识从邮箱改为「用户名或手机号二选一」，同时保留旧的邮箱登录通道，避免打断脚本与既有习惯。
+
+设计取舍：`users` 表被 members/items/sessions/daily_*/notify_*/templates/settings 等十余张表以外键引用，重建它需要临时关闭外键并重写所有依赖行，风险远高于收益。因此新增增量表 `user_identities(user_id, username UNIQUE, phone UNIQUE)` 承载登录标识，`users` 结构与全部外键保持原样，旧镜像可直接忽略新表，回滚安全。没有邮箱的账号在 `users.email` 写入 `@users.invalid` 占位地址，读接口一律把它还原为空串，不会暴露给浏览器。
+
+- 注册：必填用户名（3–30 位，字母数字下划线点短横线），手机号为可选 11 位；为兼容既有脚本，用户名位置若填的是邮箱则自动取前缀派生用户名。
+- 登录：`identifier` 依次匹配用户名、手机号，最后回退到旧邮箱；错误统一返回「用户名或密码错误」，不暴露账号是否存在。
+- 加成员：按用户名/手机号查找用户，列表返回 `login` 字段优先展示登录名。
+- 设置：新增「登录方式」区块，改绑用户名或手机号需验证当前密码。
+- 邀请：`manage_access.py invite --email` 现在可填用户名或手机号（首次引导 bootstrap 仍要求真实邮箱）；修复了注册时用合成邮箱比对付费预留名、导致所有用户名邀请被拒的缺陷（提交 db78881）。
+- 存量迁移：启动时把没有身份行的账号按邮箱前缀补一条用户名，冲突时加后缀，兜底用账号 id，`fuminer` 因此可直接用 `2521532473` 登录，id 与全部数据不变。
+
+验证（2026-11-08）：
+
+- 全量 344 项单测通过（仅已知 macOS `test_large_base64_clone` BrokenPipe 偶发）；关键路径另有脚本覆盖：注册/登录/改绑 15 项、邀请用户名与手机号、存量迁移。
+- 浏览器 QA：mobile 9、frontend_hardening 4、account_export 16、recur_calendar 22、daily 5、life_entry 6、collaboration 7、bedtime 11、menu_visual 2 全部通过。
+- 在服务器上用一次性 PostgreSQL 容器精确复现 CI 的 native PG 步骤：**344 项全绿**，排除方言差异。
+- 部署：schema 哈希 `03580192…` 走审查式迁移（先 `backup.sh --leave-stopped` 备份 `20261108T084210Z-39cbca31`，再构建、健康检查、配置断言、软链切换）；邀请修复版哈希不变走标准 deploy.sh。生产确认 fuminer 已迁移出 `username=2521532473`。
+- 生产烟测：用户名邀请注册、`/api/me` 身份、用户名与手机号登录、错误密码 401、改绑后新手机号登录、按用户名加成员、fuminer 用户名与旧邮箱均可识别；有成员的空间拒绝注销（保护机制生效）。测试账号已全部清理，仅剩真实用户与其 1 条真实「今日记录」。
+
 ## 通知、Webhook、模板库、日程与快捷方式（批次 2b）
 
 本批引入了结构变更：新增 `notify.py`（notifications / user_webhooks / webhook_deliveries）、`templates.py`（item_templates）与 `settings.py`（user_settings）三个模块，共 5 张新表，全部为 `CREATE TABLE IF NOT EXISTS` 增量且挂 `users` 外键 `ON DELETE CASCADE`。schema 哈希由 `83d99f53…` 变为 `cfc70bbf…`，`ops_backup.py` 与 `deploy.sh` 的模块清单已同序加入 notify/templates/settings，两处计算结果一致。
