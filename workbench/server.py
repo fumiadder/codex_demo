@@ -37,6 +37,7 @@ import daily
 import export
 import notify
 import settings
+import identity
 import recur
 import storage_jobs
 import templates
@@ -51,6 +52,8 @@ ID_RE = r"[a-f0-9]{32}"
 EMAIL_RE = re.compile(r"^[^\s@\x00-\x1f]+@[^\s@\x00-\x1f]+\.[^\s@\x00-\x1f]+$")
 COOKIE_NAME = "folio_session"
 INVITATION_ERROR = "邀请码无效或已过期，请联系工作台管理员获取新的邀请码"
+# Placeholder address for accounts that sign in by username/phone only.
+IDENTITY_EMAIL_DOMAIN = "users.invalid"
 
 
 def now_iso():
@@ -185,6 +188,11 @@ class FolioServer(ThreadingHTTPServer):
             conn.executescript(notify.SCHEMA)
             conn.executescript(templates.SCHEMA)
             conn.executescript(settings.SCHEMA)
+            conn.executescript(identity.SCHEMA)
+        identity.initialize(self)
+        with self.db() as conn:
+            conn.execute("BEGIN IMMEDIATE")
+            identity.migrate_existing(conn, now=now_iso())
         bedtime.initialize(self)
         daily.initialize(self)
         export.initialize(self)
@@ -403,13 +411,24 @@ class FolioHandler(BaseHTTPRequestHandler):
         return self.client_address[0]
 
     def account_input(self, data, register=False):
-        email = self.string(data.get("email", ""), "邮箱", 254, True).lower()
+        """Parse sign-in credentials: username/phone for both, email kept for legacy."""
         password = data.get("password", "")
-        if not EMAIL_RE.match(email):
-            raise APIError(400, "邮箱格式无效")
         if not isinstance(password, str) or len(password) > 1024 or (register and len(password) < 10):
             raise APIError(400, "密码至少需要 10 个字符，且不得超过 1024 个字符")
-        return email, password
+        if register:
+            username, phone = identity.normalize_identity_input(data)
+            # A username slot carrying an address was already rewritten into the
+            # email field by the identity helper; prefer that derived address.
+            email = (data.get("email") or "").strip().lower()
+            if email and not EMAIL_RE.match(email):
+                raise APIError(400, "邮箱格式无效")
+            return {"username": username, "phone": phone, "email": email or None}, password
+        identifier = data.get("identifier") or data.get("username") or data.get("email") or data.get("phone") or ""
+        if not isinstance(identifier, str) or not identifier.strip():
+            raise APIError(400, "请输入用户名或手机号")
+        if len(identifier.strip()) > 254:
+            raise APIError(400, "输入的账号过长")
+        return identifier.strip(), password
 
     def current_user(self, conn):
         cookie = SimpleCookie()
@@ -770,12 +789,17 @@ class FolioHandler(BaseHTTPRequestHandler):
         if path in ("/api/auth/register", "/api/auth/login") and method == "POST":
             data = self.read_json()
             register = path.endswith("register")
-            email, password = self.account_input(data, register)
+            try:
+                credential, password = self.account_input(data, register)
+            except ValueError as exc:
+                raise APIError(400, str(exc)) from None
             ip = self.client_ip()
             # Both IP and account buckets protect shared / public networks.
             self.server.throttle(("register" if register else "login", ip), 8 if register else 30)
             if not register:
-                self.server.throttle(("login-email", email), 12)
+                # Keep the historical bucket name: it keys the same per-account
+                # budget operators and tests already rely on.
+                self.server.throttle(("login-email", credential), 12)
             invitation_hash = None
             if register:
                 name = self.string(data.get("name", ""), "姓名", 80, True)
@@ -796,7 +820,11 @@ class FolioHandler(BaseHTTPRequestHandler):
                     consumed_at = int(time.time())
                     if invitation_hash:
                         invite = conn.execute("SELECT email,expires_at,consumed_at,bootstrap FROM registration_invites WHERE token_hash=?", (invitation_hash,)).fetchone()
-                        if not invite or invite["email"] != email or invite["expires_at"] <= consumed_at or invite["consumed_at"] is not None:
+                        # The invite records the reserved login name (or a legacy email);
+                        # either must match what the caller is registering.
+                        reserved = invite["email"] if invite else None
+                        offered = [credential["username"], credential.get("email"), credential.get("phone")]
+                        if not invite or reserved not in [v for v in offered if v] or invite["expires_at"] <= consumed_at or invite["consumed_at"] is not None:
                             raise APIError(403, INVITATION_ERROR)
                         # A bootstrap code is valid only for an empty install,
                         # including when another account was created after it
@@ -804,23 +832,45 @@ class FolioHandler(BaseHTTPRequestHandler):
                         if invite["bootstrap"] and conn.execute("SELECT 1 FROM users LIMIT 1").fetchone():
                             raise APIError(403, INVITATION_ERROR)
                     user_id, space_id, stamp = new_id(), new_id(), now_iso()
+                    # Validate the identity pair inside the writer transaction so a
+                    # concurrent registration cannot take the same username/phone.
+                    try:
+                        uname, tel = identity.validate_new_identity(
+                            conn, credential["username"], credential.get("phone", ""),
+                            explicit=bool(data.get("username")) and not data.get("_derived_from_email"))
+                    except ValueError as exc:
+                        raise APIError(409, str(exc)) from None
+                    # users.email stays NOT NULL for compatibility with older images;
+                    # a synthetic address is used when no real email was supplied.
+                    email = credential.get("email") or f"{uname}@{IDENTITY_EMAIL_DOMAIN}"
                     try:
                         conn.execute("INSERT INTO users VALUES (?,?,?,?,?)", (user_id, email, name, encoded_password, stamp))
                     except sqlite3.IntegrityError:
-                        raise APIError(409, "该邮箱已注册，请登录或更换邮箱")
+                        raise APIError(409, "该账号已存在，请更换用户名或手机号") from None
+                    identity.create_identity(conn, user_id, uname, tel, now=stamp)
                     conn.execute("INSERT INTO spaces VALUES (?,?,?,?)", (space_id, "我的空间", user_id, stamp))
                     conn.execute("INSERT INTO members VALUES (?,?,?)", (space_id, user_id, "owner"))
                     if invitation_hash:
                         changed = conn.execute("UPDATE registration_invites SET consumed_at=? WHERE token_hash=? AND consumed_at IS NULL AND expires_at>? AND email=?", (consumed_at, invitation_hash, consumed_at, email)).rowcount
                         if changed != 1:
                             raise APIError(403, INVITATION_ERROR)
-                    user = {"id": user_id, "email": email, "name": name, "created_at": stamp}
+                    user = {"id": user_id, "email": "" if email.endswith("@" + IDENTITY_EMAIL_DOMAIN) else email,
+                            "name": name, "created_at": stamp, "username": uname, "phone": tel or None}
                 else:
-                    row = conn.execute("SELECT * FROM users WHERE email=?", (email,)).fetchone()
+                    # Sign in by username or phone. A legacy email is still accepted so
+                    # existing sessions/scripts keep working through the transition.
+                    uid = identity.lookup_user_id(conn, credential)
+                    if uid is None and "@" in credential:
+                        legacy = conn.execute("SELECT id FROM users WHERE email=?", (credential.lower(),)).fetchone()
+                        uid = legacy["id"] if legacy else None
+                    row = conn.execute("SELECT * FROM users WHERE id=?", (uid,)).fetchone() if uid else None
                     valid = verify_password(password, row["password_hash"] if row else self.server.dummy_password)
                     if not row or not valid:
-                        raise APIError(401, "邮箱或密码错误")
+                        raise APIError(401, "用户名或密码错误")
                     user = {key: row[key] for key in ("id", "email", "name", "created_at")}
+                    if row["email"].endswith("@" + IDENTITY_EMAIL_DOMAIN):
+                        user["email"] = ""
+                    user.update(identity.identity_of(conn, row["id"]))
                 conn.execute("DELETE FROM sessions WHERE expires_at<=?", (int(time.time()),))
                 conn.execute("INSERT INTO sessions VALUES (?,?,?)", (token_hash, user["id"], int(time.time()) + SESSION_SECONDS))
             self.json_response(201 if register else 200, {"user": user}, self.session_cookie(token))
@@ -836,6 +886,8 @@ class FolioHandler(BaseHTTPRequestHandler):
         if templates.dispatch(self, path, query):
             return
         if settings.dispatch(self, path, query):
+            return
+        if identity.dispatch(self, path, query):
             return
         with self.server.db() as conn:
             user = self.current_user(conn)
@@ -860,7 +912,12 @@ class FolioHandler(BaseHTTPRequestHandler):
                 user = self.current_user(conn)
             uid = user["id"]
             if path == "/api/me" and method == "GET":
-                result = {"user": user}
+                ident = identity.identity_of(conn, user["id"])
+                profile = dict(user)
+                if profile.get("email", "").endswith("@" + IDENTITY_EMAIL_DOMAIN):
+                    profile["email"] = ""
+                profile.update(ident)
+                result = {"user": profile}
             elif path == "/api/me" and method == "PATCH":
                 result = self.update_me(conn, user)
                 if result is None:
@@ -963,21 +1020,40 @@ class FolioHandler(BaseHTTPRequestHandler):
                 sid, member_id = match[1], match[2]
                 self.membership(conn, sid, uid, owner=method != "GET")
                 if method == "GET" and member_id is None:
-                    rows = conn.execute("SELECT u.id,u.email,u.name,m.role FROM members m JOIN users u ON u.id=m.user_id WHERE m.space_id=? ORDER BY CASE m.role WHEN 'owner' THEN 0 WHEN 'editor' THEN 1 ELSE 2 END,u.name", (sid,)).fetchall()
-                    result = {"members": [dict(row) for row in rows]}
+                    rows = conn.execute("SELECT u.id,u.email,u.name,m.role,i.username,i.phone FROM members m JOIN users u ON u.id=m.user_id LEFT JOIN user_identities i ON i.user_id=u.id WHERE m.space_id=? ORDER BY CASE m.role WHEN 'owner' THEN 0 WHEN 'editor' THEN 1 ELSE 2 END,u.name", (sid,)).fetchall()
+                    members = []
+                    for row in rows:
+                        item = dict(row)
+                        if item["email"].endswith("@" + IDENTITY_EMAIL_DOMAIN):
+                            item["email"] = ""
+                        # Prefer the sign-in name over an address nobody uses.
+                        item["login"] = item.get("username") or item.get("phone") or item["name"]
+                        members.append(item)
+                    result = {"members": members}
                 elif method == "POST" and member_id is None:
                     data = self.read_json()
-                    email = self.string(data.get("email", ""), "邮箱", 254, True).lower()
+                    identifier = data.get("identifier") or data.get("username") or data.get("email") or data.get("phone") or ""
                     role = data.get("role", "editor")
                     if role not in ("editor", "viewer"):
                         raise APIError(400, "成员角色只能是编辑者或查看者")
-                    target = conn.execute("SELECT id,email,name FROM users WHERE email=?", (email,)).fetchone()
-                    if not target:
-                        raise APIError(404, "此邮箱尚未注册，请对方先创建账号")
+                    if not isinstance(identifier, str) or not identifier.strip():
+                        raise APIError(400, "请输入对方的用户名或手机号")
+                    identifier = identifier.strip()
+                    target_id = identity.lookup_user_id(conn, identifier)
+                    if target_id is None and "@" in identifier:
+                        legacy = conn.execute("SELECT id FROM users WHERE email=?", (identifier.lower(),)).fetchone()
+                        target_id = legacy["id"] if legacy else None
+                    if target_id is None:
+                        raise APIError(404, "没有找到该用户，请确认用户名或手机号")
+                    target = conn.execute("SELECT id,email,name FROM users WHERE id=?", (target_id,)).fetchone()
                     if target["id"] == uid:
                         raise APIError(400, "无法修改空间所有者的角色")
                     conn.execute("INSERT INTO members VALUES (?,?,?) ON CONFLICT(space_id,user_id) DO UPDATE SET role=excluded.role", (sid, target["id"], role))
-                    result = {"member": {**dict(target), "role": role}}
+                    ident = identity.identity_of(conn, target["id"])
+                    profile = dict(target)
+                    if profile["email"].endswith("@" + IDENTITY_EMAIL_DOMAIN):
+                        profile["email"] = ""
+                    result = {"member": {**profile, **ident, "login": ident["username"] or ident["phone"] or target["name"], "role": role}}
                 elif method == "DELETE" and member_id is not None:
                     target = conn.execute("SELECT role FROM members WHERE space_id=? AND user_id=?", (sid, member_id)).fetchone()
                     if not target:

@@ -214,16 +214,27 @@
                 placeholder="怎么称呼你"
             /></label>
             <label
-              >邮箱地址<input
+              ><span id="auth-identifier-label">用户名或手机号</span><input
                 id="auth-email"
-                type="email"
-                autocomplete="email"
-                inputmode="email"
+                type="text"
+                autocomplete="username"
                 autocapitalize="none"
                 spellcheck="false"
                 enterkeyhint="next"
+                maxlength="254"
                 required
-                placeholder="you@example.com"
+                placeholder="输入用户名或手机号"
+            /></label>
+            <label id="phone-label" hidden
+              >手机号（可选，也可用手机号登录）<input
+                id="auth-phone"
+                type="tel"
+                autocomplete="tel"
+                inputmode="tel"
+                autocapitalize="none"
+                spellcheck="false"
+                maxlength="11"
+                placeholder="11 位手机号，可留空"
             /></label>
             <label
               >密码<input

@@ -13,6 +13,7 @@ RUN --mount=type=secret,id=proxy_ca \
 COPY --chown=folio:folio server.py bedtime.py daily.py export.py notify.py persistence.py recur.py neon_transport.py media_storage.py storage_jobs.py stories_data.json /app/
 COPY --chown=folio:folio templates.py /app/
 COPY --chown=folio:folio settings.py /app/
+COPY --chown=folio:folio identity.py /app/
 COPY --chown=folio:folio public /app/public
 COPY --chown=folio:folio scripts/manage_access.py /app/scripts/manage_access.py
 USER folio

@@ -4282,6 +4282,7 @@ function showAccountSettings() {
     (body) => {
       body.append(
         buildNicknameSection(),
+        buildIdentitySection(),
         buildPasswordSection(),
         buildWebhookSection(),
         buildAccountDangerZone(),
@@ -4682,6 +4683,79 @@ async function saveCurrentAsTemplate(kind, fields) {
     toast(errorMessage(err), true);
     return null;
   }
+}
+
+// ---------------------------------------------------------------------------
+// 登录方式：用户名（必填登录名）与手机号（可选），改绑需验证密码。
+// ---------------------------------------------------------------------------
+function buildIdentitySection() {
+  const section = el("section", "account-section");
+  section.append(el("h3", "", "登录方式"));
+  if (state.demo) {
+    section.append(el("p", "helper", "演示模式不连接账号服务，登录方式需在真实账号中设置。"));
+    return section;
+  }
+  const username = state.user?.username || "";
+  const phone = state.user?.phone || "";
+  section.append(
+    el(
+      "p",
+      "helper",
+      `当前用「${username || "未设置"}」登录${phone ? `，手机号 ${phone}` : ""}。用户名与手机号都可以用来登录。`,
+    ),
+  );
+  const form = el("form");
+  const nameInput = input("text", "3-30 位字母、数字、下划线", username);
+  nameInput.autocomplete = "username";
+  nameInput.spellcheck = false;
+  nameInput.autocapitalize = "none";
+  const phoneInput = input("tel", "11 位手机号，留空表示不设置", phone);
+  phoneInput.autocomplete = "tel";
+  phoneInput.inputMode = "tel";
+  phoneInput.maxLength = 11;
+  const password = input("password", "当前登录密码");
+  password.autocomplete = "current-password";
+  password.required = true;
+  const error = el("p", "form-error");
+  error.setAttribute("role", "alert");
+  const save = el("button", "button primary", "保存登录方式");
+  save.type = "submit";
+  form.append(
+    labelField("用户名", nameInput),
+    labelField("手机号（可选）", phoneInput),
+    labelField("验证密码", password),
+    error,
+    actionsRow(save),
+  );
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    error.textContent = "";
+    const nextName = nameInput.value.trim();
+    const nextPhone = phoneInput.value.trim();
+    if (!nextName) return void (error.textContent = "请填写用户名");
+    if (nextPhone && !/^1[3-9]\d{9}$/.test(nextPhone))
+      return void (error.textContent = "请输入有效的 11 位手机号");
+    if (!password.value) return void (error.textContent = "请输入当前密码");
+    const payload = { password: password.value };
+    if (nextName !== username) payload.username = nextName;
+    if (nextPhone !== phone) payload.phone = nextPhone;
+    if (!("username" in payload) && !("phone" in payload))
+      return void (error.textContent = "登录方式没有变化");
+    save.disabled = true;
+    try {
+      const result = await api("/api/me/identity", "PATCH", payload);
+      state.user = { ...state.user, ...result.identity };
+      password.value = "";
+      $("#user-status").textContent = state.user.username || "个人账户";
+      toast("登录方式已更新");
+    } catch (err) {
+      error.textContent = errorMessage(err);
+    } finally {
+      save.disabled = false;
+    }
+  });
+  section.append(form);
+  return section;
 }
 
 function buildNicknameSection() {
@@ -6585,6 +6659,14 @@ $("#auth-toggle").addEventListener("click", () => {
   $("#auth-password").autocomplete = state.register
     ? "new-password"
     : "current-password";
+  // 注册时可填手机号；登录时同一输入框接受用户名或手机号。
+  $("#phone-label").hidden = !state.register;
+  $("#auth-identifier-label").textContent = state.register
+    ? "用户名"
+    : "用户名或手机号";
+  $("#auth-email").placeholder = state.register
+    ? "3-30 位字母、数字、下划线"
+    : "输入用户名或手机号";
   $("#auth-error").textContent = "";
   updateRegistrationControls();
 });
@@ -6595,16 +6677,19 @@ $("#auth-form").addEventListener("submit", async (event) => {
   submit.disabled = true;
   $("#auth-error").textContent = "";
   try {
-    const data = {
-      email: $("#auth-email").value.trim(),
-      password: $("#auth-password").value,
-    };
+    const identifier = $("#auth-email").value.trim();
+    const data = { password: $("#auth-password").value };
     if (state.register) {
       if (state.registrationMode === null)
         throw new Error("暂时无法确认注册设置，请刷新页面后重试。");
+      data.username = identifier;
+      const phone = $("#auth-phone").value.trim();
+      if (phone) data.phone = phone;
       data.name = $("#auth-name").value.trim();
       if (state.registrationMode === "invite")
         data.invitationCode = $("#auth-invitation").value.trim();
+    } else {
+      data.identifier = identifier;
     }
     const result = await api(
       `/api/auth/${state.register ? "register" : "login"}`,
