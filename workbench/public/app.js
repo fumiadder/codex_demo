@@ -628,8 +628,26 @@ function nextOccurrences(item, limit = 3) {
   }
   return dates;
 }
+// 生成 UUID。crypto.randomUUID 只在安全上下文（HTTPS/localhost）可用，
+// 通过 HTTP 访问时为 undefined，会直接抛错让整个流程崩溃。这里统一降级到
+// crypto.getRandomValues（HTTP 下仍可用），最后再退回时间戳加随机数。
+function randomUUID() {
+  if (typeof crypto !== "undefined") {
+    if (typeof crypto.randomUUID === "function") return crypto.randomUUID();
+    if (typeof crypto.getRandomValues === "function") {
+      const bytes = crypto.getRandomValues(new Uint8Array(16));
+      bytes[6] = (bytes[6] & 0x0f) | 0x40; // version 4
+      bytes[8] = (bytes[8] & 0x3f) | 0x80; // variant 10
+      const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+      return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+    }
+  }
+  // 最后兜底：碰撞概率足够低，仅用于本地临时标识。
+  return `tmp-${Date.now().toString(16)}-${Math.random().toString(16).slice(2, 10)}`;
+}
+
 function makeSubtaskId() {
-  return crypto.randomUUID().replace(/-/g, "");
+  return randomUUID().replace(/-/g, "");
 }
 function itemTags(item, prefillMeta) {
   const source = item ? item.meta : prefillMeta;
@@ -2695,7 +2713,7 @@ async function saveItem(data, id) {
     const previous = index >= 0 ? store[index] : null;
     let savedItem = {
       ...data,
-      id: id || `local-${crypto.randomUUID()}`,
+      id: id || `local-${randomUUID()}`,
       space_id: sid,
       created_at: data.created_at || previous?.created_at || new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -3330,7 +3348,7 @@ async function uploadFiles(files) {
         const url = URL.createObjectURL(file);
         state.objectURLs.add(url);
         item = {
-          id: `local-${crypto.randomUUID()}`,
+          id: `local-${randomUUID()}`,
           kind: "media",
           area,
           title: file.name,
@@ -3462,7 +3480,7 @@ function showCreateSpace() {
         let space;
         if (state.demo) {
           space = {
-            id: `demo-${crypto.randomUUID()}`,
+            id: `demo-${randomUUID()}`,
             name: name.value.trim(),
             role: "owner",
             member_count: 1,
@@ -5517,7 +5535,7 @@ function showVaultEditor(entry) {
       try {
         if (epoch !== state.vault.epoch) throw new Error("密码箱已锁定");
         const value = {
-          id: entry?.id || crypto.randomUUID(),
+          id: entry?.id || randomUUID(),
           title: title.value.trim(),
           body: text.value,
           updatedAt: new Date().toISOString(),
@@ -5851,7 +5869,7 @@ async function onDailyFiles(fileList) {
     const localURL = URL.createObjectURL(file);
     state.objectURLs.add(localURL);
     const item = {
-      tempId: crypto.randomUUID(),
+      tempId: randomUUID(),
       file,
       localURL,
       name: file.name,
@@ -5949,7 +5967,7 @@ async function submitDailyEntry(note, submit) {
 }
 function buildDemoDailyEntry(items, body) {
   const now = new Date().toISOString();
-  const entryId = `local-${crypto.randomUUID()}`;
+  const entryId = `local-${randomUUID()}`;
   return {
     id: entryId,
     spaceId: state.space.id,
@@ -5977,7 +5995,7 @@ function buildDemoDailyEntry(items, body) {
     createdAt: now,
     updatedAt: now,
     images: items.map((item, index) => ({
-      id: `local-${crypto.randomUUID()}`,
+      id: `local-${randomUUID()}`,
       entryId,
       name: item.name,
       mime: item.file.type,
@@ -6008,7 +6026,7 @@ function demoDailyEntries() {
     source: "daily",
   });
   const makeDemoEntry = (area, title, body) => ({
-    id: `local-demo-${crypto.randomUUID()}`,
+    id: `local-demo-${randomUUID()}`,
     spaceId: "demo-personal",
     area,
     entryDate: dailyDateString(),
