@@ -102,9 +102,16 @@ wait_healthy || { echo 'New app health failed' >&2; exit 5; }
 compose exec -T app python -c 'import urllib.request,json; c=json.load(urllib.request.urlopen("http://127.0.0.1:8000/api/config",timeout=3)); assert c.get("testMode") is False and c.get("storagePersistence")=="persistent" and c.get("registrationMode")=="invite", "Production configuration check failed"'
 if ((!app_only)); then
   compose up -d --no-build gateway
-  health_args=(--url "https://$domain" --timeout 120)
-  # An IP-only temporary server uses Caddy's internal self-signed CA.
-  if [[ "$domain" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  # Follow the scheme the gateway actually serves: a temporary IP-only box may
+  # be configured for plain HTTP, and probing https there always fails.
+  site_address=$(read_setting WORKSPACE_SITE_ADDRESS "https://$domain")
+  case "$site_address" in
+    http://*) site_scheme=http ;;
+    *) site_scheme=https ;;
+  esac
+  health_args=(--url "$site_scheme://$domain" --timeout 120)
+  # An IP-only HTTPS server uses Caddy's internal self-signed CA.
+  if [[ "$site_scheme" == https && "$domain" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     health_args+=(--insecure)
   fi
   python3 "$ops_dir/ops_health.py" "${health_args[@]}"
@@ -113,4 +120,4 @@ ln -s "$release_dir" "$deploy_root/current.next.$$"
 mv -Tf "$deploy_root/current.next.$$" "$deploy_root/current"
 printf '%s\n' "$source_sha" > "$deploy_root/state/current-sha"
 completed=1
-if ((app_only)); then echo 'PASS APP-ONLY TEST deployment; public gateway/TLS was not verified'; else echo 'PASS production deployment and read-only HTTPS verification'; fi
+if ((app_only)); then echo 'PASS APP-ONLY TEST deployment; public gateway was not verified'; else echo "PASS production deployment and read-only $site_scheme verification"; fi
