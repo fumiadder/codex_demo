@@ -112,10 +112,49 @@ with tempfile.TemporaryDirectory(prefix="zhixu-daily-qa-") as data:
             page.locator("#modal .button.primary").click()
             expect(entry.locator(".daily-summary")).to_contain_text("手动整理的摘要内容")
 
-            # The overview surfaces today's capture and its entry point.
+            # Today's capture appears only inside this month's schedule.
             page.locator('[data-view="overview"]').click()
-            expect(page.locator(".overview-daily")).to_be_visible()
-            expect(page.locator(".overview-daily")).to_contain_text("今天已记录 1 条")
+            expect(page.locator(".today-items, .overview-daily")).to_have_count(0)
+            today_agenda = page.locator(".month-agenda-day", has_text="今天")
+            expect(today_agenda).to_have_count(1)
+            expect(today_agenda.locator(".month-agenda-daily")).to_have_count(1)
+            expect(today_agenda.locator(".month-agenda-daily")).to_contain_text("周会白板：确认上线节奏")
+            before_url = page.url
+            today_agenda.locator(".month-agenda-daily").click()
+            expect(page.locator("#modal")).to_be_visible()
+            expect(page.locator("#modal-title")).to_have_text("今天的记录")
+            expect(page.locator("#modal .daily-detail-body")).to_have_text("周会白板：确认上线节奏")
+            expect(page.locator("#modal .daily-detail-summary")).to_have_text("手动整理的摘要内容")
+            expect(page.locator("#modal .daily-image-tile")).to_have_count(2)
+            assert page.url == before_url
+            for width, height in ((320, 844), (390, 844), (844, 390)):
+                page.set_viewport_size({"width": width, "height": height})
+                no_overflow(page)
+                bounds = page.locator("#modal").bounding_box()
+                assert bounds["x"] >= 0 and bounds["x"] + bounds["width"] <= width
+                expect(page.locator("#modal-close")).to_be_visible()
+            page.set_viewport_size({"width": 390, "height": 844})
+            page.screenshot(path=str(ROOT / "artifacts/workbench-agenda-dialog-mobile.png"))
+            page.set_viewport_size({"width": 1440, "height": 1000})
+            page.keyboard.press("Escape")
+            expect(page.locator("#modal")).not_to_be_visible()
+            expect(page.locator('[data-view="overview"].active')).to_have_count(1)
+            (ROOT / "artifacts").mkdir(exist_ok=True)
+            page.screenshot(path=str(ROOT / "artifacts/workbench-month-agenda.png"), full_page=True)
+            page.locator('[data-view="calendar"]').click()
+            page.get_by_role("button", name="日程", exact=True).click()
+            agenda_record = page.locator(".agenda-group", has_text="今天").locator(".agenda-daily")
+            expect(agenda_record).to_contain_text("周会白板：确认上线节奏")
+            agenda_record.click()
+            expect(page.locator("#modal .daily-detail-body")).to_have_text("周会白板：确认上线节奏")
+            assert page.url == before_url
+            page.locator("#modal-close").click()
+            agenda_record.focus()
+            page.keyboard.press("Enter")
+            expect(page.locator("#modal .daily-detail-body")).to_have_text("周会白板：确认上线节奏")
+            page.keyboard.press("Escape")
+            page.locator('[data-view="overview"]').click()
+            print("PASS today records merge into month agenda and open as non-navigating dialogs", flush=True)
 
             # Narrow phones must not overflow, including the composer and grid.
             for width in (320, 390):

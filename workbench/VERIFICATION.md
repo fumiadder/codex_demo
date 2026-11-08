@@ -1,5 +1,13 @@
 # 验证记录
 
+## 首页今日记事去重与日程弹窗（2026-11-08）
+
+- 首页「本月日程」的今天分组继续聚合待办、今日记录、随笔与媒体；删除重复的「今天记下的事」「今日记录」首页卡片及其无用样式，不改动原始记录或数据库。
+- 今日记录在首页本月日程、当日回顾和日历的日程视图中均改为打开详情弹窗，不再跳转记录页；弹窗显示时间、分区、摘要、正文与私有图片，可继续编辑。待办、随笔和媒体沿用既有弹窗。
+- 真实后端浏览器 QA：`daily_browser_qa.py` 全部通过，覆盖今日记录只在本月日程出现一次、首页与日程页点击 URL 不变、正文／摘要／两张图片、Escape 与关闭按钮、键盘 Enter 打开；320px、390px 竖屏和 844×390 横屏弹窗均在视口内且无页面横向溢出。截图：`artifacts/workbench-month-agenda.png`、`artifacts/workbench-agenda-dialog-mobile.png`。
+- `recur_calendar_qa.py`：21 项通过，无 pageerror；`node --check public/app.js` 与 `git diff --check` 通过。
+- 后端未改动。全量 344 项 unittest 中，已有文档记录的 macOS `test_large_base64_clone` 网络 BrokenPipe／ConnectionReset 仍复现，与本次纯前端修改无关；排除该已知平台用例后 343 项通过（15 项按环境跳过），正式 CI 仍需全绿后才允许生产发布。
+
 ## 用户名 / 手机号登录（第二批）
 
 登录标识从邮箱改为「用户名或手机号二选一」，同时保留旧的邮箱登录通道，避免打断脚本与既有习惯。

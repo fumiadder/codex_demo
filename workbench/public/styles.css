@@ -4359,50 +4359,6 @@ form label + label {
   gap: 12px;
   padding-top: 12px;
 }
-.overview-daily {
-  margin-bottom: 22px;
-}
-.overview-daily-strip {
-  display: flex;
-  gap: 12px;
-  padding: 0 22px 16px;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.overview-daily-strip::-webkit-scrollbar {
-  display: none;
-}
-.overview-daily-tile {
-  flex: 0 0 132px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: var(--bg);
-  padding: 0;
-  overflow: hidden;
-  text-align: left;
-  cursor: pointer;
-}
-.overview-daily-tile img,
-.overview-daily-tile .icon {
-  width: 100%;
-  height: 88px;
-  object-fit: cover;
-}
-.overview-daily-tile .icon {
-  display: grid;
-  place-items: center;
-  background: var(--sand);
-  color: #b3a88f;
-}
-.overview-daily-tile span {
-  display: block;
-  padding: 8px 10px;
-  font-size: 11px;
-  color: var(--text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
 @media (max-width: 760px) {
   .daily-entry {
     padding: 14px 15px 12px;
@@ -4421,10 +4377,6 @@ form label + label {
   .daily-image-grid.count-1 .daily-image-tile,
   .daily-image-grid.count-1 img {
     max-height: 240px;
-  }
-  .overview-daily-strip {
-    padding-left: 15px;
-    padding-right: 15px;
   }
   .daily-card-footer {
     flex-wrap: wrap;
@@ -5982,6 +5934,47 @@ form label + label {
   white-space: pre-wrap;
   word-break: break-word;
 }
+
+/* 日程记录详情：弹窗内阅读，不离开当前日期与滚动位置。 */
+.daily-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.daily-detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.daily-detail-summary {
+  margin: 0;
+  padding: 12px 14px;
+  border-left: 3px solid var(--orange);
+  border-radius: 0 10px 10px 0;
+  background: var(--soft-green);
+  color: var(--ink);
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.daily-detail-body {
+  margin: 0;
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.daily-detail .daily-image-grid {
+  margin: 0;
+}
+@media (max-width: 480px) {
+  .daily-detail .daily-image-tile {
+    min-height: 44px;
+  }
+}
 .daily-entry-card .daily-card-footer {
   display: flex;
   flex-wrap: wrap;
@@ -6001,67 +5994,4 @@ form label + label {
 /* 没选中的格子里预览略淡，避免抢过日期本身 */
 .home-calendar-cell.muted .home-calendar-preview {
   opacity: 0.5;
-}
-
-/* ---------------------------------------------------------------------------
-   首页「今天记下的事」：每条一个框，内容直出
---------------------------------------------------------------------------- */
-.today-items {
-  margin-bottom: 16px;
-}
-.today-items-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.today-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  width: 100%;
-  padding: 11px 13px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: var(--card);
-  color: var(--text);
-  text-align: left;
-  font: inherit;
-  cursor: pointer;
-  transition: border-color 0.15s ease;
-}
-.today-item:hover,
-.today-item:focus-visible {
-  border-color: var(--green);
-}
-.today-item-icon {
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 8px;
-  background: var(--soft-green);
-  color: var(--green);
-}
-.today-item-text {
-  flex: 1;
-  min-width: 0;
-}
-.today-item-body {
-  display: block;
-  color: var(--ink);
-  font-size: 14px;
-  line-height: 1.6;
-  word-break: break-word;
-}
-
-.today-item-title {
-  display: block;
-  margin-top: 2px;
-  color: var(--muted);
-  font-size: 12px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }

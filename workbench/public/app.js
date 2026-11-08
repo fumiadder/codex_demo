@@ -2095,7 +2095,7 @@ function renderDayReview(content) {
         ph.append(svg("note", true));
         row.append(ph);
       }
-      const text = button("", "day-entry-text", () => navigate("daily"));
+      const text = button("", "day-entry-text", () => showDailyEntry(entry));
       text.type = "button";
       text.append(el("span", "day-entry-title", entry.title || "无标题记录"));
       if (entry.summary) text.append(el("small", "", entry.summary));
@@ -2163,16 +2163,12 @@ function renderDayReview(content) {
 }
 
 function renderOverview(content) {
-  // 首页结构：状态标签（待完成 / 进行中 / 已完成）→ 对应列表
-  //            → 小日历 → 本月日程滚动列表 → 快捷入口。
+  // 首页结构：状态标签 → 对应列表 → 小日历 → 本月日程 → 快捷入口。
+  // 今日记录只归入「本月日程」的今天分组，不再另设重复卡片。
   renderStatusTabs(content);
   renderStatusList(content);
   renderHomeCalendar(content);
   renderMonthAgenda(content);
-  // 今天记下的事：每条一个框，内容直接展示（无标题）。
-  renderTodayItems(content);
-  // 今日记录的紧凑卡片（含「今天已记录 N 条」与快速入口）。
-  content.append(renderOverviewDaily());
   if (state.area === "life") renderBedtimeEntry(content);
   renderShortcutBar(content);
 }
@@ -2274,7 +2270,7 @@ function renderMonthAgenda(content) {
       items.append(makeRow("task", item, "task", () => showEditor("task", item))),
     );
     groups.daily.forEach((entry) =>
-      items.append(makeRow("daily", entry, "camera", () => navigate("daily"))),
+      items.append(makeRow("daily", entry, "camera", () => showDailyEntry(entry))),
     );
     groups.note.forEach((item) =>
       items.append(makeRow("note", item, "note", () => showEditor("note", item))),
@@ -2417,7 +2413,6 @@ function renderOverviewStats(content) {
   capture.append(inner);
   grid.append(capture);
   content.append(grid);
-  content.append(renderOverviewDaily());
   content.append(sectionHeading("最近的灵感与笔记", "想法值得被留下", "notes"));
   const noteGrid = el("div", "notes-grid overview-notes");
   if (notes.length)
@@ -2498,104 +2493,6 @@ function renderOverviewStats(content) {
   spaceSummary.append(art);
   lower.append(spaceSummary);
   content.append(lower);
-}
-// 今天记下的事：待办 / 记录 / 随笔 / 媒体各一条独立小框，内容直出。
-function renderTodayItems(content) {
-  const today = dailyDateString();
-  const groups = collectDayEntries(today);
-  const rows = [];
-  groups.daily.forEach((entry) =>
-    rows.push({ kind: "daily", icon: "camera", item: entry, onClick: () => navigate("daily") }),
-  );
-  groups.note.forEach((item) =>
-    rows.push({ kind: "note", icon: "note", item, onClick: () => showEditor("note", item) }),
-  );
-  groups.media.forEach((item) =>
-    rows.push({ kind: "media", icon: "folder", item, onClick: () => showMedia(item) }),
-  );
-  if (!rows.length) return;
-  const card = el("section", "card today-items");
-  card.append(
-    cardHeading("今天记下的事", "note", "全部记录 ↗", () => navigate("daily"), "随手记"),
-  );
-  const list = el("div", "today-items-list");
-  for (const row of rows) {
-    const box = button("", `today-item today-item-${row.kind}`, row.onClick);
-    box.type = "button";
-    const iconWrap = el("span", "today-item-icon");
-    iconWrap.append(svg(row.icon, true));
-    const text = el("div", "today-item-text");
-    // 内容优先展示；若另有标题（灵感笔记常见），补一行小字避免信息丢失。
-    const primary = describeEntry(row.kind, row.item, 120);
-    text.append(el("span", "today-item-body", primary));
-    const title = (row.item.title || "").trim();
-    if (title && title !== primary)
-      text.append(el("small", "today-item-title", title.slice(0, 60)));
-    box.append(iconWrap, text);
-    list.append(box);
-  }
-  card.append(list);
-  content.append(card);
-}
-
-function renderOverviewDaily() {
-  if (
-    state.space &&
-    state.daily.loadedSpace !== state.space.id &&
-    !state.daily.loading
-  )
-    loadDailyEntries();
-  const card = el("section", "card overview-daily");
-  card.append(
-    cardHeading("今日记录", "camera", "全部记录 ↗", () =>
-      navigate("daily"),
-    ),
-  );
-  const today = dailyDateString();
-  const entries = state.daily.entries.filter(
-    (entry) => entry.entryDate === today && entry.area === state.area,
-  );
-  if (!entries.length) {
-    emptyState(
-      card,
-      "camera",
-      "拍一张，今天就有记录",
-      "白板、便签、屏幕或现场，AI 会识别并总结成摘要与待办。",
-      writable() ? "拍第一张" : null,
-      writable() ? () => navigate("daily") : null,
-    );
-    return card;
-  }
-  const strip = el("div", "overview-daily-strip");
-  for (const entry of entries.slice(0, 6)) {
-    const tile = button("", "overview-daily-tile", () => navigate("daily"));
-    const image = entry.images?.[0];
-    const url = image ? dailyImageURL(image) : "";
-    if (url) {
-      const img = el("img");
-      img.src = url;
-      img.alt = entry.title;
-      img.loading = "lazy";
-      tile.append(img);
-    } else {
-      tile.append(svg("camera"));
-    }
-    // 今日记录没有标题：缩略块上直接显示内容本身。
-    tile.append(el("span", "", snippetOf({ body: entry.body, summary: entry.summary }, 40)));
-    strip.append(tile);
-  }
-  card.append(strip);
-  const foot = el("div", "card-action-footer");
-  foot.append(
-    writable()
-      ? button("再记一笔", "add-task-button", () => navigate("daily"), "camera")
-      : el("span"),
-    el("span", "", `今天已记录 ${entries.length} 条`),
-  );
-  const addButton = $("button", foot);
-  if (addButton) addButton.disabled = !writable();
-  card.append(foot);
-  return card;
 }
 function renderBedtimeEntry(content) {
   const entry = el("section", "life-bedtime-entry");
@@ -4597,13 +4494,11 @@ function renderAgenda(content) {
       body.append(row);
     });
     daily.forEach((entry) => {
-      const row = button("", "agenda-item agenda-daily", () => {
-        navigate("daily");
-      });
+      const row = button("", "agenda-item agenda-daily", () => showDailyEntry(entry));
       row.type = "button";
       row.append(
         el("span", "agenda-time", "记录"),
-        el("strong", "agenda-title", entry.title || "今日记录"),
+        el("strong", "agenda-title", describeEntry("daily", entry, 80)),
       );
       body.append(row);
     });
@@ -6691,6 +6586,31 @@ function renderDailyImageGrid(entry) {
     grid.append(tile);
   });
   return grid;
+}
+// 日程中的记录直接弹窗查看，保持当前月份、滚动位置和所选日期。
+function showDailyEntry(entry) {
+  const dateString = entry.entryDate || entry.entry_date || dailyDateString();
+  const detail = dateString === dailyDateString() ? "今天的记录" : "当日记录";
+  showModal(detail, (body) => {
+    const content = el("article", "daily-detail");
+    const meta = el("div", "daily-detail-meta");
+    meta.append(
+      el("span", "", `${dateString} ${dailyTime(entry.createdAt || entry.created_at)}`),
+      el("span", "", entry.area === "work" ? "工作" : "生活"),
+    );
+    content.append(meta);
+    const summary = (entry.summary || "").trim();
+    const text = (entry.body || "").trim();
+    if (summary && summary !== text) content.append(el("p", "daily-detail-summary", summary));
+    if (text) content.append(el("p", "daily-detail-body", text));
+    if (!summary && !text) content.append(el("p", "daily-detail-body", entry.title || "（无文字内容）"));
+    if (entry.images?.length) content.append(renderDailyImageGrid(entry));
+    body.append(content);
+    body.append(actionsRow(
+      ...(writable() ? [button("编辑记录", "button soft", () => editDailyEntry(entry))] : []),
+      button("关闭", "button secondary", closeModal),
+    ));
+  });
 }
 function renderRecognition(entry, ai) {
   const block = el("div", "daily-ai done");
