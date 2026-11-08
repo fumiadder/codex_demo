@@ -7,6 +7,7 @@ stored as JSON because the shortcut list is an ordered array of view ids.
 from __future__ import annotations
 
 import json
+import sys
 import uuid
 
 SCHEMA = """
@@ -34,12 +35,17 @@ def fail(handler, status, message):
 
 
 def initialize(server):
-    """No on-disk state; keep the entry point for symmetry with other modules."""
-    try:
-        from server import APIError
-    except Exception:  # pragma: no cover - import always succeeds in practice
-        APIError = None
-    server.settings_error = APIError
+    """No on-disk state; keep the entry point for symmetry with other modules.
+
+    Resolve APIError from the module that actually runs the server. Under
+    ``python server.py`` the running module is ``__main__``, so importing the
+    ``server`` module by name would yield a *different* class object and the
+    handler's ``except APIError`` would not match it (turning 400s into 500s).
+    """
+    error = getattr(sys.modules.get(type(server).__module__), "APIError", None)
+    if error is None:  # test subclasses may live in another module
+        from server import APIError as error
+    server.settings_error = error
 
 
 def _normalize_shortcuts(raw):
