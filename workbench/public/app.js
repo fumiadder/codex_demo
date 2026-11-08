@@ -257,6 +257,56 @@ function svg(name, small = false) {
   node.append(use);
   return node;
 }
+// ---------------------------------------------------------------------------
+// 手机端触感反馈：点击按钮时轻微震动一次。
+// 只在触屏设备上生效，尊重系统「减少动态效果」设置；不支持振动 API 的浏览器
+// 静默跳过，不影响任何交互。使用事件委托，避免给每个按钮单独绑定。
+// ---------------------------------------------------------------------------
+const hapticPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+const HAPTIC_DURATION = 12; // 毫秒：足够感知、又不产生明显嗡鸣
+let lastHapticAt = 0;
+
+function hapticsAvailable() {
+  return typeof navigator !== "undefined" && typeof navigator.vibrate === "function";
+}
+function shouldHaptic(target) {
+  if (!hapticsAvailable()) return false;
+  if (hapticPreference.matches) return false;
+  // 触屏优先：桌面鼠标点击不震动；平板/手机按粗指针判定。
+  const coarse = window.matchMedia("(pointer: coarse)").matches;
+  if (!coarse && !mobileLayout.matches) return false;
+  return Boolean(target);
+}
+function hapticFeedback(target) {
+  if (!shouldHaptic(target)) return;
+  // 连点防抖：40ms 内不重复触发，避免列表快速点击时连续嗡鸣。
+  const now = Date.now();
+  if (now - lastHapticAt < 40) return;
+  lastHapticAt = now;
+  try {
+    navigator.vibrate(HAPTIC_DURATION);
+  } catch {
+    /* 振动失败不影响交互 */
+  }
+}
+function bindHaptics() {
+  document.addEventListener(
+    "click",
+    (event) => {
+      const target = event.target instanceof Element
+        ? event.target.closest(
+            'button, [role="button"], .nav-item, .stat-card, .search-result, .calendar-cell, .agenda-item, .template-option',
+          )
+        : null;
+      if (!target) return;
+      // 禁用态与只读控件不反馈。
+      if (target.disabled || target.getAttribute("aria-disabled") === "true") return;
+      hapticFeedback(target);
+    },
+    { passive: true },
+  );
+}
+
 function button(text, className, action, iconName) {
   const b = el("button", className);
   b.type = "button";
@@ -6881,6 +6931,7 @@ if (globalThis.ResizeObserver)
     $("#test-environment-banner"),
   );
 async function init() {
+  bindHaptics();
   syncDrawerLayout();
   updateVisualViewport();
   updateDate();
