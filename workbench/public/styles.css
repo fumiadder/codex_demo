@@ -5889,20 +5889,41 @@ form label + label {
   margin-bottom: 16px;
 }
 .home-calendar-cell {
-  min-height: 36px;
-  gap: 0;
+  min-height: 52px;
+  gap: 1px;
+  padding: 3px 2px;
 }
 .home-calendar-day {
   font-size: 13px;
 }
-.home-calendar-mark {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--orange);
+/* 格子里的内容预览：显示当天第一条事情的前几个字 */
+.home-calendar-preview {
+  display: block;
+  width: 100%;
+  padding: 0 2px;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.2;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.home-calendar-cell.picked .home-calendar-mark {
-  background: var(--card);
+.home-calendar-preview.is-task {
+  color: var(--green);
+  font-weight: 600;
+}
+.home-calendar-cell.picked .home-calendar-preview,
+.home-calendar-cell.picked .home-calendar-more {
+  color: var(--card);
+}
+.home-calendar-more {
+  position: absolute;
+  top: 2px;
+  right: 3px;
+  color: var(--orange);
+  font-size: 9px;
+  line-height: 1;
 }
 .home-calendar-weekdays {
   margin-bottom: 2px;
@@ -5970,4 +5991,77 @@ form label + label {
 }
 .daily-entry-card .daily-images {
   margin: 0;
+}
+
+/* 选中格子的预览文字需要更高的对比度 */
+.home-calendar-cell.picked .home-calendar-preview {
+  color: var(--card);
+  opacity: 0.95;
+}
+/* 没选中的格子里预览略淡，避免抢过日期本身 */
+.home-calendar-cell.muted .home-calendar-preview {
+  opacity: 0.5;
+}
+
+/* ---------------------------------------------------------------------------
+   首页「今天记下的事」：每条一个框，内容直出
+--------------------------------------------------------------------------- */
+.today-items {
+  margin-bottom: 16px;
+}
+.today-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.today-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 13px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--text);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+.today-item:hover,
+.today-item:focus-visible {
+  border-color: var(--green);
+}
+.today-item-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: var(--soft-green);
+  color: var(--green);
+}
+.today-item-text {
+  flex: 1;
+  min-width: 0;
+}
+.today-item-body {
+  display: block;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+.today-item-title {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

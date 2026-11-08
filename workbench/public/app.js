@@ -1876,8 +1876,10 @@ function collectDayEntries(dateString) {
   const groups = { task: [], note: [], media: [], daily: [] };
   // 接口返回 camelCase 的 createdAt，演示数据同样是 camelCase；
   // 兼容 snake_case，并且绝不把「没有日期」的项目算到今天之外的日子。
+  // 服务端接口返回 snake_case 的 created_at；演示数据用 camelCase，
+  // 两种命名都要兼容，否则记录会被算成「无日期」而漏掉。
   const createdOf = (item) =>
-    String(item.createdAt || item.created_at || "").slice(0, 10);
+    String(item.created_at || item.createdAt || "").slice(0, 10);
   for (const item of state.items) {
     if (item.status === "archived") continue;
     const cat = recordCategory(item);
@@ -1895,6 +1897,25 @@ function collectDayEntries(dateString) {
   }
   return groups;
 }
+// 展示用的短文本：优先用正文/摘要的前几个字，而不是标题。
+// 标题只在「转为待办」后才需要，列表与日历里一律显示内容本身。
+function snippetOf(item, limit = 12) {
+  const raw =
+    (item.body || "").trim() ||
+    (item.summary || "").trim() ||
+    (item.title || "").trim();
+  const flat = raw.replace(/\s+/g, " ").trim();
+  if (!flat) return "（无内容）";
+  return flat.length > limit ? `${flat.slice(0, limit)}…` : flat;
+}
+
+// 一条事项的统一描述：类型 + 短内容，供日历与日程列表共用。
+function describeEntry(kind, item, limit = 14) {
+  if (kind === "daily")
+    return snippetOf({ body: item.body, summary: item.summary }, limit);
+  return snippetOf(item, limit);
+}
+
 function countDayEntries(dateString) {
   const g = collectDayEntries(dateString);
   return g.task.length + g.note.length + g.media.length + g.daily.length;
@@ -1964,7 +1985,16 @@ function renderHomeCalendar(content) {
       },
     );
     cell.append(el("span", "home-calendar-day", String(cellDate.getDate())));
-    if (total > 0) cell.append(el("span", "home-calendar-mark"));
+    if (total > 0) {
+      // 格子里直接显示当天第一条内容的前几个字，不再用标题或纯圆点。
+      const groups = collectDayEntries(dateString);
+      const first = groups.daily[0] || groups.task[0] || groups.note[0] || groups.media[0];
+      const kind = groups.daily[0] ? "daily" : groups.task[0] ? "task" : groups.note[0] ? "note" : "media";
+      const label = el("span", "home-calendar-preview", describeEntry(kind, first));
+      if (kind === "task") label.classList.add("is-task");
+      cell.append(label);
+      if (total > 1) cell.append(el("span", "home-calendar-more", `+${total - 1}`));
+    }
     cell.setAttribute(
       "aria-label",
       `${dateString}${isToday ? "（今天）" : ""}${total ? `，${total} 条内容` : "，暂无内容"}`,
@@ -2139,8 +2169,9 @@ function renderOverview(content) {
   renderStatusList(content);
   renderHomeCalendar(content);
   renderMonthAgenda(content);
-  // 今日记录的紧凑卡片（含「今天已记录 N 条」与快速入口），
-  // 保留既有的今日记录能力，但不放大块统计与灵感墙。
+  // 今天记下的事：每条一个框，内容直接展示（无标题）。
+  renderTodayItems(content);
+  // 今日记录的紧凑卡片（含「今天已记录 N 条」与快速入口）。
   content.append(renderOverviewDaily());
   if (state.area === "life") renderBedtimeEntry(content);
   renderShortcutBar(content);
@@ -2178,8 +2209,10 @@ function renderStatusList(content) {
   const label = (OVERVIEW_STATUS.find(([k]) => k === key) || ["", "待完成"])[1];
   const tasks = currentItems("task").filter((t) => normalizeTaskStatus(t.status) === key);
   const card = el("section", "card overview-status-list");
+  const heading =
+    key === "active" ? "待办事项" : `已${label === "已完成" ? "完成" : "删除"}的事项`;
   card.append(
-    cardHeading(`${label}的待办`, "task", "全部待办 ↗", () => navigate("tasks"), "我的节奏"),
+    cardHeading(heading, "task", "全部待办 ↗", () => navigate("tasks"), "我的节奏"),
   );
   const list = el("div", "task-list");
   if (tasks.length) {
@@ -2228,31 +2261,27 @@ function renderMonthAgenda(content) {
     row.append(head);
     // 待办优先，其次记录，再随笔与媒体
     const items = el("div", "month-agenda-items");
-    groups.task.forEach((item) => {
-      const b = button("", "month-agenda-item", () => showEditor("task", item));
+    // 每条事项是一个独立小事框，展示「内容前几个字」而非标题。
+    const makeRow = (kind, item, icon, onClick) => {
+      const b = button("", `month-agenda-item month-agenda-${kind}`, onClick);
       b.type = "button";
-      if ((item.status || "active") === "done") b.classList.add("is-done");
-      b.append(svg("task", true), el("span", "", item.title));
-      items.append(b);
-    });
-    groups.daily.forEach((entry) => {
-      const b = button("", "month-agenda-item", () => navigate("daily"));
-      b.type = "button";
-      b.append(svg("camera", true), el("span", "", entry.title || "记录"));
-      items.append(b);
-    });
-    groups.note.forEach((item) => {
-      const b = button("", "month-agenda-item", () => showEditor("note", item));
-      b.type = "button";
-      b.append(svg("note", true), el("span", "", item.title));
-      items.append(b);
-    });
-    groups.media.forEach((item) => {
-      const b = button("", "month-agenda-item", () => showMedia(item));
-      b.type = "button";
-      b.append(svg("folder", true), el("span", "", item.title));
-      items.append(b);
-    });
+      if (kind === "task" && normalizeTaskStatus(item.status) === "done")
+        b.classList.add("is-done");
+      b.append(svg(icon, true), el("span", "", describeEntry(kind, item)));
+      return b;
+    };
+    groups.task.forEach((item) =>
+      items.append(makeRow("task", item, "task", () => showEditor("task", item))),
+    );
+    groups.daily.forEach((entry) =>
+      items.append(makeRow("daily", entry, "camera", () => navigate("daily"))),
+    );
+    groups.note.forEach((item) =>
+      items.append(makeRow("note", item, "note", () => showEditor("note", item))),
+    );
+    groups.media.forEach((item) =>
+      items.append(makeRow("media", item, "folder", () => showMedia(item))),
+    );
     row.append(items);
     list.append(row);
   }
@@ -2470,6 +2499,45 @@ function renderOverviewStats(content) {
   lower.append(spaceSummary);
   content.append(lower);
 }
+// 今天记下的事：待办 / 记录 / 随笔 / 媒体各一条独立小框，内容直出。
+function renderTodayItems(content) {
+  const today = dailyDateString();
+  const groups = collectDayEntries(today);
+  const rows = [];
+  groups.daily.forEach((entry) =>
+    rows.push({ kind: "daily", icon: "camera", item: entry, onClick: () => navigate("daily") }),
+  );
+  groups.note.forEach((item) =>
+    rows.push({ kind: "note", icon: "note", item, onClick: () => showEditor("note", item) }),
+  );
+  groups.media.forEach((item) =>
+    rows.push({ kind: "media", icon: "folder", item, onClick: () => showMedia(item) }),
+  );
+  if (!rows.length) return;
+  const card = el("section", "card today-items");
+  card.append(
+    cardHeading("今天记下的事", "note", "全部记录 ↗", () => navigate("daily"), "随手记"),
+  );
+  const list = el("div", "today-items-list");
+  for (const row of rows) {
+    const box = button("", `today-item today-item-${row.kind}`, row.onClick);
+    box.type = "button";
+    const iconWrap = el("span", "today-item-icon");
+    iconWrap.append(svg(row.icon, true));
+    const text = el("div", "today-item-text");
+    // 内容优先展示；若另有标题（灵感笔记常见），补一行小字避免信息丢失。
+    const primary = describeEntry(row.kind, row.item, 120);
+    text.append(el("span", "today-item-body", primary));
+    const title = (row.item.title || "").trim();
+    if (title && title !== primary)
+      text.append(el("small", "today-item-title", title.slice(0, 60)));
+    box.append(iconWrap, text);
+    list.append(box);
+  }
+  card.append(list);
+  content.append(card);
+}
+
 function renderOverviewDaily() {
   if (
     state.space &&
@@ -2512,7 +2580,8 @@ function renderOverviewDaily() {
     } else {
       tile.append(svg("camera"));
     }
-    tile.append(el("span", "", entry.title));
+    // 今日记录没有标题：缩略块上直接显示内容本身。
+    tile.append(el("span", "", snippetOf({ body: entry.body, summary: entry.summary }, 40)));
     strip.append(tile);
   }
   card.append(strip);
@@ -6676,18 +6745,58 @@ function renderDailyEntryActions(entry, ai) {
     const promote = button(
       already ? "已在待办中" : "设为待办",
       "text-button",
-      async () => {
+      () => {
         if (!ensureWrite() || already) return;
-        const title = entry.title || entry.summary || "今日记录";
-        await saveItem({
-          kind: "task",
-          area: entry.area || state.area,
-          title: title.slice(0, 200),
-          body: entry.body || entry.summary || "",
-          status: "active",
-          meta: { due: entryDate, fromDailyEntry: entry.id },
-        });
-        toast("已设为待办");
+        // 转为待办时才需要标题：给用户一个填写框，默认带上内容开头。
+        const suggestion = snippetOf(
+          { body: entry.body, summary: entry.summary },
+          60,
+        );
+        showModal("设为待办", (body) => {
+          const form = el("form", "editor-main");
+          const title = input("text", "这件待办要做什么", suggestion === "（无内容）" ? "" : suggestion);
+          title.maxLength = 200;
+          title.required = true;
+          const due = input("date", "", entryDate);
+          const error = el("p", "form-error");
+          error.setAttribute("role", "alert");
+          const save = el("button", "button primary", "创建待办");
+          save.type = "submit";
+          form.append(
+            labelField("标题", title),
+            labelField("计划日期", due),
+            error,
+            actionsRow(
+              button("取消", "button secondary", closeModal),
+              save,
+            ),
+          );
+          form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const value = title.value.trim();
+            if (!value) {
+              error.textContent = "请填写待办标题";
+              return;
+            }
+            save.disabled = true;
+            try {
+              await saveItem({
+                kind: "task",
+                area: entry.area || state.area,
+                title: value.slice(0, 200),
+                body: entry.body || entry.summary || "",
+                status: "active",
+                meta: { due: due.value || entryDate, fromDailyEntry: entry.id },
+              });
+              closeModal();
+              toast("已设为待办");
+            } catch (err) {
+              error.textContent = errorMessage(err);
+              save.disabled = false;
+            }
+          });
+          body.append(form);
+        }, "从今日记录创建");
       },
     );
     promote.disabled = already;
