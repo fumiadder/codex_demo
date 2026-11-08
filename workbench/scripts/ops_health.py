@@ -16,8 +16,11 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
 
 def run(url, budget, insecure=False):
     parsed = urlsplit(url)
-    if parsed.scheme != 'https' or not parsed.hostname or parsed.path not in ('','/') or parsed.query or parsed.fragment or parsed.username:
-        raise ValueError('An HTTPS origin is required')
+    # A temporary IP-only server may be served over plain HTTP; both schemes are
+    # accepted, but HSTS is only required when the origin is HTTPS.
+    secure = parsed.scheme == 'https'
+    if parsed.scheme not in ('http', 'https') or not parsed.hostname or parsed.path not in ('','/') or parsed.query or parsed.fragment or parsed.username:
+        raise ValueError('An http(s) origin is required')
     handlers = [NoRedirect()]
     if insecure:
         # Only used for an IP-only temporary server with Caddy's internal CA.
@@ -29,7 +32,14 @@ def run(url, budget, insecure=False):
         try:
             for path in ('/api/health','/api/config','/'):
                 with opener.open(url.rstrip('/')+path, timeout=min(10,max(1,end-time.monotonic()))) as response:
-                    if response.status != 200 or response.headers.get('X-Content-Type-Options') != 'nosniff' or not response.headers.get('Strict-Transport-Security') or "frame-ancestors 'none'" not in response.headers.get('Content-Security-Policy',''):
+                    headers_ok = (
+                        response.status == 200
+                        and response.headers.get('X-Content-Type-Options') == 'nosniff'
+                        and "frame-ancestors 'none'" in response.headers.get('Content-Security-Policy', '')
+                    )
+                    if secure:
+                        headers_ok = headers_ok and bool(response.headers.get('Strict-Transport-Security'))
+                    if not headers_ok:
                         raise ValueError('Production response/security headers failed')
                     body = response.read(1024*1024)
                     if path == '/api/health' and json.loads(body).get('ok') is not True:
@@ -38,7 +48,7 @@ def run(url, budget, insecure=False):
                         config = json.loads(body)
                         if config.get('testMode') is not False or config.get('storagePersistence') != 'persistent' or config.get('registrationMode') != 'invite':
                             raise ValueError('Production invite/persistence configuration failed')
-            print('PASS read-only production HTTPS, health, config, and security headers')
+            print(f'PASS read-only production {parsed.scheme.upper()}, health, config, and security headers')
             return
         except (urllib.error.URLError, TimeoutError, OSError):
             if time.monotonic() >= end:
