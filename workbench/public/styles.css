@@ -5569,3 +5569,207 @@ form label + label {
     font-size: 13px;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   首页「月历 + 当日回顾」
+--------------------------------------------------------------------------- */
+.home-calendar {
+  padding: 16px 18px 18px;
+  margin-bottom: 16px;
+}
+.home-calendar-weekdays,
+.home-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+.home-calendar-weekdays {
+  margin-bottom: 6px;
+}
+.home-calendar-weekdays span {
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+}
+.home-calendar-cell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-height: 46px;
+  padding: 4px 2px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.home-calendar-cell:hover,
+.home-calendar-cell:focus-visible {
+  background: var(--soft-green);
+}
+.home-calendar-cell.muted {
+  color: var(--muted);
+  opacity: 0.55;
+}
+.home-calendar-cell.picked {
+  background: var(--green);
+  border-color: var(--green);
+  color: var(--card);
+}
+.home-calendar-cell.today .home-calendar-day {
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.home-calendar-day {
+  font-size: 14px;
+  line-height: 1.2;
+}
+.home-calendar-dots {
+  display: flex;
+  gap: 3px;
+  height: 6px;
+  align-items: center;
+}
+.home-calendar-dots .dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--orange);
+}
+.home-calendar-cell.picked .dot {
+  background: var(--card);
+}
+.home-calendar-dots .dot-task {
+  background: var(--green);
+}
+.home-calendar-cell.picked .dot-task {
+  background: var(--card);
+}
+
+.day-review {
+  padding: 18px;
+  margin-bottom: 16px;
+}
+.day-review-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.day-review-head h2 {
+  margin: 0;
+  font-size: 17px;
+  color: var(--ink);
+}
+.day-review-date {
+  color: var(--muted);
+  font-size: 13px;
+}
+.day-section {
+  margin-bottom: 16px;
+}
+.day-section-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+.day-section-head svg {
+  color: var(--green);
+}
+.day-section-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.day-entry {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--card);
+}
+.day-entry.done {
+  opacity: 0.6;
+}
+.day-entry.done .day-entry-title {
+  text-decoration: line-through;
+}
+.day-entry-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font: inherit;
+  color: var(--text);
+  cursor: pointer;
+}
+.day-entry-title {
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.day-entry-text small {
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.day-thumb {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: var(--sand);
+}
+.day-thumb-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+}
+.day-review-foot {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-top: 6px;
+  border-top: 1px solid var(--line);
+}
+@media (max-width: 480px) {
+  .home-calendar {
+    padding: 12px 12px 14px;
+  }
+  .home-calendar-cell {
+    min-height: 40px;
+  }
+  .day-review {
+    padding: 14px 12px;
+  }
+  .day-entry {
+    padding: 7px 8px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-calendar-cell {
+    transition: none;
+  }
+}

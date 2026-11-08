@@ -1851,8 +1851,302 @@ function sectionHeading(title, subtitle, view) {
   );
   return heading;
 }
+// ---------------------------------------------------------------------------
+// 首页「月历 + 当日回顾」：把今日记录、待办、随笔、媒体按天聚合展示。
+// 数据来自三个既有来源（daily_entries / items.kind=task / note / media），
+// 只做聚合不做迁移，原菜单功能保持不变。
+// ---------------------------------------------------------------------------
+const homeCalendar = { month: "", day: "" };
+
+// 四类记录：待办、记录（带图或图文）、随笔（纯文字）、媒体。
+function recordCategory(item) {
+  if (item.kind === "media") return "media";
+  if (item.kind === "task") return "task";
+  return "note"; // 笔记与随笔同属文字类
+}
+const CATEGORY_META = {
+  task: { label: "待办", icon: "task" },
+  note: { label: "随笔", icon: "note" },
+  media: { label: "媒体", icon: "folder" },
+  daily: { label: "记录", icon: "camera" },
+};
+
+// 某一天的全部内容：当日到期的待办 + 当日创建/当日日期的笔记与媒体 + 今日记录。
+function collectDayEntries(dateString) {
+  const groups = { task: [], note: [], media: [], daily: [] };
+  for (const item of state.items) {
+    if (item.status === "archived") continue;
+    const cat = recordCategory(item);
+    if (cat === "task") {
+      // 待办按计划日期归属；无日期则按创建日期。
+      const due = item.meta?.due || (item.created_at || "").slice(0, 10);
+      if (due === dateString) groups.task.push(item);
+    } else {
+      const created = (item.created_at || "").slice(0, 10);
+      if (created === dateString) groups[cat].push(item);
+    }
+  }
+  for (const entry of state.daily.entries || []) {
+    const d = entry.entryDate || entry.entry_date;
+    if (d === dateString) groups.daily.push(entry);
+  }
+  return groups;
+}
+function countDayEntries(dateString) {
+  const g = collectDayEntries(dateString);
+  return g.task.length + g.note.length + g.media.length + g.daily.length;
+}
+
+// 顶部月历：可翻月，有内容的日期显示圆点，点击选中某天。
+function renderHomeCalendar(content) {
+  if (!homeCalendar.month) homeCalendar.month = dailyDateString().slice(0, 7);
+  if (!homeCalendar.day) homeCalendar.day = dailyDateString();
+  const monthValue = homeCalendar.month;
+  const [year, month] = monthValue.split("-").map(Number);
+  const firstDay = new Date(year, month - 1, 1);
+  const gridStart = new Date(year, month - 1, 1 - weekdayIndex(firstDay));
+  const today = dailyDateString();
+
+  const card = el("section", "card home-calendar");
+  const nav = el("div", "calendar-nav");
+  const prev = button("", "icon-button", () => {
+    homeCalendar.month = shiftMonth(monthValue, -1);
+    render();
+  }, "chevron");
+  prev.setAttribute("aria-label", "上一月");
+  prev.querySelector(".icon").style.setProperty("transform", "rotate(180deg)");
+  const next = button("", "icon-button", () => {
+    homeCalendar.month = shiftMonth(monthValue, 1);
+    render();
+  }, "chevron");
+  next.setAttribute("aria-label", "下一月");
+  nav.append(
+    prev,
+    el("h2", "calendar-title", calendarMonthLabel(monthValue)),
+    button("今天", "button secondary calendar-nav-btn", () => {
+      homeCalendar.month = today.slice(0, 7);
+      homeCalendar.day = today;
+      render();
+    }),
+    next,
+  );
+  card.append(nav);
+
+  const weekdays = el("div", "home-calendar-weekdays");
+  ["一", "二", "三", "四", "五", "六", "日"].forEach((w) =>
+    weekdays.append(el("span", "", w)),
+  );
+  card.append(weekdays);
+
+  const grid = el("div", "home-calendar-grid");
+  for (let index = 0; index < 42; index++) {
+    const cellDate = new Date(
+      gridStart.getFullYear(),
+      gridStart.getMonth(),
+      gridStart.getDate() + index,
+    );
+    const dateString = isoDateString(cellDate);
+    const inMonth = cellDate.getMonth() === month - 1;
+    const isToday = dateString === today;
+    const isPicked = dateString === homeCalendar.day;
+    const total = countDayEntries(dateString);
+    const cell = button(
+      "",
+      `home-calendar-cell${inMonth ? "" : " muted"}${isToday ? " today" : ""}${
+        isPicked ? " picked" : ""
+      }`,
+      () => {
+        homeCalendar.day = dateString;
+        render();
+      },
+    );
+    cell.append(el("span", "home-calendar-day", String(cellDate.getDate())));
+    if (total > 0) {
+      const dots = el("span", "home-calendar-dots");
+      if (collectDayEntries(dateString).task.length)
+        dots.append(el("i", "dot dot-task"));
+      dots.append(el("i", "dot dot-any"));
+      cell.append(dots);
+    }
+    cell.setAttribute(
+      "aria-label",
+      `${dateString}${isToday ? "（今天）" : ""}${total ? `，${total} 条内容` : "，暂无内容"}`,
+    );
+    cell.setAttribute("aria-pressed", String(isPicked));
+    grid.append(cell);
+  }
+  card.append(grid);
+  content.append(card);
+}
+
+// 当日回顾：按四类分组列出所选日期的全部内容。
+function renderDayReview(content) {
+  const dateString = homeCalendar.day || dailyDateString();
+  if (state.space && state.daily.loadedSpace !== state.space.id && !state.daily.loading) {
+    loadDailyEntries();
+  }
+  const [y, m, d] = dateString.split("-").map(Number);
+  const isToday = dateString === dailyDateString();
+  const card = el("section", "card day-review");
+  const head = el("div", "day-review-head");
+  head.append(
+    el("h2", "", isToday ? "今天的回顾" : `${m} 月 ${d} 日的回顾`),
+    el("span", "day-review-date", `${y}-${m}-${String(d).padStart(2, "0")} ${weekdayCn(dateString)} · ${lunarText(dateString)}`),
+  );
+  card.append(head);
+
+  const groups = collectDayEntries(dateString);
+  const total = groups.task.length + groups.note.length + groups.media.length + groups.daily.length;
+  if (!total) {
+    emptyState(
+      card,
+      "calendar",
+      isToday ? "今天还没有记录" : "这一天没有内容",
+      isToday ? "拍一张、写一句，或加一件待办。" : "点击日历里的其他日期查看。",
+      writable() ? "记录今天" : null,
+      writable() ? () => navigate("daily") : null,
+    );
+    content.append(card);
+    return;
+  }
+
+  const section = (title, iconName, nodes, emptyText) => {
+    if (!nodes.length) return;
+    const block = el("div", "day-section");
+    const heading = el("div", "day-section-head");
+    heading.append(svg(iconName, true), el("span", "", `${title} ${nodes.length}`));
+    block.append(heading);
+    const list = el("div", "day-section-list");
+    nodes.forEach((n) => list.append(n));
+    block.append(list);
+    card.append(block);
+  };
+
+  // 待办：可勾选完成
+  section(
+    "待办",
+    "task",
+    groups.task.map((item) => {
+      const row = el("div", `day-entry day-entry-task${item.status === "done" ? " done" : ""}`);
+      const check = button("", `task-check${item.status === "done" ? " checked" : ""}`, async () => {
+        if (!writable()) return;
+        await saveItem(
+          { ...item, status: item.status === "done" ? "active" : "done" },
+          item.id,
+        );
+      });
+      check.setAttribute("aria-label", item.status === "done" ? "标记为未完成" : "标记为完成");
+      check.disabled = !writable();
+      if (item.status === "done") check.append(svg("check"));
+      const text = button("", "day-entry-text", () => showEditor("task", item));
+      text.type = "button";
+      text.append(el("span", "day-entry-title", item.title));
+      const meta = [];
+      if (item.meta?.priority === "high") meta.push("优先");
+      if (item.meta?.due) meta.push(taskTimeLabel(item));
+      if (meta.length) text.append(el("small", "", meta.join(" · ")));
+      row.append(check, text);
+      return row;
+    }),
+  );
+
+  // 今日记录：带图或文字速记
+  section(
+    "记录",
+    "camera",
+    groups.daily.map((entry) => {
+      const row = el("div", "day-entry day-entry-daily");
+      const img = (entry.images || [])[0];
+      if (img) {
+        const thumb = el("img", "day-thumb");
+        thumb.src = `/api/spaces/${state.space.id}/daily/images/${img.id}`;
+        thumb.alt = entry.title || "记录图片";
+        thumb.loading = "lazy";
+        row.append(thumb);
+      } else {
+        const ph = el("span", "day-thumb day-thumb-empty");
+        ph.append(svg("note", true));
+        row.append(ph);
+      }
+      const text = button("", "day-entry-text", () => navigate("daily"));
+      text.type = "button";
+      text.append(el("span", "day-entry-title", entry.title || "无标题记录"));
+      if (entry.summary) text.append(el("small", "", entry.summary));
+      row.append(text);
+      return row;
+    }),
+  );
+
+  // 随笔：纯文字，可选一键转待办
+  section(
+    "随笔",
+    "note",
+    groups.note.map((item) => {
+      const row = el("div", "day-entry");
+      const text = button("", "day-entry-text", () => showEditor("note", item));
+      text.type = "button";
+      text.append(el("span", "day-entry-title", item.title));
+      const body = (item.body || "").replace(/\s+/g, " ").trim();
+      if (body) text.append(el("small", "", body.slice(0, 60)));
+      row.append(text);
+      if (writable()) {
+        const promote = button("转为待办", "text-button", async () => {
+          await saveItem(
+            {
+              kind: "task",
+              area: item.area,
+              title: item.title,
+              body: item.body,
+              status: "active",
+              meta: { ...(item.meta || {}), due: dateString },
+            },
+            item.id,
+          );
+          toast("已转为待办");
+        });
+        row.append(promote);
+      }
+      return row;
+    }),
+  );
+
+  // 媒体
+  section(
+    "媒体",
+    "folder",
+    groups.media.map((item) => {
+      const row = el("div", "day-entry");
+      const text = button("", "day-entry-text", () => showMedia(item));
+      text.type = "button";
+      text.append(el("span", "day-entry-title", item.title));
+      row.append(text);
+      return row;
+    }),
+  );
+
+  const foot = el("div", "day-review-foot");
+  if (writable()) {
+    foot.append(
+      button("记录今天", "button primary", () => navigate("daily"), "camera"),
+      button("加一件待办", "button soft", () => showEditor("task", null, { due: dateString }), "plus"),
+    );
+  }
+  card.append(foot);
+  content.append(card);
+}
+
 function renderOverview(content) {
+  // 首页主视图：月历置顶，下方是所选日期的全部内容（待办 / 记录 / 随笔 / 媒体）。
+  renderHomeCalendar(content);
+  renderDayReview(content);
+  // 快捷入口与统计仍在下方，保持原有跳转习惯不变。
   if (state.area === "life") renderBedtimeEntry(content);
+  renderShortcutBar(content);
+  renderOverviewStats(content);
+}
+
+// 原统计卡片与「今日记录」卡片单独拆出，供新首页复用在列表下方。
+function renderOverviewStats(content) {
   const tasks = currentItems("task"),
     notes = currentItems("note"),
     media = currentItems("media");
@@ -1882,7 +2176,6 @@ function renderOverview(content) {
     stats.append(card);
   }
   content.append(stats);
-  renderShortcutBar(content);
   const grid = el("div", "overview-grid");
   const taskCard = el("section", "card");
   taskCard.append(
