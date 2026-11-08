@@ -4011,11 +4011,16 @@ form label + label {
 }
 .daily-picker-row {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   padding: 0 22px;
+  min-width: 0;
 }
 .daily-picker-row .button {
-  flex: 1;
+  flex: 1 1 auto;
+  /* 允许按钮收缩，避免四个入口在窄屏下撑出横向滚动。 */
+  min-width: 0;
+  white-space: nowrap;
 }
 .daily-picker-row .button .icon {
   margin-right: 6px;
@@ -5772,4 +5777,151 @@ form label + label {
   .home-calendar-cell {
     transition: none;
   }
+}
+
+/* ---------------------------------------------------------------------------
+   总览：状态标签 / 本月日程 / 精简日历
+--------------------------------------------------------------------------- */
+.status-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.status-tab {
+  min-height: 40px;
+  padding: 0 18px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--muted);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.status-tab.active {
+  border-color: var(--green);
+  background: var(--soft-green);
+  color: var(--green);
+  font-weight: 600;
+}
+.overview-status-list {
+  margin-bottom: 16px;
+}
+.month-agenda {
+  margin-bottom: 16px;
+}
+.month-agenda-list {
+  max-height: 340px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-right: 4px;
+}
+.month-agenda-day {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.month-agenda-date {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--line);
+}
+.month-agenda-date strong {
+  color: var(--ink);
+  font-size: 14px;
+}
+.month-agenda-date span {
+  color: var(--muted);
+  font-size: 12px;
+}
+.month-agenda-count {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 12px;
+  font-style: normal;
+}
+.month-agenda-items {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.month-agenda-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  min-width: 0;
+}
+.month-agenda-item:hover,
+.month-agenda-item:focus-visible {
+  background: var(--soft-green);
+}
+.month-agenda-item svg {
+  color: var(--green);
+  flex-shrink: 0;
+}
+.month-agenda-item span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.month-agenda-item.is-done {
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+/* 日历整体收小 */
+.home-calendar {
+  padding: 12px 14px 14px;
+  margin-bottom: 16px;
+}
+.home-calendar-cell {
+  min-height: 36px;
+  gap: 0;
+}
+.home-calendar-day {
+  font-size: 13px;
+}
+.home-calendar-mark {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--orange);
+}
+.home-calendar-cell.picked .home-calendar-mark {
+  background: var(--card);
+}
+.home-calendar-weekdays {
+  margin-bottom: 2px;
+}
+.home-calendar-weekdays span {
+  font-size: 11px;
+}
+@media (max-width: 480px) {
+  .status-tab {
+    padding: 0 13px;
+    font-size: 13px;
+  }
+  .month-agenda-list {
+    max-height: 300px;
+  }
+}
+
+/* 图标本身不参与指针事件，避免命中测试落到 <use> 上导致点击被判定为遮挡。 */
+.icon-button svg,
+.icon-button svg * {
+  pointer-events: none;
 }

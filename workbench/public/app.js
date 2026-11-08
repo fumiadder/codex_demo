@@ -1874,16 +1874,19 @@ const CATEGORY_META = {
 // 某一天的全部内容：当日到期的待办 + 当日创建/当日日期的笔记与媒体 + 今日记录。
 function collectDayEntries(dateString) {
   const groups = { task: [], note: [], media: [], daily: [] };
+  // 接口返回 camelCase 的 createdAt，演示数据同样是 camelCase；
+  // 兼容 snake_case，并且绝不把「没有日期」的项目算到今天之外的日子。
+  const createdOf = (item) =>
+    String(item.createdAt || item.created_at || "").slice(0, 10);
   for (const item of state.items) {
     if (item.status === "archived") continue;
     const cat = recordCategory(item);
     if (cat === "task") {
-      // 待办按计划日期归属；无日期则按创建日期。
-      const due = item.meta?.due || (item.created_at || "").slice(0, 10);
+      // 待办按计划日期归属；无计划日期再看创建日期。
+      const due = item.meta?.due || createdOf(item);
       if (due === dateString) groups.task.push(item);
     } else {
-      const created = (item.created_at || "").slice(0, 10);
-      if (created === dateString) groups[cat].push(item);
+      if (createdOf(item) === dateString) groups[cat].push(item);
     }
   }
   for (const entry of state.daily.entries || []) {
@@ -1961,13 +1964,7 @@ function renderHomeCalendar(content) {
       },
     );
     cell.append(el("span", "home-calendar-day", String(cellDate.getDate())));
-    if (total > 0) {
-      const dots = el("span", "home-calendar-dots");
-      if (collectDayEntries(dateString).task.length)
-        dots.append(el("i", "dot dot-task"));
-      dots.append(el("i", "dot dot-any"));
-      cell.append(dots);
-    }
+    if (total > 0) cell.append(el("span", "home-calendar-mark"));
     cell.setAttribute(
       "aria-label",
       `${dateString}${isToday ? "（今天）" : ""}${total ? `，${total} 条内容` : "，暂无内容"}`,
@@ -2136,13 +2133,128 @@ function renderDayReview(content) {
 }
 
 function renderOverview(content) {
-  // 首页主视图：月历置顶，下方是所选日期的全部内容（待办 / 记录 / 随笔 / 媒体）。
+  // 首页结构：状态标签（待完成 / 进行中 / 已完成）→ 对应列表
+  //            → 小日历 → 本月日程滚动列表 → 快捷入口。
+  renderStatusTabs(content);
+  renderStatusList(content);
   renderHomeCalendar(content);
-  renderDayReview(content);
-  // 快捷入口与统计仍在下方，保持原有跳转习惯不变。
+  renderMonthAgenda(content);
+  // 今日记录的紧凑卡片（含「今天已记录 N 条」与快速入口），
+  // 保留既有的今日记录能力，但不放大块统计与灵感墙。
+  content.append(renderOverviewDaily());
   if (state.area === "life") renderBedtimeEntry(content);
   renderShortcutBar(content);
-  renderOverviewStats(content);
+}
+
+// 待办状态：待完成 / 进行中 / 已完成（已删除不进入首页列表）。
+const OVERVIEW_STATUS = [
+  ["active", "待完成"],
+  ["doing", "进行中"],
+  ["done", "已完成"],
+];
+function renderStatusTabs(content) {
+  const tasks = currentItems("task");
+  const bar = el("div", "status-tabs");
+  for (const [key, label] of OVERVIEW_STATUS) {
+    const count = tasks.filter((t) => (t.status || "active") === key).length;
+    const active = (state.overviewStatus || "active") === key;
+    const tab = button(`${label} ${count}`, `status-tab${active ? " active" : ""}`, () => {
+      state.overviewStatus = key;
+      render();
+    });
+    tab.setAttribute("aria-pressed", String(active));
+    bar.append(tab);
+  }
+  content.append(bar);
+}
+function renderStatusList(content) {
+  const key = state.overviewStatus || "active";
+  const label = (OVERVIEW_STATUS.find(([k]) => k === key) || ["", "待完成"])[1];
+  const tasks = currentItems("task").filter((t) => (t.status || "active") === key);
+  const card = el("section", "card overview-status-list");
+  card.append(
+    cardHeading(`${label}的待办`, "task", "全部待办 ↗", () => navigate("tasks"), "我的节奏"),
+  );
+  const list = el("div", "task-list");
+  if (tasks.length) {
+    tasks.forEach((item) => list.append(taskRow(item)));
+  } else {
+    emptyState(
+      list,
+      "task",
+      key === "done" ? "还没有完成的事项" : "这里还是空的",
+      key === "done" ? "完成的待办会出现在这里。" : "记下一件要做的事，它会出现在这里。",
+      writable() && key === "active" ? "添加第一件待办" : null,
+      writable() && key === "active" ? () => showEditor("task") : null,
+    );
+  }
+  card.append(list);
+  content.append(card);
+}
+
+// 本月日程：从今天往回排到 1 号，可滚动查看更早的内容。
+function renderMonthAgenda(content) {
+  if (state.space && state.daily.loadedSpace !== state.space.id && !state.daily.loading) {
+    loadDailyEntries();
+  }
+  const today = dailyDateString();
+  const [year, month, day] = today.split("-").map(Number);
+  const card = el("section", "card month-agenda");
+  card.append(
+    cardHeading("本月日程", "calendar", "打开日程 ↗", () => navigate("calendar"), "回顾这个月"),
+  );
+  const list = el("div", "month-agenda-list");
+  let rendered = 0;
+  // 从今天倒序到 1 号
+  for (let d = day; d >= 1; d--) {
+    const dateString = `${year}-${String(month).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    const groups = collectDayEntries(dateString);
+    const total = groups.task.length + groups.note.length + groups.media.length + groups.daily.length;
+    if (!total) continue;
+    rendered += 1;
+    const row = el("div", "month-agenda-day");
+    const head = el("div", "month-agenda-date");
+    head.append(
+      el("strong", "", `${month} 月 ${d} 日`),
+      el("span", "", `${weekdayCn(dateString)}${d === day ? " · 今天" : ""}`),
+      el("em", "month-agenda-count", `${total} 条`),
+    );
+    row.append(head);
+    // 待办优先，其次记录，再随笔与媒体
+    const items = el("div", "month-agenda-items");
+    groups.task.forEach((item) => {
+      const b = button("", "month-agenda-item", () => showEditor("task", item));
+      b.type = "button";
+      if ((item.status || "active") === "done") b.classList.add("is-done");
+      b.append(svg("task", true), el("span", "", item.title));
+      items.append(b);
+    });
+    groups.daily.forEach((entry) => {
+      const b = button("", "month-agenda-item", () => navigate("daily"));
+      b.type = "button";
+      b.append(svg("camera", true), el("span", "", entry.title || "记录"));
+      items.append(b);
+    });
+    groups.note.forEach((item) => {
+      const b = button("", "month-agenda-item", () => showEditor("note", item));
+      b.type = "button";
+      b.append(svg("note", true), el("span", "", item.title));
+      items.append(b);
+    });
+    groups.media.forEach((item) => {
+      const b = button("", "month-agenda-item", () => showMedia(item));
+      b.type = "button";
+      b.append(svg("folder", true), el("span", "", item.title));
+      items.append(b);
+    });
+    row.append(items);
+    list.append(row);
+  }
+  if (!rendered) {
+    emptyState(list, "calendar", "本月还没有记录", "从今天开始，记下第一件事。");
+  }
+  card.append(list);
+  content.append(card);
 }
 
 // 原统计卡片与「今日记录」卡片单独拆出，供新首页复用在列表下方。
@@ -3442,9 +3554,13 @@ function showEditor(kind, item, prefill = {}) {
         status = select(
           [
             ["active", "待完成"],
+            ["doing", "进行中"],
             ["done", "已完成"],
+            ["dropped", "已删除"],
           ],
-          item?.status === "done" ? "done" : "active",
+          ["active", "doing", "done", "dropped"].includes(item?.status)
+            ? item.status
+            : "active",
         );
         // 可选时间段：为空表示「全天」，日程视图据此显示时间范围。
         startTime = input("time", "", item?.meta?.startTime || prefillMeta.startTime || "");
@@ -6044,7 +6160,17 @@ function renderDailyComposer() {
     pickDailyImages(false),
   );
   galleryButton.prepend(svg("image", true));
-  picker.append(cameraButton, galleryButton);
+  // 语音转文字：用浏览器语音识别把说的话直接写进附言。
+  const voiceButton = button("语音转文字", "button secondary", () =>
+    startDailyDictation(note, voiceButton),
+  );
+  voiceButton.prepend(svg("mic", true));
+  // 附件：图片以外的文件统一进资料库，记录里留一条引用。
+  const attachButton = button("上传附件", "button secondary", () => {
+    ensureWrite() && chooseFiles();
+  });
+  attachButton.prepend(svg("upload", true));
+  picker.append(cameraButton, galleryButton, voiceButton, attachButton);
   const strip = el("div", "daily-composer-strip");
   const note = el("textarea", "daily-note");
   note.placeholder = "补充一句背景（可选）：和谁、在哪、接下来要做什么…";
@@ -6072,6 +6198,64 @@ function renderDailyComposer() {
   card._counter = counter;
   return card;
 }
+// 语音转文字：优先用浏览器内置的 Web Speech API（Chrome/Edge 支持，
+// 优先中文）。不支持时给出明确提示，不静默失败。
+let dictationRecognition = null;
+function startDailyDictation(note, trigger) {
+  const Recognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!Recognition) {
+    toast("当前浏览器不支持语音转文字，可改用键盘输入或语音录入", true);
+    return;
+  }
+  if (dictationRecognition) {
+    try {
+      dictationRecognition.stop();
+    } catch {
+      /* 已停止时忽略 */
+    }
+    dictationRecognition = null;
+    trigger.textContent = "语音转文字";
+    return;
+  }
+  const recognition = new Recognition();
+  recognition.lang = "zh-CN";
+  recognition.continuous = true;
+  recognition.interimResults = false;
+  const base = note.value ? `${note.value.replace(/\s*$/, "")} ` : "";
+  recognition.onresult = (event) => {
+    let text = "";
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      if (event.results[i].isFinal) text += event.results[i][0].transcript;
+    }
+    if (text) note.value = (note.value ? `${note.value} ` : "") + text.trim();
+  };
+  recognition.onerror = (event) => {
+    const message =
+      event.error === "not-allowed"
+        ? "麦克风权限被拒绝，请在浏览器设置里允许后重试"
+        : "语音识别中断，可再试一次";
+    toast(message, true);
+    stop();
+  };
+  recognition.onend = () => stop();
+  function stop() {
+    dictationRecognition = null;
+    trigger.textContent = "语音转文字";
+    trigger.classList.remove("recording");
+  }
+  dictationRecognition = recognition;
+  trigger.textContent = "停止转写";
+  trigger.classList.add("recording");
+  try {
+    recognition.start();
+    toast("已开始转写，说话内容会写入附言");
+  } catch {
+    stop();
+    toast("无法启动语音识别", true);
+  }
+}
+
 function renderComposerStrip(strip, counter) {
   strip.replaceChildren();
   const items = state.daily.composer;
@@ -6470,6 +6654,35 @@ function renderDailyEntryActions(entry, ai) {
     actions.append(
       button("重新识别", "text-button", () => recognizeDailyEntry(entry)),
     );
+  // 把一条今日记录变成待办：标题/正文带入，日期取记录当天，
+  // 之后就在「待完成 → 进行中 → 已完成」的流程里流转。
+  if (writable()) {
+    const entryDate = entry.entryDate || entry.entry_date || dailyDateString();
+    const already = (state.items || []).some(
+      (item) =>
+        item.kind === "task" &&
+        item.meta?.fromDailyEntry === entry.id,
+    );
+    const promote = button(
+      already ? "已在待办中" : "设为待办",
+      "text-button",
+      async () => {
+        if (!ensureWrite() || already) return;
+        const title = entry.title || entry.summary || "今日记录";
+        await saveItem({
+          kind: "task",
+          area: entry.area || state.area,
+          title: title.slice(0, 200),
+          body: entry.body || entry.summary || "",
+          status: "active",
+          meta: { due: entryDate, fromDailyEntry: entry.id },
+        });
+        toast("已设为待办");
+      },
+    );
+    promote.disabled = already;
+    actions.append(promote);
+  }
   actions.append(
     button("编辑", "text-button", () => editDailyEntry(entry)),
     button("删除", "text-button danger-text", () => deleteDailyEntry(entry)),
