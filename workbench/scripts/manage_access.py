@@ -49,14 +49,40 @@ def access_database(data_dir):
 
 
 def normalize_email(email):
-    email = email.strip().lower()
-    if len(email) > 254 or not EMAIL_RE.fullmatch(email):
+    """Normalise a mailbox, keeping the strict rule the bootstrap path relies on."""
+    value = (email or "").strip()
+    if not value:
+        raise ValueError("请填写要预留的登录名（用户名、手机号或邮箱）")
+    if len(value) > 254:
+        raise ValueError("登录名过长")
+    lowered = value.lower()
+    if len(value) > 254 or not EMAIL_RE.fullmatch(lowered):
         raise ValueError("请输入有效邮箱地址")
-    return email
+    return lowered
+
+
+def normalize_login(value):
+    """Validate an operator-supplied login name for an invitation.
+
+    Accepts a mailbox, an 11-digit phone number or a username that satisfies the
+    same rules the sign-up form enforces, so an invite can never reserve a name
+    nobody would be allowed to register.
+    """
+    if "@" in value:
+        return normalize_email(value)
+    if any(ord(ch) < 0x20 or ord(ch) == 0x7f for ch in value):
+        raise ValueError("登录名不能包含控制字符")
+    from identity import PHONE_RE, USERNAME_RE
+    if PHONE_RE.fullmatch(value) or USERNAME_RE.fullmatch(value):
+        return value
+    raise ValueError("请填写有效的用户名、手机号或邮箱")
 
 
 def issue_invitation(data_dir, email, ttl_hours=24, bootstrap=False):
-    email = normalize_email(email)
+    # The first-run bootstrap is handed to a human operator over a real channel,
+    # so it keeps the stricter mailbox requirement; ordinary invites may reserve
+    # a username or phone number as sign-in moved to those identifiers.
+    email = normalize_email(email) if bootstrap else normalize_login(email)
     if type(ttl_hours) is not int or not 1 <= ttl_hours <= 168:
         raise ValueError("有效期需为 1 至 168 小时的整数")
     now = int(time.time())
@@ -84,7 +110,7 @@ def issue_invitation(data_dir, email, ttl_hours=24, bootstrap=False):
 
 
 def revoke_invitation(data_dir, email):
-    email = normalize_email(email)
+    email = normalize_login(email)
     with access_database(data_dir) as conn:
         count = conn.execute("UPDATE registration_invites SET consumed_at=? WHERE email=? AND consumed_at IS NULL", (int(time.time()), email)).rowcount
     return {"email": email, "revoked": count}

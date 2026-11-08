@@ -851,7 +851,9 @@ class FolioHandler(BaseHTTPRequestHandler):
                     conn.execute("INSERT INTO spaces VALUES (?,?,?,?)", (space_id, "我的空间", user_id, stamp))
                     conn.execute("INSERT INTO members VALUES (?,?,?)", (space_id, user_id, "owner"))
                     if invitation_hash:
-                        changed = conn.execute("UPDATE registration_invites SET consumed_at=? WHERE token_hash=? AND consumed_at IS NULL AND expires_at>? AND email=?", (consumed_at, invitation_hash, consumed_at, email)).rowcount
+                        # The reserved value is the login name the operator issued the
+                        # invite for, not the synthetic users.email placeholder.
+                        changed = conn.execute("UPDATE registration_invites SET consumed_at=? WHERE token_hash=? AND consumed_at IS NULL AND expires_at>? AND email=?", (consumed_at, invitation_hash, consumed_at, reserved)).rowcount
                         if changed != 1:
                             raise APIError(403, INVITATION_ERROR)
                     user = {"id": user_id, "email": "" if email.endswith("@" + IDENTITY_EMAIL_DOMAIN) else email,
