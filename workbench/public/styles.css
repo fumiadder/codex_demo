@@ -5925,3 +5925,49 @@ form label + label {
 .icon-button svg * {
   pointer-events: none;
 }
+
+/* ---------------------------------------------------------------------------
+   今日记录：每条独立卡片框（内容 / 附件 / 操作）
+--------------------------------------------------------------------------- */
+.daily-entry-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  margin-bottom: 12px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--card);
+}
+.daily-entry-card .daily-entry-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0;
+}
+.daily-entry-card .daily-entry-meta {
+  display: inline-flex;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 12px;
+  margin: 0;
+}
+.daily-entry-body {
+  margin: 0;
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.daily-entry-card .daily-card-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+.daily-entry-card .daily-images {
+  margin: 0;
+}

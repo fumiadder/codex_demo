@@ -2147,16 +2147,22 @@ function renderOverview(content) {
 }
 
 // 待办状态：待完成 / 进行中 / 已完成（已删除不进入首页列表）。
+// 待办只有三种状态：待办（active）、已完成（done）、已删除（dropped）。
 const OVERVIEW_STATUS = [
-  ["active", "待完成"],
-  ["doing", "进行中"],
+  ["active", "待办"],
   ["done", "已完成"],
+  ["dropped", "已删除"],
 ];
+// 历史数据里可能残留 doing（进行中），统一并入待办，避免出现空标签。
+function normalizeTaskStatus(status) {
+  if (status === "doing") return "active";
+  return status || "active";
+}
 function renderStatusTabs(content) {
   const tasks = currentItems("task");
   const bar = el("div", "status-tabs");
   for (const [key, label] of OVERVIEW_STATUS) {
-    const count = tasks.filter((t) => (t.status || "active") === key).length;
+    const count = tasks.filter((t) => normalizeTaskStatus(t.status) === key).length;
     const active = (state.overviewStatus || "active") === key;
     const tab = button(`${label} ${count}`, `status-tab${active ? " active" : ""}`, () => {
       state.overviewStatus = key;
@@ -2170,7 +2176,7 @@ function renderStatusTabs(content) {
 function renderStatusList(content) {
   const key = state.overviewStatus || "active";
   const label = (OVERVIEW_STATUS.find(([k]) => k === key) || ["", "待完成"])[1];
-  const tasks = currentItems("task").filter((t) => (t.status || "active") === key);
+  const tasks = currentItems("task").filter((t) => normalizeTaskStatus(t.status) === key);
   const card = el("section", "card overview-status-list");
   card.append(
     cardHeading(`${label}的待办`, "task", "全部待办 ↗", () => navigate("tasks"), "我的节奏"),
@@ -3553,14 +3559,11 @@ function showEditor(kind, item, prefill = {}) {
         );
         status = select(
           [
-            ["active", "待完成"],
-            ["doing", "进行中"],
+            ["active", "待办"],
             ["done", "已完成"],
             ["dropped", "已删除"],
           ],
-          ["active", "doing", "done", "dropped"].includes(item?.status)
-            ? item.status
-            : "active",
+          normalizeTaskStatus(item?.status),
         );
         // 可选时间段：为空表示「全天」，日程视图据此显示时间范围。
         startTime = input("time", "", item?.meta?.startTime || prefillMeta.startTime || "");
@@ -6173,7 +6176,7 @@ function renderDailyComposer() {
   picker.append(cameraButton, galleryButton, voiceButton, attachButton);
   const strip = el("div", "daily-composer-strip");
   const note = el("textarea", "daily-note");
-  note.placeholder = "补充一句背景（可选）：和谁、在哪、接下来要做什么…";
+  note.placeholder = "今天做了什么？写一句就好，也可以语音转文字或上传附件…";
   note.maxLength = 100000;
   note.setAttribute("aria-label", "记录附言");
   const bottom = el("div", "daily-composer-bottom");
@@ -6536,18 +6539,24 @@ function demoDailyEntries() {
   ];
 }
 function renderDailyEntry(entry) {
-  const card = el("article", "card daily-entry");
+  // 每条记录是一个独立卡片框：框内自上而下是内容、附件、操作。
+  // 今日记录不再显示标题，正文即内容。
+  const card = el("article", "card daily-entry daily-entry-card");
   const ai = entry.meta?.ai || {};
   const head = el("div", "daily-entry-head");
-  const titleWrap = el("div");
-  titleWrap.append(el("h3", "daily-entry-title", entry.title));
   const meta = el("div", "daily-entry-meta");
   meta.append(
     el("span", "", dailyTime(entry.createdAt)),
     el("span", "", entry.area === "work" ? "工作" : "生活"),
   );
-  head.append(titleWrap, meta);
+  head.append(meta);
   card.append(head);
+  // 正文与摘要分别渲染，样式和语义保持既有约定。
+  if (entry.body?.trim()) {
+    const body = el("p", "daily-entry-body");
+    body.textContent = entry.body.trim();
+    card.append(body);
+  }
   if (entry.images?.length) card.append(renderDailyImageGrid(entry));
   if (ai.status === "pending") {
     const pending = el("div", "daily-ai pending");
@@ -6587,7 +6596,8 @@ function renderDailyEntry(entry) {
       );
     card.append(disabled);
   }
-  if (entry.summary && ai.status !== "done")
+  // 有摘要就展示；AI 已产出摘要时由识别区块统一呈现，避免重复。
+  if (entry.summary && (ai.status !== "done" || entry.summary !== ai.summary))
     card.append(el("p", "daily-summary", entry.summary));
   if (entry.body) card.append(el("p", "daily-body", entry.body));
   if (writable()) card.append(renderDailyEntryActions(entry, ai));
@@ -6810,10 +6820,9 @@ async function convertSuggestion(entry, text) {
 function editDailyEntry(entry) {
   showModal("编辑这条记录", (body) => {
     const form = el("form", "editor-main");
-    const title = input("text", "给这条记录起个名字", entry.title);
-    title.maxLength = 200;
+    // 今日记录不再有标题：标题字段由正文首句自动派生，界面上不出现。
     const summary = el("textarea");
-    summary.placeholder = "手动填写或修改摘要";
+    summary.placeholder = "一句话说明这条记录（可留空）";
     summary.value = entry.summary || "";
     summary.maxLength = 1000;
     const note = el("textarea");
@@ -6828,7 +6837,6 @@ function editDailyEntry(entry) {
       entry.area,
     );
     form.append(
-      labelField("标题", title),
       labelField("摘要", summary),
       labelField("附言", note),
       labelField("所属分区", area),
@@ -6842,16 +6850,18 @@ function editDailyEntry(entry) {
     );
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
-      if (!title.value.trim()) {
-        error.textContent = "请输入标题";
+      const content = note.value.trim();
+      if (!content && !summary.value.trim() && !(entry.images || []).length) {
+        error.textContent = "写点什么，或上传一张图片";
         return;
       }
       save.disabled = true;
       try {
         const payload = {
-          title: title.value.trim(),
+          // 标题由内容首句自动派生，保持列表与搜索可用。
+          title: (content.split(/[。！？\n]/)[0] || content || "处理和附件记录").slice(0, 200),
           summary: summary.value.trim(),
-          body: note.value.trim(),
+          body: content,
           area: area.value,
         };
         if (state.demo) {
