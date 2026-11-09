@@ -1993,12 +1993,26 @@ function renderHomeCalendar(content) {
     );
     cell.append(el("span", "home-calendar-day", String(cellDate.getDate())));
     if (total > 0) {
-      // 格子里直接显示当天第一条内容的前几个字，不再用标题或纯圆点。
+      // 格子里显示当天第一条内容的前几个字；点它直接弹窗查看当天的全部内容，
+      // 点格子空白处仍然是选中日期。
       const groups = collectDayEntries(dateString);
       const first = groups.daily[0] || groups.task[0] || groups.note[0] || groups.media[0];
       const kind = groups.daily[0] ? "daily" : groups.task[0] ? "task" : groups.note[0] ? "note" : "media";
       const label = el("span", "home-calendar-preview", describeEntry(kind, first));
       if (kind === "task") label.classList.add("is-task");
+      label.setAttribute("role", "button");
+      label.setAttribute("tabindex", "0");
+      label.setAttribute("aria-label", `查看 ${dateString} 的内容`);
+      const openDay = (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+        homeCalendar.day = dateString;
+        showDayEntries(dateString);
+      };
+      label.addEventListener("click", openDay);
+      label.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") openDay(event);
+      });
       cell.append(label);
       if (total > 1) cell.append(el("span", "home-calendar-more", `+${total - 1}`));
     }
@@ -2011,6 +2025,117 @@ function renderHomeCalendar(content) {
   }
   card.append(grid);
   content.append(card);
+}
+
+// 点日历格子里的内容时弹出当天全部事项的弹窗：文字、图片、附件都在这里。
+function showDayEntries(dateString) {
+  const [y, m, d] = dateString.split("-").map(Number);
+  const groups = collectDayEntries(dateString);
+  showModal(`${m} 月 ${d} 日`, (body) => {
+    const wrap = el("div", "day-modal");
+    const head = el("div", "day-modal-head");
+    head.append(
+      el("span", "", `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")} ${weekdayCn(dateString)}`),
+      el("span", "day-modal-lunar", lunarText(dateString)),
+    );
+    wrap.append(head);
+    const total =
+      groups.task.length + groups.note.length + groups.media.length + groups.daily.length;
+    if (!total) {
+      wrap.append(el("p", "helper", "这一天还没有内容。"));
+    }
+    const section = (title, iconName, nodes) => {
+      if (!nodes.length) return;
+      const block = el("div", "day-modal-section");
+      const heading = el("div", "day-modal-section-head");
+      heading.append(svg(iconName, true), el("span", "", `${title} ${nodes.length}`));
+      block.append(heading);
+      const list = el("div", "day-modal-list");
+      nodes.forEach((n) => list.append(n));
+      block.append(list);
+      wrap.append(block);
+    };
+    // 记录：缩略图 + 文字，点开看大图
+    section(
+      "记录",
+      "camera",
+      groups.daily.map((entry) => {
+        const row = button("", "day-modal-entry", () => showDailyEntry(entry));
+        row.type = "button";
+        const image = (entry.images || [])[0];
+        if (image) {
+          const img = el("img", "day-modal-thumb");
+          img.src = dailyImageURL(image);
+          img.alt = entry.summary || "记录图片";
+          img.loading = "lazy";
+          row.append(img);
+        } else {
+          const ph = el("span", "day-modal-thumb day-modal-thumb-empty");
+          ph.append(svg("camera", true));
+          row.append(ph);
+        }
+        const text = el("div", "day-modal-text");
+        text.append(el("span", "", describeEntry("daily", entry, 60)));
+        const extra = [];
+        if ((entry.images || []).length) extra.push(`${entry.images.length} 张图片`);
+        if (extra.length) text.append(el("small", "", extra.join(" · ")));
+        row.append(text);
+        return row;
+      }),
+    );
+    section(
+      "待办",
+      "task",
+      groups.task.map((item) => {
+        const row = button("", "day-modal-entry", () => showEditor("task", item));
+        row.type = "button";
+        const text = el("div", "day-modal-text");
+        text.append(el("span", "", item.title));
+        const bits = [];
+        if (normalizeTaskStatus(item.status) === "done") bits.push("已完成");
+        if (item.meta?.priority === "high") bits.push("优先");
+        if (bits.length) text.append(el("small", "", bits.join(" · ")));
+        row.append(svg("task", true), text);
+        return row;
+      }),
+    );
+    section(
+      "随笔",
+      "note",
+      groups.note.map((item) => {
+        const row = button("", "day-modal-entry", () => showEditor("note", item));
+        row.type = "button";
+        const text = el("div", "day-modal-text");
+        text.append(el("span", "", item.title));
+        const body = (item.body || "").replace(/\s+/g, " ").trim();
+        if (body) text.append(el("small", "", body.slice(0, 50)));
+        row.append(svg("note", true), text);
+        return row;
+      }),
+    );
+    section(
+      "媒体",
+      "folder",
+      groups.media.map((item) => {
+        const row = button("", "day-modal-entry", () => showMedia(item));
+        row.type = "button";
+        row.append(svg("folder", true), el("div", "day-modal-text", item.title));
+        return row;
+      }),
+    );
+    body.append(wrap);
+    body.append(
+      actionsRow(
+        writable()
+          ? button("记录这一天", "button primary", () => {
+              closeModal();
+              navigate("daily");
+            }, "camera")
+          : el("span"),
+        button("关闭", "button secondary", closeModal),
+      ),
+    );
+  }, "日程事项");
 }
 
 // 当日回顾：按四类分组列出所选日期的全部内容。
@@ -2170,12 +2295,17 @@ function renderDayReview(content) {
 }
 
 function renderOverview(content) {
-  // 首页结构：状态标签 → 对应列表 → 小日历 → 本月日程 → 快捷入口。
-  // 今日记录只归入「本月日程」的今天分组，不再另设重复卡片。
-  renderStatusTabs(content);
-  renderStatusList(content);
-  renderHomeCalendar(content);
-  renderMonthAgenda(content);
+  // 首页两栏：左栏是待办（状态标签 + 列表），右栏是日历 + 对应月份日程。
+  // 日历格子里的事项可直接点击弹窗查看。
+  const layout = el("div", "overview-columns");
+  const leftCol = el("div", "overview-col overview-col-left");
+  const rightCol = el("div", "overview-col overview-col-right");
+  renderStatusTabs(leftCol);
+  renderStatusList(leftCol);
+  renderHomeCalendar(rightCol);
+  renderMonthAgenda(rightCol);
+  layout.append(leftCol, rightCol);
+  content.append(layout);
   if (state.area === "life") renderBedtimeEntry(content);
   renderShortcutBar(content);
 }
