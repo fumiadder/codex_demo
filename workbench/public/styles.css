@@ -5995,3 +5995,18 @@ form label + label {
 .home-calendar-cell.muted .home-calendar-preview {
   opacity: 0.5;
 }
+/* 本月日程里的记录缩略图 */
+.month-agenda-thumb {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: var(--sand);
+}
+.month-agenda-imgnum {
+  flex-shrink: 0;
+  color: var(--muted);
+  font-size: 11px;
+  font-style: normal;
+}

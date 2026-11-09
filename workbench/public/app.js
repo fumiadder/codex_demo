@@ -2263,7 +2263,22 @@ function renderMonthAgenda(content) {
       b.type = "button";
       if (kind === "task" && normalizeTaskStatus(item.status) === "done")
         b.classList.add("is-done");
-      b.append(svg(icon, true), el("span", "", describeEntry(kind, item)));
+      // 带图片的记录直接露出缩略图，一眼能看出记了什么画面。
+      const firstImage = kind === "daily" ? (item.images || [])[0] : null;
+      const url = firstImage ? dailyImageURL(firstImage) : "";
+      if (url) {
+        const thumb = el("img", "month-agenda-thumb");
+        thumb.src = url;
+        thumb.alt = item.summary || "记录图片";
+        thumb.loading = "lazy";
+        b.append(thumb);
+      } else {
+        b.append(svg(icon, true));
+      }
+      const label = el("span", "", describeEntry(kind, item));
+      b.append(label);
+      if (kind === "daily" && (item.images || []).length > 1)
+        b.append(el("em", "month-agenda-imgnum", `${item.images.length} 张`));
       return b;
     };
     groups.task.forEach((item) =>
