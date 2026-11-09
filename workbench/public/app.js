@@ -1799,7 +1799,12 @@ function render() {
   const todayDaily = state.daily.entries.filter(
     (entry) => entry.entryDate === dailyDateString(),
   ).length;
-  $("#nav-daily-count").textContent = todayDaily;
+  // 侧边栏不再有「今日记录」菜单，计数改为顶栏按钮的角标。
+  const dailyBadge = $("#daily-quick-badge");
+  if (dailyBadge) {
+    dailyBadge.hidden = todayDaily <= 0;
+    dailyBadge.textContent = todayDaily > 99 ? "99+" : String(todayDaily);
+  }
   const content = $("#view-content");
   content.replaceChildren();
   if (state.loading) {
@@ -6262,6 +6267,73 @@ function renderDigestCard(date, digest) {
   }
   return card;
 }
+// ---------------------------------------------------------------------------
+// 快速记录弹窗：从顶栏「今日记录」按钮打开。
+// 一个文本框 + 附件/拍照 + 语音转文字，保存为今日记录，不跳转大页面。
+// ---------------------------------------------------------------------------
+function showDailyQuickCapture() {
+  if (!ensureWrite()) return;
+  const composer = []; // 已上传的附件（与 daily 视图共用上传队列结构）
+  const stage = el("div", "quick-stage");
+  showModal("记录今天", (body) => {
+    const form = el("form", "editor-main");
+    const note = el("textarea", "quick-note");
+    note.placeholder = "今天做了什么？写一句就好…";
+    note.maxLength = 100000;
+    note.setAttribute("aria-label", "今日记录内容");
+    const err = el("p", "form-error");
+    err.setAttribute("role", "alert");
+    // 附件 / 拍照 / 语音
+    const tools = el("div", "quick-tools");
+    const attach = button("上传附件", "button soft compact", () => {
+      chooseFiles();
+    }, "upload");
+    const pick = button("拍照", "button soft compact", () => pickDailyImages(true), "camera");
+    const gallery = button("从相册选择", "button soft compact", () => pickDailyImages(false), "image");
+    const voice = button("语音转文字", "button soft compact", () => {
+      startDailyDictation(note, voice);
+    }, "mic");
+    tools.append(pick, gallery, attach, voice);
+    const submit = el("button", "button primary", "保存记录");
+    submit.type = "submit";
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const text = note.value.trim();
+      if (!text) {
+        err.textContent = "写一句，或先加一张图片";
+        note.focus();
+        return;
+      }
+      submit.disabled = true;
+      err.textContent = "";
+      try {
+        if (state.demo) {
+          const entry = buildDemoDailyEntry([], text);
+          state.demoDaily[state.space.id].unshift(entry);
+          state.daily.entries = state.demoDaily[state.space.id];
+        } else {
+          await api(`/api/spaces/${state.space.id}/daily/entries`, "POST", {
+            area: state.area,
+            body: text,
+            summary: text.split(/[。！？\n]/)[0].slice(0, 200),
+            imageIds: [],
+          });
+          state.daily.loadedSpace = null;
+          await loadDailyEntries();
+        }
+        closeModal();
+        render();
+        toast("记录已保存");
+      } catch (error) {
+        err.textContent = errorMessage(error);
+        submit.disabled = false;
+      }
+    });
+    form.append(note, tools, err, actionsRow(submit));
+    body.append(form);
+  }, "今日记录");
+}
+
 function renderDailyComposer() {
   const card = el("section", "card daily-composer");
   card.append(
@@ -7505,6 +7577,7 @@ $(".sidebar .brand").addEventListener("click", (event) => {
   event.preventDefault();
   navigate("overview");
 });
+$("#daily-quick-button").addEventListener("click", showDailyQuickCapture);
 $("#new-button").addEventListener("click", showNew);
 $("#mobile-new").addEventListener("click", showNew);
 $("#space-switcher").addEventListener("click", showSpaceSwitcher);

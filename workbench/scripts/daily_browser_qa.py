@@ -70,7 +70,8 @@ with tempfile.TemporaryDirectory(prefix="zhixu-daily-qa-") as data:
             page.locator('[data-view="modules"]').click()
             expect(page.locator(".module-card", has_text="今日记录")).to_contain_text("已可使用")
 
-            page.locator('[data-view="daily"]').click()
+            # 侧边栏不再有「今日记录」菜单，改为通过视图切换进入
+            page.evaluate("navigate('daily')")
             expect(page.locator(".daily-composer")).to_be_visible()
             expect(page.locator(".daily-timeline .empty-state")).to_be_visible()
             # No DASHSCOPE_API_KEY: the AI capability is honestly disconnected.
@@ -89,7 +90,8 @@ with tempfile.TemporaryDirectory(prefix="zhixu-daily-qa-") as data:
             expect(entry.locator(".daily-image-grid .daily-image-tile")).to_have_count(2)
             # Vision is disconnected, so the card says so instead of inventing a result.
             expect(entry.locator(".daily-ai.disabled")).to_contain_text("待连接")
-            expect(page.locator("#nav-daily-count")).to_have_text("1")
+            # 侧边栏计数已改为顶栏「今日记录」按钮的角标
+            expect(page.locator("#daily-quick-badge")).to_have_text("1")
 
             # The lightbox opens the original private image.
             entry.locator(".daily-image-tile").first.click()
@@ -162,9 +164,7 @@ with tempfile.TemporaryDirectory(prefix="zhixu-daily-qa-") as data:
                 no_overflow(page)
             page.set_viewport_size({"width": 390, "height": 844})
             # The sidebar becomes a drawer on phones; open it before navigating.
-            page.locator("#mobile-more").click()
-            expect(page.locator("#sidebar.open")).to_be_visible()
-            page.locator('[data-view="daily"]').click()
+            page.evaluate("navigate('daily')")
             no_overflow(page)
             expect(page.locator(".daily-composer")).to_be_visible()
             (ROOT / "artifacts").mkdir(exist_ok=True)
@@ -206,7 +206,7 @@ with tempfile.TemporaryDirectory(prefix="zhixu-daily-qa-") as data:
 
             # P2-2: a failed upload tile blocks submit and exposes retry/remove;
             # reusing the original File object recovers to ready and re-enables submit.
-            page.locator('[data-view="daily"]').click()
+            page.evaluate("navigate('daily')")
             retry_image = upload_dir / "retry.png"
             remove_image = upload_dir / "remove.png"
             make_png(retry_image, (90, 120, 160))

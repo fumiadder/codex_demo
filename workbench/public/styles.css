@@ -5537,7 +5537,8 @@ form label + label {
 .home-calendar-weekdays,
 .home-calendar-grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  /* minmax(0,1fr) 允许列宽被压缩，否则窄屏下 7 列会撑出横向滚动 */
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 4px;
 }
 .home-calendar-weekdays {
@@ -6152,4 +6153,129 @@ form label + label {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* 顶栏「今日记录」快速入口与角标 */
+.daily-quick {
+  position: relative;
+}
+.daily-quick-badge {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 9px;
+  background: var(--green);
+  color: var(--card);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 17px;
+  text-align: center;
+}
+@media (max-width: 760px) {
+  .daily-quick span:not(.daily-quick-badge) {
+    display: none;
+  }
+  .daily-quick {
+    width: 40px;
+    min-width: 40px;
+    padding: 0;
+    justify-content: center;
+  }
+}
+/* 快速记录弹窗 */
+.quick-note {
+  width: 100%;
+  min-height: 120px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+  line-height: 1.7;
+  resize: vertical;
+}
+.quick-note:focus {
+  outline: none;
+  border-color: var(--green);
+}
+.quick-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 4px;
+}
+
+/* 顶栏新增「今日记录」后，最窄屏需要进一步收紧，避免横向溢出 */
+@media (max-width: 400px) {
+  .topbar-actions {
+    gap: 4px;
+    min-width: 0;
+    flex-shrink: 1;
+  }
+  .daily-quick,
+  .notify-button,
+  .search-button {
+    width: 38px;
+    min-width: 38px;
+    height: 38px;
+  }
+  .topbar .primary {
+    padding: 6px 8px;
+  }
+}
+
+/* 320px 极窄屏：日历与卡片内边距再收一档，消除 2px 溢出 */
+@media (max-width: 340px) {
+  .overview-columns {
+    gap: 10px;
+  }
+  .home-calendar {
+    padding: 10px 10px 12px;
+  }
+  .home-calendar-grid,
+  .home-calendar-weekdays {
+    gap: 2px;
+  }
+  .home-calendar-cell {
+    min-height: 46px;
+    padding: 2px 0;
+  }
+  .home-calendar-preview {
+    font-size: 9px;
+  }
+}
+
+/* 亚像素舍入在 320px 下会多出 1–2px，这里兜底裁掉，避免误判为横向滚动 */
+@media (max-width: 340px) {
+  .overview-columns,
+  .overview-col {
+    overflow-x: clip;
+  }
+}
+
+@media (max-width: 340px) {
+  .topbar {
+    padding-left: 8px;
+    padding-right: 8px;
+    gap: 6px;
+  }
+  .topbar-actions {
+    gap: 3px;
+  }
+  .daily-quick,
+  .notify-button,
+  .search-button {
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+  }
+  #new-button {
+    min-width: 36px;
+    padding: 6px;
+  }
 }

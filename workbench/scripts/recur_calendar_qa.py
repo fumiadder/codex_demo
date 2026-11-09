@@ -393,9 +393,10 @@ def check_search_real(page):
     # daily 结果点击跳到今日记录
     page.locator("#search-view-input").fill(keyword)
     page.locator(".search-result", has_text="今日记录").first.click()
-    expect(
-        page.locator('[data-view="daily"].active, [data-mobile-view="daily"].active'),
-    ).to_have_count(1)
+    # 侧边栏已移除「今日记录」菜单，改用当前视图判断是否跳转成功
+    # CSP 禁止字符串求值，用函数形式等待视图切换
+    page.wait_for_function("() => state.view === 'daily'", timeout=8000)
+    assert page.evaluate("state.view") == "daily"
 
     # item 结果点击：跨空间时自动切换并打开编辑 modal
     page.locator('[data-view="search"]').first.click()
