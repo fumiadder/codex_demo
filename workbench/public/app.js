@@ -1880,10 +1880,17 @@ function collectDayEntries(dateString) {
   // 两种命名都要兼容，否则记录会被算成「无日期」而漏掉。
   const createdOf = (item) =>
     String(item.created_at || item.createdAt || "").slice(0, 10);
+  // 由今日记录「设为待办」生成的待办，原记录本身已在本月日程里出现，
+  // 不再重复列出——不论待办被安排到哪一天，内容都不该出现两遍。
+  const promotedFrom = new Set(
+    (state.daily.entries || []).map((entry) => entry.id),
+  );
   for (const item of state.items) {
     if (item.status === "archived") continue;
     const cat = recordCategory(item);
     if (cat === "task") {
+      const source = item.meta?.fromDailyEntry;
+      if (source && promotedFrom.has(source)) continue;
       // 待办按计划日期归属；无计划日期再看创建日期。
       const due = item.meta?.due || createdOf(item);
       if (due === dateString) groups.task.push(item);
