@@ -6313,12 +6313,6 @@ form label + label {
   height: 18px;
   accent-color: var(--green);
 }
-.capture-task-fields {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 10px;
-  margin: 8px 0;
-}
 .capture-task-fields[hidden] {
   display: none;
 }
@@ -6329,4 +6323,59 @@ form label + label {
 }
 .day-modal-note .day-modal-entry {
   flex: 1;
+}
+
+/* 记一笔弹窗：待办字段左右对齐。
+   日期 input 与 select 的原生高度不同（49 vs 44），这里统一固定高度，
+   并让两个 label 采用相同的行高，标签与控件就会在同一水平线上。 */
+.capture-task-fields {
+  align-items: start;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+.capture-task-fields > label {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 6px;
+  min-width: 0;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* 记一笔弹窗：待办字段左右并排且水平对齐。
+   注意 form label + label 的全局 margin-top:19px 会把第二个字段推下去，
+   这里必须显式归零，日期与优先级才会在同一条基线上。 */
+.capture-task-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  align-items: start;
+  margin: 8px 0;
+}
+.capture-task-fields > label,
+.capture-task-fields > label + label {
+  display: block;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+  line-height: 1.4;
+  font-size: 13px;
+}
+.capture-task-fields > label > input,
+.capture-task-fields > label > select {
+  display: block;
+  width: 100%;
+  height: 44px;
+  margin: 8px 0 0;
+  padding: 0 12px;
+  box-sizing: border-box;
+  line-height: normal;
+}
+@media (max-width: 420px) {
+  .capture-task-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .capture-task-fields > label + label {
+    margin-top: 12px;
+  }
 }
