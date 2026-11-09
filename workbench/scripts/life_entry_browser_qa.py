@@ -39,14 +39,14 @@ with tempfile.TemporaryDirectory(prefix='zhixu-life-qa-') as data:
             expect(page.locator('.main-nav [data-view="bedtime"]')).to_be_hidden()
             expect(page.locator('.main-nav [data-view="vault"]')).to_be_visible()
             expect(page.locator('#main-nav-label')).to_have_text('我的工作台')
-            expect(page.locator('.main-nav [data-view="tasks"] [data-label-work]')).to_have_text('待办事项')
+            # 待办菜单已移除，改用保留的媒体菜单验证分区文案
+            expect(page.locator('.main-nav [data-view="media"] [data-label-work]')).to_have_text('媒体资料库')
             page.locator('[data-view="modules"]').click()
             assert page.locator('#view-content .life-bedtime-entry').count()==0
             page.locator('[data-area="life"]').click()
             expect(page.locator('.main-nav [data-view="bedtime"]')).to_be_visible()
             expect(page.locator('.main-nav [data-view="vault"]')).to_be_hidden()
             expect(page.locator('#main-nav-label')).to_have_text('我的生活')
-            expect(page.locator('.main-nav [data-view="tasks"] [data-label-work]')).to_have_text('生活清单')
             expect(page.locator('.main-nav [data-view="media"] [data-label-work]')).to_have_text('回忆收藏')
             expect(page.locator('#view-content .module-category-heading')).to_contain_text('生活功能')
             expect(page.locator('#view-content .life-bedtime-entry')).to_be_visible()

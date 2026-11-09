@@ -1793,9 +1793,12 @@ function render() {
   $("#page-eyebrow").hidden = state.view !== "overview";
   $("#topbar-description").textContent =
     state.area === "work" ? "专注当下，把想法变成进展" : "放慢一点，让日常有光";
-  $("#nav-task-count").textContent = currentItems("task").filter(
-    (t) => t.status !== "done",
-  ).length;
+  // 侧边栏已简化：待办数量显示在总览的状态标签上，这里只做空值保护。
+  const taskCounter = $("#nav-task-count");
+  if (taskCounter)
+    taskCounter.textContent = currentItems("task").filter(
+      (t) => (t.status || "active") !== "done",
+    ).length;
   const todayDaily = state.daily.entries.filter(
     (entry) => entry.entryDate === dailyDateString(),
   ).length;

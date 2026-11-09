@@ -143,7 +143,8 @@ with tempfile.TemporaryDirectory(prefix="zhixu-daily-qa-") as data:
             expect(page.locator('[data-view="overview"].active')).to_have_count(1)
             (ROOT / "artifacts").mkdir(exist_ok=True)
             page.screenshot(path=str(ROOT / "artifacts/workbench-month-agenda.png"), full_page=True)
-            page.locator('[data-view="calendar"]').click()
+            page.wait_for_selector("#app-shell:not([hidden])", timeout=15000)
+            page.evaluate("navigate('calendar')")
             page.get_by_role("button", name="日程", exact=True).click()
             agenda_record = page.locator(".agenda-group", has_text="今天").locator(".agenda-daily")
             expect(agenda_record).to_contain_text("周会白板：确认上线节奏")
@@ -200,7 +201,8 @@ with tempfile.TemporaryDirectory(prefix="zhixu-daily-qa-") as data:
             assert len(created) == 1 and created[0]["status"] == "active", created
             # 转换流程不本地插入任务，重新拉取后任务视图应展示这条 active 待办
             page.evaluate("loadItems()")
-            page.locator('[data-view="tasks"]').click()
+            page.wait_for_selector("#app-shell:not([hidden])", timeout=15000)
+            page.evaluate("navigate('tasks')")
             expect(page.locator("#view-content")).to_contain_text("QA 建议转待办")
             print("PASS suggestion conversion posts and persists an active task", flush=True)
 

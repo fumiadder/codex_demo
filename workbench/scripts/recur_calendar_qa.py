@@ -66,7 +66,8 @@ def shift_day(days):
 
 
 def open_editor_for_new_task(page):
-    page.locator('[data-view="tasks"]').first.click()
+    page.wait_for_selector("#app-shell:not([hidden])", timeout=15000)
+    page.evaluate("navigate('tasks')")
     page.get_by_role("button", name="添加待办").first.click()
     expect(page.locator("#modal")).to_be_visible()
 
@@ -259,7 +260,8 @@ def check_subtasks_real(page):
 def check_tags_real(page):
     """多标签添加/删除/8 个上限、筛选条、旧单标签兼容。"""
     title = "QA 标签笔记 " + uuid.uuid4().hex[:6]
-    page.locator('[data-view="notes"]').first.click()
+    page.wait_for_selector("#app-shell:not([hidden])", timeout=15000)
+    page.evaluate("navigate('notes')")
     page.get_by_role("button", name="写一条笔记").first.click()
     expect(page.locator("#modal")).to_be_visible()
     page.locator("#modal .editor-main input").first.fill(title)
@@ -446,7 +448,8 @@ def check_calendar_real(page):
     set_due(page, today_str())
     save_modal(page)
 
-    page.locator('[data-view="calendar"]').first.click()
+    page.wait_for_selector("#app-shell:not([hidden])", timeout=15000)
+    page.evaluate("navigate('calendar')")
     expect(page.locator(".calendar-grid .calendar-cell")).to_have_count(42)
     expect(page.locator(".calendar-weekdays span")).to_have_count(7)
     month_title = page.locator(".calendar-title").inner_text()
@@ -496,7 +499,8 @@ def check_markdown_real(page):
         "<script>window.__qaXssHit = 1;</script>\n\n"
         "[危险链接](javascript:alert('xss'))\n"
     )
-    page.locator('[data-view="notes"]').first.click()
+    page.wait_for_selector("#app-shell:not([hidden])", timeout=15000)
+    page.evaluate("navigate('notes')")
     page.get_by_role("button", name="写一条笔记").first.click()
     page.locator("#modal .editor-main input").first.fill(title)
     page.locator("#modal textarea").fill(body)
