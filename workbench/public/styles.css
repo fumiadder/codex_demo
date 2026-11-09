@@ -6279,3 +6279,54 @@ form label + label {
     padding: 6px;
   }
 }
+
+/* 统一记录弹窗 */
+.capture-note {
+  width: 100%;
+  min-height: 130px;
+  padding: 13px 15px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+  line-height: 1.7;
+  resize: vertical;
+}
+.capture-note:focus {
+  outline: none;
+  border-color: var(--green);
+}
+.capture-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  margin: 12px 0 4px;
+  color: var(--text);
+  font-size: 14px;
+  cursor: pointer;
+}
+.capture-toggle input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--green);
+}
+.capture-task-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin: 8px 0;
+}
+.capture-task-fields[hidden] {
+  display: none;
+}
+.day-modal-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.day-modal-note .day-modal-entry {
+  flex: 1;
+}

@@ -78,10 +78,9 @@ def account_boundaries(page, context, base, email_a):
     expect(other.locator("#app-shell")).to_be_visible()
     expect(other.locator("#view-content")).to_contain_text("添加第一件待办")
     other.locator("#new-button").click()
-    other.locator("#modal").get_by_role("button", name="灵感笔记", exact=False).click()
-    other.get_by_label("标题", exact=True).fill("B_PRIVATE_NOTE")
-    other.get_by_label("正文", exact=True).fill("仅 B 的空间内容")
-    other.locator("#modal").get_by_role("button", name="保存记录", exact=True).click()
+    # 统一记录弹窗：直接填写内容即为随笔
+    other.locator(".capture-note").fill("B_PRIVATE_NOTE")
+    other.locator("#modal").get_by_role("button", name="保存", exact=True).click()
     expect(other.locator("#modal")).not_to_be_visible()
     other.wait_for_selector("#app-shell:not([hidden])", timeout=15000)
     other.evaluate("navigate('notes')")
@@ -177,13 +176,12 @@ def checks(base):
 
         page.locator('[data-mobile-view="notes"]').click()
         page.locator("#mobile-new").click()
-        page.locator("#modal").get_by_role("button", name="灵感笔记", exact=False).click()
-        page.get_by_label("标题", exact=True).fill("手机上留下的一句话")
-        page.get_by_label("正文", exact=True).fill("从窄屏也能把日常记录保存下来。")
+        # 统一记录弹窗：直接填写内容即为随笔
+        page.locator(".capture-note").fill("手机上留下的一句话")
         no_overflow(page)
         assert page.locator("#modal").bounding_box()["width"] <= 320
-        assert float(page.get_by_label("标题", exact=True).evaluate("el => parseFloat(getComputedStyle(el).fontSize)")) >= 16
-        page.locator("#modal").get_by_role("button", name="保存记录", exact=True).click()
+        assert float(page.locator(".capture-note").evaluate("el => parseFloat(getComputedStyle(el).fontSize)")) >= 16
+        page.locator("#modal").get_by_role("button", name="保存", exact=True).click()
         expect(page.locator("#view-content")).to_contain_text("手机上留下的一句话")
         report("手机弹窗录入并真实保存笔记")
 

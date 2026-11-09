@@ -90,9 +90,6 @@ with tempfile.TemporaryDirectory(prefix="zhixu-daily-qa-") as data:
             expect(entry.locator(".daily-image-grid .daily-image-tile")).to_have_count(2)
             # Vision is disconnected, so the card says so instead of inventing a result.
             expect(entry.locator(".daily-ai.disabled")).to_contain_text("待连接")
-            # 侧边栏计数已改为顶栏「今日记录」按钮的角标
-            expect(page.locator("#daily-quick-badge")).to_have_text("1")
-
             # The lightbox opens the original private image.
             entry.locator(".daily-image-tile").first.click()
             expect(page.locator("#modal .daily-lightbox img")).to_be_visible()
@@ -115,7 +112,9 @@ with tempfile.TemporaryDirectory(prefix="zhixu-daily-qa-") as data:
             expect(entry.locator(".daily-summary")).to_contain_text("手动整理的摘要内容")
 
             # Today's capture appears only inside this month's schedule.
-            page.locator('[data-view="overview"]').click()
+            page.evaluate("navigate('overview')")
+            page.wait_for_timeout(1200)
+            expect(page.locator(".month-agenda-item")).not_to_have_count(0)
             expect(page.locator(".today-items, .overview-daily")).to_have_count(0)
             today_agenda = page.locator(".month-agenda-day", has_text="今天")
             expect(today_agenda).to_have_count(1)

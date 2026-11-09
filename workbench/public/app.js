@@ -1802,12 +1802,7 @@ function render() {
   const todayDaily = state.daily.entries.filter(
     (entry) => entry.entryDate === dailyDateString(),
   ).length;
-  // 侧边栏不再有「今日记录」菜单，计数改为顶栏按钮的角标。
-  const dailyBadge = $("#daily-quick-badge");
-  if (dailyBadge) {
-    dailyBadge.hidden = todayDaily <= 0;
-    dailyBadge.textContent = todayDaily > 99 ? "99+" : String(todayDaily);
-  }
+  // 单一「记一笔」入口后不再有独立计数角标；今日条数在总览里展示。
   const content = $("#view-content");
   content.replaceChildren();
   if (state.loading) {
@@ -1895,6 +1890,8 @@ function collectDayEntries(dateString) {
   );
   for (const item of state.items) {
     if (item.status === "archived") continue;
+    // 只展示当前分区（工作 / 生活）的内容，避免另一个分区的记录混进来。
+    if (item.area !== state.area) continue;
     const cat = recordCategory(item);
     if (cat === "task") {
       const source = item.meta?.fromDailyEntry;
@@ -1908,7 +1905,8 @@ function collectDayEntries(dateString) {
   }
   for (const entry of state.daily.entries || []) {
     const d = entry.entryDate || entry.entry_date;
-    if (d === dateString) groups.daily.push(entry);
+    if (d === dateString && (entry.area || state.area) === state.area)
+      groups.daily.push(entry);
   }
   return groups;
 }
@@ -2111,14 +2109,27 @@ function showDayEntries(dateString) {
       "随笔",
       "note",
       groups.note.map((item) => {
+        const wrap = el("div", "day-modal-note");
         const row = button("", "day-modal-entry", () => showEditor("note", item));
         row.type = "button";
         const text = el("div", "day-modal-text");
         text.append(el("span", "", item.title));
         const body = (item.body || "").replace(/\s+/g, " ").trim();
-        if (body) text.append(el("small", "", body.slice(0, 50)));
+        if (body && body !== item.title) text.append(el("small", "", body.slice(0, 50)));
         row.append(svg("note", true), text);
-        return row;
+        // 随笔里发现要做的事：一键转成待办（弹窗内填标题与日期）
+        if (writable()) {
+          wrap.append(
+            row,
+            button("转为待办", "text-button", () => {
+              closeModal();
+              showNew({ task: true, text: item.body || item.title });
+            }),
+          );
+        } else {
+          wrap.append(row);
+        }
+        return wrap;
       }),
     );
     section(
@@ -2365,7 +2376,7 @@ function renderStatusList(content) {
       key === "done" ? "还没有完成的事项" : "这里还是空的",
       key === "done" ? "完成的待办会出现在这里。" : "记下一件要做的事，它会出现在这里。",
       writable() && key === "active" ? "添加第一件待办" : null,
-      writable() && key === "active" ? () => showEditor("task") : null,
+      writable() && key === "active" ? () => showNew({ task: true }) : null,
     );
   }
   card.append(list);
@@ -2508,7 +2519,7 @@ function renderOverviewStats(content) {
   taskCard.append(list);
   const foot = el("div", "card-action-footer");
   foot.append(
-    button("添加待办", "add-task-button", () => showEditor("task"), "plus"),
+    button("添加待办", "add-task-button", () => showNew({ task: true }), "plus"),
     el(
       "span",
       "",
@@ -3836,32 +3847,104 @@ function showEditor(kind, item, prefill = {}) {
     },
   );
 }
-function showNew() {
+// 统一的记录入口：一个文本框，可随手记，也可一键转成待办。
+// 取代了此前分散的「新建」菜单与「今日记录」按钮。
+function showNew(opts = {}) {
   if (!ensureWrite()) return;
-  showModal("给想法一个位置", (body) => {
-    const options = el("div", "new-options");
-    for (const [iconName, title, text, action] of [
-      ["camera", "拍照记一笔", "拍照或选图，AI 识别总结", () => navigate("daily")],
-      ["task", "待办事项", "记录接下来要做的事", () => showEditor("task")],
-      ["note", "灵感笔记", "留住此刻的想法", () => showEditor("note")],
-      ["mic", "语音录入", "说下来，保存为录音", showVoice],
-      ["upload", "上传资料", "图片、视频、音频与文档", chooseFiles],
-    ]) {
-      const b = button("", "new-option", action);
-      b.append(svg(iconName), el("strong", "", title), el("small", "", text));
-      options.append(b);
-    }
-    const fromTemplate = button("", "new-option new-option-template", () =>
-      showTemplatePicker(),
+  const asTask = Boolean(opts.task);
+  showModal("记一笔", (body) => {
+    const form = el("form", "editor-main");
+    const note = el("textarea", "capture-note");
+    note.placeholder = asTask
+      ? "要做什么？一句话就行"
+      : "随手记一句：想法、发生了什么、想做的事…";
+    note.maxLength = 100000;
+    note.setAttribute("aria-label", "记录内容");
+    note.value = opts.text || "";
+
+    // 「设为待办」开关：打开后多出计划日期，保存即成待办。
+    const toggleRow = el("label", "capture-toggle");
+    const toggle = el("input");
+    toggle.type = "checkbox";
+    toggle.checked = asTask;
+    const toggleText = el("span", "", "设为待办（可安排日期）");
+    toggleRow.append(toggle, toggleText);
+
+    const taskFields = el("div", "capture-task-fields");
+    const due = input("date", "", opts.due || dailyDateString());
+    const priority = select(
+      [
+        ["normal", "普通"],
+        ["high", "优先"],
+      ],
+      "normal",
     );
-    fromTemplate.append(
-      svg("note"),
-      el("strong", "", "从模板新建"),
-      el("small", "", "站会、周报、读书清单…"),
-    );
-    options.append(fromTemplate);
-    body.append(options);
-  });
+    taskFields.append(labelField("计划日期", due), labelField("优先级", priority));
+    taskFields.hidden = !asTask;
+    toggle.addEventListener("change", () => {
+      taskFields.hidden = !toggle.checked;
+      if (toggle.checked) note.placeholder = "要做什么？一句话就行";
+      else note.placeholder = "随手记一句：想法、发生了什么、想做的事…";
+    });
+
+    // 附件与语音
+    const tools = el("div", "quick-tools");
+    const attach = button("上传附件", "button soft compact", () => chooseFiles(), "upload");
+    const voice = button("语音转文字", "button soft compact", () => {
+      startDailyDictation(note, voice);
+    }, "mic");
+    // 录音另存为媒体文件（适合语音备忘，不做转写）
+    const record = button("语音录入", "button soft compact", () => {
+      closeModal();
+      showVoice();
+    }, "mic");
+    tools.append(attach, voice, record);
+
+    const err = el("p", "form-error");
+    err.setAttribute("role", "alert");
+    const submit = el("button", "button primary", "保存");
+    submit.type = "submit";
+    form.append(note, toggleRow, taskFields, tools, err, actionsRow(submit));
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const text = note.value.trim();
+      if (!text) {
+        err.textContent = "先写一句再保存";
+        note.focus();
+        return;
+      }
+      submit.disabled = true;
+      err.textContent = "";
+      try {
+        if (toggle.checked) {
+          await saveItem({
+            kind: "task",
+            area: state.area,
+            title: text.split(/[。！？\n]/)[0].slice(0, 200) || text.slice(0, 200),
+            body: text,
+            status: "active",
+            meta: { due: due.value || dailyDateString(), priority: priority.value },
+          });
+        } else {
+          await saveItem({
+            kind: "note",
+            area: state.area,
+            title: text.split(/[。！？\n]/)[0].slice(0, 200) || text.slice(0, 200),
+            body: text,
+            status: "active",
+            meta: {},
+          });
+        }
+        closeModal();
+        render();
+        toast(toggle.checked ? "已加入待办" : "已记下");
+      } catch (error) {
+        err.textContent = errorMessage(error);
+        submit.disabled = false;
+      }
+    });
+    body.append(form);
+  }, asTask ? "待办" : "随笔");
 }
 function chooseFiles() {
   if (!ensureWrite()) return;
@@ -6274,69 +6357,6 @@ function renderDigestCard(date, digest) {
 // 快速记录弹窗：从顶栏「今日记录」按钮打开。
 // 一个文本框 + 附件/拍照 + 语音转文字，保存为今日记录，不跳转大页面。
 // ---------------------------------------------------------------------------
-function showDailyQuickCapture() {
-  if (!ensureWrite()) return;
-  const composer = []; // 已上传的附件（与 daily 视图共用上传队列结构）
-  const stage = el("div", "quick-stage");
-  showModal("记录今天", (body) => {
-    const form = el("form", "editor-main");
-    const note = el("textarea", "quick-note");
-    note.placeholder = "今天做了什么？写一句就好…";
-    note.maxLength = 100000;
-    note.setAttribute("aria-label", "今日记录内容");
-    const err = el("p", "form-error");
-    err.setAttribute("role", "alert");
-    // 附件 / 拍照 / 语音
-    const tools = el("div", "quick-tools");
-    const attach = button("上传附件", "button soft compact", () => {
-      chooseFiles();
-    }, "upload");
-    const pick = button("拍照", "button soft compact", () => pickDailyImages(true), "camera");
-    const gallery = button("从相册选择", "button soft compact", () => pickDailyImages(false), "image");
-    const voice = button("语音转文字", "button soft compact", () => {
-      startDailyDictation(note, voice);
-    }, "mic");
-    tools.append(pick, gallery, attach, voice);
-    const submit = el("button", "button primary", "保存记录");
-    submit.type = "submit";
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      const text = note.value.trim();
-      if (!text) {
-        err.textContent = "写一句，或先加一张图片";
-        note.focus();
-        return;
-      }
-      submit.disabled = true;
-      err.textContent = "";
-      try {
-        if (state.demo) {
-          const entry = buildDemoDailyEntry([], text);
-          state.demoDaily[state.space.id].unshift(entry);
-          state.daily.entries = state.demoDaily[state.space.id];
-        } else {
-          await api(`/api/spaces/${state.space.id}/daily/entries`, "POST", {
-            area: state.area,
-            body: text,
-            summary: text.split(/[。！？\n]/)[0].slice(0, 200),
-            imageIds: [],
-          });
-          state.daily.loadedSpace = null;
-          await loadDailyEntries();
-        }
-        closeModal();
-        render();
-        toast("记录已保存");
-      } catch (error) {
-        err.textContent = errorMessage(error);
-        submit.disabled = false;
-      }
-    });
-    form.append(note, tools, err, actionsRow(submit));
-    body.append(form);
-  }, "今日记录");
-}
-
 function renderDailyComposer() {
   const card = el("section", "card daily-composer");
   card.append(
@@ -7580,7 +7600,6 @@ $(".sidebar .brand").addEventListener("click", (event) => {
   event.preventDefault();
   navigate("overview");
 });
-$("#daily-quick-button").addEventListener("click", showDailyQuickCapture);
 $("#new-button").addEventListener("click", showNew);
 $("#mobile-new").addEventListener("click", showNew);
 $("#space-switcher").addEventListener("click", showSpaceSwitcher);

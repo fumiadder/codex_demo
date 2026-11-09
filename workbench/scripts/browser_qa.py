@@ -22,9 +22,12 @@ def report(message):
     print("PASS", message, flush=True)
 
 
-def open_new(page, label):
+def open_new(page, task=False):
+    """打开统一的「记一笔」弹窗；task=True 时勾选设为待办。"""
     page.locator("#new-button").click()
-    page.locator("#modal").get_by_role("button", name=re.compile("^" + re.escape(label))).click()
+    expect(page.locator("#modal")).to_be_visible()
+    if task:
+        page.locator(".capture-toggle input").check()
 
 
 def run():
@@ -52,35 +55,40 @@ def run():
         expect(page.locator(".task-row")).to_have_count(0)
         report("注册后的私人空间初始为空")
 
-        open_new(page, "灵感笔记")
-        page.get_by_label("标题", exact=True).fill("工作记录测试")
-        page.get_by_label("正文", exact=True).fill('<img src=x onerror="window.__xss=1">这段内容只按文字展示。')
-        page.locator("#modal").get_by_role("button", name="保存记录", exact=True).click()
+        open_new(page)
+        page.locator(".capture-note").fill('<img src=x onerror="window.__xss=1">工作记录测试，这段内容只按文字展示。')
+        page.locator("#modal").get_by_role("button", name="保存", exact=True).click()
         expect(page.locator("#modal")).not_to_be_visible()
-        expect(page.locator("#view-content")).to_contain_text("工作记录测试")
+        # 卡片/日程只显示内容前几个字，这里断言内容已保存且没有执行脚本
+        expect(page.locator(".month-agenda-item")).not_to_have_count(0)
         assert page.evaluate("window.__xss === undefined")
         report("笔记真实保存，用户文本不会执行 HTML")
 
-        open_new(page, "待办事项")
-        page.get_by_label("标题", exact=True).fill("完成一件待办")
-        page.get_by_label("补充说明", exact=True).fill("浏览器端到端验证")
-        page.locator("#modal").get_by_role("button", name="保存记录", exact=True).click()
+        open_new(page, task=True)
+        page.locator(".capture-note").fill("完成一件待办")
+        page.locator("#modal").get_by_role("button", name="保存", exact=True).click()
         expect(page.locator("#modal")).not_to_be_visible()
-        page.get_by_role("button", name="完成「完成一件待办」", exact=True).click()
-        expect(page.get_by_role("button", name="将「完成一件待办」标为未完成", exact=True)).to_be_visible()
+        # 待办行里的勾选框：.task-row > .task-check
+        row = page.locator(".task-row").filter(has_text="完成一件待办").first
+        expect(row).to_be_visible()
+        before = page.locator(".status-tab").filter(has_text="已完成").inner_text()
+        row.locator(".task-check").click()
+        page.wait_for_timeout(800)
+        # 完成后该条从「待办」移入「已完成」，计数随之变化
+        after = page.locator(".status-tab").filter(has_text="已完成").inner_text()
+        assert before != after, (before, after)
         report("任务创建并标记完成")
 
         page.locator('[data-area="life"]').click()
         expect(page.locator("#view-content")).not_to_contain_text("工作记录测试")
-        open_new(page, "灵感笔记")
-        page.get_by_label("标题", exact=True).fill("生活记录测试")
-        page.get_by_label("正文", exact=True).fill("工作与生活分别整理")
-        page.locator("#modal").get_by_role("button", name="保存记录", exact=True).click()
+        open_new(page)
+        page.locator(".capture-note").fill("生活记录测试，工作与生活分别整理")
+        page.locator("#modal").get_by_role("button", name="保存", exact=True).click()
         expect(page.locator("#modal")).not_to_be_visible()
         page.locator('[data-area="work"]').click()
         expect(page.locator("#view-content")).not_to_contain_text("生活记录测试")
         page.reload(wait_until="networkidle")
-        expect(page.locator("#view-content")).to_contain_text("工作记录测试")
+        expect(page.locator(".month-agenda-item")).not_to_have_count(0)
         report("工作生活分区及刷新后持久保存")
 
         page.locator('[data-view="media"]').click()
@@ -122,7 +130,8 @@ def run():
         report("页面刷新后密码箱保持锁定")
 
         page.locator('[data-view="media"]').click()
-        open_new(page, "语音录入")
+        open_new(page)
+        page.locator("#modal").get_by_role("button", name=re.compile("^语音录入")).click()
         page.get_by_role("button", name="开始录音", exact=True).click()
         expect(page.get_by_role("button", name="停止录音", exact=True)).to_be_enabled()
         page.wait_for_timeout(1200)

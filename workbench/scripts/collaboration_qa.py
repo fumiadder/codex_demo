@@ -41,10 +41,10 @@ def register(page, base, name, email):
 
 def new_note(page, title, body):
     page.locator("#new-button").click()
-    page.locator("#modal").get_by_role("button", name=re.compile("^灵感笔记")).click()
-    page.get_by_label("标题", exact=True).fill(title)
-    page.get_by_label("正文", exact=True).fill(body)
-    page.locator("#modal").get_by_role("button", name="保存记录", exact=True).click()
+    # 统一记录弹窗：直接填写内容即为随笔
+    # 统一记录弹窗只填内容；标题由内容首句派生
+    page.locator(".capture-note").fill(f"{title}。{body}")
+    page.locator("#modal").get_by_role("button", name="保存", exact=True).click()
     expect(page.locator("#modal")).not_to_be_visible()
     page.wait_for_selector("#app-shell:not([hidden])", timeout=15000)
     page.evaluate("navigate('notes')")
@@ -89,8 +89,10 @@ def check_collaboration(owner, member, base, member_email):
     expect(member.locator("#view-content")).to_contain_text(OWNER_NOTE)
     expect(member.locator("#new-button")).to_be_disabled()
     member.locator(".note-card").filter(has_text=OWNER_NOTE).click()
+    expect(member.locator("#modal")).to_be_visible()
+    # textarea 的值要用 to_have_value 断言（不是 text 内容）
     expect(member.get_by_label("正文", exact=True)).to_have_value(
-        "共享记录可以查看，只读成员不能编辑。"
+        "所有者共享给成员的记录。共享记录可以查看，只读成员不能编辑。"
     )
     expect(member.get_by_label("正文", exact=True)).to_be_disabled()
     member.locator("#modal-close").click()
