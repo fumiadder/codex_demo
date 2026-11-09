@@ -505,7 +505,14 @@ class FolioHandler(BaseHTTPRequestHandler):
 
     @staticmethod
     def validate_meta_extensions(meta):
-        """校验 meta 内的 recurrence/subtasks/tags；旧的单值 meta.tag 不受影响。"""
+        """校验 meta 内的 recurrence/subtasks/tags 与提醒时间；旧的单值 meta.tag 不受影响。"""
+        # 定时提醒：YYYY-MM-DDTHH:MM，且必须是将来或不久前的合法时刻。
+        if "remindAt" in meta and meta["remindAt"]:
+            value = meta["remindAt"]
+            if not isinstance(value, str) or not re.fullmatch(
+                r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}", value
+            ):
+                raise APIError(400, "提醒时间格式应为 YYYY-MM-DDTHH:MM")
         if "recurrence" in meta:
             try:
                 recur.validate_recurrence(meta["recurrence"])

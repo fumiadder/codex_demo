@@ -39,6 +39,8 @@ SHANGHAI_TZ = timezone(timedelta(hours=8))
 
 # 维护与发送参数。
 MAINTENANCE_INTERVAL = 60
+# 定时提醒：到点后最多延迟这么久仍会补发（避免服务刚好在那一分钟不可用而漏提醒）
+REMIND_GRACE_SECONDS = 15 * 60
 USER_BATCH = 200
 MAX_SPACES_PER_USER = 500
 MAX_ITEMS_PER_SPACE = 2000
@@ -139,6 +141,17 @@ def _clip(text):
     if not isinstance(text, str):
         return ""
     return text[:MAX_ERROR_LEN]
+
+
+def _parse_remind_at(value):
+    """解析 meta.remindAt（YYYY-MM-DDTHH:MM）为 Unix 秒；非法返回 None。"""
+    if not isinstance(value, str) or not value.strip()[:16]:
+        return None
+    try:
+        parsed = datetime.strptime(value.strip()[:16], "%Y-%m-%dT%H:%M")
+    except ValueError:
+        return None
+    return int(time.mktime(parsed.timetuple()))
 
 
 def _valid_due(value):
@@ -310,7 +323,7 @@ def _enqueue_for_hooks(conn, uid, notification, hooks):
         )
 
 
-def _scan_user(conn, uid, today):
+def _scan_user(conn, uid, today, now):
     """扫描单个用户成员空间内未完成且到期的 task，返回待写通知清单。"""
     spaces = [
         row["space_id"]
@@ -344,6 +357,21 @@ def _scan_user(conn, uid, today):
             continue
         if not isinstance(meta, dict):
             continue
+        # 优先：任务设置了具体提醒时间（meta.remindAt，形如 2026-11-10T09:00）
+        remind_at = meta.get("remindAt")
+        if remind_at:
+            moment = _parse_remind_at(remind_at)
+            if moment is not None and 0 <= (now - moment) <= REMIND_GRACE_SECONDS:
+                dedup_key = f"task-remind:{item['id']}:{remind_at}"
+                if dedup_key in existing:
+                    continue
+                existing.add(dedup_key)
+                pending.append((item, item["space_id"], remind_at, dedup_key))
+                continue
+            # 还没到点、或早已超出补发窗口：不再走「按日期提醒」路径，
+            # 否则会给设了时间点的任务重复提醒。
+            if moment is not None:
+                continue
         due = meta.get("due")
         # ISO 日期可直接字符串比较；非法/未来日期跳过。
         if not _valid_due(due) or due > today:
@@ -418,7 +446,7 @@ def _scan_due_tasks(server):
         for user_row in users:
             uid = user_row["id"]
             with server.db() as conn:
-                pending = _scan_user(conn, uid, today)
+                pending = _scan_user(conn, uid, today, _now())
             _persist_notifications(server, uid, pending, today)
         offset += len(users)
         if len(users) < USER_BATCH:

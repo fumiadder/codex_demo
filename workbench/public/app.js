@@ -724,6 +724,47 @@ async function loadNotifications(force = false) {
   }
   updateNotifyBadge();
 }
+// ---------------------------------------------------------------------------
+// 手机桌面未读数：用 Badging API 在应用图标上显示未读角标。
+// 只在已安装（standalone）或支持该 API 的环境生效，其他环境静默跳过。
+// ---------------------------------------------------------------------------
+let lastBadgeCount = -1;
+function updateAppBadge(count) {
+  const value = Number.isFinite(count) ? Math.max(0, Math.floor(count)) : 0;
+  if (value === lastBadgeCount) return;
+  lastBadgeCount = value;
+  // 页面侧 API 优先；部分平台只认 Service Worker 侧注册。
+  try {
+    if (value > 0 && typeof navigator.setAppBadge === "function") {
+      navigator.setAppBadge(value).catch(() => {});
+      return;
+    }
+    if (value === 0 && typeof navigator.clearAppBadge === "function") {
+      navigator.clearAppBadge().catch(() => {});
+      return;
+    }
+  } catch {
+    /* 不支持时忽略 */
+  }
+  // 回退：交给 Service Worker 处理
+  if (typeof navigator.serviceWorker !== "undefined") {
+    navigator.serviceWorker.ready
+      .then((registration) => {
+        const target = registration.active || navigator.serviceWorker.controller;
+        target?.postMessage({ type: "badge", count: value });
+      })
+      .catch(() => {});
+  }
+}
+
+// 注册 Service Worker，让站点可被安装到手机桌面（不缓存私密数据）。
+function registerServiceWorker() {
+  if (typeof navigator.serviceWorker === "undefined") return;
+  navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch(() => {
+    /* 注册失败不影响正常使用 */
+  });
+}
+
 function updateNotifyBadge() {
   const badge = $("#notify-badge");
   if (!badge) return;
@@ -736,6 +777,7 @@ function updateNotifyBadge() {
     "aria-label",
     count > 0 ? `通知，${count} 条未读` : "通知",
   );
+  updateAppBadge(count);
 }
 function notificationTime(stamp) {
   const then = new Date(stamp).getTime();
@@ -3683,7 +3725,7 @@ function showEditor(kind, item, prefill = {}) {
       const tagField = labelField("标签（最多 8 个，每个 ≤20 字）", tagEditor.node);
       tagField.classList.add("editor-meta-wide");
       meta.append(tagField);
-      let due, priority, status, recurEditor, subtaskEditor, startTime, endTime;
+      let due, priority, status, recurEditor, subtaskEditor, startTime, endTime, remindAt;
       if (kind === "task") {
         const prefillMeta = prefill.meta || {};
         due = input("date", "", item?.meta?.due || prefillMeta.due || prefill.due || "");
@@ -3705,8 +3747,16 @@ function showEditor(kind, item, prefill = {}) {
         // 可选时间段：为空表示「全天」，日程视图据此显示时间范围。
         startTime = input("time", "", item?.meta?.startTime || prefillMeta.startTime || "");
         endTime = input("time", "", item?.meta?.endTime || prefillMeta.endTime || "");
+        // 定时提醒：勾选后可指定具体时刻，到点推送站内通知与微信/Webhook。
+        remindAt = input(
+          "datetime-local",
+          "",
+          item?.meta?.remindAt || prefillMeta.remindAt || "",
+        );
+        remindAt.setAttribute("aria-label", "提醒时间");
         meta.append(
           labelField("计划日期", due),
+          labelField("提醒时间（可选）", remindAt),
           labelField("优先级", priority),
           labelField("当前状态", status),
           labelField("开始时间（可选）", startTime),
@@ -3826,6 +3876,9 @@ function showEditor(kind, item, prefill = {}) {
             }
             if (startValue) nextMeta.startTime = startValue;
             else delete nextMeta.startTime;
+            // 提醒时间：空值表示不提醒（按计划日期当天提醒）。
+            if (remindAt.value) nextMeta.remindAt = remindAt.value;
+            else delete nextMeta.remindAt;
             if (endValue) nextMeta.endTime = endValue;
             else delete nextMeta.endTime;
             const recurrence = recurEditor.getRecurrence();
@@ -7742,6 +7795,7 @@ if (globalThis.ResizeObserver)
   );
 async function init() {
   bindHaptics();
+  registerServiceWorker();
   syncDrawerLayout();
   updateVisualViewport();
   updateDate();
