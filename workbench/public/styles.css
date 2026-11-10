@@ -6379,3 +6379,77 @@ form label + label {
     margin-top: 12px;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   手机预览（调试用）
+--------------------------------------------------------------------------- */
+.preview-button {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--text);
+  cursor: pointer;
+}
+.preview-button:hover,
+.preview-button:focus-visible {
+  border-color: var(--green);
+}
+.preview-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.preview-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.preview-size-btn {
+  min-width: 52px;
+  min-height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--card);
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.preview-size-btn.active {
+  border-color: var(--green);
+  background: var(--soft-green);
+  color: var(--green);
+  font-weight: 600;
+}
+.preview-size {
+  color: var(--muted);
+  font-size: 12px;
+}
+.preview-frame-box {
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+  border-radius: 14px;
+  background: var(--sand);
+  overflow: auto;
+  max-height: 78vh;
+}
+.preview-frame {
+  border: 0;
+  border-radius: 12px;
+  background: var(--bg);
+  box-shadow: var(--shadow);
+  flex-shrink: 0;
+  width: 390px;
+  height: 780px;
+}
+@media (max-width: 760px) {
+  /* 手机端本身就不需要预览按钮 */
+  .preview-button {
+    display: none;
+  }
+}

@@ -415,6 +415,9 @@
               ><svg class="icon small"><use href="#i-bell" /></svg
               ><span id="notify-badge" class="notify-badge" hidden></span
             ></button
+            ><button id="preview-button" class="icon-button preview-button" title="手机预览" aria-label="手机预览">
+              <svg class="icon small"><use href="#i-image" /></svg
+            ></button
             ><button id="new-button" class="button primary compact capture-button" title="写一句、转成待办">
               <svg class="icon small"><use href="#i-plus" /></svg
               ><span>记一笔</span>
@@ -460,9 +463,9 @@
           <button type="button" id="mobile-new" class="mobile-nav-item mobile-nav-create" aria-label="新建记录">
             <span class="mobile-create-icon"><svg class="icon"><use href="#i-plus" /></svg></span><span>新建</span>
           </button>
-          <button type="button" data-mobile-view="notes" class="mobile-nav-item">
-            <svg class="icon"><use href="#i-note" /></svg
-            ><span data-label-work="笔记" data-label-life="心情">笔记</span>
+          <button type="button" id="mobile-capture" class="mobile-nav-item" aria-label="记一笔">
+            <svg class="icon"><use href="#i-camera" /></svg
+            ><span data-label-work="记录" data-label-life="记录">记录</span>
           </button>
           <button type="button" id="mobile-more" class="mobile-nav-item" aria-controls="sidebar" aria-expanded="false" aria-label="更多功能，展开导航">
             <svg class="icon"><use href="#i-more" /></svg><span>更多</span>

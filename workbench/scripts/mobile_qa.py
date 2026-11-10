@@ -174,14 +174,18 @@ def checks(base):
         assert not page.locator(".workspace-body").evaluate("el => el.inert")
         report("导航抽屉焦点约束、遮罩、Escape 与焦点恢复")
 
-        page.locator('[data-mobile-view="notes"]').click()
-        page.locator("#mobile-new").click()
+        # 手机底部「笔记」已改为统一「记录」入口
+        page.locator("#mobile-capture").click()
         # 统一记录弹窗：直接填写内容即为随笔
         page.locator(".capture-note").fill("手机上留下的一句话")
         no_overflow(page)
         assert page.locator("#modal").bounding_box()["width"] <= 320
         assert float(page.locator(".capture-note").evaluate("el => parseFloat(getComputedStyle(el).fontSize)")) >= 16
         page.locator("#modal").get_by_role("button", name="保存", exact=True).click()
+        expect(page.locator("#modal")).not_to_be_visible()
+        # 保存后内容进入总览的本月日程；切到笔记视图确认原文完整保存
+        page.evaluate("navigate('notes')")
+        page.wait_for_timeout(600)
         expect(page.locator("#view-content")).to_contain_text("手机上留下的一句话")
         report("手机弹窗录入并真实保存笔记")
 

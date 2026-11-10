@@ -263,7 +263,7 @@ function svg(name, small = false) {
 // 静默跳过，不影响任何交互。使用事件委托，避免给每个按钮单独绑定。
 // ---------------------------------------------------------------------------
 const hapticPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
-const HAPTIC_DURATION = 12; // 毫秒：足够感知、又不产生明显嗡鸣
+const HAPTIC_DURATION = 15; // 毫秒：足够感知、又不产生明显嗡鸣
 let lastHapticAt = 0;
 
 function hapticsAvailable() {
@@ -295,7 +295,7 @@ function bindHaptics() {
     (event) => {
       const target = event.target instanceof Element
         ? event.target.closest(
-            'button, [role="button"], .nav-item, .stat-card, .search-result, .calendar-cell, .agenda-item, .template-option',
+            'button, [role="button"], .nav-item, .stat-card, .search-result, .calendar-cell, .agenda-item, .template-option, .home-calendar-cell, .month-agenda-item, .task-row, .today-item, .day-modal-entry',
           )
         : null;
       if (!target) return;
@@ -3902,6 +3902,63 @@ function showEditor(kind, item, prefill = {}) {
 }
 // 统一的记录入口：一个文本框，可随手记，也可一键转成待办。
 // 取代了此前分散的「新建」菜单与「今日记录」按钮。
+// ---------------------------------------------------------------------------
+// 手机预览：在弹窗里用手机宽度（390px）渲染同一页面，便于在电脑上调试手机布局。
+// 用 iframe 加载同源页面，真实触发 @media (max-width:760px) 的手机断点。
+// ---------------------------------------------------------------------------
+const PREVIEW_WIDTHS = [
+  [390, "iPhone 14"],
+  [360, "安卓常见"],
+  [320, "小屏"],
+  [430, "大屏"],
+];
+function showMobilePreview() {
+  showModal("手机预览", (body) => {
+    const wrap = el("div", "preview-wrap");
+    const bar = el("div", "preview-toolbar");
+    let current = PREVIEW_WIDTHS[0][0];
+    const label = el("span", "preview-size", `390 × 844（${PREVIEW_WIDTHS[0][1]}）`);
+    const frameBox = el("div", "preview-frame-box");
+    const frame = el("iframe", "preview-frame");
+    frame.title = "手机端预览";
+    frame.src = "/";
+    // 预览时带上当前账号：iframe 同源会自动携带登录 cookie
+    frameBox.append(frame);
+
+    const resize = (width, name) => {
+      current = width;
+      frame.style.width = `${width}px`;
+      frame.style.height = width >= 430 ? "932px" : width >= 360 ? "780px" : "720px";
+      label.textContent = `${width} × ${frame.style.height.replace("px", "")}（${name}）`;
+    };
+    PREVIEW_WIDTHS.forEach(([w, name]) => {
+      bar.append(
+        button(`${w}`, `preview-size-btn${w === current ? " active" : ""}`, () => {
+          resize(w, name);
+          $$(".preview-size-btn", bar).forEach((b) =>
+            b.classList.toggle("active", b.textContent === String(w)),
+          );
+        }),
+      );
+    });
+    bar.append(label);
+    const reload = button("刷新", "button soft compact", () => {
+      frame.src = "/";
+    });
+    bar.append(reload);
+    resize(current, PREVIEW_WIDTHS[0][1]);
+    wrap.append(bar, frameBox);
+    body.append(
+      wrap,
+      el(
+        "p",
+        "helper",
+        "这是手机宽度下的真实渲染，可直接检查窄屏布局、触控尺寸与弹窗表现。",
+      ),
+    );
+  }, "调试工具");
+}
+
 function showNew(opts = {}) {
   if (!ensureWrite()) return;
   const asTask = Boolean(opts.task);
@@ -7654,7 +7711,10 @@ $(".sidebar .brand").addEventListener("click", (event) => {
   navigate("overview");
 });
 $("#new-button").addEventListener("click", showNew);
+$("#preview-button").addEventListener("click", showMobilePreview);
 $("#mobile-new").addEventListener("click", showNew);
+// 手机底部「记录」按钮：与顶栏「记一笔」同一个统一入口
+$("#mobile-capture").addEventListener("click", () => showNew());
 $("#space-switcher").addEventListener("click", showSpaceSwitcher);
 $("#search-button").addEventListener("click", openSearchView);
 $("#notify-button").addEventListener("click", showNotifications);
