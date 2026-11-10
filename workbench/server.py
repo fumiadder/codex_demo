@@ -38,6 +38,7 @@ import export
 import notify
 import settings
 import identity
+import webpush
 import recur
 import storage_jobs
 import templates
@@ -189,7 +190,9 @@ class FolioServer(ThreadingHTTPServer):
             conn.executescript(templates.SCHEMA)
             conn.executescript(settings.SCHEMA)
             conn.executescript(identity.SCHEMA)
+            conn.executescript(webpush.SCHEMA)
         identity.initialize(self)
+        webpush.initialize(self)
         with self.db() as conn:
             conn.execute("BEGIN IMMEDIATE")
             identity.migrate_existing(conn, now=now_iso())
@@ -897,6 +900,8 @@ class FolioHandler(BaseHTTPRequestHandler):
         if settings.dispatch(self, path, query):
             return
         if identity.dispatch(self, path, query):
+            return
+        if webpush.dispatch(self, path, query):
             return
         with self.server.db() as conn:
             user = self.current_user(conn)

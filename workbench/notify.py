@@ -388,6 +388,7 @@ def _persist_notifications(server, uid, pending, today):
     if not pending:
         return 0
     created = 0
+    pending_push = []  # 落库后要推送的 Web Push 内容（在写事务外发送）
     with server.db() as conn:
         conn.execute("BEGIN IMMEDIATE")
         # 写事务内重新取 webhook，避免读/写事务间隙的配置变更。
@@ -408,11 +409,14 @@ def _persist_notifications(server, uid, pending, today):
             notification_id = uuid.uuid4().hex
             stamp = _stamp()
             title = item["title"]
-            body = f"任务「{title}」已于 {due} 到期，请及时处理。"
-            data = json.dumps(
-                {"itemId": item["id"], "spaceId": sid, "due": due},
-                ensure_ascii=False, separators=(",", ":"),
-            )
+            if dedup_key.startswith("task-remind:"):
+                # 定时提醒：提醒时间就是用户设置的那个时刻，更口语化
+                body = f"任务「{title}」的提醒时间到了（{due.replace('T', ' ')}）。"
+                payload = {"title": title, "body": body, "itemId": item["id"], "spaceId": sid, "remindAt": due}
+            else:
+                body = f"任务「{title}」已于 {due} 到期，请及时处理。"
+                payload = {"title": title, "body": body, "itemId": item["id"], "spaceId": sid, "due": due}
+            data = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
             conn.execute(
                 "INSERT INTO notifications "
                 "(id,user_id,space_id,type,title,body,data,dedup_key,read,created_at) "
@@ -424,11 +428,19 @@ def _persist_notifications(server, uid, pending, today):
                 "type": EVENT_TASK_DUE,
                 "title": title,
                 "body": body,
-                "data": {"itemId": item["id"], "spaceId": sid, "due": due},
+                "data": payload,
                 "createdAt": stamp,
             }
             _enqueue_for_hooks(conn, uid, notification, hooks)
+            # 事务提交后再推送，避免慢推送阻塞写库；失败只记日志不影响通知本身。
+            pending_push.append((title, body, payload))
             created += 1
+    # 写完库后统一推送 Web Push（不阻塞通知落库）
+    for push_title, push_body, push_payload in pending_push:
+        try:
+            webpush.deliver(server, uid, push_title, push_body, push_payload)
+        except Exception:
+            logging.warning("web push delivery skipped")
     return created
 
 

@@ -14,6 +14,7 @@ COPY --chown=folio:folio server.py bedtime.py daily.py export.py notify.py persi
 COPY --chown=folio:folio templates.py /app/
 COPY --chown=folio:folio settings.py /app/
 COPY --chown=folio:folio identity.py /app/
+COPY --chown=folio:folio webpush.py /app/
 COPY --chown=folio:folio public /app/public
 COPY --chown=folio:folio scripts/manage_access.py /app/scripts/manage_access.py
 USER folio

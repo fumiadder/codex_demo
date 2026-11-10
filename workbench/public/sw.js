@@ -32,6 +32,33 @@ self.addEventListener("fetch", (event) => {
 });
 
 // 允许页面通过 SW 更新桌面角标（部分平台只认 SW 侧设置）
+// 收到服务器推送：显示系统通知（锁屏/下拉栏可见），点击回到工作台。
+self.addEventListener("push", (event) => {
+  if (!event.data) return;
+  let payload = { title: "知序", body: "" };
+  try { payload = { ...payload, ...event.data.json() }; } catch { payload.body = event.data.text(); }
+  event.waitUntil(
+    self.registration.showNotification(payload.title || "知序", {
+      body: payload.body || "",
+      icon: "/icons/icon-192.png",
+      badge: "/icons/icon-192.png",
+      data: payload.data || {},
+      tag: payload.data?.itemId || "zhixu",
+      renotify: true,
+    }),
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clients) => {
+      if (clients.length) return clients[0].focus();
+      return self.clients.openWindow("/");
+    }),
+  );
+});
+
 self.addEventListener("message", (event) => {
   const data = event.data || {};
   if (data.type === "badge" && "setAppBadge" in self.registration) {

@@ -729,6 +729,85 @@ async function loadNotifications(force = false) {
 // 只在已安装（standalone）或支持该 API 的环境生效，其他环境静默跳过。
 // ---------------------------------------------------------------------------
 let lastBadgeCount = -1;
+// ---------------------------------------------------------------------------
+// 手机锁屏推送（Web Push）：订阅后由服务端把通知推到系统通知栏。
+// 需要 HTTPS（fuminer.xyz 已有受信任证书），不支持时静默降级。
+// ---------------------------------------------------------------------------
+let pushSubscriptionState = { supported: false, enabled: false, checking: false };
+
+function base64ToUint8Array(base64) {
+  const raw = atob(base64.replace(/-/g, "+").replace(/_/g, "/"));
+  const out = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
+  return out;
+}
+async function getPushSubscriptionConfig() {
+  try {
+    return await api("/api/push/config");
+  } catch {
+    return { enabled: false, publicKey: "" };
+  }
+}
+async function refreshPushState() {
+  pushSubscriptionState.checking = true;
+  try {
+    const config = await getPushSubscriptionConfig();
+    pushSubscriptionState.supported =
+      config.enabled &&
+      typeof navigator.serviceWorker !== "undefined" &&
+      typeof window.PushManager !== "undefined" &&
+      "Notification" in window;
+    if (!pushSubscriptionState.supported) {
+      pushSubscriptionState.enabled = false;
+      return pushSubscriptionState;
+    }
+    const registration = await navigator.serviceWorker.ready;
+    const subscription = await registration.pushManager.getSubscription();
+    pushSubscriptionState.enabled = Boolean(subscription) && Notification.permission === "granted";
+  } finally {
+    pushSubscriptionState.checking = false;
+  }
+  return pushSubscriptionState;
+}
+async function enableWebPush() {
+  const config = await getPushSubscriptionConfig();
+  if (!config.enabled || !config.publicKey) {
+    throw new Error("服务端未配置推送密钥");
+  }
+  // 请求系统通知权限（必须由用户手势触发，否则可能被拒）
+  const permission = await Notification.requestPermission();
+  if (permission !== "granted") {
+    throw new Error("需要允许通知权限才能接收提醒");
+  }
+  const registration = await navigator.serviceWorker.ready;
+  let subscription = await registration.pushManager.getSubscription();
+  if (!subscription) {
+    subscription = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: base64ToUint8Array(config.publicKey),
+    });
+  }
+  const json = subscription.toJSON();
+  await api("/api/push/subscribe", "POST", {
+    endpoint: subscription.endpoint,
+    keys: json.keys,
+  });
+  pushSubscriptionState.enabled = true;
+  return subscription;
+}
+async function disableWebPush() {
+  const registration = await navigator.serviceWorker.ready;
+  const subscription = await registration.pushManager.getSubscription();
+  if (subscription) {
+    try {
+      await api("/api/push/subscribe", "DELETE", { endpoint: subscription.endpoint });
+    } finally {
+      await subscription.unsubscribe();
+    }
+  }
+  pushSubscriptionState.enabled = false;
+}
+
 function updateAppBadge(count) {
   const value = Number.isFinite(count) ? Math.max(0, Math.floor(count)) : 0;
   if (value === lastBadgeCount) return;
@@ -1619,6 +1698,8 @@ async function enterApp() {
   // 进入应用即刷新通知铃铛与快捷方式（此后在保存/切空间等动作时顺带刷新，不轮询）
   loadNotifications();
   loadShortcuts();
+  // 手机锁屏推送：后台初始化订阅状态，失败不影响使用
+  refreshPushState().catch(() => {});
   if (!state.spaces.length) {
     showCreateSpace();
     render();
@@ -5081,12 +5162,75 @@ function showAccountSettings() {
         buildNicknameSection(),
         buildIdentitySection(),
         buildPasswordSection(),
+        buildPushSection(),
         buildWebhookSection(),
         buildAccountDangerZone(),
       );
     },
     "账号设置",
   );
+}
+
+// ---------------------------------------------------------------------------
+// 手机锁屏推送：开启后任务提醒会推到手机系统通知栏，即使网页关闭也能收到。
+// ---------------------------------------------------------------------------
+function buildPushSection() {
+  const section = el("section", "account-section push-section");
+  section.append(el("h3", "", "手机提醒"));
+  const note = el("p", "helper");
+  note.textContent = "开启后，到期和定时提醒会推到手机系统通知栏，网页关了也能收到。";
+  section.append(note);
+  if (state.demo) {
+    section.append(el("p", "helper", "演示模式不连接推送服务，请在真实账号中开启。"));
+    return section;
+  }
+  const status = el("p", "push-status");
+  status.setAttribute("role", "status");
+  status.textContent = "正在检查推送支持…";
+  const actions = el("div", "modal-actions");
+  const enable = button("开启手机提醒", "button primary", async () => {
+    enable.disabled = true;
+    status.textContent = "正在请求通知权限…";
+    try {
+      await enableWebPush();
+      status.textContent = "已开启：到期与定时提醒会推送到这台设备";
+      toast("手机提醒已开启");
+    } catch (err) {
+      status.textContent = errorMessage(err) || "开启失败，请确认浏览器允许通知";
+      enable.disabled = false;
+      return;
+    }
+    enable.hidden = true;
+    disable.hidden = false;
+  });
+  const disable = button("关闭手机提醒", "button soft compact", async () => {
+    disable.disabled = true;
+    try {
+      await disableWebPush();
+      status.textContent = "已关闭：提醒只出现在网页内";
+      toast("手机提醒已关闭");
+    } finally {
+      disable.disabled = false;
+      enable.hidden = false;
+      disable.hidden = true;
+    }
+  });
+  disable.hidden = true;
+  actions.append(enable, disable);
+  section.append(status, actions);
+  refreshPushState().then((state) => {
+    if (!state.supported) {
+      status.textContent = "这台浏览器暂不支持锁屏推送（需 HTTPS 与通知权限）";
+      enable.disabled = true;
+      return;
+    }
+    status.textContent = state.enabled
+      ? "已开启：到期与定时提醒会推送到这台设备"
+      : "尚未开启：点下方按钮后允许通知即可";
+    enable.hidden = state.enabled;
+    disable.hidden = !state.enabled;
+  });
+  return section;
 }
 
 // ---------------------------------------------------------------------------

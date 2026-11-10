@@ -6453,3 +6453,10 @@ form label + label {
     display: none;
   }
 }
+
+/* 手机提醒设置 */
+.push-section .push-status {
+  margin: 0 0 12px;
+  color: var(--text);
+  font-size: 14px;
+}
