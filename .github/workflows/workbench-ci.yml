@@ -63,7 +63,21 @@ jobs:
       - name: Install pinned browser QA tools
         run: |
           python -m pip install --disable-pip-version-check playwright==1.62.0
-          python -m playwright install --with-deps chromium
+          # ubuntu-latest 已包含 Chromium 运行库；优先跳过 apt，避免镜像 DNS 故障拖垮 CI。
+          python -m playwright install chromium
+          if ! python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as playwright:
+              browser = playwright.chromium.launch()
+              browser.close()
+          PY
+          then
+            for attempt in 1 2 3; do
+              python -m playwright install --with-deps chromium && break
+              echo "playwright dependency install failed (attempt $attempt)" >&2
+              sleep 15
+            done
+          fi
           python - <<'PY'
           import os
           from pathlib import Path
