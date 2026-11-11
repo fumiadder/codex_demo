@@ -1,0 +1,26 @@
+{
+  "name": "course-publish-pipeline",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "百度网盘课程订阅 → 文档汇总 → 博客园发布流水线",
+  "scripts": {
+    "run": "node .dsh/skills/course-publish/scripts/run.mjs",
+    "subscribe": "node .dsh/skills/course-publish/scripts/subscribe.mjs",
+    "baidu:login": "node .dsh/skills/course-publish/scripts/baidu-login.mjs",
+    "cnblogs:login": "node .dsh/skills/course-publish/scripts/cnblogs-login.mjs",
+    "probe": "node .dsh/skills/course-publish/scripts/baidu-probe.mjs",
+    "doctor": "node .dsh/skills/course-publish/scripts/doctor.mjs",
+    "test": "node --test tests/*.test.mjs .dsh/skills/course-publish/scripts/names.test.mjs",
+    "fixtures": ".venv/bin/python tests/make_fixtures.py",
+    "selftest": "node .dsh/skills/course-publish/scripts/xmlrpc.selftest.mjs"
+  },
+  "dependencies": {
+    "mammoth": "^1.10.0",
+    "marked": "^12.0.2",
+    "pdfjs-dist": "^4.10.38",
+    "playwright": "^1.55.0",
+    "turndown": "^7.2.1",
+    "yaml": "^2.8.0"
+  }
+}

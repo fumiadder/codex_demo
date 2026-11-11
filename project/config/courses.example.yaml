@@ -1,0 +1,19 @@
+# 课程期次配置模板。复制为 courses.yaml 后填写真实信息。
+# 每期一个条目；id 用作 state/output/downloads 下的目录名（英文/数字/中划线）。
+courses:
+  - id: "agent-camp-xx"
+    title: "AI Agent 实战营 第X期"          # 人读名称
+    edition: "第X期"                        # 期号，用于合集名匹配
+    collection: "AI Agent 实战营第X期"       # 博客园合集名称（不存在则自动创建后询问确认）
+    category: "AI/agent"                    # 博客园分类（必须已存在，缺失会停下询问）
+    baidu:
+      targetDir: "/课程/AI Agent 实战营/第X期"   # 你网盘里的目标目录（绝对路径）
+      shares:                               # 可多个分享链接
+        - url: "https://pan.baidu.com/s/1xxxx?pwd=abcd"
+          password: "abcd"                  # 提取码（URL 已带 pwd 时可省略）
+    toc:
+      platform: "generic"                   # 课程站适配器：generic | geektime | xiaobotong | zsxq ...
+      url: "https://example.com/course/123" # 需登录的课程目录页
+    publish:
+      titlePrefix: ""                       # 博文标题前缀，默认纯网站章节名
+      autoPublish: true                     # 高置信度匹配时自动发布；false 则只存草稿

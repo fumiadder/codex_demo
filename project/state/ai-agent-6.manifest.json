@@ -1,0 +1,378 @@
+{
+  "courseId": "ai-agent-6",
+  "shares": {
+    "https://pan.baidu.com/s/13L6mCHRq8bmA1pJTbP8Clw?pwd=1234": {
+      "lastChecked": "2026-11-10T13:27:32.998Z",
+      "shareid": "62881268096",
+      "uk": "1103698223344",
+      "chapters": [
+        {
+          "fsid": "385613184421329",
+          "name": "AI智能体六期",
+          "isdir": true,
+          "size": 0
+        }
+      ]
+    }
+  },
+  "chapters": {
+    "ai智能体六期": {
+      "status": "discovered",
+      "shareName": "AI智能体六期",
+      "shareFsid": "385613184421329",
+      "isdir": true
+    },
+    "day00开班导学": {
+      "status": "transferred",
+      "shareName": "day00开班导学",
+      "shareFsid": "128933205747726",
+      "isdir": true,
+      "transferredAt": "2026-11-10T14:08:54.930Z"
+    },
+    "day02coze从入门到精通之绘本故事案例": {
+      "status": "transferred",
+      "shareName": "Day02：coze从入门到精通之绘本故事案例",
+      "shareFsid": "236851534430353",
+      "isdir": true,
+      "transferredAt": "2026-11-10T14:08:57.054Z"
+    },
+    "day03coze从入门到精通之绘本短视频案例": {
+      "status": "transferred",
+      "shareName": "Day03：coze从入门到精通之绘本短视频案例",
+      "shareFsid": "66362008212639",
+      "isdir": true,
+      "transferredAt": "2026-11-10T14:08:57.060Z"
+    },
+    "day04openclaw部署配置飞书skills": {
+      "status": "transferred",
+      "shareName": "day04-OpenClaw部署-配置飞书-Skills",
+      "shareFsid": "938644248932765",
+      "isdir": true,
+      "transferredAt": "2026-11-10T14:08:57.060Z"
+    },
+    "day05coze从入门到精通之绘本短视频案例2zip": {
+      "status": "transferred",
+      "shareName": "Day05：coze从入门到精通之绘本短视频案例2.zip",
+      "shareFsid": "801106469862681",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:57.060Z"
+    },
+    "day06day07coze从入门到精通之自媒体运营案例抖音转小红书转存飞书&批量化zip": {
+      "status": "transferred",
+      "shareName": "Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）.zip",
+      "shareFsid": "59623315692976",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:57.060Z"
+    },
+    "day08coze从入门到精通之自媒体运营案例2抖音转小红书转存飞书&批量化": {
+      "status": "transferred",
+      "shareName": "Day08：coze从入门到精通之自媒体运营案例2（抖音转小红书转存飞书&批量化）",
+      "shareFsid": "1030589549431097",
+      "isdir": true,
+      "transferredAt": "2026-11-10T14:08:57.061Z"
+    },
+    "day09影刀下载好看搞笑视频zip": {
+      "status": "transferred",
+      "shareName": "day09-影刀下载好看搞笑视频.zip",
+      "shareFsid": "1044324849246910",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:57.061Z"
+    },
+    "day010影刀rpa下载梨视频zip": {
+      "status": "transferred",
+      "shareName": "day010-影刀RPA下载梨视频.zip",
+      "shareFsid": "543942740542470",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:57.062Z"
+    },
+    "day11获取抖音评论和企业微信自动回消息zip": {
+      "status": "transferred",
+      "shareName": "day11-获取抖音评论和企业微信自动回消息.zip",
+      "shareFsid": "209172095839922",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:57.062Z"
+    },
+    "day12影刀对接coze自动回复zip": {
+      "status": "transferred",
+      "shareName": "day12-影刀对接Coze自动回复.zip",
+      "shareFsid": "487048650150129",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:57.062Z"
+    },
+    "day13traeai编辑器使用": {
+      "status": "transferred",
+      "shareName": "day13-TraeAI编辑器使用",
+      "shareFsid": "1116808378062104",
+      "isdir": true,
+      "transferredAt": "2026-11-10T14:08:57.063Z"
+    },
+    "day14小游戏上线换脸小程序需求rar": {
+      "status": "transferred",
+      "shareName": "day14-小游戏上线-换脸小程序需求.rar",
+      "shareFsid": "41595418580561",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:57.063Z"
+    },
+    "day15trae实现换脸微信小程序02zip": {
+      "status": "transferred",
+      "shareName": "day15-Trae实现换脸微信小程序02.zip",
+      "shareFsid": "780719513326460",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:57.063Z"
+    },
+    "day16trae开发换脸微信小程序03": {
+      "status": "transferred",
+      "shareName": "day16-Trae开发换脸微信小程序03",
+      "shareFsid": "131540375601437",
+      "isdir": true,
+      "transferredAt": "2026-11-10T14:08:57.064Z"
+    },
+    "day17trae开发微信小程序04zip": {
+      "status": "transferred",
+      "shareName": "day17-Trae开发微信小程序04.zip",
+      "shareFsid": "822867519276490",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:57.064Z"
+    },
+    "day18微信小程序上线rar": {
+      "status": "transferred",
+      "shareName": "day18-微信小程序上线.rar",
+      "shareFsid": "368670320421087",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:57.064Z"
+    },
+    "day19ai漫剧基础与市场前景zip": {
+      "status": "transferred",
+      "shareName": "day19-AI漫剧基础与市场前景.zip",
+      "shareFsid": "923276316595754",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:57.064Z"
+    },
+    "day20ai漫剧类目解析zip": {
+      "status": "transferred",
+      "shareName": "day20-AI漫剧类目解析.zip",
+      "shareFsid": "712398492978683",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:57.064Z"
+    },
+    "day21剧本创作zip": {
+      "status": "transferred",
+      "shareName": "day21-剧本创作.zip",
+      "shareFsid": "69310316719188",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:57.064Z"
+    },
+    "day22模型+工具的使用zip": {
+      "status": "transferred",
+      "shareName": "day22-模型+工具的使用.zip",
+      "shareFsid": "262833559131111",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:57.064Z"
+    },
+    "day23漫剧全流程+提示词zip": {
+      "status": "transferred",
+      "shareName": "day23-漫剧全流程+提示词.zip",
+      "shareFsid": "232161094963870",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:57.064Z"
+    },
+    "day24解说类制作实操1zip": {
+      "status": "transferred",
+      "shareName": "day24-解说类制作实操1.zip",
+      "shareFsid": "770907345594892",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:57.064Z"
+    },
+    "day25解说类实操02zip": {
+      "status": "transferred",
+      "shareName": "day25-解说类实操02.zip",
+      "shareFsid": "1005527307284718",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:57.065Z"
+    },
+    "day26仿真人实操zip": {
+      "status": "transferred",
+      "shareName": "day26-仿真人实操.zip",
+      "shareFsid": "39938972230768",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:57.065Z"
+    },
+    "day27半解说实操zip": {
+      "status": "transferred",
+      "shareName": "day27-半解说实操.zip",
+      "shareFsid": "722724506370220",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:57.065Z"
+    },
+    "day28平台政策解析zip": {
+      "status": "transferred",
+      "shareName": "day28-平台政策解析.zip",
+      "shareFsid": "724095423553301",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:57.065Z"
+    },
+    "day29": {
+      "status": "transferred",
+      "shareName": "day29",
+      "shareFsid": "203802455818294",
+      "isdir": true,
+      "transferredAt": "2026-11-10T14:08:57.065Z"
+    },
+    "day30zip": {
+      "status": "transferred",
+      "shareName": "day30.zip",
+      "shareFsid": "319672909708095",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:57.065Z"
+    },
+    "day31zip": {
+      "status": "transferred",
+      "shareName": "day31.zip",
+      "shareFsid": "135636801272907",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:57.065Z"
+    },
+    "day32zip": {
+      "status": "transferred",
+      "shareName": "day32.zip",
+      "shareFsid": "651470464775600",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:57.065Z"
+    },
+    "day33zip": {
+      "status": "transferred",
+      "shareName": "day33.zip",
+      "shareFsid": "130763519536724",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:57.065Z"
+    },
+    "day34zip": {
+      "status": "transferred",
+      "shareName": "day34.zip",
+      "shareFsid": "284859736883746",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:57.065Z"
+    },
+    "day36": {
+      "status": "transferred",
+      "shareName": "day36",
+      "shareFsid": "17686619873933",
+      "isdir": true,
+      "transferredAt": "2026-11-10T14:08:59.968Z"
+    },
+    "day37zip": {
+      "status": "transferred",
+      "shareName": "day37.zip",
+      "shareFsid": "63096489339350",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:59.968Z"
+    },
+    "day38zip": {
+      "status": "transferred",
+      "shareName": "day38.zip",
+      "shareFsid": "1018123069712603",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:59.968Z"
+    },
+    "day39zip": {
+      "status": "transferred",
+      "shareName": "day39.zip",
+      "shareFsid": "414203570392311",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:59.968Z"
+    },
+    "day40zip": {
+      "status": "transferred",
+      "shareName": "day40.zip",
+      "shareFsid": "116798466498311",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:59.968Z"
+    },
+    "day41zip": {
+      "status": "transferred",
+      "shareName": "day41.zip",
+      "shareFsid": "196863584298015",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:59.968Z"
+    },
+    "day42zip": {
+      "status": "transferred",
+      "shareName": "day42.zip",
+      "shareFsid": "590008790357922",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:59.968Z"
+    },
+    "day43zip": {
+      "status": "transferred",
+      "shareName": "day43.zip",
+      "shareFsid": "586758061141617",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:59.968Z"
+    },
+    "day45zip": {
+      "status": "transferred",
+      "shareName": "day45.zip",
+      "shareFsid": "733294505430356",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:59.968Z"
+    },
+    "day01coze从入门到精通之小红书图文案例": {
+      "status": "transferred",
+      "shareName": "Day01：coze从入门到精通之小红书图文案例",
+      "shareFsid": "1018246648161042",
+      "isdir": true,
+      "transferredAt": "2026-11-10T14:08:55.741Z"
+    },
+    "day35zip": {
+      "status": "transferred",
+      "shareName": "day35.zip",
+      "shareFsid": "833773992529484",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:08:57.896Z"
+    },
+    "day46zip": {
+      "status": "transferred",
+      "shareName": "day46.zip",
+      "shareFsid": "602563983675562",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:09:00.652Z"
+    },
+    "day47zip": {
+      "status": "transferred",
+      "shareName": "day47.zip",
+      "shareFsid": "521591250446881",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:09:03.111Z"
+    },
+    "day49zip": {
+      "status": "transferred",
+      "shareName": "day49.zip",
+      "shareFsid": "83073696122808",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:09:05.424Z"
+    },
+    "day50zip": {
+      "status": "transferred",
+      "shareName": "day50.zip",
+      "shareFsid": "885483208973276",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:09:07.869Z"
+    },
+    "day51zip": {
+      "status": "transferred",
+      "shareName": "day51.zip",
+      "shareFsid": "316110070533418",
+      "isdir": false,
+      "transferredAt": "2026-11-10T14:09:10.769Z"
+    },
+    "day52": {
+      "status": "transferred",
+      "shareName": "day52",
+      "shareFsid": "76663670206129",
+      "isdir": true,
+      "transferredAt": "2026-11-10T14:09:13.105Z"
+    }
+  },
+  "createdAt": "2026-11-10T13:27:19.779Z",
+  "updatedAt": "2026-11-10T14:09:15.099Z"
+}

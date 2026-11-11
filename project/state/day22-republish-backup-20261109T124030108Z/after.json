@@ -1,0 +1,45 @@
+{
+  "at": "2026-11-09T12:50:10.098Z",
+  "oldId": "23594495",
+  "newId": "23606785",
+  "newUrl": "https://www.cnblogs.com/fuminer/p/23606785.html",
+  "title": "day22-Codex应用开发",
+  "replacedHiddenReason": "旧文被博客园置为重审(2)，公开页404",
+  "contentCheck": {
+    "previewMatchesExceptBlogStrippedEmoji": true,
+    "blogStrippedAstralEmojiCount": 2,
+    "imageReferences": 82,
+    "uniqueImages": 82,
+    "allImagesPublic": true
+  },
+  "collection": {
+    "id": "45406",
+    "name": "AI智能体八期",
+    "count": 39,
+    "position": 22,
+    "oldIdPresent": false
+  },
+  "publishState": {
+    "postId": "23606785",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23606785.html",
+    "published": true,
+    "deleted": false,
+    "images": 55,
+    "verify": {
+      "httpOk": false,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-09T12:44:27.162Z",
+    "isNew": true,
+    "gated": "approved",
+    "reviewPending": true,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-09T12:48:44.603Z",
+    "collectionVerified": true,
+    "collectionPosition": 22,
+    "collectionCount": 39,
+    "replacedPostId": "23594495"
+  }
+}

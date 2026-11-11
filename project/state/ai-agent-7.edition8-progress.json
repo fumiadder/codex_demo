@@ -1,0 +1,2293 @@
+{
+  "day26": {
+    "downloaded": true,
+    "files": 23,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:16:59.732Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-day26.md",
+    "report": {
+      "converted": [
+        "6.即梦全流程/操作记录.md",
+        "6.即梦全流程/分镜描述词.txt",
+        "6.即梦全流程/剧本.md",
+        "6.即梦全流程/提示词/即梦分镜提示词.md",
+        "6.即梦全流程/提示词/即梦画布生视频提示词.txt",
+        "6.即梦全流程/提示词/剧本创作提示词.md",
+        "6.即梦全流程/提示词/资产推理提示词.txt",
+        "6.即梦全流程/小说原文/《都重生了，谁还认祖归宗啊》--男频.md",
+        "6.即梦全流程/小说原文/烂赌鬼要拿妻女抵债那天，他突然改好了.txt",
+        "6.即梦全流程/资产图/陈家破茅草屋室内·凌晨至清晨.png",
+        "6.即梦全流程/资产图/陈家破茅草屋室内·雪夜.png",
+        "6.即梦全流程/资产图/陈家破茅草屋外观.png",
+        "6.即梦全流程/资产图/陈家院落与院门·暴雪深夜.png",
+        "6.即梦全流程/资产图/陈立军.png",
+        "6.即梦全流程/资产图/村外雪地·风雪死亡闪回环境.png",
+        "6.即梦全流程/资产图/二混子.png",
+        "6.即梦全流程/资产图/跟班甲.png",
+        "6.即梦全流程/资产图/跟班乙.png",
+        "6.即梦全流程/资产图/林秀兰.png",
+        "6.即梦全流程/资产图/丫丫.png",
+        "6.即梦全流程/资产图/张老三.png",
+        "6.即梦全流程/资产图/镇上地下赌坊.png",
+        "6.即梦全流程/资产信息.md"
+      ],
+      "skipped": [],
+      "warnings": [],
+      "scannedPdf": []
+    }
+  },
+  "day27": {
+    "downloaded": true,
+    "files": 4,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:17:17.096Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-day27.md",
+    "report": {
+      "converted": [
+        "7.漫剧进阶/短剧内容审核禁限规范完整整理.md",
+        "7.漫剧进阶/火山引擎剧本格式.txt",
+        "7.漫剧进阶/进阶内容.md",
+        "7.漫剧进阶/烂赌鬼剧本.txt"
+      ],
+      "skipped": [],
+      "warnings": [],
+      "scannedPdf": []
+    }
+  },
+  "day01": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:20:52.918Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-day01.md",
+    "report": {
+      "converted": [
+        "_extracted/day01-Coze智能体初识/day01-课堂笔记.md",
+        "_extracted/day01-Coze智能体初识/image/day01-课堂笔记/image-20260428200524820.png",
+        "_extracted/day01-Coze智能体初识/image/day01-课堂笔记/image-20260428204804632.png",
+        "_extracted/day01-Coze智能体初识/image/day01-课堂笔记/image-20260428205352117.png",
+        "_extracted/day01-Coze智能体初识/image/day01-课堂笔记/image-20260428214423245.png",
+        "_extracted/day01-Coze智能体初识/image/day01-课堂笔记/image-20260428221804805.png",
+        "_extracted/day01-Coze智能体初识/image/day01-课堂笔记/image-20260428221901295.png",
+        "_extracted/day01-Coze智能体初识/image/day01-课堂笔记/image-20260428222916315.png",
+        "_extracted/day01-Coze智能体初识/image/day01-Coze智能体初识/image-20250521181048774.png",
+        "_extracted/day01-Coze智能体初识/image/day01-Coze智能体初识/image-20250521182132893.png",
+        "_extracted/day01-Coze智能体初识/image/day01-Coze智能体初识/image-20250521182443526.png",
+        "_extracted/day01-Coze智能体初识/image/day01-Coze智能体初识/image-20250521183044576.png",
+        "_extracted/day01-Coze智能体初识/image/day01-Coze智能体初识/image-20250522140151179.png",
+        "_extracted/day01-Coze智能体初识/image/day01-Coze智能体初识/image-20250522140200608.png",
+        "_extracted/day01-Coze智能体初识/image/day01-Coze智能体初识/image-20250525205409028.png",
+        "_extracted/day01-Coze智能体初识/image/day01-Coze智能体初识/image-20250525210121921.png",
+        "_extracted/day01-Coze智能体初识/image/day01-Coze智能体初识/image-20250807162246001.png",
+        "_extracted/day01-Coze智能体初识/image/day01-Coze智能体初识/image-20250807162308790.png",
+        "_extracted/day01-Coze智能体初识/image/day01-Coze智能体初识/image-20251012123654404.png",
+        "_extracted/day01-Coze智能体初识/image/day01-Coze智能体初识/lqz.jpg"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day01-Coze智能体初识.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day02": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:20:57.722Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-day02.md",
+    "report": {
+      "converted": [
+        "_extracted/day02-Coze智能体详解/day02-课堂笔记.md",
+        "_extracted/day02-Coze智能体详解/image/day02-课堂笔记/image-20260508202927536.png",
+        "_extracted/day02-Coze智能体详解/image/day02-课堂笔记/image-20260508204313065.png",
+        "_extracted/day02-Coze智能体详解/image/day02-课堂笔记/image-20260508204514246.png",
+        "_extracted/day02-Coze智能体详解/image/day02-课堂笔记/image-20260508205101219.png",
+        "_extracted/day02-Coze智能体详解/image/day02-课堂笔记/image-20260508205346780.png",
+        "_extracted/day02-Coze智能体详解/image/day02-课堂笔记/image-20260508205412930.png",
+        "_extracted/day02-Coze智能体详解/image/day02-课堂笔记/image-20260508205439935.png",
+        "_extracted/day02-Coze智能体详解/image/day02-课堂笔记/image-20260508212647623.png",
+        "_extracted/day02-Coze智能体详解/image/day02-课堂笔记/image-20260508221048884.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250522140151179.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250522140200608.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250522162042187-177823751922724.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250522162042187.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250522162235690-177823751922721.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250522162235690.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250525205409028.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250525210121921.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250525211153959-177823751922722.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250525211153959.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250525211805870-177823751922726.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250525211805870.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250525212311149-177823751922725.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250525212311149.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250525212553362-177823751922727.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250525212553362.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250525213045055-177823751922728.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250525213045055.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250529203854332-177823751922717.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250529203854332.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250529210455618-177823751922723.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250529210455618.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250810162508426-17606199610671-17782373639543.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250810162508426-17606199610671.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250810163441128.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250810163557263.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250810163612860.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250810163632861.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250810163700501.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250810214828174-177823751922720.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250810214828174.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250810215127254-177823751922718.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250810215127254.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250810220437273-177823751922719.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250810220437273.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20250810222239225.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20251016201234826-17782373639541.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20251016201234826.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20251016201554151-17782373639542.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20251016201554151.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20251016213640365-17782373639544.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20251016213640365.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20251016213833280-17782373639545.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20251016213833280.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20251016214755935-17782373639546.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20251016214755935.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20251016214808592-17782373639547.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20251016214808592.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20251016220035399-17782373639548.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20251016220035399.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20251016220221579-17782373639549.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20251016220221579.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20251016220253472-177823736395410.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20251016220253472.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20251016220633907-177823736395411.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20251016220633907.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20251016220929065-177823736395412.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20251016220929065.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20251016221013984-177823736395513.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20251016221013984.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20251016221330216-177823736395514.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20251016221330216.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20251016221424873-177823736395515.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20251016221424873.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20251016221635656-177823736395516.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20251016221635656.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20251019194052242.png",
+        "_extracted/day02-Coze智能体详解/image/day02-Coze入门/image-20251019194110817.png"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day02-Coze智能体详解.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day03": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:21:02.519Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-day03.md",
+    "report": {
+      "converted": [
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/资料/独家内部学校.md",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/资料/image/1-JS.jpeg",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/资料/image/1-SYL.jpeg",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/资料/image/2-DM.jpeg",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/资料/image/2-SYL.jpeg",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/day03-课堂笔记.md",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/day03-课堂笔记.pdf",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-课堂笔记/image-20260512201208438.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-课堂笔记/image-20260512202850821.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-课堂笔记/image-20260512203258612.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-课堂笔记/image-20260512204457770.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-课堂笔记/image-20260512204553826.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-课堂笔记/image-20260512204916456.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-课堂笔记/image-20260512210414869.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-课堂笔记/image-20260512214140042.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-课堂笔记/image-20260512214152456.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-课堂笔记/image-20260512214647361.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-课堂笔记/image-20260512214722588.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-课堂笔记/image-20260512214911049.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-课堂笔记/image-20260512215257188.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-课堂笔记/image-20260512215821478.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-课堂笔记/image-20260512215938277.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-课堂笔记/image-20260512215949854.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-课堂笔记/image-20260512220128973.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-课堂笔记/image-20260512220216279.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-课堂笔记/image-20260512220311770.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-课堂笔记/image-20260512221314339.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-课堂笔记/image-20260512221359231.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250522140151179.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250522140200608.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250522162042187-177823751922724.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250522162042187.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250522162235690-177823751922721.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250522162235690.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250525205409028.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250525210121921.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250529201918141.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250529202558709.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250529202613730.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250529202849202.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250529202921191.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250529203128095.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250529203145474.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250529203854332-177823751922717.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250529203854332.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250529210455618-177823751922723.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250529210455618.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250810162508426-17606199610671-17782373639543.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250810163557263.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250810163612860.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250810163700501.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250810214828174-177823751922720.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250810214828174.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250810215127254-177823751922718.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250810215127254.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250810220437273-177823751922719.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250810220437273.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250810221318979.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250810221805982.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250810222239225.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250810222604275.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250810222620533.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20250810222641245.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20251016201234826-17782373639541.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20251016201554151-17782373639542.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20251016220035399-17782373639548.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20251016220221579-17782373639549.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20251016220253472-177823736395410.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20251016220633907-177823736395411.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20251016220929065-177823736395412.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20251016221013984-177823736395513.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20251016221330216-177823736395514.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20251016221424873-177823736395515.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20251016221635656-177823736395516.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20260512181600302.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20260512183243257.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20260512183850705.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20260512184437388.png",
+        "_extracted/day03-Coze智能体之知识-记忆-开场白/image/day03-Coze智能体之知识-记忆-对话体验/image-20260512184445018.png"
+      ],
+      "skipped": [
+        {
+          "file": "_extracted/day03-Coze智能体之知识-记忆-开场白/资料/独家学费.xlsx",
+          "reason": "不支持的扩展名 .xlsx"
+        }
+      ],
+      "warnings": [
+        {
+          "file": "_staging/day03-Coze智能体之知识-记忆-开场白.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day04": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:21:11.762Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-day04.md",
+    "report": {
+      "converted": [
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/资料/草药/1.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/资料/草药/2.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/资料/草药/3.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/资料/换脸/jrn.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/资料/换脸/lqz.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/资料/换脸/lyf.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/资料/换脸.txt",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/资料/纠音.txt",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/day04-课堂笔记.md",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20250810163441128-17788441826911.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20250810163441128.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20250810163557263-17788441826912.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20250810163557263.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20250810163612860-17788441826914.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20250810163612860.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20250810163632861-17788441826916.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20250810163632861.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20250810163700501-17788441826917.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20250810163700501.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20250810222239225-17788441826918.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20250810222239225.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20251019194052242-17788441826913.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20251019194052242.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20251019194110817-17788441826915.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20251019194110817.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20251023150415252.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20251023150451001.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20251023150543265.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20251023150747651.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20251023150829975.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20251023155842850.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20251023160111176.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20251023160135759.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20251023160206014.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20251023160232069.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20251023160306343.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20251023160458724.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20251023160711070.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20251023160750034.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20251023160803180.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20251030154629173.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20251030154656014.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20251030154757177.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20251030154843139.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20251030155012982.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20251030155049010.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20251030155201082.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20251030155522305.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20251030155642144.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20251030155755332.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20251030160628389.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20251030160646647.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20251030161017550.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20251030161042387.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20260515192318978.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20260515192641938.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20260515193103308.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20260515193139051.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20260515193259828.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20260515193335645.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20260515193416656.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-多个工作流案例/image-20260515195443341.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-课堂笔记/image-20260515195443341.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-课堂笔记/image-20260515201321895.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-课堂笔记/image-20260515201428204.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-课堂笔记/image-20260515201639639.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-课堂笔记/image-20260515203243841.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-课堂笔记/image-20260515203348104.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-课堂笔记/image-20260515203409736.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-课堂笔记/image-20260515203914599.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-课堂笔记/image-20260515205245062.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-课堂笔记/image-20260515205427594.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-课堂笔记/image-20260515205738213.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-课堂笔记/image-20260515210019562.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-课堂笔记/image-20260515211858907.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-课堂笔记/image-20260515212107895.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-课堂笔记/image-20260515212440332.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-课堂笔记/image-20260515212610659.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-课堂笔记/image-20260515213540388.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-课堂笔记/image-20260515213608357.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-课堂笔记/image-20260515214306821.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-课堂笔记/image-20260515214317905.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-课堂笔记/image-20260515215634691.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-课堂笔记/image-20260515220109635.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-课堂笔记/image-20260515220238038.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-课堂笔记/image-20260515220535814.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-课堂笔记/image-20260515220805540.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-课堂笔记/image-20260515220954358.png",
+        "_extracted/day04-英语口语纠音-换脸-草药识别工作流/image/day04-课堂笔记/image-20260515221217371.png"
+      ],
+      "skipped": [
+        {
+          "file": "_extracted/day04-英语口语纠音-换脸-草药识别工作流/资料/口语/英语.mp3",
+          "reason": "音视频/安装包，不汇总"
+        }
+      ],
+      "warnings": [
+        {
+          "file": "_staging/day04-英语口语纠音-换脸-草药识别工作流.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day05": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:21:19.153Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-day05.md",
+    "report": {
+      "converted": [
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/资料/视频提取语音.txt",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/day05-课堂笔记.md",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day-工作流发布-智能体中集成/image-20251023150829975.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day-工作流发布-智能体中集成/image-20251023155842850.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day-工作流发布-智能体中集成/image-20251023160111176.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day-工作流发布-智能体中集成/image-20251023160135759.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day-工作流发布-智能体中集成/image-20251023160206014.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day-工作流发布-智能体中集成/image-20251023160232069.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day-工作流发布-智能体中集成/image-20251023160306343.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day-工作流发布-智能体中集成/image-20251023160458724.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day-工作流发布-智能体中集成/image-20251023160711070.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day-工作流发布-智能体中集成/image-20251023160750034.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day-工作流发布-智能体中集成/image-20251023160803180.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day-工作流发布-智能体中集成/image-20251030154629173.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day-工作流发布-智能体中集成/image-20251030154656014.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day-工作流发布-智能体中集成/image-20251030154757177.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day-工作流发布-智能体中集成/image-20251030154843139.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day-工作流发布-智能体中集成/image-20251030155012982.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day-工作流发布-智能体中集成/image-20251030155049010.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day-工作流发布-智能体中集成/image-20251030155201082.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day-工作流发布-智能体中集成/image-20251030155522305.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day-工作流发布-智能体中集成/image-20251030155642144.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day-工作流发布-智能体中集成/image-20251030155755332.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day-工作流发布-智能体中集成/image-20251030160628389.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day-工作流发布-智能体中集成/image-20251030160646647.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day-工作流发布-智能体中集成/image-20251030161017550.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day-工作流发布-智能体中集成/image-20251030161042387.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day-工作流发布-智能体中集成/image-20260515192318978.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-工作流发布-智能体中集成/image-20250810222239225-17791890328701.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-工作流发布-智能体中集成/image-20260519191309595.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-工作流发布-智能体中集成/image-20260519191329168.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-工作流发布-智能体中集成/image-20260519191401068.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-工作流发布-智能体中集成/image-20260519191427742.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-工作流发布-智能体中集成/image-20260519191531628.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-工作流发布-智能体中集成/image-20260519191550681.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-工作流发布-智能体中集成/image-20260519195001492.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-工作流发布-智能体中集成/image-20260519195036400.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-工作流发布-智能体中集成/image-20260519195104272.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-课堂笔记/image-20260519201753088.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-课堂笔记/image-20260519201921043.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-课堂笔记/image-20260519202001872.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-课堂笔记/image-20260519202132959.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-课堂笔记/image-20260519202253271.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-课堂笔记/image-20260519202824596.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-课堂笔记/image-20260519203243683.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-课堂笔记/image-20260519203545085.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-课堂笔记/image-20260519204001228.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-课堂笔记/image-20260519204101417.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-课堂笔记/image-20260519204636260.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-课堂笔记/image-20260519204903030.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-课堂笔记/image-20260519211905679.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-课堂笔记/image-20260519212218971.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-课堂笔记/image-20260519212836675.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-课堂笔记/image-20260519213238338.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-课堂笔记/image-20260519213541534.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-课堂笔记/image-20260519213743714.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-课堂笔记/image-20260519214016521.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-课堂笔记/image-20260519214404242.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-课堂笔记/image-20260519215021656.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-课堂笔记/image-20260519215115851.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-课堂笔记/image-20260519215147563.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-课堂笔记/image-20260519215918314.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-课堂笔记/image-20260519215936813.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-课堂笔记/image-20260519220613936.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-课堂笔记/image-20260519220704841.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-课堂笔记/image-20260519220740533.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-课堂笔记/image-20260519221058659.png",
+        "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/image/day05-课堂笔记/image-20260519221226919.png"
+      ],
+      "skipped": [
+        {
+          "file": "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/资料/视频.mp4",
+          "reason": "音视频/安装包，不汇总"
+        }
+      ],
+      "warnings": [
+        {
+          "file": "_extracted/day05-生成PPT和视频提取音频工作流-发布和导出/资料/Workflow-DY2mp3002-draft-9567.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        },
+        {
+          "file": "_staging/day05-生成PPT和视频提取音频工作流-发布和导出.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day06": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:21:24.921Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-day06.md",
+    "report": {
+      "converted": [
+        "_extracted/day06-Coze工作流之口播数字人/数字人.txt",
+        "_extracted/day06-Coze工作流之口播数字人/day06-课堂笔记.md",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-课堂笔记/image-20260522201319271.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-课堂笔记/image-20260522201551343.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-课堂笔记/image-20260522202404171.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-课堂笔记/image-20260522202600069.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-课堂笔记/image-20260522204422360.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-课堂笔记/image-20260522205230228.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-课堂笔记/image-20260522205500739.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-课堂笔记/image-20260522205821705.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-课堂笔记/image-20260522210242487.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-课堂笔记/image-20260522210522341.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-课堂笔记/image-20260522210541742.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-课堂笔记/image-20260522213943206.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-课堂笔记/image-20260522214145246.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-课堂笔记/image-20260522214500618.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-课堂笔记/image-20260522214908462.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-课堂笔记/image-20260522215127530.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-课堂笔记/image-20260522215151953.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-课堂笔记/image-20260522220252019.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-课堂笔记/image-20260522220821757.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-课堂笔记/image-20260522220838454.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-课堂笔记/image-20260522221133967.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-课堂笔记/image-20260522221354569.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-课堂笔记/image-20260522222031670.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-数字人/image-20250814201402341.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-数字人/image-20250814202107237.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-数字人/image-20250814202826394.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-数字人/image-20250814203031315.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-数字人/image-20250814203441954.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-数字人/image-20250814203725757.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-数字人/image-20250814204258889.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-数字人/image-20250814205707587.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-数字人/image-20250814205812101.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-数字人/image-20250814210152478.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-数字人/image-20250814210440913.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-数字人/image-20250814210806418.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-数字人/image-20250814211245665.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-数字人/image-20250814214020589.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-数字人/image-20250814214510515.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-数字人/image-20250814214556146.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-数字人/image-20250814214922229.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-数字人/image-20250814215109880.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-数字人/image-20250814220448933.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-数字人/image-20250814221149602.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-数字人/image-20250814222846612.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-数字人/image-20250814222941439.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-数字人/image-20260522185625725.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-数字人/image-20260522190200584.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-数字人/image-20260522190453802.png",
+        "_extracted/day06-Coze工作流之口播数字人/image/day06-数字人/image-20260522190650091.png"
+      ],
+      "skipped": [
+        {
+          "file": "_extracted/day06-Coze工作流之口播数字人/资料/录音lqz.mp3",
+          "reason": "音视频/安装包，不汇总"
+        },
+        {
+          "file": "_extracted/day06-Coze工作流之口播数字人/资料/视频.mp4",
+          "reason": "音视频/安装包，不汇总"
+        },
+        {
+          "file": "_extracted/day06-Coze工作流之口播数字人/资料/音频.mp3",
+          "reason": "音视频/安装包，不汇总"
+        },
+        {
+          "file": "_extracted/day06-Coze工作流之口播数字人/资料/afa8153a-78ab-4894-ba6c-fc4acf62d6ac.mp4",
+          "reason": "音视频/安装包，不汇总"
+        }
+      ],
+      "warnings": [
+        {
+          "file": "_extracted/day06-Coze工作流之口播数字人/Workflow-shuziren001-draft-114.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        },
+        {
+          "file": "_staging/day06-Coze工作流之口播数字人.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day07": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:21:29.037Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-day07.md",
+    "report": {
+      "converted": [
+        "_extracted/day07-自动出试卷工作流/出题工作流.txt",
+        "_extracted/day07-自动出试卷工作流/资料/错题1.png",
+        "_extracted/day07-自动出试卷工作流/资料/知识库.md",
+        "_extracted/day07-自动出试卷工作流/资料/知识文档.doc",
+        "_extracted/day07-自动出试卷工作流/day07-课堂笔记.md",
+        "_extracted/day07-自动出试卷工作流/image/day07-课堂笔记/image-20260526202155586.png",
+        "_extracted/day07-自动出试卷工作流/image/day07-课堂笔记/image-20260526204157935.png",
+        "_extracted/day07-自动出试卷工作流/image/day07-课堂笔记/image-20260526205040771.png",
+        "_extracted/day07-自动出试卷工作流/image/day07-课堂笔记/image-20260526210438589.png",
+        "_extracted/day07-自动出试卷工作流/image/day07-课堂笔记/image-20260526210529717.png",
+        "_extracted/day07-自动出试卷工作流/image/day07-课堂笔记/image-20260526213330899.png",
+        "_extracted/day07-自动出试卷工作流/image/day07-课堂笔记/image-20260526213448834.png",
+        "_extracted/day07-自动出试卷工作流/image/day07-课堂笔记/image-20260526213918314.png",
+        "_extracted/day07-自动出试卷工作流/image/day07-课堂笔记/image-20260526214553953.png",
+        "_extracted/day07-自动出试卷工作流/image/day07-课堂笔记/image-20260526214936888.png",
+        "_extracted/day07-自动出试卷工作流/image/day07-课堂笔记/image-20260526215109354.png",
+        "_extracted/day07-自动出试卷工作流/image/day07-课堂笔记/image-20260526215334764.png",
+        "_extracted/day07-自动出试卷工作流/image/day07-课堂笔记/image-20260526215444855.png",
+        "_extracted/day07-自动出试卷工作流/image/day07-课堂笔记/image-20260526215539674.png",
+        "_extracted/day07-自动出试卷工作流/image/day07-生成试卷工作流/image-20250904152209504.png",
+        "_extracted/day07-自动出试卷工作流/image/day07-生成试卷工作流/image-20250904152644207.png",
+        "_extracted/day07-自动出试卷工作流/image/day07-生成试卷工作流/image-20250904153727003.png",
+        "_extracted/day07-自动出试卷工作流/image/day07-生成试卷工作流/image-20250904153915861.png",
+        "_extracted/day07-自动出试卷工作流/image/day07-生成试卷工作流/image-20250904154007675.png",
+        "_extracted/day07-自动出试卷工作流/image/day07-生成试卷工作流/image-20250904154047033.png",
+        "_extracted/day07-自动出试卷工作流/image/day07-生成试卷工作流/image-20250904154337920.png",
+        "_extracted/day07-自动出试卷工作流/image/day07-生成试卷工作流/image-20250904154440478.png",
+        "_extracted/day07-自动出试卷工作流/image/day07-生成试卷工作流/image-20250904154521387.png",
+        "_extracted/day07-自动出试卷工作流/image/day07-生成试卷工作流/image-20250904154714854.png",
+        "_extracted/day07-自动出试卷工作流/image/day07-生成试卷工作流/image-20250904155150890.png",
+        "_extracted/day07-自动出试卷工作流/image/day07-生成试卷工作流/image-20250904160113782.png",
+        "_extracted/day07-自动出试卷工作流/image/day07-生成试卷工作流/image-20250904160252605.png",
+        "_extracted/day07-自动出试卷工作流/image/day07-生成试卷工作流/image-20250904160325039.png",
+        "_extracted/day07-自动出试卷工作流/image/day07-生成试卷工作流/image-20250904160345488.png",
+        "_extracted/day07-自动出试卷工作流/image/day07-生成试卷工作流/image-20250904160447136.png",
+        "_extracted/day07-自动出试卷工作流/image/day07-生成试卷工作流/image-20250904160532143.png",
+        "_extracted/day07-自动出试卷工作流/image/day07-生成试卷工作流/image-20250904160709382.png"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_extracted/day07-自动出试卷工作流/Workflow-chuti01-draft-4624.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        },
+        {
+          "file": "_staging/day07-自动出试卷工作流.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day08": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:21:31.707Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-day08.md",
+    "report": {
+      "converted": [
+        "_extracted/day08-低代码应用编写换脸程序01/day08-课堂笔记.md",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-课堂笔记/image-20260529201519282.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-课堂笔记/image-20260529202056920.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-课堂笔记/image-20260529202433087.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-课堂笔记/image-20260529203015599.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-课堂笔记/image-20260529204443655.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-课堂笔记/image-20260529205227064.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-课堂笔记/image-20260529205500100.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-课堂笔记/image-20260529212251258.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-课堂笔记/image-20260529215350136.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-课堂笔记/image-20260529215827632.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-课堂笔记/image-20260529220020620.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-课堂笔记/image-20260529220134866.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-课堂笔记/image-20260529220438510.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-课堂笔记/image-20260529220524661.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-课堂笔记/image-20260529220556449.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-课堂笔记/image-20260529220929282.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-课堂笔记/image-20260529221050503.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-课堂笔记/image-20260529221227862.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-课堂笔记/image-20260529221625833.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-课堂笔记/image-20260529222259036.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-课堂笔记/image-20260529222829184.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-课堂笔记/image-20260529222841168.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-课堂笔记/image-20260529223350171.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-Coze低代码平台/image-20260529174036409.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-Coze低代码平台/image-20260529174241247.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-Coze低代码平台/image-20260529175335003.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-Coze低代码平台/image-20260529175433523.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-Coze低代码平台/image-20260529180431371.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-Coze低代码平台/image-20260529180442687.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-Coze低代码平台/image-20260529180502782.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-Coze低代码平台/image-20260529180533898.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-Coze低代码平台/image-20260529180548840.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-Coze低代码平台/image-20260529180636658.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-Coze低代码平台/image-20260529180650624.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-Coze低代码平台/image-20260529180716597.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-Coze低代码平台/image-20260529180757124.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-Coze低代码平台/image-20260529180815684.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-Coze低代码平台/image-20260529180828579.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-Coze低代码平台/image-20260529180843814.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-Coze低代码平台/image-20260529180902681.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-Coze低代码平台/image-20260529180943373.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-Coze低代码平台/image-20260529181025534.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-Coze低代码平台/image-20260529181039548.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-Coze低代码平台/image-20260529181058482.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-Coze低代码平台/image-20260529181129514.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-Coze低代码平台/image-20260529181201408.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-Coze低代码平台/image-20260529181218863.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-Coze低代码平台/image-20260529181240225.png",
+        "_extracted/day08-低代码应用编写换脸程序01/image/day08-Coze低代码平台/image-20260529181248247.png"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day08-低代码应用编写换脸程序01.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day09": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:21:36.264Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-day09.md",
+    "report": {
+      "converted": [
+        "_extracted/day09-Coze低代码应用开发换脸程序02/换脸失败问题.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/day09-课堂笔记.md",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-课堂笔记/image-20260602202309636.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-课堂笔记/image-20260602202459121.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-课堂笔记/image-20260602202937439.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-课堂笔记/image-20260602203139384.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-课堂笔记/image-20260602204504857.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-课堂笔记/image-20260602204524783.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-课堂笔记/image-20260602204608879.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-课堂笔记/image-20260602205556278.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-课堂笔记/image-20260602205928426.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-课堂笔记/image-20260602210011791.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-课堂笔记/image-20260602210139302.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-课堂笔记/image-20260602211305744.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-课堂笔记/image-20260602212748740.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-课堂笔记/image-20260602213034223.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-课堂笔记/image-20260602213400169.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-课堂笔记/image-20260602213646825.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-课堂笔记/image-20260602213955488.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-课堂笔记/image-20260602214220052.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-课堂笔记/image-20260602214532862.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-课堂笔记/image-20260602215157423.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-课堂笔记/image-20260602215701583.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-课堂笔记/image-20260602220140767.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-课堂笔记/image-20260602220926804.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-课堂笔记/image-20260602221158309.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-课堂笔记/image-20260602221254977.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-课堂笔记/image-20260602221351792.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-课堂笔记/image-20260602221616282.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-Coze低代码应用开发换脸程序/0e24d79ca6610372479c7b37cf3214a5.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-Coze低代码应用开发换脸程序/760e44a12d20945ae60859c4a4cfe794-17803946246091.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-Coze低代码应用开发换脸程序/760e44a12d20945ae60859c4a4cfe794.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-Coze低代码应用开发换脸程序/1561a3a9f5f4337d473c6c537630638a.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-Coze低代码应用开发换脸程序/db54e5cc52ab13cc995e63d2850a7468.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-Coze低代码应用开发换脸程序/fbb06eb6fbf2c9eb159c00eb304294af.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-Coze低代码应用开发换脸程序/image-20260602174731037.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-Coze低代码应用开发换脸程序/image-20260602174749374.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-Coze低代码应用开发换脸程序/image-20260602174824274.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-Coze低代码应用开发换脸程序/image-20260602174923998.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-Coze低代码应用开发换脸程序/image-20260602174959485.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-Coze低代码应用开发换脸程序/image-20260602175026035.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-Coze低代码应用开发换脸程序/image-20260602175105847.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-Coze低代码应用开发换脸程序/image-20260602175150970.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-Coze低代码应用开发换脸程序/image-20260602175227910.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-Coze低代码应用开发换脸程序/image-20260602175352089.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-Coze低代码应用开发换脸程序/image-20260602175356395.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-Coze低代码应用开发换脸程序/image-20260602175436344.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-Coze低代码应用开发换脸程序/image-20260602175512853.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-Coze低代码应用开发换脸程序/image-20260602175547772.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-Coze低代码应用开发换脸程序/image-20260602175643038.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-Coze低代码应用开发换脸程序/image-20260602175756197.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-Coze低代码应用开发换脸程序/image-20260602175910479.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-Coze低代码应用开发换脸程序/image-20260602175944589.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-Coze低代码应用开发换脸程序/image-20260602180159967.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-Coze低代码应用开发换脸程序/image-20260602180633652.png",
+        "_extracted/day09-Coze低代码应用开发换脸程序02/image/day09-Coze低代码应用开发换脸程序/image-20260602181122880.png"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day09-Coze低代码应用开发换脸程序02.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day10": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:21:43.136Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-day10.md",
+    "report": {
+      "converted": [
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/资料/换脸失败问题.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/资料/dahai.jpeg",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/资料/lyf.jpeg",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/资料/pyy.jpeg",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/day10-课堂笔记.md",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-课堂笔记/0e24d79ca6610372479c7b37cf3214a5.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-课堂笔记/760e44a12d20945ae60859c4a4cfe794-17803946246091.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-课堂笔记/1561a3a9f5f4337d473c6c537630638a.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-课堂笔记/fbb06eb6fbf2c9eb159c00eb304294af.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-课堂笔记/image-20260605201651948.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-课堂笔记/image-20260605201935890.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-课堂笔记/image-20260605202058181.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-课堂笔记/image-20260605202314824.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-课堂笔记/image-20260605202654858.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-课堂笔记/image-20260605203131754.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-课堂笔记/image-20260605203620858.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-课堂笔记/image-20260605203839861.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-课堂笔记/image-20260605203912910.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-课堂笔记/image-20260605204332442.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-课堂笔记/image-20260605204805992.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-课堂笔记/image-20260605204930559.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-课堂笔记/image-20260605205712283.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-课堂笔记/image-20260605211850561.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-课堂笔记/image-20260605213325355.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-课堂笔记/image-20260605213728882.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-课堂笔记/image-20260605213853429.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-课堂笔记/image-20260605215514775.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-课堂笔记/image-20260605215630481.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-AI编辑器使用/0e24d79ca6610372479c7b37cf3214a5.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-AI编辑器使用/760e44a12d20945ae60859c4a4cfe794-17803946246091.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-AI编辑器使用/1561a3a9f5f4337d473c6c537630638a.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-AI编辑器使用/db54e5cc52ab13cc995e63d2850a7468.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-AI编辑器使用/fbb06eb6fbf2c9eb159c00eb304294af.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-AI编辑器使用/image-20250911174752453.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-AI编辑器使用/image-20250911174809930.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-AI编辑器使用/image-20260602180159967.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-AI编辑器使用/image-20260602180633652.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-AI编辑器使用/image-20260605193852435.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-AI编辑器使用/image-20260605193916836.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-AI编辑器使用/image-20260605193919140.png",
+        "_extracted/day10-低代码平台开发-未来宝宝照片-场景穿越应用/image/day10-AI编辑器使用/image-20260605194017584.png"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day10-低代码平台开发-未来宝宝照片-场景穿越应用.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day11": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [
+      {
+        "rel": "day11-AI编辑介绍和VibeCoding编程-仅软件.zip",
+        "mb": 301.7
+      }
+    ],
+    "at": "2026-11-09T14:21:48.559Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-day11.md",
+    "report": {
+      "converted": [
+        "_extracted/day11-AI编辑介绍和VibeCoding编程-课件/day11-课堂笔记.md",
+        "_extracted/day11-AI编辑介绍和VibeCoding编程-课件/image/day11-课堂笔记/image-20260609205904748.png",
+        "_extracted/day11-AI编辑介绍和VibeCoding编程-课件/image/day11-课堂笔记/image-20260609205936202.png",
+        "_extracted/day11-AI编辑介绍和VibeCoding编程-课件/image/day11-课堂笔记/image-20260609210521572.png",
+        "_extracted/day11-AI编辑介绍和VibeCoding编程-课件/image/day11-课堂笔记/image-20260609210627606.png",
+        "_extracted/day11-AI编辑介绍和VibeCoding编程-课件/image/day11-课堂笔记/image-20260609212727620.png",
+        "_extracted/day11-AI编辑介绍和VibeCoding编程-课件/image/day11-课堂笔记/image-20260609213251549.png",
+        "_extracted/day11-AI编辑介绍和VibeCoding编程-课件/image/day11-课堂笔记/image-20260609214115448.png",
+        "_extracted/day11-AI编辑介绍和VibeCoding编程-课件/image/day11-课堂笔记/image-20260609215430014.png",
+        "_extracted/day11-AI编辑介绍和VibeCoding编程-课件/image/day11-课堂笔记/image-20260609215728432.png",
+        "_extracted/day11-AI编辑介绍和VibeCoding编程-课件/image/day11-Trae介绍和使用/image-20250911174752453.png",
+        "_extracted/day11-AI编辑介绍和VibeCoding编程-课件/image/day11-Trae介绍和使用/image-20250911174809930.png",
+        "_extracted/day11-AI编辑介绍和VibeCoding编程-课件/image/day11-Trae介绍和使用/image-20260416204251628.png",
+        "_extracted/day11-AI编辑介绍和VibeCoding编程-课件/image/day11-Trae介绍和使用/image-20260416204307295.png",
+        "_extracted/day11-AI编辑介绍和VibeCoding编程-课件/image/day11-Trae介绍和使用/image-20260416205635223.png",
+        "_extracted/day11-AI编辑介绍和VibeCoding编程-课件/image/day11-Trae介绍和使用/image-20260416205953585.png",
+        "_extracted/day11-AI编辑介绍和VibeCoding编程-课件/image/day11-Trae介绍和使用/image-20260416210103815.png",
+        "_extracted/day11-AI编辑介绍和VibeCoding编程-课件/image/day11-Trae介绍和使用/image-20260416210300252.png",
+        "_extracted/day11-AI编辑介绍和VibeCoding编程-课件/image/day11-Trae介绍和使用/image-20260416210427556.png",
+        "_extracted/day11-AI编辑介绍和VibeCoding编程-课件/image/day11-Trae介绍和使用/image-20260416210452330.png",
+        "_extracted/day11-AI编辑介绍和VibeCoding编程-课件/image/day11-Trae介绍和使用/image-20260416211923401.png",
+        "_extracted/day11-AI编辑介绍和VibeCoding编程-课件/image/day11-Trae介绍和使用/image-20260416212308615.png",
+        "_extracted/day11-AI编辑介绍和VibeCoding编程-课件/image/day11-Trae介绍和使用/image-20260416212701981.png",
+        "_extracted/day11-AI编辑介绍和VibeCoding编程-课件/image/day11-Trae介绍和使用/image-20260416212755625.png",
+        "_extracted/day11-AI编辑介绍和VibeCoding编程-课件/image/day11-Trae介绍和使用/image-20260416221750869.png"
+      ],
+      "skipped": [],
+      "warnings": [],
+      "scannedPdf": []
+    }
+  },
+  "day12": {
+    "downloaded": true,
+    "files": 58,
+    "gated": [],
+    "at": "2026-11-09T14:34:49.568Z",
+    "warnings": [],
+    "shareBrowserDownload": true,
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-day12.md",
+    "report": {
+      "converted": [
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/day12-课堂笔记.md",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-课堂笔记/image-20260612203117656.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-课堂笔记/image-20260612203428883.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-课堂笔记/image-20260612203749429.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-课堂笔记/image-20260612204017702.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-课堂笔记/image-20260612204426953.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-课堂笔记/image-20260612204510685.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-课堂笔记/image-20260612204617576.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-课堂笔记/image-20260612204737286.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-课堂笔记/image-20260612204759564.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-课堂笔记/image-20260612204827115.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-课堂笔记/image-20260612204907686.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-课堂笔记/image-20260612205101566.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-课堂笔记/image-20260612205708119.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-课堂笔记/image-20260612210417300.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-课堂笔记/image-20260612210755851.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-课堂笔记/image-20260612211012385.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-课堂笔记/image-20260612211129725.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-课堂笔记/image-20260612213207965.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-课堂笔记/image-20260612213241403.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20240401162948430.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20240401163023686.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20240401163050951.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20240401163142613.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20240401163812295.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20240401163835864.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20240401163920407.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20240401164834700.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20240401165216886.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20240401170838510.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20240401170910709.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20250625170206083-17653801972411.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20250911173035986.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20250911173123838.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20250911173431064.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20251211215158641.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20251214202456054.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20251214203310762.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20251214203817132.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20251214204215242.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20251214205503263.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20251214205544357.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20251214205635791.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20251214205711724.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20251214205927219.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20251214210058461.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20251214210347385.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20251214210503659.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20251214210907698.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20251214221808137.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20251214222708070.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20251214222738937.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20251214222834477.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20251214223109400.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20251214223216343.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20251214223322534.png",
+        "_extracted/day12-小游戏上线-Trae开发微信小程序01/image/day12-小游戏上线-开发微信小程序/image-20260612193047275.png"
+      ],
+      "skipped": [
+        {
+          "file": "_extracted/day12-小游戏上线-Trae开发微信小程序01/软件/finalshell_windows_x64.exe",
+          "reason": "音视频/安装包，不汇总"
+        }
+      ],
+      "warnings": [],
+      "scannedPdf": []
+    }
+  },
+  "day13": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:21:53.984Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-day13.md",
+    "report": {
+      "converted": [
+        "_extracted/day13-Trae开发微信小程序02/资料/手绘首页.png",
+        "_extracted/day13-Trae开发微信小程序02/资料/图片.png",
+        "_extracted/day13-Trae开发微信小程序02/资料/test_source.jpg",
+        "_extracted/day13-Trae开发微信小程序02/资料/test_target.jpg",
+        "_extracted/day13-Trae开发微信小程序02/day13-课堂笔记.md",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-课堂笔记/image-20260616200455249.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-课堂笔记/image-20260616210340521.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-课堂笔记/image-20260616211602314.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-课堂笔记/image-20260616213435287.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-课堂笔记/image-20260616220148774.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-课堂笔记/image-20260616220728813.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-课堂笔记/image-20260616221321758.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-课堂笔记/image-20260616221700175.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-课堂笔记/image-20260616221737309.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-课堂笔记/image-20260616221959929.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20240401162948430.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20240401163023686.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20240401163050951.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20240401163142613.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20240401163812295.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20240401163835864.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20240401163920407.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20240401164834700.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20240401165216886.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20240401170838510.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20240401170910709.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20250625170206083-17653801972411.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20250911173035986.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20250911173123838.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20250911173431064.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20251211215158641.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20251214202456054.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20251214203310762.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20251214203817132.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20251214204215242.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20251214205503263.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20251214205544357.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20251214205635791.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20251214205711724.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20251214205927219.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20251214210058461.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20251214210347385.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20251214210503659.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20251214210907698.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20251214221808137.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20251214222708070.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20251214222738937.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20251214222834477.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20251214223109400.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20251214223216343.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20251214223322534.png",
+        "_extracted/day13-Trae开发微信小程序02/image/day13-Trae开发微信小程序02/image-20260616195134582.png"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_extracted/day13-Trae开发微信小程序02/代码/ChangeFace.rar",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        },
+        {
+          "file": "_staging/day13-Trae开发微信小程序02.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day14": {
+    "downloaded": true,
+    "files": 70,
+    "gated": [],
+    "at": "2026-11-09T14:36:30.485Z",
+    "warnings": [],
+    "shareBrowserDownload": true,
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-day14.md",
+    "report": {
+      "converted": [
+        "_extracted/day14-Trae开发微信小程序03/day14-课堂笔记.md",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-课堂笔记/image-20240401162948430.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-课堂笔记/image-20240401163023686.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-课堂笔记/image-20240401163050951.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-课堂笔记/image-20240401163142613.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-课堂笔记/image-20240401163812295.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-课堂笔记/image-20240401163835864.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-课堂笔记/image-20240401163920407.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-课堂笔记/image-20260623201558761.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-课堂笔记/image-20260623202841684.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-课堂笔记/image-20260623205600370.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-课堂笔记/image-20260623210259646.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-课堂笔记/image-20260623210740066.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-课堂笔记/image-20260623211945309.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-课堂笔记/image-20260623212035792.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-课堂笔记/image-20260623212143675.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-课堂笔记/image-20260623212329967.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-课堂笔记/image-20260623212345426.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-课堂笔记/image-20260623212403447.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-课堂笔记/image-20260623214220890.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-课堂笔记/image-20260623214252945.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-课堂笔记/image-20260623214405385.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-课堂笔记/image-20260623214444893.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-课堂笔记/image-20260623214606785.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-课堂笔记/image-20260623214638633.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-课堂笔记/image-20260623214734137.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-课堂笔记/image-20260623215339787.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-课堂笔记/image-20260623215406642.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-课堂笔记/image-20260623215640403.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-课堂笔记/image-20260623215813048.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-课堂笔记/image-20260623220057679.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-课堂笔记/image-20260623221003511.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20240401162948430.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20240401163023686.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20240401163050951.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20240401163142613.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20240401163812295.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20240401163835864.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20240401163920407.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20240401164834700.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20240401165216886.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20240401170838510.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20240401170910709.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20251214221808137.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20251214222708070.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20251214222738937.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20251214222834477.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20251214223109400.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20251214223216343.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20251214223322534.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20260426201149013.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20260426203718949.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20260426205522617.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20260426212634781.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20260426213622753.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20260426214110075.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20260426214406090.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20260426215430389.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20260426215456617.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20260426215611885.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20260426215646046.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20260426215827363.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20260426215851433.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20260426220002620.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20260426220157974.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20260426220216170.png",
+        "_extracted/day14-Trae开发微信小程序03/image/day14-Trae开发微信小程序03/image-20260426222622881.png"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_extracted/day14-Trae开发微信小程序03/资料/mysql-8.4.4-winx64.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        },
+        {
+          "file": "_extracted/day14-Trae开发微信小程序03/资料/Navicat-Mysql图形化界面-收费-需破解-可以不用-密码-123.rar",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        },
+        {
+          "file": "_extracted/day14-Trae开发微信小程序03/ChangeFace.rar",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day15": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [
+      {
+        "rel": "day15-Trae开发微信小程序04-仅软件.zip",
+        "mb": 231.6
+      }
+    ],
+    "at": "2026-11-09T14:22:02.163Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-day15.md",
+    "report": {
+      "converted": [
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/day15-课堂笔记.md",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-课堂笔记/image-20251214222708070.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-课堂笔记/image-20251214222738937.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-课堂笔记/image-20251214222834477.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-课堂笔记/image-20251214223109400.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-课堂笔记/image-20251214223216343.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-课堂笔记/image-20251214223322534.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-课堂笔记/image-20260626200600431.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-课堂笔记/image-20260626202853060.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-课堂笔记/image-20260626204648254.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-课堂笔记/image-20260626204957355.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-课堂笔记/image-20260626205730090.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-课堂笔记/image-20260626205941137.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-课堂笔记/image-20260626210535089.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-课堂笔记/image-20260626211915903.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-课堂笔记/image-20260626214200949.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-课堂笔记/image-20260626214711640.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-课堂笔记/image-20260626215531228.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-课堂笔记/image-20260626215731020.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-课堂笔记/image-20260626220803151.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-Trae开发微信小程序04/image-20240401162948430.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-Trae开发微信小程序04/image-20240401163023686.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-Trae开发微信小程序04/image-20240401163050951.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-Trae开发微信小程序04/image-20240401163142613.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-Trae开发微信小程序04/image-20240401163812295.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-Trae开发微信小程序04/image-20240401163835864.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-Trae开发微信小程序04/image-20240401163920407.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-Trae开发微信小程序04/image-20240401164834700.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-Trae开发微信小程序04/image-20240401165216886.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-Trae开发微信小程序04/image-20240401170838510.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-Trae开发微信小程序04/image-20240401170910709.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-Trae开发微信小程序04/image-20240401173528007.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-Trae开发微信小程序04/image-20250629205352682.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-Trae开发微信小程序04/image-20250629205500808.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-Trae开发微信小程序04/image-20250629205657159.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-Trae开发微信小程序04/image-20250629220933230.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-Trae开发微信小程序04/image-20250629221224480.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-Trae开发微信小程序04/image-20251214221808137.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-Trae开发微信小程序04/image-20251214222708070.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-Trae开发微信小程序04/image-20251214222738937.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-Trae开发微信小程序04/image-20251214222834477.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-Trae开发微信小程序04/image-20251214223109400.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-Trae开发微信小程序04/image-20251214223216343.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-Trae开发微信小程序04/image-20251214223322534.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-Trae开发微信小程序04/image-20251221202029430.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-Trae开发微信小程序04/image-20251221202722356.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-Trae开发微信小程序04/image-20260430213617260.png",
+        "_extracted/day15-Trae开发微信小程序04-仅笔记/image/day15-Trae开发微信小程序04/image-20260430213814398.png"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_extracted/day15-Trae开发微信小程序04-仅笔记/代码/ChangeFace.rar",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day16": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:22:10.788Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-day16.md",
+    "report": {
+      "converted": [
+        "_extracted/day16-微信小程序完成和上线/day16-课堂笔记.md",
+        "_extracted/day16-微信小程序完成和上线/image/day16-课堂笔记/image-20260630201752488.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-课堂笔记/image-20260630204433597.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-课堂笔记/image-20260630204901914.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-课堂笔记/image-20260630205228305.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-课堂笔记/image-20260630205331063.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-课堂笔记/image-20260630205509146.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-课堂笔记/image-20260630210112924.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-课堂笔记/image-20260630210227962.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-课堂笔记/image-20260630210442550.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-课堂笔记/image-20260630211300332.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-课堂笔记/image-20260630214244953.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-课堂笔记/image-20260630214321189.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-课堂笔记/image-20260630214823726.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-课堂笔记/image-20260630215615018.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-课堂笔记/image-20260630221231953.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-微信小程序完成和上线/image-20251221202029430-17828028886661.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-微信小程序完成和上线/image-20251221202029430.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-微信小程序完成和上线/image-20251221202722356-17828028886672.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-微信小程序完成和上线/image-20251221202722356.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-微信小程序完成和上线/image-20251221204616102.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-微信小程序完成和上线/image-20251221210716710.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-微信小程序完成和上线/image-20251221214439487.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-微信小程序完成和上线/image-20251221214635932.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-微信小程序完成和上线/image-20251221220349973.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-微信小程序完成和上线/image-20251221221953472.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-微信小程序完成和上线/image-20251221222225434.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-微信小程序完成和上线/image-20251221222812598.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-微信小程序完成和上线/image-20251221222941423.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-微信小程序完成和上线/image-20251221223146707.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-微信小程序完成和上线/image-20251221223634322.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-微信小程序完成和上线/image-20251221225023321.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-微信小程序完成和上线/image-20251221225639549.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-微信小程序完成和上线/image-20251221225704783.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-微信小程序完成和上线/image-20251221225731944.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-微信小程序完成和上线/image-20251221231152572.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-微信小程序完成和上线/image-20251221231605888.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-微信小程序完成和上线/image-20251221231712059.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-微信小程序完成和上线/image-20251221231820234.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-微信小程序完成和上线/image-20251221231930963.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-微信小程序完成和上线/image-20251221232150218.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-微信小程序完成和上线/image-20251221232310717.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-微信小程序完成和上线/image-20260507192828935.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-微信小程序完成和上线/image-20260507192927225.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-微信小程序完成和上线/image-20260507194004663.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-微信小程序完成和上线/image-20260507194312894.png",
+        "_extracted/day16-微信小程序完成和上线/image/day16-微信小程序完成和上线/image-20260507195219520.png"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_extracted/day16-微信小程序完成和上线/资料/ChangeFace-课上讲的项目.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        },
+        {
+          "file": "_extracted/day16-微信小程序完成和上线/资料/ChangeFace-之前的.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        },
+        {
+          "file": "_staging/day16-微信小程序完成和上线.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day17": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:22:18.137Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-day17.md",
+    "report": {
+      "converted": [
+        "_extracted/day17-微信小程序上线/day17-课堂笔记.md",
+        "_extracted/day17-微信小程序上线/image/day17-课堂笔记/image-20251221214635932.png",
+        "_extracted/day17-微信小程序上线/image/day17-课堂笔记/image-20251221225704783-17830745829901.png",
+        "_extracted/day17-微信小程序上线/image/day17-课堂笔记/image-20251221225731944-17830745829902.png",
+        "_extracted/day17-微信小程序上线/image/day17-课堂笔记/image-20260507194312894-17830745829903.png",
+        "_extracted/day17-微信小程序上线/image/day17-课堂笔记/image-20260507224307904.png",
+        "_extracted/day17-微信小程序上线/image/day17-课堂笔记/image-20260507224455038.png",
+        "_extracted/day17-微信小程序上线/image/day17-课堂笔记/image-20260507224531896.png",
+        "_extracted/day17-微信小程序上线/image/day17-课堂笔记/image-20260507224921250.png",
+        "_extracted/day17-微信小程序上线/image/day17-课堂笔记/image-20260507225050540.png",
+        "_extracted/day17-微信小程序上线/image/day17-课堂笔记/image-20260703182157375.png",
+        "_extracted/day17-微信小程序上线/image/day17-课堂笔记/image-20260703200132684.png",
+        "_extracted/day17-微信小程序上线/image/day17-课堂笔记/image-20260703201108651.png",
+        "_extracted/day17-微信小程序上线/image/day17-课堂笔记/image-20260703204834222.png",
+        "_extracted/day17-微信小程序上线/image/day17-课堂笔记/image-20260703210131525.png",
+        "_extracted/day17-微信小程序上线/image/day17-课堂笔记/image-20260703211340481.png",
+        "_extracted/day17-微信小程序上线/image/day17-课堂笔记/image-20260703211904575.png",
+        "_extracted/day17-微信小程序上线/image/day17-课堂笔记/image-20260703211905721.png",
+        "_extracted/day17-微信小程序上线/image/day17-课堂笔记/image-20260703213054721.png",
+        "_extracted/day17-微信小程序上线/image/day17-课堂笔记/image-20260703215836861.png",
+        "_extracted/day17-微信小程序上线/image/day17-课堂笔记/image-20260703220231119.png",
+        "_extracted/day17-微信小程序上线/image/day17-课堂笔记/image-20260703220322796.png",
+        "_extracted/day17-微信小程序上线/image/day17-课堂笔记/image-20260703220329871.png",
+        "_extracted/day17-微信小程序上线/image/day17-上线/image-20251221204616102.png",
+        "_extracted/day17-微信小程序上线/image/day17-上线/image-20251221210716710.png",
+        "_extracted/day17-微信小程序上线/image/day17-上线/image-20251221214439487.png",
+        "_extracted/day17-微信小程序上线/image/day17-上线/image-20251221214635932.png",
+        "_extracted/day17-微信小程序上线/image/day17-上线/image-20251221220349973.png",
+        "_extracted/day17-微信小程序上线/image/day17-上线/image-20251221221953472.png",
+        "_extracted/day17-微信小程序上线/image/day17-上线/image-20251221222225434.png",
+        "_extracted/day17-微信小程序上线/image/day17-上线/image-20251221222812598.png",
+        "_extracted/day17-微信小程序上线/image/day17-上线/image-20251221222941423.png",
+        "_extracted/day17-微信小程序上线/image/day17-上线/image-20251221223146707.png",
+        "_extracted/day17-微信小程序上线/image/day17-上线/image-20251221223634322.png",
+        "_extracted/day17-微信小程序上线/image/day17-上线/image-20251221225023321.png",
+        "_extracted/day17-微信小程序上线/image/day17-上线/image-20251221225639549.png",
+        "_extracted/day17-微信小程序上线/image/day17-上线/image-20251221225704783-17830745829901.png",
+        "_extracted/day17-微信小程序上线/image/day17-上线/image-20251221225704783.png",
+        "_extracted/day17-微信小程序上线/image/day17-上线/image-20251221225731944-17830745829902.png",
+        "_extracted/day17-微信小程序上线/image/day17-上线/image-20251221225731944.png",
+        "_extracted/day17-微信小程序上线/image/day17-上线/image-20251221231152572.png",
+        "_extracted/day17-微信小程序上线/image/day17-上线/image-20251221231605888.png",
+        "_extracted/day17-微信小程序上线/image/day17-上线/image-20251221231712059.png",
+        "_extracted/day17-微信小程序上线/image/day17-上线/image-20251221231820234.png",
+        "_extracted/day17-微信小程序上线/image/day17-上线/image-20251221231930963.png",
+        "_extracted/day17-微信小程序上线/image/day17-上线/image-20251221232150218.png",
+        "_extracted/day17-微信小程序上线/image/day17-上线/image-20251221232310717.png",
+        "_extracted/day17-微信小程序上线/image/day17-上线/image-20260507194312894-17830745829903.png",
+        "_extracted/day17-微信小程序上线/image/day17-上线/image-20260507194312894.png",
+        "_extracted/day17-微信小程序上线/image/day17-上线/image-20260507224307904.png",
+        "_extracted/day17-微信小程序上线/image/day17-上线/image-20260507224455038.png",
+        "_extracted/day17-微信小程序上线/image/day17-上线/image-20260507224531896.png",
+        "_extracted/day17-微信小程序上线/image/day17-上线/image-20260507224921250.png",
+        "_extracted/day17-微信小程序上线/image/day17-上线/image-20260507225050540.png",
+        "_extracted/day17-微信小程序上线/image/day17-上线/image-20260630221231953.png",
+        "_extracted/day17-微信小程序上线/image/day17-上线/image-20260703182157375.png"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_extracted/day17-微信小程序上线/资料/24897193_www.liuqingzheng.top_nginx (2).zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        },
+        {
+          "file": "_extracted/day17-微信小程序上线/ChangeFace.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        },
+        {
+          "file": "_staging/day17-微信小程序上线.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day18": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:22:23.614Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-day18.md",
+    "report": {
+      "converted": [
+        "_extracted/day18-影刀RPA介绍和下载视频/day18-课堂笔记.md",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-课堂笔记/image-20250709145242056-17600071972691.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-课堂笔记/image-20251009204109088.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-课堂笔记/image-20251009204247714.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-课堂笔记/image-20251009204425198.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-课堂笔记/image-20260707204805422.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-课堂笔记/image-20260707210402891.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-课堂笔记/image-20260707210747461.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-课堂笔记/image-20260707213809661.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-课堂笔记/image-20260707214042478.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-课堂笔记/image-20260707214230677.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-课堂笔记/image-20260707214343019.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-课堂笔记/image-20260707214720535.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-课堂笔记/image-20260707215521641.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-课堂笔记/image-20260707215709620.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-课堂笔记/image-20260707215932840.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-课堂笔记/image-20260707220058545.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-课堂笔记/image-20260707220752559.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-课堂笔记/image-20260707220925413.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-课堂笔记/image-20260707220932262.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-课堂笔记/image-20260707221137583.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-课堂笔记/image-20260707221305238.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-课堂笔记/image-20260707221631035.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-课堂笔记/image-20260707221850276.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-影刀RPA介绍和下载视频/image-20250709145242056-17600071972691.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-影刀RPA介绍和下载视频/image-20250709151100707.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-影刀RPA介绍和下载视频/image-20250709151149152.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-影刀RPA介绍和下载视频/image-20251009204109088.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-影刀RPA介绍和下载视频/image-20251009204247714.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-影刀RPA介绍和下载视频/image-20251009204425198.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-影刀RPA介绍和下载视频/image-20251009210145541.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-影刀RPA介绍和下载视频/image-20251009210203374.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-影刀RPA介绍和下载视频/image-20251009210343683.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-影刀RPA介绍和下载视频/image-20251009211117750.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-影刀RPA介绍和下载视频/image-20251009211308418.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-影刀RPA介绍和下载视频/image-20251009211456570.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-影刀RPA介绍和下载视频/image-20251009212045633.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-影刀RPA介绍和下载视频/image-20251009212444553.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-影刀RPA介绍和下载视频/image-20251009212751062.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-影刀RPA介绍和下载视频/image-20251009213004291.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-影刀RPA介绍和下载视频/image-20251009213128178.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-影刀RPA介绍和下载视频/image-20251009213526491.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-影刀RPA介绍和下载视频/image-20251009214007685.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-影刀RPA介绍和下载视频/image-20251009214317245.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-影刀RPA介绍和下载视频/image-20251009214415260.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-影刀RPA介绍和下载视频/image-20251009221049381.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-影刀RPA介绍和下载视频/image-20251009221255262.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-影刀RPA介绍和下载视频/image-20251009221438324.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-影刀RPA介绍和下载视频/image-20251009221810952.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-影刀RPA介绍和下载视频/image-20251009222338416.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-影刀RPA介绍和下载视频/image-20260707165206429.png",
+        "_extracted/day18-影刀RPA介绍和下载视频/image/day18-影刀RPA介绍和下载视频/image-20260707172624339.png"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day18-影刀RPA介绍和下载视频.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day19": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:22:28.942Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-day19.md",
+    "report": {
+      "converted": [
+        "_extracted/day19-影刀RPA-02/day19-课堂笔记.md",
+        "_extracted/day19-影刀RPA-02/image/day19-课堂笔记/image-20260409221231901.png",
+        "_extracted/day19-影刀RPA-02/image/day19-课堂笔记/image-20260710202004301.png",
+        "_extracted/day19-影刀RPA-02/image/day19-课堂笔记/image-20260710202110539.png",
+        "_extracted/day19-影刀RPA-02/image/day19-课堂笔记/image-20260710202202017.png",
+        "_extracted/day19-影刀RPA-02/image/day19-课堂笔记/image-20260710203031229.png",
+        "_extracted/day19-影刀RPA-02/image/day19-课堂笔记/image-20260710203133023.png",
+        "_extracted/day19-影刀RPA-02/image/day19-课堂笔记/image-20260710203301754.png",
+        "_extracted/day19-影刀RPA-02/image/day19-课堂笔记/image-20260710203835714.png",
+        "_extracted/day19-影刀RPA-02/image/day19-课堂笔记/image-20260710203925654.png",
+        "_extracted/day19-影刀RPA-02/image/day19-课堂笔记/image-20260710204349514.png",
+        "_extracted/day19-影刀RPA-02/image/day19-课堂笔记/image-20260710204552208.png",
+        "_extracted/day19-影刀RPA-02/image/day19-课堂笔记/image-20260710205105470.png",
+        "_extracted/day19-影刀RPA-02/image/day19-课堂笔记/image-20260710205226308.png",
+        "_extracted/day19-影刀RPA-02/image/day19-课堂笔记/image-20260710213133922.png",
+        "_extracted/day19-影刀RPA-02/image/day19-课堂笔记/image-20260710214427103.png",
+        "_extracted/day19-影刀RPA-02/image/day19-课堂笔记/image-20260710214609817.png",
+        "_extracted/day19-影刀RPA-02/image/day19-课堂笔记/image-20260710214706992.png",
+        "_extracted/day19-影刀RPA-02/image/day19-课堂笔记/image-20260710214908970.png",
+        "_extracted/day19-影刀RPA-02/image/day19-课堂笔记/image-20260710214952200.png",
+        "_extracted/day19-影刀RPA-02/image/day19-课堂笔记/image-20260710215049558.png",
+        "_extracted/day19-影刀RPA-02/image/day19-课堂笔记/image-20260710215119022.png",
+        "_extracted/day19-影刀RPA-02/image/day19-课堂笔记/image-20260710215147680.png",
+        "_extracted/day19-影刀RPA-02/image/day19-课堂笔记/image-20260710215223092.png",
+        "_extracted/day19-影刀RPA-02/image/day19-课堂笔记/image-20260710215428757.png",
+        "_extracted/day19-影刀RPA-02/image/day19-课堂笔记/image-20260710215517305.png",
+        "_extracted/day19-影刀RPA-02/image/day19-课堂笔记/image-20260710215542116.png",
+        "_extracted/day19-影刀RPA-02/image/day19-课堂笔记/image-20260710215730912.png",
+        "_extracted/day19-影刀RPA-02/image/day19-课堂笔记/image-20260710220359420.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/11.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/22.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/33-17757444768411.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20250712220537131.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20251009192124471.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20251011202054304.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20251011202442372.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20251011203131355.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20251011203251443.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20251011203753898.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20251011203938901.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20251011204659258.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20251011204829132.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20251130215814878.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20251130215914582.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20251130220143053.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20251130220326046.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20251130220410254.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20251130220600348.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20251130220635166.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20251130220710919.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20251130220837627.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20251130220932807.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20251130221052256.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20251130221619858.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20260402194546846.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20260409202649815.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20260409202856260.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20260409203014675.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20260409203545178.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20260409203802950.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20260409204234960.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20260409205234697.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20260409205326638.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20260409205500180.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20260409210441241.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20260409210847224.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20260409211040669.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20260409214914154.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20260409215016354.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20260409215230878.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20260409215715633.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20260409215742953.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20260409220011039.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20260409220033002.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20260409220100949.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20260409220228504.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20260409220405548.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20260409220436146.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20260409220820185.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20260409221231901.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20260710195919256.png",
+        "_extracted/day19-影刀RPA-02/image/day19-影刀RPA使用02/image-20260710195933495.png"
+      ],
+      "skipped": [
+        {
+          "file": "_extracted/day19-影刀RPA-02/资料/抖音评论.xlsx",
+          "reason": "不支持的扩展名 .xlsx"
+        },
+        {
+          "file": "_extracted/day19-影刀RPA-02/资料/联系人.xls",
+          "reason": "不支持的扩展名 .xls"
+        }
+      ],
+      "warnings": [
+        {
+          "file": "_staging/day19-影刀RPA-02.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day20": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:22:32.353Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-day20.md",
+    "report": {
+      "converted": [
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/day20-课堂笔记.md",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-课堂笔记/image-20260714201915768.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-课堂笔记/image-20260714203932788.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-课堂笔记/image-20260714204547786.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-课堂笔记/image-20260714204706578.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-课堂笔记/image-20260714205746852.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-课堂笔记/image-20260714205824410.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-课堂笔记/image-20260714205912817.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-课堂笔记/image-20260714205940012.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-课堂笔记/image-20260714210115512.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-课堂笔记/image-20260714210634745.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-课堂笔记/image-20260714212718421.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-课堂笔记/image-20260714212751574.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-课堂笔记/image-20260714212806125.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-课堂笔记/image-20260714212853322.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-课堂笔记/image-20260714213020024.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-课堂笔记/image-20260714213335762.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-课堂笔记/image-20260714213411571.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-课堂笔记/image-20260714213511356.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-课堂笔记/image-20260714213812827.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-课堂笔记/image-20260714214057843.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-课堂笔记/image-20260714214217599.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-课堂笔记/image-20260714214240544.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-影刀RPA对接Coze实现自动回复/image-20260412205512465.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-影刀RPA对接Coze实现自动回复/image-20260412205637753.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-影刀RPA对接Coze实现自动回复/image-20260412205725191.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-影刀RPA对接Coze实现自动回复/image-20260412210121755.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-影刀RPA对接Coze实现自动回复/image-20260412211843216.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-影刀RPA对接Coze实现自动回复/image-20260412212736879.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-影刀RPA对接Coze实现自动回复/image-20260412213004246.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-影刀RPA对接Coze实现自动回复/image-20260412213145586.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-影刀RPA对接Coze实现自动回复/image-20260412213430986.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-影刀RPA对接Coze实现自动回复/image-20260412213520955.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-影刀RPA对接Coze实现自动回复/image-20260412213619836.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-影刀RPA对接Coze实现自动回复/image-20260412213806159.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-影刀RPA对接Coze实现自动回复/image-20260412213959958.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-影刀RPA对接Coze实现自动回复/image-20260412214102123.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-影刀RPA对接Coze实现自动回复/image-20260412214312491.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-影刀RPA对接Coze实现自动回复/image-20260412214505958.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-影刀RPA对接Coze实现自动回复/image-20260412215423257.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-影刀RPA对接Coze实现自动回复/image-20260412215743723.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-影刀RPA对接Coze实现自动回复/image-20260412215957352.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-影刀RPA对接Coze实现自动回复/image-20260412220109003.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-影刀RPA对接Coze实现自动回复/image-20260412220204736.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-影刀RPA对接Coze实现自动回复/image-20260412220232150.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-影刀RPA对接Coze实现自动回复/image-20260412221025478.png",
+        "_extracted/day20-影刀RPA对接Coze实现自动回复/image/day20-影刀RPA对接Coze实现自动回复/image-20260714015732756.png"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day20-影刀RPA对接Coze实现自动回复.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day21": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:22:34.606Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-day21.md",
+    "report": {
+      "converted": [
+        "1.漫剧介绍+工具使用.md"
+      ],
+      "skipped": [],
+      "warnings": [],
+      "scannedPdf": []
+    }
+  },
+  "day22": {
+    "downloaded": true,
+    "files": 22,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:23:02.225Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-day22.md",
+    "report": {
+      "converted": [
+        "漫剧制作流程+提示词改写 - 笔记.md",
+        "实操演示/1.选文/重返90从捡个老婆开始.txt",
+        "实操演示/2.分集/第二集：第4章.txt",
+        "实操演示/2.分集/第一集：1-3章.txt",
+        "实操演示/3.改文/第一集：改文后.txt",
+        "实操演示/3.改文/第一集原文：1-3章.txt",
+        "实操演示/3.改文/解说类文案改写.md",
+        "实操演示/3.改文/read me.txt",
+        "实操演示/4.分段/第一集：改文后.txt",
+        "实操演示/4.分段/分段后的第一集内容.txt",
+        "实操演示/4.分段/分段提示词.txt",
+        "实操演示/5.分段描述/分段后的第一集内容.txt",
+        "实操演示/5.分段描述/分段描述后的第一集内容.txt",
+        "实操演示/5.分段描述/分段描述提示词.txt",
+        "实操演示/6.分镜提示词创作/分段描述后的第一集内容.txt",
+        "实操演示/6.分镜提示词创作/分镜描述词内容-第一集.md",
+        "实操演示/6.分镜提示词创作/分镜提示词模版-best-v2.md",
+        "实操演示/6.分镜提示词创作/美术风格.txt",
+        "实操演示/6.分镜提示词创作/read me.txt",
+        "实操演示/7.人物资产推理/分镜描述词内容-第一集.md",
+        "实操演示/7.人物资产推理/资产提示词-v2.txt",
+        "实操演示/7.人物资产推理/read me.txt"
+      ],
+      "skipped": [],
+      "warnings": [],
+      "scannedPdf": []
+    }
+  },
+  "day23": {
+    "downloaded": true,
+    "files": 42,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:24:00.680Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-day23.md",
+    "report": {
+      "converted": [
+        "3.解说类实操/1.选文/重返90从捡个老婆开始.txt",
+        "3.解说类实操/2.分集/第二集：第4章.txt",
+        "3.解说类实操/2.分集/第一集：1-3章.txt",
+        "3.解说类实操/3.改文/第一集：改文后.txt",
+        "3.解说类实操/3.改文/第一集原文：1-3章.txt",
+        "3.解说类实操/3.改文/解说类文案改写.md",
+        "3.解说类实操/3.改文/read me.txt",
+        "3.解说类实操/4.分段/第一集：改文后.txt",
+        "3.解说类实操/4.分段/分段后的第一集内容.txt",
+        "3.解说类实操/4.分段/分段提示词.txt",
+        "3.解说类实操/5.分段描述/分段后的第一集内容.txt",
+        "3.解说类实操/5.分段描述/分段描述后的第一集内容.txt",
+        "3.解说类实操/5.分段描述/分段描述提示词.txt",
+        "3.解说类实操/6.分镜提示词创作/分段描述后的第一集内容.txt",
+        "3.解说类实操/6.分镜提示词创作/分镜描述词内容-第一集.md",
+        "3.解说类实操/6.分镜提示词创作/分镜提示词模版-best-v2.md",
+        "3.解说类实操/6.分镜提示词创作/分镜提示词模版-best-v3.md",
+        "3.解说类实操/6.分镜提示词创作/美术风格.txt",
+        "3.解说类实操/6.分镜提示词创作/read me.txt",
+        "3.解说类实操/7.人物资产推理/分镜描述词内容-第一集.md",
+        "3.解说类实操/7.人物资产推理/美术风格.txt",
+        "3.解说类实操/7.人物资产推理/资产提示词-v2.txt",
+        "3.解说类实操/7.人物资产推理/资产图/90 年代袜子厂生产车间.png",
+        "3.解说类实操/7.人物资产推理/资产图/1990 年代破旧土坯房.png",
+        "3.解说类实操/7.人物资产推理/资产图/持现普通人.png",
+        "3.解说类实操/7.人物资产推理/资产图/倒地女人.png",
+        "3.解说类实操/7.人物资产推理/资产图/顶层豪华总裁办公室.png",
+        "3.解说类实操/7.人物资产推理/资产图/古风皇室宫殿.png",
+        "3.解说类实操/7.人物资产推理/资产图/皇子.png",
+        "3.解说类实操/7.人物资产推理/资产图/李斯文.png",
+        "3.解说类实操/7.人物资产推理/资产图/袜子厂厂区门口.png",
+        "3.解说类实操/7.人物资产推理/资产图/系统少年.png",
+        "3.解说类实操/7.人物资产推理/资产图/现代顶级 VIP ICU 病房.png",
+        "3.解说类实操/7.人物资产推理/资产图/现代明亮公寓.png",
+        "3.解说类实操/7.人物资产推理/资产图/小妮.png",
+        "3.解说类实操/7.人物资产推理/资产图/周文静.png",
+        "3.解说类实操/7.人物资产推理/资产形象描述词.md",
+        "3.解说类实操/7.人物资产推理/read me.txt",
+        "3.解说类实操/8.生视频/分镜描述词内容-第一集.md",
+        "3.解说类实操/8.生视频/美术风格.txt",
+        "3.解说类实操/8.生视频/read me.txt",
+        "3.解说类实操/10.剪辑/read me.txt"
+      ],
+      "skipped": [],
+      "warnings": [],
+      "scannedPdf": []
+    }
+  },
+  "day24": {
+    "downloaded": true,
+    "files": 22,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:29:18.470Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-day24.md",
+    "report": {
+      "converted": [
+        "4.仿真人实操/1.选文/农家娘子美又娇.txt",
+        "4.仿真人实操/2.分集/第一集：1-2章.txt",
+        "4.仿真人实操/3.改文/解说类文案改写.md",
+        "4.仿真人实操/3.改文/read me.txt",
+        "4.仿真人实操/4.分镜提示词创作/分镜描述词.txt",
+        "4.仿真人实操/4.分镜提示词创作/分镜提示词模版-best-v3.md",
+        "4.仿真人实操/4.分镜提示词创作/分镜提示词模版-v4.txt",
+        "4.仿真人实操/4.分镜提示词创作/美术风格.txt",
+        "4.仿真人实操/4.分镜提示词创作/read me.txt",
+        "4.仿真人实操/5.人物资产推理/美术风格.txt",
+        "4.仿真人实操/5.人物资产推理/三视图 + 局部细节资产提示词-防卡人脸.txt",
+        "4.仿真人实操/5.人物资产推理/资产图/顾家老宅堂屋.png",
+        "4.仿真人实操/5.人物资产推理/资产图/顾玉梅.png",
+        "4.仿真人实操/5.人物资产推理/资产图/顾元元.png",
+        "4.仿真人实操/5.人物资产推理/资产图/顾元元父母.png",
+        "4.仿真人实操/5.人物资产推理/资产图/老宅冷眼祖辈老人.png",
+        "4.仿真人实操/5.人物资产推理/资产图/农家小院 + 斑驳木门.png",
+        "4.仿真人实操/5.人物资产推理/资产图/水田田间地头.png",
+        "4.仿真人实操/5.人物资产推理/资产图/土坯农家卧房.png",
+        "4.仿真人实操/5.人物资产推理/资产图/张金花.png",
+        "4.仿真人实操/6.生视频/美术风格.txt",
+        "4.仿真人实操/6.生视频/read me.txt"
+      ],
+      "skipped": [],
+      "warnings": [],
+      "scannedPdf": []
+    }
+  },
+  "day25": {
+    "downloaded": true,
+    "files": 39,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:25:03.441Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-day25.md",
+    "report": {
+      "converted": [
+        "4.仿真人实操/1.选文/农家娘子美又娇.txt",
+        "4.仿真人实操/2.分集/第一集：1-2章.txt",
+        "4.仿真人实操/3.改文/第一集：1-2章.txt",
+        "4.仿真人实操/3.改文/改写后内容.txt",
+        "4.仿真人实操/3.改文/解说类文案改写.md",
+        "4.仿真人实操/4.分镜提示词创作/分镜后内容.md",
+        "4.仿真人实操/4.分镜提示词创作/分镜提示词模版-best-v3.md",
+        "4.仿真人实操/4.分镜提示词创作/分镜提示词模版-v4.txt",
+        "4.仿真人实操/4.分镜提示词创作/改写后内容.txt",
+        "4.仿真人实操/4.分镜提示词创作/美术风格.txt",
+        "4.仿真人实操/4.分镜提示词创作/read me.txt",
+        "4.仿真人实操/5.人物资产推理/分镜后内容.md",
+        "4.仿真人实操/5.人物资产推理/美术风格.txt",
+        "4.仿真人实操/5.人物资产推理/三视图 + 局部细节资产提示词-防卡人脸.txt",
+        "4.仿真人实操/5.人物资产推理/资产图/顾河.png",
+        "4.仿真人实操/5.人物资产推理/资产图/顾元元.png",
+        "4.仿真人实操/5.人物资产推理/资产图/顾元元母亲.png",
+        "4.仿真人实操/5.人物资产推理/资产图/六亩水田.png",
+        "4.仿真人实操/5.人物资产推理/资产图/青山村村民群体.png",
+        "4.仿真人实操/5.人物资产推理/资产图/青山村顾家院子.png",
+        "4.仿真人实操/5.人物资产推理/资产图/青山村顾元元卧房.png",
+        "4.仿真人实操/5.人物资产推理/资产图/青山村乡村道路.png",
+        "4.仿真人实操/5.人物资产推理/资产图/青砖大瓦房住宅.png",
+        "4.仿真人实操/5.人物资产推理/资产图/张金花.png",
+        "4.仿真人实操/6.生视频/美术风格.txt",
+        "4.仿真人实操/6.生视频/read me.txt",
+        "5.小说推文教程/操作流程 - AI润色版.assets/image-20260625081749267.png",
+        "5.小说推文教程/操作流程 - AI润色版.assets/image-20260625081757818.png",
+        "5.小说推文教程/操作流程 - AI润色版.assets/image-20260625081841433.png",
+        "5.小说推文教程/操作流程 - AI润色版.assets/image-20260625082105316.png",
+        "5.小说推文教程/操作流程 - AI润色版.assets/image-20260625082113853.png",
+        "5.小说推文教程/操作流程 - AI润色版.assets/image-20260625082122949.png",
+        "5.小说推文教程/操作流程 - AI润色版.assets/image-20260625082232299.png",
+        "5.小说推文教程/操作流程 - AI润色版.assets/image-20260625082244467.png",
+        "5.小说推文教程/操作流程 - AI润色版.assets/image-20260625082252491.png",
+        "5.小说推文教程/操作流程 - AI润色版.assets/image-20260625091716796.png",
+        "5.小说推文教程/操作流程 - AI润色版.assets/image-20260625091908660.png",
+        "5.小说推文教程/操作流程 - AI润色版.assets/image-20260625102554837.png",
+        "5.小说推文教程/操作流程 .md"
+      ],
+      "skipped": [],
+      "warnings": [],
+      "scannedPdf": []
+    }
+  },
+  "day28": {
+    "downloaded": true,
+    "files": 19,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:25:29.160Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-day28.md",
+    "report": {
+      "converted": [
+        "发行/确权和发行 - 授课版.assets/image-20260610170216389.png",
+        "发行/确权和发行 - 授课版.assets/image-20260610170513602.png",
+        "发行/确权和发行 - 授课版.assets/image-20260610170543269.png",
+        "发行/确权和发行 - 授课版.assets/image-20260610175213353.png",
+        "发行/确权和发行 - 授课版.md",
+        "codex使用/codex++.assets/image-20260810183105931.png",
+        "codex使用/codex++.assets/image-20260810184309140.png",
+        "codex使用/codex++.assets/image-20260810184346184.png",
+        "codex使用/codex++.assets/image-20260810184459152.png",
+        "codex使用/codex++.assets/image-20260810184618197.png",
+        "codex使用/codex++.md",
+        "gptCodex批量生图/3D国风-美术风格.txt",
+        "gptCodex批量生图/3D通用-美术风格.txt",
+        "gptCodex批量生图/gptCodex批量生图.assets/image-20260725080813307.png",
+        "gptCodex批量生图/gptCodex批量生图.assets/image-20260725081519474.png",
+        "gptCodex批量生图/gptCodex批量生图.assets/image-20260725081905787.png",
+        "gptCodex批量生图/gptCodex批量生图.assets/image-20260725083038813.png",
+        "gptCodex批量生图/gptCodex批量生图.md",
+        "gptCodex批量生图/imgs/read me.txt"
+      ],
+      "skipped": [],
+      "warnings": [],
+      "scannedPdf": []
+    }
+  },
+  "day29": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:25:31.781Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-day29.md",
+    "report": {
+      "converted": [
+        "_extracted/day29/day29/AI智能体7期直播总结.txt"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day29.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "peipao-day01": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:25:35.641Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-peipao-day01.md",
+    "report": {
+      "converted": [
+        "AI78期陪跑--开营仪式0903.pptx"
+      ],
+      "skipped": [],
+      "warnings": [],
+      "scannedPdf": []
+    }
+  },
+  "peipao-day02": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:25:37.929Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-peipao-day02.md",
+    "report": {
+      "converted": [
+        "Day02-Ai赋能自媒体必做风口+避雷禁区.pptx"
+      ],
+      "skipped": [],
+      "warnings": [],
+      "scannedPdf": []
+    }
+  },
+  "peipao-day03": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:25:46.479Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-peipao-day03.md",
+    "report": {
+      "converted": [
+        "_extracted/day03/day03/AI78期陪跑-03(1).pptx"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day03.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "peipao-day04": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:25:49.559Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-peipao-day04.md",
+    "report": {
+      "converted": [
+        "_extracted/day04/day04/0915-最强AI-Codex零基础实操指南.pptx"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day04.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "peipao-day05": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:25:50.567Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-peipao-day05.md",
+    "report": {
+      "converted": [
+        "_extracted/day05/day05/Day05-新号独家激活流量玩法——数据笔记(1).pptx"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day05.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "peipao-day06": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:25:51.761Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-peipao-day06.md",
+    "report": {
+      "converted": [
+        "_extracted/day06/day06/Day06-选对赛道少走弯路，搭建专属海量资料库产出笔记.pptx"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day06.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "peipao-day07": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:25:53.466Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-peipao-day07.md",
+    "report": {
+      "converted": [
+        "Day07_找对标拆解_高级视觉升级版.pptx"
+      ],
+      "skipped": [],
+      "warnings": [],
+      "scannedPdf": []
+    }
+  },
+  "peipao-day08": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:25:54.546Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-peipao-day08.md",
+    "report": {
+      "converted": [
+        "_extracted/day08/day08/Day08-找对标+拆解分析(1)(1).pptx"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day08.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "peipao-day09": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:25:55.444Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-peipao-day09.md",
+    "report": {
+      "converted": [
+        "_extracted/day09/day09/Day09_-拆解分析对标笔记.pptx"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day09.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "peipao-day10": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:25:56.211Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-peipao-day10.md",
+    "report": {
+      "converted": [
+        "_extracted/day10/day10/Day10_电子资料笔记制作01.pptx"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day10.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "peipao-day11": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:25:57.461Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-peipao-day11.md",
+    "report": {
+      "converted": [
+        "_extracted/day11/day11/Day11_电子资料笔记制作02_高级视觉升级版(1).pptx"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day11.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "peipao-day12": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:25:58.325Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-peipao-day12.md",
+    "report": {
+      "converted": [
+        "_extracted/day12/day12/Day12-商品SKU+闲鱼变现全流程(1).pptx"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day12.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "peipao-day13": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:25:59.186Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-peipao-day13.md",
+    "report": {
+      "converted": [
+        "_extracted/day13/day13/Day13-闲鱼批量操作.pptx"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day13.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "peipao-day14": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:26:00.196Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-peipao-day14.md",
+    "report": {
+      "converted": [
+        "_extracted/day14/day14/Day14-闲鱼选品进阶+细节处理.pptx"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day14.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "peipao-day15": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:26:01.177Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-peipao-day15.md",
+    "report": {
+      "converted": [
+        "_extracted/day15/day15/Day15-玩转小红书引流，避开导流违规大坑(1).pptx"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day15.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "peipao-day16": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:26:02.570Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-peipao-day16.md",
+    "report": {
+      "converted": [
+        "_extracted/day16/day16/Day16-普通笔记与商品笔记(1).pptx"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day16.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "peipao-day17": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-09T14:26:03.688Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-7/00-peipao-day17.md",
+    "report": {
+      "converted": [
+        "_extracted/day17/day17/Day17-小红书引流接单笔记制作.pptx"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day17.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  }
+}

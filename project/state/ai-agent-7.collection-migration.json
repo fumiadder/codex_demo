@@ -1,0 +1,1080 @@
+{
+  "createdAt": "2026-11-09T13:33:48.073Z",
+  "sourceCollectionId": "39559",
+  "sourceCollectionName": "AI agent七期",
+  "targetCollectionId": "45423",
+  "targetCollectionName": "AI智能体七期",
+  "strategy": "reuse-existing-post-ids-and-associate-in-course-order",
+  "rows": [
+    {
+      "position": 1,
+      "title": "day01-Coze智能体初识",
+      "href": "https://www.cnblogs.com/fuminer/p/19982513",
+      "postId": "19982513",
+      "views": 189,
+      "statusText": "已发布"
+    },
+    {
+      "position": 2,
+      "title": "day02-Coze智能体详解",
+      "href": "https://www.cnblogs.com/fuminer/p/20204279",
+      "postId": "20204279",
+      "views": 124,
+      "statusText": "已发布"
+    },
+    {
+      "position": 3,
+      "title": "day03-Coze智能体之知识-记忆-开场白",
+      "href": "https://www.cnblogs.com/fuminer/p/20204308",
+      "postId": "20204308",
+      "views": 81,
+      "statusText": "已发布"
+    },
+    {
+      "position": 4,
+      "title": "day04-英语口语纠音-换脸-草药识别工作流",
+      "href": "https://www.cnblogs.com/fuminer/p/20204324",
+      "postId": "20204324",
+      "views": 100,
+      "statusText": "已发布"
+    },
+    {
+      "position": 5,
+      "title": "day05-生成PPT和视频提取音频工作流-发布和导出",
+      "href": "https://www.cnblogs.com/fuminer/p/20204346",
+      "postId": "20204346",
+      "views": 80,
+      "statusText": "已发布"
+    },
+    {
+      "position": 6,
+      "title": "day06-Coze工作流之口播数字人",
+      "href": "https://www.cnblogs.com/fuminer/p/20204366",
+      "postId": "20204366",
+      "views": 165,
+      "statusText": "已发布"
+    },
+    {
+      "position": 7,
+      "title": "day07-自动出试卷工作流",
+      "href": "https://www.cnblogs.com/fuminer/p/20204384",
+      "postId": "20204384",
+      "views": 92,
+      "statusText": "已发布"
+    },
+    {
+      "position": 8,
+      "title": "day08-低代码应用编写换脸程序01",
+      "href": "https://www.cnblogs.com/fuminer/p/20513105",
+      "postId": "20513105",
+      "views": 84,
+      "statusText": "已发布"
+    },
+    {
+      "position": 9,
+      "title": "day09-Coze低代码应用开发换脸程序02",
+      "href": "https://www.cnblogs.com/fuminer/p/20513126",
+      "postId": "20513126",
+      "views": 54,
+      "statusText": "已发布"
+    },
+    {
+      "position": 10,
+      "title": "day10-低代码平台开发-未来宝宝照片-场景穿越应用",
+      "href": "https://www.cnblogs.com/fuminer/p/20513153",
+      "postId": "20513153",
+      "views": 85,
+      "statusText": "已发布"
+    },
+    {
+      "position": 11,
+      "title": "day11-AI编辑介绍和VibeCoding编程",
+      "href": "https://www.cnblogs.com/fuminer/p/20513197",
+      "postId": "20513197",
+      "views": 104,
+      "statusText": "已发布"
+    },
+    {
+      "position": 12,
+      "title": "day12-小游戏上线-Trae开发微信小程序01",
+      "href": "https://www.cnblogs.com/fuminer/p/20513224",
+      "postId": "20513224",
+      "views": 62,
+      "statusText": "已发布"
+    },
+    {
+      "position": 13,
+      "title": "day13-Trae开发微信小程序02",
+      "href": "https://www.cnblogs.com/fuminer/p/20655745",
+      "postId": "20655745",
+      "views": 70,
+      "statusText": "已发布"
+    },
+    {
+      "position": 14,
+      "title": "day14-Trae开发微信小程序03",
+      "href": "https://www.cnblogs.com/fuminer/p/20898540",
+      "postId": "20898540",
+      "views": 41,
+      "statusText": "已发布"
+    },
+    {
+      "position": 15,
+      "title": "day15-Trae开发微信小程序04",
+      "href": "https://www.cnblogs.com/fuminer/p/20898545",
+      "postId": "20898545",
+      "views": 91,
+      "statusText": "已发布"
+    },
+    {
+      "position": 16,
+      "title": "day16-微信小程序完成和上线",
+      "href": "https://www.cnblogs.com/fuminer/p/21144338",
+      "postId": "21144338",
+      "views": 44,
+      "statusText": "已发布"
+    },
+    {
+      "position": 17,
+      "title": "day17-微信小程序上线",
+      "href": "https://www.cnblogs.com/fuminer/p/21144371",
+      "postId": "21144371",
+      "views": 41,
+      "statusText": "已发布"
+    },
+    {
+      "position": 18,
+      "title": "day18-影刀RPA介绍和下载视频",
+      "href": "https://www.cnblogs.com/fuminer/p/22498595",
+      "postId": "22498595",
+      "views": 78,
+      "statusText": "已发布"
+    },
+    {
+      "position": 19,
+      "title": "day19-影刀RPA-02",
+      "href": "https://www.cnblogs.com/fuminer/p/22498616",
+      "postId": "22498616",
+      "views": 64,
+      "statusText": "已发布"
+    },
+    {
+      "position": 20,
+      "title": "day20-影刀RPA对接Coze实现自动回复",
+      "href": "https://www.cnblogs.com/fuminer/p/22498617",
+      "postId": "22498617",
+      "views": 86,
+      "statusText": "已发布"
+    },
+    {
+      "position": 21,
+      "title": "day21-漫剧初始+工具介绍",
+      "href": "https://www.cnblogs.com/fuminer/p/22498622",
+      "postId": "22498622",
+      "views": 1,
+      "statusText": "已发布"
+    },
+    {
+      "position": 22,
+      "title": "day22-全流程01",
+      "href": "https://www.cnblogs.com/fuminer/p/22498624",
+      "postId": "22498624",
+      "views": 113,
+      "statusText": "已发布"
+    },
+    {
+      "position": 23,
+      "title": "day23-解说实操",
+      "href": "https://www.cnblogs.com/fuminer/p/22498664",
+      "postId": "22498664",
+      "views": 50,
+      "statusText": "已发布"
+    },
+    {
+      "position": 24,
+      "title": "day24-仿真人实操",
+      "href": "https://www.cnblogs.com/fuminer/p/22498675",
+      "postId": "22498675",
+      "views": 39,
+      "statusText": "已发布"
+    },
+    {
+      "position": 25,
+      "title": "day25-小说推文",
+      "href": "https://www.cnblogs.com/fuminer/p/22498682",
+      "postId": "22498682",
+      "views": 161,
+      "statusText": "已发布"
+    },
+    {
+      "position": 26,
+      "title": "day26-即梦全流程",
+      "href": "https://www.cnblogs.com/fuminer/p/22498715",
+      "postId": "22498715",
+      "views": 74,
+      "statusText": "已发布"
+    },
+    {
+      "position": 27,
+      "title": "day27-进阶+技巧",
+      "href": "https://www.cnblogs.com/fuminer/p/22498716",
+      "postId": "22498716",
+      "views": 85,
+      "statusText": "已发布"
+    },
+    {
+      "position": 28,
+      "title": "day28-发行",
+      "href": "https://www.cnblogs.com/fuminer/p/22498718",
+      "postId": "22498718",
+      "views": 1,
+      "statusText": "已发布"
+    },
+    {
+      "position": 29,
+      "title": "day29：AI智能体7期直播总结",
+      "href": "https://www.cnblogs.com/fuminer/p/22638562",
+      "postId": "22638562",
+      "views": 52,
+      "statusText": "已发布"
+    }
+  ],
+  "after": {
+    "targetSize": 29,
+    "exactOrder": true,
+    "verifiedAt": "2026-11-09T13:41:17.433Z",
+    "rows": [
+      {
+        "position": 1,
+        "title": "day01-Coze智能体初识",
+        "postId": "19982513"
+      },
+      {
+        "position": 2,
+        "title": "day02-Coze智能体详解",
+        "postId": "20204279"
+      },
+      {
+        "position": 3,
+        "title": "day03-Coze智能体之知识-记忆-开场白",
+        "postId": "20204308"
+      },
+      {
+        "position": 4,
+        "title": "day04-英语口语纠音-换脸-草药识别工作流",
+        "postId": "20204324"
+      },
+      {
+        "position": 5,
+        "title": "day05-生成PPT和视频提取音频工作流-发布和导出",
+        "postId": "20204346"
+      },
+      {
+        "position": 6,
+        "title": "day06-Coze工作流之口播数字人",
+        "postId": "20204366"
+      },
+      {
+        "position": 7,
+        "title": "day07-自动出试卷工作流",
+        "postId": "20204384"
+      },
+      {
+        "position": 8,
+        "title": "day08-低代码应用编写换脸程序01",
+        "postId": "20513105"
+      },
+      {
+        "position": 9,
+        "title": "day09-Coze低代码应用开发换脸程序02",
+        "postId": "20513126"
+      },
+      {
+        "position": 10,
+        "title": "day10-低代码平台开发-未来宝宝照片-场景穿越应用",
+        "postId": "20513153"
+      },
+      {
+        "position": 11,
+        "title": "day11-AI编辑介绍和VibeCoding编程",
+        "postId": "20513197"
+      },
+      {
+        "position": 12,
+        "title": "day12-小游戏上线-Trae开发微信小程序01",
+        "postId": "20513224"
+      },
+      {
+        "position": 13,
+        "title": "day13-Trae开发微信小程序02",
+        "postId": "20655745"
+      },
+      {
+        "position": 14,
+        "title": "day14-Trae开发微信小程序03",
+        "postId": "20898540"
+      },
+      {
+        "position": 15,
+        "title": "day15-Trae开发微信小程序04",
+        "postId": "20898545"
+      },
+      {
+        "position": 16,
+        "title": "day16-微信小程序完成和上线",
+        "postId": "21144338"
+      },
+      {
+        "position": 17,
+        "title": "day17-微信小程序上线",
+        "postId": "21144371"
+      },
+      {
+        "position": 18,
+        "title": "day18-影刀RPA介绍和下载视频",
+        "postId": "22498595"
+      },
+      {
+        "position": 19,
+        "title": "day19-影刀RPA-02",
+        "postId": "22498616"
+      },
+      {
+        "position": 20,
+        "title": "day20-影刀RPA对接Coze实现自动回复",
+        "postId": "22498617"
+      },
+      {
+        "position": 21,
+        "title": "day21-漫剧初始+工具介绍",
+        "postId": "22498622"
+      },
+      {
+        "position": 22,
+        "title": "day22-全流程01",
+        "postId": "22498624"
+      },
+      {
+        "position": 23,
+        "title": "day23-解说实操",
+        "postId": "22498664"
+      },
+      {
+        "position": 24,
+        "title": "day24-仿真人实操",
+        "postId": "22498675"
+      },
+      {
+        "position": 25,
+        "title": "day25-小说推文",
+        "postId": "22498682"
+      },
+      {
+        "position": 26,
+        "title": "day26-即梦全流程",
+        "postId": "22498715"
+      },
+      {
+        "position": 27,
+        "title": "day27-进阶+技巧",
+        "postId": "22498716"
+      },
+      {
+        "position": 28,
+        "title": "day28-发行",
+        "postId": "22498718"
+      },
+      {
+        "position": 29,
+        "title": "day29：AI智能体7期直播总结",
+        "postId": "22638562"
+      }
+    ]
+  },
+  "oldCollectionSnapshot": {
+    "collection": {
+      "id": 39559,
+      "serialNum": 0,
+      "title": "AI agent七期",
+      "isVisible": false,
+      "defaultInsertionIndex": -1,
+      "orderEntryBy": 0,
+      "postCount": 29,
+      "viewCount": 2312,
+      "dateAdded": "2026-05-06T19:29:36.95"
+    },
+    "entries": {
+      "items": [
+        {
+          "id": 187821,
+          "serialNum": 1,
+          "collectionId": 39559,
+          "postId": 19982513,
+          "blogApp": "fuminer",
+          "title": "day01-Coze智能体初识",
+          "postUrl": "https://www.cnblogs.com/fuminer/p/19982513",
+          "isPublished": true,
+          "viewCount": 189,
+          "dateAdded": "2026-05-06T19:32:10.84",
+          "postType": 1,
+          "datePublished": "2026-05-06T19:32:00",
+          "entryName": null,
+          "postConfig": 16477,
+          "accessPermission": 0
+        },
+        {
+          "id": 191629,
+          "serialNum": 2,
+          "collectionId": 39559,
+          "postId": 20204279,
+          "blogApp": "fuminer",
+          "title": "day02-Coze智能体详解",
+          "postUrl": "https://www.cnblogs.com/fuminer/p/20204279",
+          "isPublished": true,
+          "viewCount": 124,
+          "dateAdded": "2026-05-28T17:51:18.443",
+          "postType": 1,
+          "datePublished": "2026-05-28T17:51:00",
+          "entryName": null,
+          "postConfig": 16477,
+          "accessPermission": 0
+        },
+        {
+          "id": 191630,
+          "serialNum": 3,
+          "collectionId": 39559,
+          "postId": 20204308,
+          "blogApp": "fuminer",
+          "title": "day03-Coze智能体之知识-记忆-开场白",
+          "postUrl": "https://www.cnblogs.com/fuminer/p/20204308",
+          "isPublished": true,
+          "viewCount": 81,
+          "dateAdded": "2026-05-28T17:52:00.44",
+          "postType": 1,
+          "datePublished": "2026-05-28T17:52:00",
+          "entryName": null,
+          "postConfig": 16477,
+          "accessPermission": 0
+        },
+        {
+          "id": 191631,
+          "serialNum": 4,
+          "collectionId": 39559,
+          "postId": 20204324,
+          "blogApp": "fuminer",
+          "title": "day04-英语口语纠音-换脸-草药识别工作流",
+          "postUrl": "https://www.cnblogs.com/fuminer/p/20204324",
+          "isPublished": true,
+          "viewCount": 100,
+          "dateAdded": "2026-05-28T17:52:45.177",
+          "postType": 1,
+          "datePublished": "2026-05-28T17:53:00",
+          "entryName": null,
+          "postConfig": 16477,
+          "accessPermission": 0
+        },
+        {
+          "id": 191632,
+          "serialNum": 5,
+          "collectionId": 39559,
+          "postId": 20204346,
+          "blogApp": "fuminer",
+          "title": "day05-生成PPT和视频提取音频工作流-发布和导出",
+          "postUrl": "https://www.cnblogs.com/fuminer/p/20204346",
+          "isPublished": true,
+          "viewCount": 80,
+          "dateAdded": "2026-05-28T17:53:35.36",
+          "postType": 1,
+          "datePublished": "2026-05-28T17:54:00",
+          "entryName": null,
+          "postConfig": 16477,
+          "accessPermission": 0
+        },
+        {
+          "id": 191633,
+          "serialNum": 6,
+          "collectionId": 39559,
+          "postId": 20204366,
+          "blogApp": "fuminer",
+          "title": "day06-Coze工作流之口播数字人",
+          "postUrl": "https://www.cnblogs.com/fuminer/p/20204366",
+          "isPublished": true,
+          "viewCount": 165,
+          "dateAdded": "2026-05-28T17:54:18.983",
+          "postType": 1,
+          "datePublished": "2026-05-28T17:54:00",
+          "entryName": null,
+          "postConfig": 16477,
+          "accessPermission": 0
+        },
+        {
+          "id": 191634,
+          "serialNum": 7,
+          "collectionId": 39559,
+          "postId": 20204384,
+          "blogApp": "fuminer",
+          "title": "day07-自动出试卷工作流",
+          "postUrl": "https://www.cnblogs.com/fuminer/p/20204384",
+          "isPublished": true,
+          "viewCount": 92,
+          "dateAdded": "2026-05-28T17:54:57.617",
+          "postType": 1,
+          "datePublished": "2026-05-28T17:55:00",
+          "entryName": null,
+          "postConfig": 16477,
+          "accessPermission": 0
+        },
+        {
+          "id": 195469,
+          "serialNum": 8,
+          "collectionId": 39559,
+          "postId": 20513105,
+          "blogApp": "fuminer",
+          "title": "day08-低代码应用编写换脸程序01",
+          "postUrl": "https://www.cnblogs.com/fuminer/p/20513105",
+          "isPublished": true,
+          "viewCount": 84,
+          "dateAdded": "2026-06-14T09:15:06.307",
+          "postType": 1,
+          "datePublished": "2026-06-14T09:15:00",
+          "entryName": null,
+          "postConfig": 16477,
+          "accessPermission": 0
+        },
+        {
+          "id": 195470,
+          "serialNum": 9,
+          "collectionId": 39559,
+          "postId": 20513126,
+          "blogApp": "fuminer",
+          "title": "day09-Coze低代码应用开发换脸程序02",
+          "postUrl": "https://www.cnblogs.com/fuminer/p/20513126",
+          "isPublished": true,
+          "viewCount": 54,
+          "dateAdded": "2026-06-14T09:15:56.973",
+          "postType": 1,
+          "datePublished": "2026-06-14T09:16:00",
+          "entryName": null,
+          "postConfig": 16477,
+          "accessPermission": 0
+        },
+        {
+          "id": 195471,
+          "serialNum": 10,
+          "collectionId": 39559,
+          "postId": 20513153,
+          "blogApp": "fuminer",
+          "title": "day10-低代码平台开发-未来宝宝照片-场景穿越应用",
+          "postUrl": "https://www.cnblogs.com/fuminer/p/20513153",
+          "isPublished": true,
+          "viewCount": 86,
+          "dateAdded": "2026-06-14T09:16:52.07",
+          "postType": 1,
+          "datePublished": "2026-06-14T09:17:00",
+          "entryName": null,
+          "postConfig": 16477,
+          "accessPermission": 0
+        },
+        {
+          "id": 195472,
+          "serialNum": 11,
+          "collectionId": 39559,
+          "postId": 20513197,
+          "blogApp": "fuminer",
+          "title": "day11-AI编辑介绍和VibeCoding编程",
+          "postUrl": "https://www.cnblogs.com/fuminer/p/20513197",
+          "isPublished": true,
+          "viewCount": 104,
+          "dateAdded": "2026-06-14T09:18:03.357",
+          "postType": 1,
+          "datePublished": "2026-06-14T09:18:00",
+          "entryName": null,
+          "postConfig": 16477,
+          "accessPermission": 0
+        },
+        {
+          "id": 195473,
+          "serialNum": 12,
+          "collectionId": 39559,
+          "postId": 20513224,
+          "blogApp": "fuminer",
+          "title": "day12-小游戏上线-Trae开发微信小程序01",
+          "postUrl": "https://www.cnblogs.com/fuminer/p/20513224",
+          "isPublished": true,
+          "viewCount": 62,
+          "dateAdded": "2026-06-14T09:18:55.303",
+          "postType": 1,
+          "datePublished": "2026-06-14T09:19:00",
+          "entryName": null,
+          "postConfig": 16477,
+          "accessPermission": 0
+        },
+        {
+          "id": 196789,
+          "serialNum": 13,
+          "collectionId": 39559,
+          "postId": 20655745,
+          "blogApp": "fuminer",
+          "title": "day13-Trae开发微信小程序02",
+          "postUrl": "https://www.cnblogs.com/fuminer/p/20655745",
+          "isPublished": true,
+          "viewCount": 70,
+          "dateAdded": "2026-06-19T17:57:50.393",
+          "postType": 1,
+          "datePublished": "2026-06-19T17:58:00",
+          "entryName": null,
+          "postConfig": 16477,
+          "accessPermission": 0
+        },
+        {
+          "id": 199794,
+          "serialNum": 14,
+          "collectionId": 39559,
+          "postId": 20898540,
+          "blogApp": "fuminer",
+          "title": "day14-Trae开发微信小程序03",
+          "postUrl": "https://www.cnblogs.com/fuminer/p/20898540",
+          "isPublished": true,
+          "viewCount": 41,
+          "dateAdded": "2026-06-28T19:11:16.157",
+          "postType": 1,
+          "datePublished": "2026-06-28T19:11:00",
+          "entryName": null,
+          "postConfig": 16477,
+          "accessPermission": 0
+        },
+        {
+          "id": 199795,
+          "serialNum": 15,
+          "collectionId": 39559,
+          "postId": 20898545,
+          "blogApp": "fuminer",
+          "title": "day15-Trae开发微信小程序04",
+          "postUrl": "https://www.cnblogs.com/fuminer/p/20898545",
+          "isPublished": true,
+          "viewCount": 91,
+          "dateAdded": "2026-06-28T19:12:05.323",
+          "postType": 1,
+          "datePublished": "2026-06-28T19:12:00",
+          "entryName": null,
+          "postConfig": 16477,
+          "accessPermission": 0
+        },
+        {
+          "id": 202544,
+          "serialNum": 16,
+          "collectionId": 39559,
+          "postId": 21144338,
+          "blogApp": "fuminer",
+          "title": "day16-微信小程序完成和上线",
+          "postUrl": "https://www.cnblogs.com/fuminer/p/21144338",
+          "isPublished": true,
+          "viewCount": 44,
+          "dateAdded": "2026-07-05T18:26:28.903",
+          "postType": 1,
+          "datePublished": "2026-07-05T18:26:00",
+          "entryName": null,
+          "postConfig": 16477,
+          "accessPermission": 0
+        },
+        {
+          "id": 202545,
+          "serialNum": 17,
+          "collectionId": 39559,
+          "postId": 21144371,
+          "blogApp": "fuminer",
+          "title": "day17-微信小程序上线",
+          "postUrl": "https://www.cnblogs.com/fuminer/p/21144371",
+          "isPublished": true,
+          "viewCount": 41,
+          "dateAdded": "2026-07-05T18:27:58.03",
+          "postType": 1,
+          "datePublished": "2026-07-05T18:28:00",
+          "entryName": null,
+          "postConfig": 16477,
+          "accessPermission": 0
+        },
+        {
+          "id": 215640,
+          "serialNum": 18,
+          "collectionId": 39559,
+          "postId": 22498595,
+          "blogApp": "fuminer",
+          "title": "day18-影刀RPA介绍和下载视频",
+          "postUrl": "https://www.cnblogs.com/fuminer/p/22498595",
+          "isPublished": true,
+          "viewCount": 78,
+          "dateAdded": "2026-08-15T22:21:53.66",
+          "postType": 1,
+          "datePublished": "2026-08-15T22:22:00",
+          "entryName": null,
+          "postConfig": 16477,
+          "accessPermission": 0
+        },
+        {
+          "id": 215641,
+          "serialNum": 19,
+          "collectionId": 39559,
+          "postId": 22498616,
+          "blogApp": "fuminer",
+          "title": "day19-影刀RPA-02",
+          "postUrl": "https://www.cnblogs.com/fuminer/p/22498616",
+          "isPublished": true,
+          "viewCount": 64,
+          "dateAdded": "2026-08-15T22:26:31.62",
+          "postType": 1,
+          "datePublished": "2026-08-15T22:27:00",
+          "entryName": null,
+          "postConfig": 16477,
+          "accessPermission": 0
+        },
+        {
+          "id": 215642,
+          "serialNum": 20,
+          "collectionId": 39559,
+          "postId": 22498617,
+          "blogApp": "fuminer",
+          "title": "day20-影刀RPA对接Coze实现自动回复",
+          "postUrl": "https://www.cnblogs.com/fuminer/p/22498617",
+          "isPublished": true,
+          "viewCount": 86,
+          "dateAdded": "2026-08-15T22:27:02.46",
+          "postType": 1,
+          "datePublished": "2026-08-15T22:27:00",
+          "entryName": null,
+          "postConfig": 16477,
+          "accessPermission": 0
+        },
+        {
+          "id": 215643,
+          "serialNum": 21,
+          "collectionId": 39559,
+          "postId": 22498622,
+          "blogApp": "fuminer",
+          "title": "day21-漫剧初始+工具介绍",
+          "postUrl": "https://www.cnblogs.com/fuminer/p/22498622",
+          "isPublished": true,
+          "viewCount": 1,
+          "dateAdded": "2026-08-15T22:27:38.093",
+          "postType": 1,
+          "datePublished": "2026-08-15T22:28:00",
+          "entryName": null,
+          "postConfig": 16477,
+          "accessPermission": 134217728
+        },
+        {
+          "id": 215644,
+          "serialNum": 22,
+          "collectionId": 39559,
+          "postId": 22498624,
+          "blogApp": "fuminer",
+          "title": "day22-全流程01",
+          "postUrl": "https://www.cnblogs.com/fuminer/p/22498624",
+          "isPublished": true,
+          "viewCount": 113,
+          "dateAdded": "2026-08-15T22:28:10.273",
+          "postType": 1,
+          "datePublished": "2026-08-15T22:28:00",
+          "entryName": null,
+          "postConfig": 16477,
+          "accessPermission": 0
+        },
+        {
+          "id": 215645,
+          "serialNum": 23,
+          "collectionId": 39559,
+          "postId": 22498664,
+          "blogApp": "fuminer",
+          "title": "day23-解说实操",
+          "postUrl": "https://www.cnblogs.com/fuminer/p/22498664",
+          "isPublished": true,
+          "viewCount": 50,
+          "dateAdded": "2026-08-15T22:37:40.88",
+          "postType": 1,
+          "datePublished": "2026-08-15T22:38:00",
+          "entryName": null,
+          "postConfig": 16477,
+          "accessPermission": 0
+        },
+        {
+          "id": 215646,
+          "serialNum": 24,
+          "collectionId": 39559,
+          "postId": 22498675,
+          "blogApp": "fuminer",
+          "title": "day24-仿真人实操",
+          "postUrl": "https://www.cnblogs.com/fuminer/p/22498675",
+          "isPublished": true,
+          "viewCount": 39,
+          "dateAdded": "2026-08-15T22:41:20.85",
+          "postType": 1,
+          "datePublished": "2026-08-15T22:41:00",
+          "entryName": null,
+          "postConfig": 16477,
+          "accessPermission": 0
+        },
+        {
+          "id": 215647,
+          "serialNum": 25,
+          "collectionId": 39559,
+          "postId": 22498682,
+          "blogApp": "fuminer",
+          "title": "day25-小说推文",
+          "postUrl": "https://www.cnblogs.com/fuminer/p/22498682",
+          "isPublished": true,
+          "viewCount": 161,
+          "dateAdded": "2026-08-15T22:41:59.987",
+          "postType": 1,
+          "datePublished": "2026-08-15T22:42:00",
+          "entryName": null,
+          "postConfig": 16477,
+          "accessPermission": 0
+        },
+        {
+          "id": 215648,
+          "serialNum": 26,
+          "collectionId": 39559,
+          "postId": 22498715,
+          "blogApp": "fuminer",
+          "title": "day26-即梦全流程",
+          "postUrl": "https://www.cnblogs.com/fuminer/p/22498715",
+          "isPublished": true,
+          "viewCount": 74,
+          "dateAdded": "2026-08-15T22:48:49.053",
+          "postType": 1,
+          "datePublished": "2026-08-15T22:49:00",
+          "entryName": null,
+          "postConfig": 16477,
+          "accessPermission": 0
+        },
+        {
+          "id": 215649,
+          "serialNum": 27,
+          "collectionId": 39559,
+          "postId": 22498716,
+          "blogApp": "fuminer",
+          "title": "day27-进阶+技巧",
+          "postUrl": "https://www.cnblogs.com/fuminer/p/22498716",
+          "isPublished": true,
+          "viewCount": 85,
+          "dateAdded": "2026-08-15T22:49:18.697",
+          "postType": 1,
+          "datePublished": "2026-08-15T22:49:00",
+          "entryName": null,
+          "postConfig": 16477,
+          "accessPermission": 0
+        },
+        {
+          "id": 215650,
+          "serialNum": 28,
+          "collectionId": 39559,
+          "postId": 22498718,
+          "blogApp": "fuminer",
+          "title": "day28-发行",
+          "postUrl": "https://www.cnblogs.com/fuminer/p/22498718",
+          "isPublished": true,
+          "viewCount": 1,
+          "dateAdded": "2026-08-15T22:49:43.123",
+          "postType": 1,
+          "datePublished": "2026-08-15T22:50:00",
+          "entryName": null,
+          "postConfig": 16477,
+          "accessPermission": 134217728
+        },
+        {
+          "id": 217824,
+          "serialNum": 29,
+          "collectionId": 39559,
+          "postId": 22638562,
+          "blogApp": "fuminer",
+          "title": "day29：AI智能体7期直播总结",
+          "postUrl": "https://www.cnblogs.com/fuminer/p/22638562",
+          "isPublished": true,
+          "viewCount": 52,
+          "dateAdded": "2026-08-23T09:51:34.693",
+          "postType": 1,
+          "datePublished": "2026-08-23T09:52:00",
+          "entryName": null,
+          "postConfig": 16477,
+          "accessPermission": 0
+        }
+      ],
+      "total": 29,
+      "pageSize": 200,
+      "pageIndex": 1
+    },
+    "capturedAt": "2026-11-09T13:46:44.910Z",
+    "note": "删除旧合集前的后台快照；文章本身保留在新合集"
+  },
+  "publicPage": {
+    "url": "https://www.cnblogs.com/fuminer/collections/45423",
+    "status": 200,
+    "visibleCount": 29,
+    "orderOk": true,
+    "capturedAt": "2026-11-09T13:56:58.227Z",
+    "visibleRows": [
+      {
+        "href": "https://www.cnblogs.com/fuminer/p/19982513",
+        "title": "day01-Coze智能体初识",
+        "postId": "19982513"
+      },
+      {
+        "href": "https://www.cnblogs.com/fuminer/p/20204279",
+        "title": "day02-Coze智能体详解",
+        "postId": "20204279"
+      },
+      {
+        "href": "https://www.cnblogs.com/fuminer/p/20204308",
+        "title": "day03-Coze智能体之知识-记忆-开场白",
+        "postId": "20204308"
+      },
+      {
+        "href": "https://www.cnblogs.com/fuminer/p/20204324",
+        "title": "day04-英语口语纠音-换脸-草药识别工作流",
+        "postId": "20204324"
+      },
+      {
+        "href": "https://www.cnblogs.com/fuminer/p/20204346",
+        "title": "day05-生成PPT和视频提取音频工作流-发布和导出",
+        "postId": "20204346"
+      },
+      {
+        "href": "https://www.cnblogs.com/fuminer/p/20204366",
+        "title": "day06-Coze工作流之口播数字人",
+        "postId": "20204366"
+      },
+      {
+        "href": "https://www.cnblogs.com/fuminer/p/20204384",
+        "title": "day07-自动出试卷工作流",
+        "postId": "20204384"
+      },
+      {
+        "href": "https://www.cnblogs.com/fuminer/p/20513105",
+        "title": "day08-低代码应用编写换脸程序01",
+        "postId": "20513105"
+      },
+      {
+        "href": "https://www.cnblogs.com/fuminer/p/20513126",
+        "title": "day09-Coze低代码应用开发换脸程序02",
+        "postId": "20513126"
+      },
+      {
+        "href": "https://www.cnblogs.com/fuminer/p/20513153",
+        "title": "day10-低代码平台开发-未来宝宝照片-场景穿越应用",
+        "postId": "20513153"
+      },
+      {
+        "href": "https://www.cnblogs.com/fuminer/p/20513197",
+        "title": "day11-AI编辑介绍和VibeCoding编程",
+        "postId": "20513197"
+      },
+      {
+        "href": "https://www.cnblogs.com/fuminer/p/20513224",
+        "title": "day12-小游戏上线-Trae开发微信小程序01",
+        "postId": "20513224"
+      },
+      {
+        "href": "https://www.cnblogs.com/fuminer/p/20655745",
+        "title": "day13-Trae开发微信小程序02",
+        "postId": "20655745"
+      },
+      {
+        "href": "https://www.cnblogs.com/fuminer/p/20898540",
+        "title": "day14-Trae开发微信小程序03",
+        "postId": "20898540"
+      },
+      {
+        "href": "https://www.cnblogs.com/fuminer/p/20898545",
+        "title": "day15-Trae开发微信小程序04",
+        "postId": "20898545"
+      },
+      {
+        "href": "https://www.cnblogs.com/fuminer/p/21144338",
+        "title": "day16-微信小程序完成和上线",
+        "postId": "21144338"
+      },
+      {
+        "href": "https://www.cnblogs.com/fuminer/p/21144371",
+        "title": "day17-微信小程序上线",
+        "postId": "21144371"
+      },
+      {
+        "href": "https://www.cnblogs.com/fuminer/p/22498595",
+        "title": "day18-影刀RPA介绍和下载视频",
+        "postId": "22498595"
+      },
+      {
+        "href": "https://www.cnblogs.com/fuminer/p/22498616",
+        "title": "day19-影刀RPA-02",
+        "postId": "22498616"
+      },
+      {
+        "href": "https://www.cnblogs.com/fuminer/p/22498617",
+        "title": "day20-影刀RPA对接Coze实现自动回复",
+        "postId": "22498617"
+      },
+      {
+        "href": "https://www.cnblogs.com/fuminer/p/22498622",
+        "title": "day21-漫剧初始+工具介绍",
+        "postId": "22498622"
+      },
+      {
+        "href": "https://www.cnblogs.com/fuminer/p/22498624",
+        "title": "day22-全流程01",
+        "postId": "22498624"
+      },
+      {
+        "href": "https://www.cnblogs.com/fuminer/p/22498664",
+        "title": "day23-解说实操",
+        "postId": "22498664"
+      },
+      {
+        "href": "https://www.cnblogs.com/fuminer/p/22498675",
+        "title": "day24-仿真人实操",
+        "postId": "22498675"
+      },
+      {
+        "href": "https://www.cnblogs.com/fuminer/p/22498682",
+        "title": "day25-小说推文",
+        "postId": "22498682"
+      },
+      {
+        "href": "https://www.cnblogs.com/fuminer/p/22498715",
+        "title": "day26-即梦全流程",
+        "postId": "22498715"
+      },
+      {
+        "href": "https://www.cnblogs.com/fuminer/p/22498716",
+        "title": "day27-进阶+技巧",
+        "postId": "22498716"
+      },
+      {
+        "href": "https://www.cnblogs.com/fuminer/p/22498718",
+        "title": "day28-发行",
+        "postId": "22498718"
+      },
+      {
+        "href": "https://www.cnblogs.com/fuminer/p/22638562",
+        "title": "day29：AI智能体7期直播总结",
+        "postId": "22638562"
+      }
+    ]
+  },
+  "oldCollectionDeleted": {
+    "id": "39559",
+    "title": "AI agent七期",
+    "at": "2026-11-09T13:46:42.870Z",
+    "reason": "公开合集最多 20 个；为让新合集获得公开页，删除旧合集分组（文章仍保留在新合集）",
+    "backup": "oldCollectionSnapshot",
+    "articlesDeleted": false
+  },
+  "targetPublicUrl": "https://www.cnblogs.com/fuminer/collections/45423",
+  "targetPublicStatus": 200,
+  "targetBackendEntryCount": 29,
+  "targetPublicVisibleCount": 27,
+  "targetReviewPending": [
+    "22498622",
+    "22498718"
+  ],
+  "updatedAt": "2026-11-09T13:58:23.357Z"
+}

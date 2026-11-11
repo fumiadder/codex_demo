@@ -1,0 +1,25 @@
+{
+  "updatedAt": "2026-11-06T22:55:00+08:00",
+  "clientDrive": {
+    "breakthrough": "无辅助功能权限下，用 Playwright(CDP) 在网页网盘点『使用客户端下载』，headless Chromium 经 LaunchServices 直接唤起 BaiduNetdisk 客户端 P2SP 下载，绕过 ≥46MB 的 31326 网关；脚本 baidu-client-drive.mjs(建任务)+baidu-archive-watch.mjs(完整性校验后归档)",
+    "clientLocalApi": "netdisk_service 监听 127.0.0.1:10000(HTTPS, localhost.pan.baidu.com, 需签名不可裸调)；P2SP引擎 127.0.0.1:7475；scheme=baiduyunguanjia://evoked-download/?browserId&seq(内部回调，外部不可构造)；下载落地 ~/Downloads，完成文件 .baiduyun.p.downloading 后缀消失",
+    "sixFiles": "day07.rar/day10/day16/day17/day21/day23 全部下载+unzip -t/lsar校验+归档到 downloads/ai-agent-8/_manual/，edition8-manual.mjs --apply 已解压合并，output 现39章，6新章243图零缺失"
+  },
+  "imageQuota": {
+    "rule": "免费500张/天滚动24h窗口(非零点重置)；昨晚23:37用尽，今日22:50探测仍403，预计23:37后恢复",
+    "pending": "4配额挂起章 day15/18/20/22 = 253图 + 6新章 day07/10/16/17/21/23 = 243图，合计496张，余量仅4；QuotaGuard到限干净暂停可次日续传",
+    "probeCmd": "单图 newMediaObject 探测，PROBE_OK 才批量"
+  },
+  "moderation": {
+    "stuck": "10篇(day08,day09,peipao-day01/03/04/05/08/12/15/16) reviewStatus=0/2 公开页404 已21+小时；msg=0无处罚通知、无违规字段，属人工审核队列积压",
+    "forbidden": "严禁编辑(重触发审核)/重发(重复)；只能等官方审核或联系博客园客服",
+    "risk": "账号审核未恢复前再大量发新文可能加重审核，发布前需用户决策"
+  },
+  "resumeCommands": {
+    "afterQuotaReset": "node .dsh/skills/course-publish/scripts/edition8-publish.mjs --skip-collection (全量，45s/新文+1s/图，QuotaGuard自动停)",
+    "onlyNewSix": "node .dsh/skills/course-publish/scripts/edition8-publish.mjs --only=day07 (逐章) 等",
+    "recheckReview": "node .dsh/skills/course-publish/scripts/cnblogs-review-status.mjs",
+    "clientDownload": "node .dsh/skills/course-publish/scripts/baidu-client-drive.mjs (dry-run) / 加 --apply"
+  },
+  "tests": "138项全绿"
+}

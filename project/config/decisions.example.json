@@ -1,0 +1,18 @@
+[
+  {
+    "webIndex": 3,
+    "action": "skip",
+    "_comment": "网站第3章在网盘暂无对应内容，跳过不发布"
+  },
+  {
+    "webIndex": 5,
+    "action": "map",
+    "shareName": "05 工具调用（网盘实际文件夹名）",
+    "_comment": "手动把网站第5章映射到这个网盘文件夹"
+  },
+  {
+    "webIndex": 7,
+    "action": "accept",
+    "_comment": "采用系统给出的当前匹配（medium/ambiguous 置信度时确认）"
+  }
+]

@@ -1,0 +1,760 @@
+{
+  "day00": {
+    "postId": "23594574",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23594574.html",
+    "published": true,
+    "deleted": false,
+    "images": 0,
+    "verify": {
+      "httpOk": false,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T14:36:40.624Z",
+    "isNew": true,
+    "gated": "approved",
+    "reviewPending": true,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T14:47:53.783Z"
+  },
+  "day01": {
+    "postId": "23594578",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23594578.html",
+    "published": true,
+    "deleted": false,
+    "images": 4,
+    "verify": {
+      "httpOk": false,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T14:37:34.574Z",
+    "isNew": true,
+    "gated": "approved",
+    "reviewPending": true,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T14:47:53.784Z"
+  },
+  "day02": {
+    "postId": "23594582",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23594582.html",
+    "published": true,
+    "deleted": false,
+    "images": 12,
+    "verify": {
+      "httpOk": true,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T15:15:09.282Z",
+    "isNew": false,
+    "gated": "approved",
+    "reviewPending": false,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T15:22:41.084Z",
+    "collectionAfterEditVerified": true
+  },
+  "day03": {
+    "postId": "23594586",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23594586.html",
+    "published": true,
+    "deleted": false,
+    "images": 34,
+    "verify": {
+      "httpOk": true,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T15:39:20.760Z",
+    "isNew": false,
+    "gated": "approved",
+    "reviewPending": false,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T15:40:28.735Z",
+    "collectionAfterEditVerified": true
+  },
+  "day04": {
+    "postId": "23594589",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23594589.html",
+    "published": true,
+    "deleted": false,
+    "images": 22,
+    "verify": {
+      "httpOk": true,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T15:15:14.885Z",
+    "isNew": false,
+    "gated": "approved",
+    "reviewPending": false,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T15:22:41.084Z",
+    "collectionAfterEditVerified": true
+  },
+  "day05": {
+    "postId": "23594593",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23594593.html",
+    "published": true,
+    "deleted": false,
+    "images": 36,
+    "verify": {
+      "httpOk": true,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T15:15:17.381Z",
+    "isNew": false,
+    "gated": "approved",
+    "reviewPending": false,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T15:22:41.084Z",
+    "collectionAfterEditVerified": true
+  },
+  "day06": {
+    "postId": "23594597",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23594597.html",
+    "published": true,
+    "deleted": false,
+    "images": 10,
+    "verify": {
+      "httpOk": true,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T15:15:18.907Z",
+    "isNew": false,
+    "gated": "approved",
+    "reviewPending": false,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T15:22:41.084Z",
+    "collectionAfterEditVerified": true
+  },
+  "day08": {
+    "postId": "23594600",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23594600.html",
+    "published": true,
+    "deleted": false,
+    "images": 32,
+    "verify": {
+      "httpOk": false,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T15:15:21.602Z",
+    "isNew": false,
+    "gated": "approved",
+    "reviewPending": true,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T15:22:41.084Z",
+    "collectionAfterEditVerified": true
+  },
+  "day09": {
+    "postId": "23594603",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23594603.html",
+    "published": true,
+    "deleted": false,
+    "images": 20,
+    "verify": {
+      "httpOk": false,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T15:15:23.466Z",
+    "isNew": false,
+    "gated": "approved",
+    "reviewPending": true,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T15:22:41.084Z",
+    "collectionAfterEditVerified": true
+  },
+  "day11": {
+    "postId": "23594610",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23594610.html",
+    "published": true,
+    "deleted": false,
+    "images": 13,
+    "verify": {
+      "httpOk": true,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T15:15:24.589Z",
+    "isNew": false,
+    "gated": "approved",
+    "reviewPending": false,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T15:22:41.084Z",
+    "collectionAfterEditVerified": true
+  },
+  "day12": {
+    "postId": "23594613",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23594613.html",
+    "published": true,
+    "deleted": false,
+    "images": 11,
+    "verify": {
+      "httpOk": true,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T15:15:25.678Z",
+    "isNew": false,
+    "gated": "approved",
+    "reviewPending": false,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T15:22:41.084Z",
+    "collectionAfterEditVerified": true
+  },
+  "day13": {
+    "postId": "23594617",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23594617.html",
+    "published": true,
+    "deleted": false,
+    "images": 4,
+    "verify": {
+      "httpOk": true,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T15:15:26.536Z",
+    "isNew": false,
+    "gated": "approved",
+    "reviewPending": false,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T15:22:41.084Z",
+    "collectionAfterEditVerified": true
+  },
+  "day14": {
+    "postId": "23594622",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23594622.html",
+    "published": true,
+    "deleted": false,
+    "images": 35,
+    "verify": {
+      "httpOk": true,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T15:15:28.895Z",
+    "isNew": false,
+    "gated": "approved",
+    "reviewPending": false,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T15:22:41.084Z",
+    "collectionAfterEditVerified": true
+  },
+  "day15": {
+    "postId": "23593674",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23593674.html",
+    "published": true,
+    "deleted": false,
+    "images": 39,
+    "verify": {
+      "httpOk": false,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T10:57:05.023Z",
+    "isNew": true,
+    "gated": "approved",
+    "reviewPending": true,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T11:01:36.081Z"
+  },
+  "day18": {
+    "postId": "23593677",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23593677.html",
+    "published": true,
+    "deleted": false,
+    "images": 4,
+    "verify": {
+      "httpOk": false,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T10:57:58.424Z",
+    "isNew": true,
+    "gated": "approved",
+    "reviewPending": true,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T11:01:36.081Z"
+  },
+  "day20": {
+    "postId": "23593681",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23593681.html",
+    "published": true,
+    "deleted": false,
+    "images": 16,
+    "verify": {
+      "httpOk": false,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T10:58:46.427Z",
+    "isNew": true,
+    "gated": "approved",
+    "reviewPending": true,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T11:01:36.081Z"
+  },
+  "peipao-day01": {
+    "postId": "23593386",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23593386.html",
+    "published": true,
+    "deleted": false,
+    "images": 27,
+    "verify": {
+      "httpOk": false,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T09:45:11.008Z",
+    "isNew": true,
+    "gated": "approved",
+    "reviewPending": true,
+    "collection": "AI智能体八期",
+    "collectionAssignedAt": "2026-11-08T10:20:57.445Z",
+    "collectionId": "45406"
+  },
+  "peipao-day02": {
+    "postId": "23593391",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23593391.html",
+    "published": true,
+    "deleted": false,
+    "images": 16,
+    "verify": {
+      "httpOk": false,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T09:46:00.518Z",
+    "isNew": true,
+    "gated": "approved",
+    "reviewPending": true,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T10:20:57.445Z"
+  },
+  "peipao-day03": {
+    "postId": "23593393",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23593393.html",
+    "published": true,
+    "deleted": false,
+    "images": 25,
+    "verify": {
+      "httpOk": false,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T09:46:50.099Z",
+    "isNew": true,
+    "gated": "approved",
+    "reviewPending": true,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T10:20:57.445Z"
+  },
+  "peipao-day04": {
+    "postId": "23593397",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23593397.html",
+    "published": true,
+    "deleted": false,
+    "images": 22,
+    "verify": {
+      "httpOk": false,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T09:47:37.589Z",
+    "isNew": true,
+    "gated": "approved",
+    "reviewPending": true,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T10:20:57.445Z"
+  },
+  "peipao-day05": {
+    "postId": "23593399",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23593399.html",
+    "published": true,
+    "deleted": false,
+    "images": 14,
+    "verify": {
+      "httpOk": false,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T09:48:26.108Z",
+    "isNew": true,
+    "gated": "approved",
+    "reviewPending": true,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T10:20:57.445Z"
+  },
+  "peipao-day06": {
+    "postId": "23593401",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23593401.html",
+    "published": true,
+    "deleted": false,
+    "images": 10,
+    "verify": {
+      "httpOk": false,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T09:49:13.281Z",
+    "isNew": true,
+    "gated": "approved",
+    "reviewPending": true,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T10:20:57.445Z"
+  },
+  "peipao-day07": {
+    "postId": "23593403",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23593403.html",
+    "published": true,
+    "deleted": false,
+    "images": 13,
+    "verify": {
+      "httpOk": false,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T09:50:00.324Z",
+    "isNew": true,
+    "gated": "approved",
+    "reviewPending": true,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T10:20:57.445Z"
+  },
+  "peipao-day08": {
+    "postId": "23593406",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23593406.html",
+    "published": true,
+    "deleted": false,
+    "images": 6,
+    "verify": {
+      "httpOk": false,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T09:50:47.032Z",
+    "isNew": true,
+    "gated": "approved",
+    "reviewPending": true,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T10:20:57.445Z"
+  },
+  "peipao-day09": {
+    "postId": "23593409",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23593409.html",
+    "published": true,
+    "deleted": false,
+    "images": 10,
+    "verify": {
+      "httpOk": false,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T09:51:33.692Z",
+    "isNew": true,
+    "gated": "approved",
+    "reviewPending": true,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T10:20:57.445Z"
+  },
+  "peipao-day10": {
+    "postId": "23593413",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23593413.html",
+    "published": true,
+    "deleted": false,
+    "images": 12,
+    "verify": {
+      "httpOk": false,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T09:52:20.407Z",
+    "isNew": true,
+    "gated": "approved",
+    "reviewPending": true,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T10:20:57.445Z"
+  },
+  "peipao-day11": {
+    "postId": "23593416",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23593416.html",
+    "published": true,
+    "deleted": false,
+    "images": 8,
+    "verify": {
+      "httpOk": false,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T09:53:06.855Z",
+    "isNew": true,
+    "gated": "approved",
+    "reviewPending": true,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T10:20:57.445Z"
+  },
+  "peipao-day12": {
+    "postId": "23593420",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23593420.html",
+    "published": true,
+    "deleted": false,
+    "images": 14,
+    "verify": {
+      "httpOk": false,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T09:53:54.001Z",
+    "isNew": true,
+    "gated": "approved",
+    "reviewPending": true,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T10:20:57.445Z"
+  },
+  "peipao-day13": {
+    "postId": "23593425",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23593425.html",
+    "published": true,
+    "deleted": false,
+    "images": 17,
+    "verify": {
+      "httpOk": false,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T09:54:41.138Z",
+    "isNew": true,
+    "gated": "approved",
+    "reviewPending": true,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T10:20:57.445Z"
+  },
+  "peipao-day14": {
+    "postId": "23593429",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23593429.html",
+    "published": true,
+    "deleted": false,
+    "images": 17,
+    "verify": {
+      "httpOk": false,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T09:55:27.961Z",
+    "isNew": true,
+    "gated": "approved",
+    "reviewPending": true,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T10:20:57.445Z"
+  },
+  "peipao-day15": {
+    "postId": "23593432",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23593432.html",
+    "published": true,
+    "deleted": false,
+    "images": 11,
+    "verify": {
+      "httpOk": false,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T09:56:15.589Z",
+    "isNew": true,
+    "gated": "approved",
+    "reviewPending": true,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T10:20:57.445Z"
+  },
+  "peipao-day16": {
+    "postId": "23593437",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23593437.html",
+    "published": true,
+    "deleted": false,
+    "images": 8,
+    "verify": {
+      "httpOk": false,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T09:57:02.636Z",
+    "isNew": true,
+    "gated": "approved",
+    "reviewPending": true,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T10:20:57.445Z"
+  },
+  "day07": {
+    "postId": "22225452",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/22225452.html",
+    "published": true,
+    "deleted": false,
+    "images": 11,
+    "verify": {
+      "httpOk": true,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T10:56:57.077Z",
+    "isNew": false,
+    "gated": "approved",
+    "reviewPending": false,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T11:01:36.080Z"
+  },
+  "day10": {
+    "postId": "22225488",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/22225488.html",
+    "published": true,
+    "deleted": false,
+    "images": 22,
+    "verify": {
+      "httpOk": true,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T10:57:00.014Z",
+    "isNew": false,
+    "gated": "approved",
+    "reviewPending": false,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T11:01:36.081Z"
+  },
+  "day16": {
+    "postId": "22638493",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/22638493.html",
+    "published": true,
+    "deleted": false,
+    "images": 18,
+    "verify": {
+      "httpOk": true,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T10:57:53.455Z",
+    "isNew": false,
+    "gated": "approved",
+    "reviewPending": false,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T11:01:36.081Z"
+  },
+  "day17": {
+    "postId": "22879888",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/22879888.html",
+    "published": true,
+    "deleted": false,
+    "images": 31,
+    "verify": {
+      "httpOk": true,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T10:57:57.410Z",
+    "isNew": false,
+    "gated": "approved",
+    "reviewPending": false,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T11:01:36.081Z"
+  },
+  "day21": {
+    "postId": "23593687",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23593687.html",
+    "published": true,
+    "deleted": false,
+    "images": 39,
+    "verify": {
+      "httpOk": false,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T10:59:36.687Z",
+    "isNew": true,
+    "gated": "approved",
+    "reviewPending": true,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T11:01:36.081Z"
+  },
+  "day23": {
+    "postId": "23593690",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23593690.html",
+    "published": true,
+    "deleted": false,
+    "images": 0,
+    "verify": {
+      "httpOk": false,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T11:00:22.948Z",
+    "isNew": true,
+    "gated": "approved",
+    "reviewPending": true,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T11:01:36.081Z"
+  },
+  "day22": {
+    "postId": "23606785",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23606785.html",
+    "published": true,
+    "deleted": false,
+    "images": 55,
+    "verify": {
+      "httpOk": false,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-09T12:44:27.162Z",
+    "isNew": true,
+    "gated": "approved",
+    "reviewPending": true,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-09T12:48:44.603Z",
+    "collectionVerified": true,
+    "collectionPosition": 22,
+    "collectionCount": 39,
+    "replacedPostId": "23594495",
+    "reviewStatus": 2,
+    "reviewCheckedAt": "2026-11-09T12:56:04.095Z"
+  }
+}

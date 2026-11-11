@@ -1,0 +1,51 @@
+courses:
+  - id: "ai-agent-8"
+    title: "AI智能体八期"
+    edition: "第八期"
+    collection: "AI智能体八期"
+    category: "AI/agent"
+    baidu:
+      targetDir: "/自动上传/课程/Luffy/AI 智能体/8 期"
+      shares:
+        - url: "https://pan.baidu.com/s/1gZka8iX-LuHaxn-4jabNPA?pwd=1234"
+          password: "1234"
+    toc:
+      platform: "luffycity"
+      url: "https://www.luffycity.com/play/130801"
+    publish:
+      titlePrefix: ""
+      autoPublish: true
+
+  - id: "ai-agent-7"
+    title: "AI智能体七期"
+    edition: "第七期"
+    collection: "AI智能体七期"
+    category: "AI/agent"
+    baidu:
+      targetDir: "/自动上传/课程/Luffy/AI 智能体/7 期"
+      shares:
+        - url: "https://pan.baidu.com/s/1OfXdbQ_3LClLLuBTBKzlcw?pwd=1234"
+          password: "1234"
+    toc:
+      platform: "luffycity"
+      url: "https://www.luffycity.com/play/128505"
+    publish:
+      titlePrefix: ""
+      autoPublish: true
+
+  - id: "ai-agent-6"
+    title: "AI智能体六期"
+    edition: "第六期"
+    collection: "AI agent六期"
+    category: "AI/agent"
+    baidu:
+      targetDir: "/自动上传/课程/Luffy/AI 智能体/6 期"
+      shares:
+        - url: "https://pan.baidu.com/s/13L6mCHRq8bmA1pJTbP8Clw?pwd=1234"
+          password: "1234"
+    toc:
+      platform: "luffycity"
+      url: "https://www.luffycity.com/play/125537"
+    publish:
+      titlePrefix: ""
+      autoPublish: true

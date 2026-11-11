@@ -1,0 +1,238 @@
+{
+  "generatedAt": "2026-11-06T15:21:33.049Z",
+  "note": "29篇全量删除映射，用于博客园回收站恢复",
+  "posts": [
+    {
+      "slug": "day00",
+      "postId": "23565418",
+      "title": "day00-AI 8期直播课第一节开班",
+      "postUrl": "https://www.cnblogs.com/fuminer/p/23565418.html",
+      "deletedAt": "2026-11-06T15:17:31.723Z",
+      "deleteVerified": true
+    },
+    {
+      "slug": "day01",
+      "postId": "21267528",
+      "title": "day01-智能体入门",
+      "postUrl": "https://www.cnblogs.com/fuminer/p/21267528.html",
+      "deletedAt": "2026-11-06T15:17:36.772Z",
+      "deleteVerified": true
+    },
+    {
+      "slug": "day02",
+      "postId": "21267536",
+      "title": "day02-Coze-Agent-视频创作-对话编程使用",
+      "postUrl": "https://www.cnblogs.com/fuminer/p/21267536.html",
+      "deletedAt": "2026-11-06T15:17:41.573Z",
+      "deleteVerified": true
+    },
+    {
+      "slug": "day03",
+      "postId": "22225433",
+      "title": "day03-Coze工作流之英语纠音-抖音转小红书文案",
+      "postUrl": "https://www.cnblogs.com/fuminer/p/22225433.html",
+      "deletedAt": "2026-11-06T15:17:46.370Z",
+      "deleteVerified": true
+    },
+    {
+      "slug": "day04",
+      "postId": "22225435",
+      "title": "day04-低代码应用开发抖音转小红书文案软件01",
+      "postUrl": "https://www.cnblogs.com/fuminer/p/22225435.html",
+      "deletedAt": "2026-11-06T15:17:51.127Z",
+      "deleteVerified": true
+    },
+    {
+      "slug": "day05",
+      "postId": "22225436",
+      "title": "day05-低代码应用开发抖音转小红书文案02",
+      "postUrl": "https://www.cnblogs.com/fuminer/p/22225436.html",
+      "deletedAt": "2026-11-06T15:17:56.068Z",
+      "deleteVerified": true
+    },
+    {
+      "slug": "day06",
+      "postId": "22225438",
+      "title": "day06-产品经理介绍-需求分析-需求池",
+      "postUrl": "https://www.cnblogs.com/fuminer/p/22225438.html",
+      "deletedAt": "2026-11-06T15:18:00.864Z",
+      "deleteVerified": true
+    },
+    {
+      "slug": "day08",
+      "postId": "23565449",
+      "title": "day08-Figma和Codex介绍和安装配置",
+      "postUrl": "https://www.cnblogs.com/fuminer/p/23565449.html",
+      "deletedAt": "2026-11-06T15:18:05.593Z",
+      "deleteVerified": true
+    },
+    {
+      "slug": "day09",
+      "postId": "22225483",
+      "title": "day09-Codex配置中转站-开发小游戏",
+      "postUrl": "https://www.cnblogs.com/fuminer/p/22225483.html",
+      "deletedAt": "2026-11-06T15:18:10.212Z",
+      "deleteVerified": true
+    },
+    {
+      "slug": "day11",
+      "postId": "22225496",
+      "title": "day11-functionCalling和MCP",
+      "postUrl": "https://www.cnblogs.com/fuminer/p/22225496.html",
+      "deletedAt": "2026-11-06T15:18:15.156Z",
+      "deleteVerified": true
+    },
+    {
+      "slug": "day12",
+      "postId": "22498529",
+      "title": "day12-skills从入门到精通",
+      "postUrl": "https://www.cnblogs.com/fuminer/p/22498529.html",
+      "deletedAt": "2026-11-06T15:18:22.299Z",
+      "deleteVerified": true
+    },
+    {
+      "slug": "day13",
+      "postId": "22498544",
+      "title": "day13-Codex开发口播数字人小程序之-需求设计-UI示意图设计",
+      "postUrl": "https://www.cnblogs.com/fuminer/p/22498544.html",
+      "deletedAt": "2026-11-06T15:18:30.305Z",
+      "deleteVerified": true
+    },
+    {
+      "slug": "day14",
+      "postId": "22498545",
+      "title": "day14-Codex对接figma-数字人工作流",
+      "postUrl": "https://www.cnblogs.com/fuminer/p/22498545.html",
+      "deletedAt": "2026-11-06T15:18:35.387Z",
+      "deleteVerified": true
+    },
+    {
+      "slug": "peipao-day01",
+      "postId": "23565499",
+      "title": "day01-开课开营",
+      "postUrl": "https://www.cnblogs.com/fuminer/p/23565499.html",
+      "deletedAt": "2026-11-06T15:16:46.894Z",
+      "deleteVerified": true
+    },
+    {
+      "slug": "peipao-day02",
+      "postId": "23565501",
+      "title": "day02-Ai赋能自媒体必做风口+避雷禁区+前期准备",
+      "postUrl": "https://www.cnblogs.com/fuminer/p/23565501.html",
+      "deletedAt": "2026-11-06T15:18:41.339Z",
+      "deleteVerified": true
+    },
+    {
+      "slug": "peipao-day03",
+      "postId": "23565503",
+      "title": "day03-账号全流程搭建：从低权重到高流量账号速成",
+      "postUrl": "https://www.cnblogs.com/fuminer/p/23565503.html",
+      "deletedAt": "2026-11-06T15:18:46.974Z",
+      "deleteVerified": true
+    },
+    {
+      "slug": "peipao-day04",
+      "postId": "23565505",
+      "title": "day04-Codex注册登录使用及小红书实战案例",
+      "postUrl": "https://www.cnblogs.com/fuminer/p/23565505.html",
+      "deletedAt": "2026-11-06T15:18:51.992Z",
+      "deleteVerified": true
+    },
+    {
+      "slug": "peipao-day05",
+      "postId": "23565506",
+      "title": "day05-新号独家激活流量玩法——数据笔记",
+      "postUrl": "https://www.cnblogs.com/fuminer/p/23565506.html",
+      "deletedAt": "2026-11-06T15:18:57.165Z",
+      "deleteVerified": true
+    },
+    {
+      "slug": "peipao-day06",
+      "postId": "23565507",
+      "title": "day06-选赛道+整理资料库",
+      "postUrl": "https://www.cnblogs.com/fuminer/p/23565507.html",
+      "deletedAt": "2026-11-06T15:19:02.046Z",
+      "deleteVerified": true
+    },
+    {
+      "slug": "peipao-day07",
+      "postId": "23565508",
+      "title": "day07-搬运爆款变现笔记",
+      "postUrl": "https://www.cnblogs.com/fuminer/p/23565508.html",
+      "deletedAt": "2026-11-06T15:19:07.223Z",
+      "deleteVerified": true
+    },
+    {
+      "slug": "peipao-day08",
+      "postId": "23565509",
+      "title": "day08-AI帮你批量找对标笔记，拿来借鉴不抄袭，快速出高流量内容",
+      "postUrl": "https://www.cnblogs.com/fuminer/p/23565509.html",
+      "deletedAt": "2026-11-06T15:19:12.090Z",
+      "deleteVerified": true
+    },
+    {
+      "slug": "peipao-day09",
+      "postId": "23565510",
+      "title": "day09-拆解分析对标笔记",
+      "postUrl": "https://www.cnblogs.com/fuminer/p/23565510.html",
+      "deletedAt": "2026-11-06T15:19:16.884Z",
+      "deleteVerified": true
+    },
+    {
+      "slug": "peipao-day10",
+      "postId": "23565511",
+      "title": "day10-笔记制作01",
+      "postUrl": "https://www.cnblogs.com/fuminer/p/23565511.html",
+      "deletedAt": "2026-11-06T15:19:21.768Z",
+      "deleteVerified": true
+    },
+    {
+      "slug": "peipao-day11",
+      "postId": "23565512",
+      "title": "day11-笔记制作02",
+      "postUrl": "https://www.cnblogs.com/fuminer/p/23565512.html",
+      "deletedAt": "2026-11-06T15:19:27.174Z",
+      "deleteVerified": true
+    },
+    {
+      "slug": "peipao-day12",
+      "postId": "23565513",
+      "title": "day12-商品SKU+闲鱼变现全流程筹备",
+      "postUrl": "https://www.cnblogs.com/fuminer/p/23565513.html",
+      "deletedAt": "2026-11-06T15:19:32.061Z",
+      "deleteVerified": true
+    },
+    {
+      "slug": "peipao-day13",
+      "postId": "23565514",
+      "title": "day13-闲鱼选品及批量矩阵化操作",
+      "postUrl": "https://www.cnblogs.com/fuminer/p/23565514.html",
+      "deletedAt": "2026-11-06T15:19:36.935Z",
+      "deleteVerified": true
+    },
+    {
+      "slug": "peipao-day14",
+      "postId": "23565515",
+      "title": "day14-闲鱼选品进阶+细节处理",
+      "postUrl": "https://www.cnblogs.com/fuminer/p/23565515.html",
+      "deletedAt": "2026-11-06T15:19:43.215Z",
+      "deleteVerified": true
+    },
+    {
+      "slug": "peipao-day15",
+      "postId": "23565516",
+      "title": "day15-玩转小红书引流，避开导流违规大坑",
+      "postUrl": "https://www.cnblogs.com/fuminer/p/23565516.html",
+      "deletedAt": "2026-11-06T15:19:47.915Z",
+      "deleteVerified": true
+    },
+    {
+      "slug": "peipao-day16",
+      "postId": "23565517",
+      "title": "day16-普通笔记与商品笔记",
+      "postUrl": "https://www.cnblogs.com/fuminer/p/23565517.html",
+      "deletedAt": "2026-11-06T15:19:52.810Z",
+      "deleteVerified": true
+    }
+  ]
+}

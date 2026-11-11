@@ -1,0 +1,41 @@
+{
+  "course": "ai-agent-8",
+  "slug": "day22",
+  "oldId": "23594495",
+  "publishedRow": {
+    "postId": "23594495",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23594495.html",
+    "published": true,
+    "deleted": false,
+    "images": 55,
+    "verify": {
+      "httpOk": false,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-08T14:14:49.621Z",
+    "isNew": true,
+    "gated": "approved",
+    "reviewPending": true,
+    "collection": "AI智能体八期",
+    "collectionId": "45406",
+    "collectionAssignedAt": "2026-11-08T14:16:07.736Z"
+  },
+  "stagingRow": {
+    "slug": "day22",
+    "title": "day22-Codex应用开发",
+    "status": "published",
+    "mdPath": "/Users/fumi/Documents/DeepSeek_harness/output/ai-agent-8/00-day22.md",
+    "previewPath": "/Users/fumi/Documents/DeepSeek_harness/output/ai-agent-8/previews/00-day22.preview.md",
+    "imageCount": 82,
+    "cached": 82,
+    "uploadedNow": 0,
+    "failed": [],
+    "stagedAt": "2026-11-08T14:14:41.960Z",
+    "approvedAt": "2026-11-08T14:14:42.141Z",
+    "publishedAt": "2026-11-08T14:14:49.625Z",
+    "postId": "23594495"
+  },
+  "publicUrl": "https://www.cnblogs.com/fuminer/p/23594495.html",
+  "savedAt": "2026-11-09T12:40:30.122Z"
+}

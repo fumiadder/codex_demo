@@ -1,0 +1,487 @@
+{
+  "courseId": "ai-agent-8",
+  "generatedAt": "2026-11-05T14:00:34.810Z",
+  "rootUnit": "AI智能体八期",
+  "targetDir": "/自动上传/课程/Luffy/AI 智能体/8 期",
+  "mainChapterCount": 23,
+  "peipaoChapterCount": 16,
+  "chapters": [
+    {
+      "track": "main",
+      "day": 0,
+      "slug": "day00",
+      "webIndex": 2,
+      "webTitle": "day00-AI 8期直播课第一节开班",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/day00.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 1,
+      "slug": "day01",
+      "webIndex": 4,
+      "webTitle": "day01-智能体入门",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/day01-智能体入门.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 2,
+      "slug": "day02",
+      "webIndex": 16,
+      "webTitle": "day02-Coze-Agent-视频创作-对话编程使用",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/day02-Coze-Agent-视频创作-对话编程使用.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 3,
+      "slug": "day03",
+      "webIndex": 25,
+      "webTitle": "day03-Coze工作流之英语纠音-抖音转小红书文案",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/day03-Coze工作流之英语纠音-抖音转小红书文案.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 4,
+      "slug": "day04",
+      "webIndex": 36,
+      "webTitle": "day04-低代码应用开发抖音转小红书文案软件01",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/day04-低代码应用开发抖音转小红书文案软件01.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 5,
+      "slug": "day05",
+      "webIndex": 46,
+      "webTitle": "day05-低代码应用开发抖音转小红书文案02",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/day05-低代码应用开发抖音转小红书文案02.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 6,
+      "slug": "day06",
+      "webIndex": 59,
+      "webTitle": "day06-产品经理介绍-需求分析-需求池",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/day06-产品经理介绍-需求分析-需求池.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 7,
+      "slug": "day07",
+      "webIndex": 70,
+      "webTitle": "day07-产品经理之PRD-需求评审-思维图-流程图-figma安装",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/day07-产品经理之PRD-需求评审-思维图-流程图-figma安装.rar"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 8,
+      "slug": "day08",
+      "webIndex": 79,
+      "webTitle": "day08-Figma和Codex介绍和安装配置",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/day08-Figma和Code介绍和安装配置"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 9,
+      "slug": "day09",
+      "webIndex": 93,
+      "webTitle": "day09-Codex配置中转站-开发小游戏",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/day09-Codex配置中转站-开发小游戏.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 10,
+      "slug": "day10",
+      "webIndex": 101,
+      "webTitle": "day10-小游戏上线-提示词工程",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/day10-小游戏上线-提示词工程.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 11,
+      "slug": "day11",
+      "webIndex": 112,
+      "webTitle": "day11-functionCalling和MCP",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/day11-functionCalling和MCP.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 12,
+      "slug": "day12",
+      "webIndex": 114,
+      "webTitle": "day12-skills从入门到精通",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/day12-skills从入门到精通.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 13,
+      "slug": "day13",
+      "webIndex": 129,
+      "webTitle": "day13-Codex开发口播数字人小程序之-需求设计-UI示意图设计",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/day13-Codex开发口播数字人小程序之-需求设计-UI示意图设计.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 14,
+      "slug": "day14",
+      "webIndex": 144,
+      "webTitle": "day14-Codex对接figma-数字人工作流",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/day14-Codex对接figma-数字人工作流.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 15,
+      "slug": "day15",
+      "webIndex": 157,
+      "webTitle": "day15-Codex开发数字人后端-微信小程序创建",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/day15-Codex开发数字人后端-微信小程序创建"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 16,
+      "slug": "day16",
+      "webIndex": 174,
+      "webTitle": "day16-Codex开发微信小程序端-前后端联调-根据figma调整布局",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/day16-Codex开发微信小程序端-前后端联调-根据figma调整布局.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 17,
+      "slug": "day17",
+      "webIndex": 186,
+      "webTitle": "day17-微信小程序-上线",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/day17-微信小程序-上线.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 18,
+      "slug": "day18",
+      "webIndex": 202,
+      "webTitle": "day18-19 RPA机器人流程自动化",
+      "titleOverride": "day18-19 RPA机器人流程自动化",
+      "units": [
+        "AI智能体八期/Day18-Day19：RPA机器人流程自动化.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 20,
+      "slug": "day20",
+      "webIndex": 209,
+      "webTitle": "day20- Comfyui文生图原理解析和实操",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/day20.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 21,
+      "slug": "day21",
+      "webIndex": 213,
+      "webTitle": "day21-Comfyui文生图原理解析和实操",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/day21.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 22,
+      "slug": "day22",
+      "webIndex": 216,
+      "webTitle": "day22-Codex应用开发",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/day22"
+      ],
+      "unitCount": 1,
+      "includeDocs": [
+        "6.视频创作.md",
+        "codex课件/1.codex环境准备/1.codex环境准备.md",
+        "codex课件/2.codex基础功能/2.codex基础功能.md",
+        "codex课件/3.插件和skill/3.插件和skill.md",
+        "codex课件/4.codex应用开发/4.codex应用开发.md",
+        "codex课件/商品图制作.md"
+      ],
+      "contentPolicy": "main-teaching-only"
+    },
+    {
+      "track": "main",
+      "day": 23,
+      "slug": "day23",
+      "webIndex": 221,
+      "webTitle": "day23-数字人应用开发",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/day23.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "peipao",
+      "day": 1,
+      "slug": "peipao-day01",
+      "webIndex": 224,
+      "webTitle": "day01-开课开营",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/陪跑课件/day01开课开营"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "peipao",
+      "day": 2,
+      "slug": "peipao-day02",
+      "webIndex": 229,
+      "webTitle": "day02-Ai赋能自媒体必做风口+避雷禁区+前期准备",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/陪跑课件/day02"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "peipao",
+      "day": 3,
+      "slug": "peipao-day03",
+      "webIndex": 233,
+      "webTitle": "day03-账号全流程搭建：从低权重到高流量账号速成",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/陪跑课件/day03.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "peipao",
+      "day": 4,
+      "slug": "peipao-day04",
+      "webIndex": 238,
+      "webTitle": "day04-Codex注册登录使用及小红书实战案例",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/陪跑课件/day04.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "peipao",
+      "day": 5,
+      "slug": "peipao-day05",
+      "webIndex": 242,
+      "webTitle": "day05-新号独家激活流量玩法——数据笔记",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/陪跑课件/day05.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "peipao",
+      "day": 6,
+      "slug": "peipao-day06",
+      "webIndex": 247,
+      "webTitle": "day06-选赛道+整理资料库",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/陪跑课件/day06.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "peipao",
+      "day": 7,
+      "slug": "peipao-day07",
+      "webIndex": 251,
+      "webTitle": "day07-搬运爆款变现笔记",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/陪跑课件/day07"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "peipao",
+      "day": 8,
+      "slug": "peipao-day08",
+      "webIndex": 255,
+      "webTitle": "day08-AI帮你批量找对标笔记，拿来借鉴不抄袭，快速出高流量内容",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/陪跑课件/day08.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "peipao",
+      "day": 9,
+      "slug": "peipao-day09",
+      "webIndex": 260,
+      "webTitle": "day09-拆解分析对标笔记",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/陪跑课件/day09.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "peipao",
+      "day": 10,
+      "slug": "peipao-day10",
+      "webIndex": 265,
+      "webTitle": "day10-笔记制作01",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/陪跑课件/day10.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "peipao",
+      "day": 11,
+      "slug": "peipao-day11",
+      "webIndex": 269,
+      "webTitle": "day11-笔记制作02",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/陪跑课件/day11.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "peipao",
+      "day": 12,
+      "slug": "peipao-day12",
+      "webIndex": 273,
+      "webTitle": "day12-商品SKU+闲鱼变现全流程筹备",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/陪跑课件/day12.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "peipao",
+      "day": 13,
+      "slug": "peipao-day13",
+      "webIndex": 278,
+      "webTitle": "day13-闲鱼选品及批量矩阵化操作",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/陪跑课件/day13.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "peipao",
+      "day": 14,
+      "slug": "peipao-day14",
+      "webIndex": 283,
+      "webTitle": "day14-闲鱼选品进阶+细节处理",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/陪跑课件/day14.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "peipao",
+      "day": 15,
+      "slug": "peipao-day15",
+      "webIndex": 288,
+      "webTitle": "day15-玩转小红书引流，避开导流违规大坑",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/陪跑课件/day15.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "peipao",
+      "day": 16,
+      "slug": "peipao-day16",
+      "webIndex": 293,
+      "webTitle": "day16-普通笔记与商品笔记",
+      "titleOverride": null,
+      "units": [
+        "AI智能体八期/陪跑课件/day16.zip"
+      ],
+      "unitCount": 1
+    }
+  ]
+}

@@ -1,0 +1,6344 @@
+{
+  "courseId": "ai-agent-6",
+  "gates": [
+    {
+      "type": "chapter",
+      "webIndex": 1,
+      "webTitle": "正式课程：直播六期",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 2,
+      "webTitle": "day00-开班导学",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 3,
+      "webTitle": "AI 六期直播【3.5开课-每周四周日】2026-03-05 21_19_57",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 4,
+      "webTitle": "day01-coze从入门到精通之小红书图文案例",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 5,
+      "webTitle": "编程预备知识点",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 6,
+      "webTitle": "coze节点使用之插件",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 7,
+      "webTitle": "coze工作流的数据流动",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 8,
+      "webTitle": "小红书配图文字识别",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 9,
+      "webTitle": "day02-coze从入门到精通之绘本故事案例",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 10,
+      "webTitle": "上节回顾与补充",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 11,
+      "webTitle": "插件节点的批处理",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 12,
+      "webTitle": "小红书的配图文案识别完结",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 13,
+      "webTitle": "大模型的提示词基本使用",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 14,
+      "webTitle": "绘本故事案例解析",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 15,
+      "webTitle": "day03-coze从入门到精通之绘本短视频案例",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 16,
+      "webTitle": "上节回顾和今日主题",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 17,
+      "webTitle": "生成图片提示词大模型",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 18,
+      "webTitle": "生成动态提示词",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 19,
+      "webTitle": "循环生成视频与音频文件",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 20,
+      "webTitle": "day04-OpenClaw部署-配置飞书-Skills",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 21,
+      "webTitle": "今日内容",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 22,
+      "webTitle": "龙虾介绍",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 23,
+      "webTitle": "龙虾和影刀的区别",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 24,
+      "webTitle": "安装环境介绍",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 25,
+      "webTitle": "安装node和git并验证",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 26,
+      "webTitle": "node和git配置",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 27,
+      "webTitle": "安装并配置openclaw",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 28,
+      "webTitle": "修改阿里收费大模型",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 29,
+      "webTitle": "第一个openclaw任务",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 30,
+      "webTitle": "配置飞书",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 31,
+      "webTitle": "通过飞书操作龙虾",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 32,
+      "webTitle": "skills技能",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 33,
+      "webTitle": "npm和源码安装方式",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 34,
+      "webTitle": "重启网关",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 35,
+      "webTitle": "结束语",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 36,
+      "webTitle": "day05-coze从入门到精通之绘本短视频案例2",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 37,
+      "webTitle": "上节回顾与今日主题",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 38,
+      "webTitle": "get_urls与objs_to_str_list插件",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 39,
+      "webTitle": "数据格式与添加草稿",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 40,
+      "webTitle": "剪影小助手下载视频",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 41,
+      "webTitle": "day06-day07-coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 42,
+      "webTitle": "今日项目思路",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 43,
+      "webTitle": "抖音视频文案提取",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 44,
+      "webTitle": "小红书的图文笔记生成",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 45,
+      "webTitle": "抠图与画板的使用",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 46,
+      "webTitle": "循环多值输出的玩法",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 47,
+      "webTitle": "创建多维表格文档与table",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 48,
+      "webTitle": "添加飞书表格记录数据",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 49,
+      "webTitle": "今日作业",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 50,
+      "webTitle": "day08-coze从入门到精通之自媒体运营案例2（抖音转小红书转存飞书&批量化）",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 51,
+      "webTitle": "上节回顾",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 52,
+      "webTitle": "批处理与列表数据",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 53,
+      "webTitle": "监控竞品账号仿写爆款视频",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 54,
+      "webTitle": "工作流与智能体发布到扣子官方",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 55,
+      "webTitle": "后续安排",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 56,
+      "webTitle": "day09-影刀下载好看搞笑视频",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 57,
+      "webTitle": "今日内容概述",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 58,
+      "webTitle": "RPA是什么",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 59,
+      "webTitle": "RPA可以做什么",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 60,
+      "webTitle": "目前主流的RPA软件",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 61,
+      "webTitle": "影刀安装和注册",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 62,
+      "webTitle": "案例目标",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 63,
+      "webTitle": "获取好看视频流程",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 64,
+      "webTitle": "具体操作01",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 65,
+      "webTitle": "具体操作2",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 66,
+      "webTitle": "演示",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 67,
+      "webTitle": "总结",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 68,
+      "webTitle": "保存制作的自动化流程",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 69,
+      "webTitle": "day10-影刀RPA下载梨视频",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 70,
+      "webTitle": "下载梨视频步骤",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 71,
+      "webTitle": "具体操作02",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 72,
+      "webTitle": "优化",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 73,
+      "webTitle": "同学问题",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 74,
+      "webTitle": "同学问题01",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 75,
+      "webTitle": "day11-获取抖音评论-企业微信自动回复消息",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 76,
+      "webTitle": "获取抖音评论详细步骤",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 77,
+      "webTitle": "获取抖音评论01",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 78,
+      "webTitle": "获取抖音评论02",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 79,
+      "webTitle": "测试",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 80,
+      "webTitle": "微信自动发送消息需求",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 81,
+      "webTitle": "微信发送消息步骤",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 82,
+      "webTitle": "微信发送消息和文件具体操作",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 83,
+      "webTitle": "发版",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 84,
+      "webTitle": "定时执行",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 85,
+      "webTitle": "注册企业微信-创建企业",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 86,
+      "webTitle": "day12-影刀对接Coze自动回复",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 87,
+      "webTitle": "微信对接Coze案例介绍",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 88,
+      "webTitle": "具体步骤",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 89,
+      "webTitle": "创建智能体并发布",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 90,
+      "webTitle": "python调用Coze智能体",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 91,
+      "webTitle": "新建影刀模块-粘贴代码",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 92,
+      "webTitle": "影刀安装模块",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 93,
+      "webTitle": "具体步骤01",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 94,
+      "webTitle": "具体步骤02",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 95,
+      "webTitle": "day13-TraeAI编辑器使用",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 96,
+      "webTitle": "AI编辑器介绍",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 97,
+      "webTitle": "下载注册并登录Trae",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 98,
+      "webTitle": "普通模式和solo模式",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 99,
+      "webTitle": "Trae新建项目-创建文件和文件夹",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 100,
+      "webTitle": "配置字体大小",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 101,
+      "webTitle": "安装python插件",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 102,
+      "webTitle": "常用按钮-布局-同时打开多个项目",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 103,
+      "webTitle": "IT公司人员分配",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 104,
+      "webTitle": "项目开发流程",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 105,
+      "webTitle": "Trae开发小游戏",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 106,
+      "webTitle": "day14-小游戏上线-换脸小程序需求",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 107,
+      "webTitle": "购买云服务器",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 108,
+      "webTitle": "远程连接服务器",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 109,
+      "webTitle": "上传游戏源码到服务器",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 110,
+      "webTitle": "云服务器安装nginx",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 111,
+      "webTitle": "部署消消乐项目",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 112,
+      "webTitle": "常见软件类型",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 113,
+      "webTitle": "软件开发流程回顾",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 114,
+      "webTitle": "项目需求分析书",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 115,
+      "webTitle": "提示词生成UI设计图",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 116,
+      "webTitle": "释放云服务器",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 117,
+      "webTitle": "day15-Trae实现换脸微信小程序02",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 118,
+      "webTitle": "小回顾",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 119,
+      "webTitle": "根据图片生成UI示意图",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 120,
+      "webTitle": "根据手绘图生成UI示意图",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 121,
+      "webTitle": "项目技术扫盲和架构图",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 122,
+      "webTitle": "Trae生成前后端架构文档",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 123,
+      "webTitle": "换脸工作流介绍",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 124,
+      "webTitle": "换脸工作流开始节点",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 125,
+      "webTitle": "换脸工作流制作和发布",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 126,
+      "webTitle": "Python调用Coze工作流",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 127,
+      "webTitle": "问题-未解决",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 128,
+      "webTitle": "问题-参数问题-解决",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 129,
+      "webTitle": "day16-Trae开发换脸微信小程序03",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 130,
+      "webTitle": "上节课小回顾",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 131,
+      "webTitle": "python调用Coze工作流代码解释",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 132,
+      "webTitle": "python调用Coze工作流的提示词",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 133,
+      "webTitle": "python环境搭建",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 134,
+      "webTitle": "Trae运行python代码",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 135,
+      "webTitle": "数据库介绍",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 136,
+      "webTitle": "Mysql8安装",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 137,
+      "webTitle": "修改密码",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 138,
+      "webTitle": "Navicat创建change_face库",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 139,
+      "webTitle": "Trae创建Change_face库",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 140,
+      "webTitle": "Trae编写后端",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 141,
+      "webTitle": "微信小程序",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 142,
+      "webTitle": "后端项目运行测试",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 143,
+      "webTitle": "day17-Trae开发微信小程序04",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 144,
+      "webTitle": "后端项目回顾",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 145,
+      "webTitle": "注册微信小程序账号",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 146,
+      "webTitle": "小程序配置",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 147,
+      "webTitle": "微信小程序开发流程",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 148,
+      "webTitle": "微信小程序成员",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 149,
+      "webTitle": "创建微信小程序项目",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 150,
+      "webTitle": "项目目录结构",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 151,
+      "webTitle": "纯净项目",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 152,
+      "webTitle": "支持本地http",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 153,
+      "webTitle": "Trae编写微信小程序",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 154,
+      "webTitle": "前后端联调",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 155,
+      "webTitle": "day18-微信小程序上线",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 156,
+      "webTitle": "本地运行项目",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 157,
+      "webTitle": "真机调试项目",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 158,
+      "webTitle": "问题解释",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 159,
+      "webTitle": "上线架构图",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 160,
+      "webTitle": "安装python3.11",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 161,
+      "webTitle": "安装nginx",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 162,
+      "webTitle": "安装mysql8",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 163,
+      "webTitle": "安装uwsig",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 164,
+      "webTitle": "上传代码",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 165,
+      "webTitle": "安装项目依赖库",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 166,
+      "webTitle": "uwsgi运行django",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 167,
+      "webTitle": "nginx转发请求和导入sql文件",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 168,
+      "webTitle": "访问服务器的admin",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 169,
+      "webTitle": "配置admin访问",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 170,
+      "webTitle": "购买证书并配置",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 171,
+      "webTitle": "购买域名-备案-配置解析",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 172,
+      "webTitle": "小程序上线并测试",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 173,
+      "webTitle": "说明",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 174,
+      "webTitle": "最后",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 175,
+      "webTitle": "day19-AI漫剧基础与市场前景",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 176,
+      "webTitle": "AI漫剧基础01",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 177,
+      "webTitle": "AI漫剧基础02",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 178,
+      "webTitle": "day20-AI漫剧类目解析",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 179,
+      "webTitle": "类目解析01",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 180,
+      "webTitle": "类目解析02",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 181,
+      "webTitle": "day21-剧本创作",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 182,
+      "webTitle": "剧本创作01",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 183,
+      "webTitle": "剧本创作02",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 184,
+      "webTitle": "day22-模型+工具的使用",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 185,
+      "webTitle": "模型+工具使用01",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 186,
+      "webTitle": "模型+工具使用02",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 187,
+      "webTitle": "day23-漫剧全流程+提示词",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 188,
+      "webTitle": "全流程+提示词01",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 189,
+      "webTitle": "全流程+提示词02",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 190,
+      "webTitle": "day24-解说类制作实操1",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 191,
+      "webTitle": "解说类制作实操1",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 192,
+      "webTitle": "day25-解说类实操02",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 193,
+      "webTitle": "解说类实操02-1",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 194,
+      "webTitle": "解说类实操02-2",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 195,
+      "webTitle": "day26-仿真人实操",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 196,
+      "webTitle": "仿真人实操01",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 197,
+      "webTitle": "仿真人实操02",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 198,
+      "webTitle": "答疑1",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 199,
+      "webTitle": "答疑02",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 200,
+      "webTitle": "day27-半解说实操",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 201,
+      "webTitle": "仿真人后期制作",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 202,
+      "webTitle": "半解说实操01",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 203,
+      "webTitle": "半解说实操02",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 204,
+      "webTitle": "day28-平台政策解析",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 205,
+      "webTitle": "平台政策解析",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 206,
+      "webTitle": "day29-Ai陪跑营——开课开营",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 207,
+      "webTitle": "AI56期陪跑开营",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 208,
+      "webTitle": "day30-7 天养号闭环+邪修笔记",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 209,
+      "webTitle": "项目具体介绍",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 210,
+      "webTitle": "项目准备及注意事项",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 211,
+      "webTitle": "认识小红书及推流机制",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 212,
+      "webTitle": "day31-养号实操+打造账号",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 213,
+      "webTitle": "养号流程",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 214,
+      "webTitle": "打造账号",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 215,
+      "webTitle": "数据类笔记",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 216,
+      "webTitle": "day32-数据笔记+开店",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 217,
+      "webTitle": "账号实名问题",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 218,
+      "webTitle": "数据类笔记问题补充",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 219,
+      "webTitle": "引起讨论的数据类笔记",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 220,
+      "webTitle": "搬运数据笔记",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 221,
+      "webTitle": "day33-小红书开店+高效选品实操",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 222,
+      "webTitle": "小红书开店",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 223,
+      "webTitle": "小红书千帆",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 224,
+      "webTitle": "实操整体流程",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 225,
+      "webTitle": "常规上架流程及小红书类目",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 226,
+      "webTitle": "day34-小红书选品实操及注意事项",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 227,
+      "webTitle": "优秀学员分享",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 228,
+      "webTitle": "商品要素介绍",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 229,
+      "webTitle": "选品定认知",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 230,
+      "webTitle": "选品实操",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 231,
+      "webTitle": "day35-批量矩阵上架商品+注意事项",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 232,
+      "webTitle": "批量自动上架商品",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 233,
+      "webTitle": "商品数据采集前期准备",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 234,
+      "webTitle": "红麒麟配置",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 235,
+      "webTitle": "商品上架及违规处理",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 236,
+      "webTitle": "商品数据采集",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 237,
+      "webTitle": "day36-批量制作笔记",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 238,
+      "webTitle": "封面拆解分析",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 239,
+      "webTitle": "封面案例模版（上）",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 240,
+      "webTitle": "封面案例模板（下）",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 241,
+      "webTitle": "day37-批量制作笔记（02）",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 242,
+      "webTitle": "封面案例补充",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 243,
+      "webTitle": "内容图片及笔记分析",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 244,
+      "webTitle": "笔记批量发布流程",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 245,
+      "webTitle": "day38-杂货铺补充+闲鱼开课",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 246,
+      "webTitle": "小红书多账号操作",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 247,
+      "webTitle": "认识闲鱼+前期准备",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 248,
+      "webTitle": "选品变现模式+鱼小铺开通",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 249,
+      "webTitle": "商品上架流程",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 250,
+      "webTitle": "day39-闲鱼矩阵化信息差操作",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 251,
+      "webTitle": "选品及鱼游助手的配置",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 252,
+      "webTitle": "鱼游助手的使用",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 253,
+      "webTitle": "鱼小铺榜单选品",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 254,
+      "webTitle": "超级擦亮、引流及自动发货",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 255,
+      "webTitle": "day40-Ai进阶笔记图片",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 256,
+      "webTitle": "Gemini介绍及如何用上",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 257,
+      "webTitle": "Gemini实操示例",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 258,
+      "webTitle": "目前赛道趋势及建议",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 259,
+      "webTitle": "codex的使用",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 260,
+      "webTitle": "day41-关于第一阶段陪跑梳理总结",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 261,
+      "webTitle": "AI五六期陪跑(41)-2026-08-02152424",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 262,
+      "webTitle": "day42-电商总结补充",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 263,
+      "webTitle": "定时发布+千帆数据分析",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 264,
+      "webTitle": "刷单操作",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 265,
+      "webTitle": "优化笔记+推广投放",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 266,
+      "webTitle": "day43-接单引流变现（一）",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 267,
+      "webTitle": "小红书引流整体流程",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 268,
+      "webTitle": "前期准备+养号",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 269,
+      "webTitle": "找对标",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 270,
+      "webTitle": "拆解笔记+制作",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 271,
+      "webTitle": "引流方式",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 272,
+      "webTitle": "day44-接单引流变现（二）",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 273,
+      "webTitle": "找对标+拆解分析",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 274,
+      "webTitle": "引流方式介绍（视频+群聊+商品）",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 275,
+      "webTitle": "闲鱼引流方式",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 276,
+      "webTitle": "day45-自媒体方向（一）",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 277,
+      "webTitle": "AI五六期陪跑(45)-2026-08-18222149(1)",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 278,
+      "webTitle": "day46-自媒体方向(二)",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 279,
+      "webTitle": "AI五六期陪跑(46)-2026-08-20220606",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 280,
+      "webTitle": "day47-AI应用接单流程与注意事项",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 281,
+      "webTitle": "AI五六期陪跑(47)-2026-08-22210733",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 282,
+      "webTitle": "day48-如何运营路小飞",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 283,
+      "webTitle": "AI五六期陪跑(48)-2026-09-02204008",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 284,
+      "webTitle": "day49-个人售卖+找对标拆解分析",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 285,
+      "webTitle": "类目政策解读",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 286,
+      "webTitle": "个人售卖玩法介绍",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 287,
+      "webTitle": "确定赛道--选品",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 288,
+      "webTitle": "day50-整理资料库+拆解分析对标笔记",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 289,
+      "webTitle": "整理资料库",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 290,
+      "webTitle": "认识笔记类型及搬运爆款变现笔记",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 291,
+      "webTitle": "找对标笔记及拆解分析",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 292,
+      "webTitle": "day51-笔记制作+个人售卖应用到实际业务中",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 293,
+      "webTitle": "资料展示笔记---封面制作（上）",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 294,
+      "webTitle": "资料展示笔记---封面制作（下）",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 295,
+      "webTitle": "资料展示笔记---内容制作",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 296,
+      "webTitle": "Ps+AI图片 邪修笔记制作",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 297,
+      "webTitle": "day52-个人售卖商品结合",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 298,
+      "webTitle": "商品主图制作",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 299,
+      "webTitle": "个人售卖上架",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 300,
+      "webTitle": "SKU设置（上）",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "chapter",
+      "webIndex": 301,
+      "webTitle": "SKU+详情图制作",
+      "currentMatch": null,
+      "confidence": "none",
+      "score": 0,
+      "rivals": [],
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "跳过本章（网盘暂无对应内容）"
+        }
+      ]
+    },
+    {
+      "type": "orphan-share",
+      "shareName": "AI智能体六期",
+      "message": "网盘文件夹在网站目录中无对应章节，默认不发布；如需发布请手动指定到某 webIndex",
+      "options": [
+        {
+          "action": "map",
+          "shareName": "AI智能体六期",
+          "label": "手动指定 → AI智能体六期"
+        },
+        {
+          "action": "skip",
+          "shareName": null,
+          "label": "忽略，不发布"
+        }
+      ]
+    }
+  ],
+  "createdAt": "2026-11-10T13:27:35.494Z"
+}

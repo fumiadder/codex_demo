@@ -1,0 +1,7 @@
+{
+  "date": "2026-11-11",
+  "uploaded": 215,
+  "blocked": true,
+  "limit": 500,
+  "lastError": "XML-RPC fault 1: 上传失败, Response status code does not indicate success: 403 (Forbidden)."
+}

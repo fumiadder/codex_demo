@@ -1,0 +1,2835 @@
+{
+  "day00": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:09:50.346Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day00.md",
+    "report": {
+      "converted": [
+        "AI智能体6期开班导学.txt"
+      ],
+      "skipped": [],
+      "warnings": [],
+      "scannedPdf": []
+    }
+  },
+  "day01": {
+    "downloaded": true,
+    "files": 79,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:11:46.587Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day01.md",
+    "report": {
+      "converted": [
+        "coze从入门到精通/assets/image-20250916下午15231058-8001952.png",
+        "coze从入门到精通/assets/image-20250916下午15522936-8002124.png",
+        "coze从入门到精通/assets/image-20250916下午15824926-8002307.png",
+        "coze从入门到精通/assets/image-20250916下午22001083-8003602.png",
+        "coze从入门到精通/assets/image-20250916下午125617779-7998578-8001808.png",
+        "coze从入门到精通/assets/image-20250916下午125803900-7998686-8001830.png",
+        "coze从入门到精通/assets/image-20251216下午22838410-5866520.png",
+        "coze从入门到精通/assets/image-20251216下午22838410.png",
+        "coze从入门到精通/assets/image-20251216下午23334800-5866817.png",
+        "coze从入门到精通/assets/image-20251216下午23334800.png",
+        "coze从入门到精通/assets/image-20251216下午23428038-5866869.png",
+        "coze从入门到精通/assets/image-20251216下午23428038.png",
+        "coze从入门到精通/assets/image-20251216下午23532355-5866934.png",
+        "coze从入门到精通/assets/image-20251216下午23532355.png",
+        "coze从入门到精通/assets/image-20251216下午24128892-5867290.png",
+        "coze从入门到精通/assets/image-20251216下午24128892.png",
+        "coze从入门到精通/assets/image-20251216下午24223714-5867346.png",
+        "coze从入门到精通/assets/image-20251216下午24223714.png",
+        "coze从入门到精通/assets/image-20251216下午24249713.png",
+        "coze从入门到精通/assets/image-20251216下午24338243-5867420.png",
+        "coze从入门到精通/assets/image-20251216下午24338243.png",
+        "coze从入门到精通/assets/image-20251216下午24455716-5867497.png",
+        "coze从入门到精通/assets/image-20251216下午24455716.png",
+        "coze从入门到精通/assets/image-20251216下午24547444-5867549.png",
+        "coze从入门到精通/assets/image-20251216下午24547444.png",
+        "coze从入门到精通/assets/image-20251216下午24930286-5867771.png",
+        "coze从入门到精通/assets/image-20251216下午24930286.png",
+        "coze从入门到精通/assets/image-20251216下午25610151-5868171.png",
+        "coze从入门到精通/assets/image-20251216下午25610151.png",
+        "coze从入门到精通/assets/image-20251216下午25910422-5868351.png",
+        "coze从入门到精通/assets/image-20251216下午25910422.png",
+        "coze从入门到精通/assets/image-20251216下午30039097-5868441.png",
+        "coze从入门到精通/assets/image-20251216下午30039097.png",
+        "coze从入门到精通/assets/image-20251216下午30124954-5868486.png",
+        "coze从入门到精通/assets/image-20251216下午30124954.png",
+        "coze从入门到精通/assets/image-20251216下午30247305-5868570.png",
+        "coze从入门到精通/assets/image-20251216下午30247305.png",
+        "coze从入门到精通/assets/image-20251216下午30630459-5868792.png",
+        "coze从入门到精通/assets/image-20251216下午30630459.png",
+        "coze从入门到精通/assets/image-20251216下午30700825-5868822.png",
+        "coze从入门到精通/assets/image-20251216下午30700825.png",
+        "coze从入门到精通/assets/image-20251216下午30809069-5868891.png",
+        "coze从入门到精通/assets/image-20251216下午30809069.png",
+        "coze从入门到精通/assets/image-20251216下午30911672-5868953.png",
+        "coze从入门到精通/assets/image-20251216下午30911672.png",
+        "coze从入门到精通/assets/image-20251216下午30937958-5868979.png",
+        "coze从入门到精通/assets/image-20251216下午30937958.png",
+        "coze从入门到精通/assets/image-20251216下午31016942-5869019.png",
+        "coze从入门到精通/assets/image-20251216下午31016942.png",
+        "coze从入门到精通/assets/image-20260308下午63033508-2965834.png",
+        "coze从入门到精通/assets/image-20260308下午63033508.png",
+        "coze从入门到精通/assets/image-20260308下午63352392-2966033.png",
+        "coze从入门到精通/assets/image-20260308下午63352392.png",
+        "coze从入门到精通/assets/image-20260308下午63416890-2966058.png",
+        "coze从入门到精通/assets/image-20260308下午63416890.png",
+        "coze从入门到精通/assets/image-20260308下午63440765-2966081.png",
+        "coze从入门到精通/assets/image-20260308下午63440765.png",
+        "coze从入门到精通/assets/image-20260308下午63547817-2966149.png",
+        "coze从入门到精通/assets/image-20260308下午63547817.png",
+        "coze从入门到精通/assets/image-20260308下午63819078-2966300.png",
+        "coze从入门到精通/assets/image-20260308下午63819078.png",
+        "coze从入门到精通/assets/image-20260308下午64435138-2966677.png",
+        "coze从入门到精通/assets/image-20260308下午64435138.png",
+        "coze从入门到精通/assets/image-20260308下午64732813-2966853.png",
+        "coze从入门到精通/assets/image-20260308下午64732813.png",
+        "coze从入门到精通/assets/image-20260308下午65951761-2967592.png",
+        "coze从入门到精通/assets/image-20260308下午65951761.png",
+        "coze从入门到精通/assets/image-20260308下午70049466-2967651.png",
+        "coze从入门到精通/assets/image-20260308下午70049466.png",
+        "coze从入门到精通/assets/image-20260308下午70215645-2967737.png",
+        "coze从入门到精通/assets/image-20260308下午70215645.png",
+        "coze从入门到精通/assets/image-20260308下午70323586-2967804.png",
+        "coze从入门到精通/assets/image-20260308下午70323586.png",
+        "coze从入门到精通/assets/image-20260308下午74159614-2970120.png",
+        "coze从入门到精通/assets/image-20260308下午74159614.png",
+        "coze从入门到精通/assets/image-20260308下午74312680-2970194.png",
+        "coze从入门到精通/assets/image-20260308下午74312680.png",
+        "coze从入门到精通/coze入门到精通.md",
+        "coze入门到精通.pdf"
+      ],
+      "skipped": [],
+      "warnings": [],
+      "scannedPdf": []
+    }
+  },
+  "day02": {
+    "downloaded": true,
+    "files": 84,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:13:40.862Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day02.md",
+    "report": {
+      "converted": [
+        "coze从入门到精通/assets/image-20250916下午15231058-8001952.png",
+        "coze从入门到精通/assets/image-20250916下午15522936-8002124.png",
+        "coze从入门到精通/assets/image-20250916下午15824926-8002307.png",
+        "coze从入门到精通/assets/image-20250916下午22001083-8003602.png",
+        "coze从入门到精通/assets/image-20250916下午125617779-7998578-8001808.png",
+        "coze从入门到精通/assets/image-20250916下午125803900-7998686-8001830.png",
+        "coze从入门到精通/assets/image-20251216下午22838410-5866520.png",
+        "coze从入门到精通/assets/image-20251216下午22838410.png",
+        "coze从入门到精通/assets/image-20251216下午23334800-5866817.png",
+        "coze从入门到精通/assets/image-20251216下午23334800.png",
+        "coze从入门到精通/assets/image-20251216下午23428038-5866869.png",
+        "coze从入门到精通/assets/image-20251216下午23428038.png",
+        "coze从入门到精通/assets/image-20251216下午23532355-5866934.png",
+        "coze从入门到精通/assets/image-20251216下午23532355.png",
+        "coze从入门到精通/assets/image-20251216下午24128892-5867290.png",
+        "coze从入门到精通/assets/image-20251216下午24128892.png",
+        "coze从入门到精通/assets/image-20251216下午24223714-5867346.png",
+        "coze从入门到精通/assets/image-20251216下午24223714.png",
+        "coze从入门到精通/assets/image-20251216下午24249713.png",
+        "coze从入门到精通/assets/image-20251216下午24338243-5867420.png",
+        "coze从入门到精通/assets/image-20251216下午24338243.png",
+        "coze从入门到精通/assets/image-20251216下午24455716-5867497.png",
+        "coze从入门到精通/assets/image-20251216下午24455716.png",
+        "coze从入门到精通/assets/image-20251216下午24547444-5867549.png",
+        "coze从入门到精通/assets/image-20251216下午24547444.png",
+        "coze从入门到精通/assets/image-20251216下午24930286-5867771.png",
+        "coze从入门到精通/assets/image-20251216下午24930286.png",
+        "coze从入门到精通/assets/image-20251216下午25610151-5868171.png",
+        "coze从入门到精通/assets/image-20251216下午25610151.png",
+        "coze从入门到精通/assets/image-20251216下午25910422-5868351.png",
+        "coze从入门到精通/assets/image-20251216下午25910422.png",
+        "coze从入门到精通/assets/image-20251216下午30039097-5868441.png",
+        "coze从入门到精通/assets/image-20251216下午30039097.png",
+        "coze从入门到精通/assets/image-20251216下午30124954-5868486.png",
+        "coze从入门到精通/assets/image-20251216下午30124954.png",
+        "coze从入门到精通/assets/image-20251216下午30247305-5868570.png",
+        "coze从入门到精通/assets/image-20251216下午30247305.png",
+        "coze从入门到精通/assets/image-20251216下午30630459-5868792.png",
+        "coze从入门到精通/assets/image-20251216下午30630459.png",
+        "coze从入门到精通/assets/image-20251216下午30700825-5868822.png",
+        "coze从入门到精通/assets/image-20251216下午30700825.png",
+        "coze从入门到精通/assets/image-20251216下午30809069-5868891.png",
+        "coze从入门到精通/assets/image-20251216下午30809069.png",
+        "coze从入门到精通/assets/image-20251216下午30911672-5868953.png",
+        "coze从入门到精通/assets/image-20251216下午30911672.png",
+        "coze从入门到精通/assets/image-20251216下午30937958-5868979.png",
+        "coze从入门到精通/assets/image-20251216下午30937958.png",
+        "coze从入门到精通/assets/image-20251216下午31016942-5869019.png",
+        "coze从入门到精通/assets/image-20251216下午31016942.png",
+        "coze从入门到精通/assets/image-20260308下午63033508-2965834.png",
+        "coze从入门到精通/assets/image-20260308下午63033508.png",
+        "coze从入门到精通/assets/image-20260308下午63352392-2966033.png",
+        "coze从入门到精通/assets/image-20260308下午63352392.png",
+        "coze从入门到精通/assets/image-20260308下午63416890-2966058.png",
+        "coze从入门到精通/assets/image-20260308下午63416890.png",
+        "coze从入门到精通/assets/image-20260308下午63440765-2966081.png",
+        "coze从入门到精通/assets/image-20260308下午63440765.png",
+        "coze从入门到精通/assets/image-20260308下午63547817-2966149.png",
+        "coze从入门到精通/assets/image-20260308下午63547817.png",
+        "coze从入门到精通/assets/image-20260308下午63819078-2966300.png",
+        "coze从入门到精通/assets/image-20260308下午63819078.png",
+        "coze从入门到精通/assets/image-20260308下午64435138-2966677.png",
+        "coze从入门到精通/assets/image-20260308下午64435138.png",
+        "coze从入门到精通/assets/image-20260308下午64732813-2966853.png",
+        "coze从入门到精通/assets/image-20260308下午64732813.png",
+        "coze从入门到精通/assets/image-20260308下午65951761-2967592.png",
+        "coze从入门到精通/assets/image-20260308下午65951761.png",
+        "coze从入门到精通/assets/image-20260308下午70049466-2967651.png",
+        "coze从入门到精通/assets/image-20260308下午70049466.png",
+        "coze从入门到精通/assets/image-20260308下午70215645-2967737.png",
+        "coze从入门到精通/assets/image-20260308下午70215645.png",
+        "coze从入门到精通/assets/image-20260308下午70323586-2967804.png",
+        "coze从入门到精通/assets/image-20260308下午70323586.png",
+        "coze从入门到精通/assets/image-20260308下午74159614-2970120.png",
+        "coze从入门到精通/assets/image-20260308下午74159614.png",
+        "coze从入门到精通/assets/image-20260308下午74312680-2970194.png",
+        "coze从入门到精通/assets/image-20260308下午74312680.png",
+        "coze从入门到精通/assets/image-20260313上午122649638-3332812.png",
+        "coze从入门到精通/assets/image-20260313上午122649638.png",
+        "coze从入门到精通/assets/image-20260313上午124028243-3333629.png",
+        "coze从入门到精通/assets/image-20260313上午124028243.png",
+        "coze从入门到精通/coze入门到精通.md",
+        "coze入门到精通.pdf"
+      ],
+      "skipped": [
+        {
+          "file": "_extracted/Workflow-huiben-draft-2671/Workflow-huiben-draft-2671/MANIFEST.yml",
+          "reason": "不支持的扩展名 .yml"
+        },
+        {
+          "file": "_extracted/Workflow-huiben-draft-2671/Workflow-huiben-draft-2671/workflow/huiben-draft.yaml",
+          "reason": "不支持的扩展名 .yaml"
+        }
+      ],
+      "warnings": [],
+      "scannedPdf": []
+    }
+  },
+  "day03": {
+    "downloaded": true,
+    "files": 122,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:16:39.601Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day03.md",
+    "report": {
+      "converted": [
+        "coze从入门到精通/assets/image-20250916下午15231058-8001952.png",
+        "coze从入门到精通/assets/image-20250916下午15522936-8002124.png",
+        "coze从入门到精通/assets/image-20250916下午15824926-8002307.png",
+        "coze从入门到精通/assets/image-20250916下午22001083-8003602.png",
+        "coze从入门到精通/assets/image-20250916下午125617779-7998578-8001808.png",
+        "coze从入门到精通/assets/image-20250916下午125803900-7998686-8001830.png",
+        "coze从入门到精通/assets/image-20251216下午22838410-5866520.png",
+        "coze从入门到精通/assets/image-20251216下午22838410.png",
+        "coze从入门到精通/assets/image-20251216下午23334800-5866817.png",
+        "coze从入门到精通/assets/image-20251216下午23334800.png",
+        "coze从入门到精通/assets/image-20251216下午23428038-5866869.png",
+        "coze从入门到精通/assets/image-20251216下午23428038.png",
+        "coze从入门到精通/assets/image-20251216下午23532355-5866934.png",
+        "coze从入门到精通/assets/image-20251216下午23532355.png",
+        "coze从入门到精通/assets/image-20251216下午24128892-5867290.png",
+        "coze从入门到精通/assets/image-20251216下午24128892.png",
+        "coze从入门到精通/assets/image-20251216下午24223714-5867346.png",
+        "coze从入门到精通/assets/image-20251216下午24223714.png",
+        "coze从入门到精通/assets/image-20251216下午24249713.png",
+        "coze从入门到精通/assets/image-20251216下午24338243-5867420.png",
+        "coze从入门到精通/assets/image-20251216下午24338243.png",
+        "coze从入门到精通/assets/image-20251216下午24455716-5867497.png",
+        "coze从入门到精通/assets/image-20251216下午24455716.png",
+        "coze从入门到精通/assets/image-20251216下午24547444-5867549.png",
+        "coze从入门到精通/assets/image-20251216下午24547444.png",
+        "coze从入门到精通/assets/image-20251216下午24930286-5867771.png",
+        "coze从入门到精通/assets/image-20251216下午24930286.png",
+        "coze从入门到精通/assets/image-20251216下午25610151-5868171.png",
+        "coze从入门到精通/assets/image-20251216下午25610151.png",
+        "coze从入门到精通/assets/image-20251216下午25910422-5868351.png",
+        "coze从入门到精通/assets/image-20251216下午25910422.png",
+        "coze从入门到精通/assets/image-20251216下午30039097-5868441.png",
+        "coze从入门到精通/assets/image-20251216下午30039097.png",
+        "coze从入门到精通/assets/image-20251216下午30124954-5868486.png",
+        "coze从入门到精通/assets/image-20251216下午30124954.png",
+        "coze从入门到精通/assets/image-20251216下午30247305-5868570.png",
+        "coze从入门到精通/assets/image-20251216下午30247305.png",
+        "coze从入门到精通/assets/image-20251216下午30630459-5868792.png",
+        "coze从入门到精通/assets/image-20251216下午30630459.png",
+        "coze从入门到精通/assets/image-20251216下午30700825-5868822.png",
+        "coze从入门到精通/assets/image-20251216下午30700825.png",
+        "coze从入门到精通/assets/image-20251216下午30809069-5868891.png",
+        "coze从入门到精通/assets/image-20251216下午30809069.png",
+        "coze从入门到精通/assets/image-20251216下午30911672-5868953.png",
+        "coze从入门到精通/assets/image-20251216下午30911672.png",
+        "coze从入门到精通/assets/image-20251216下午30937958-5868979.png",
+        "coze从入门到精通/assets/image-20251216下午30937958.png",
+        "coze从入门到精通/assets/image-20251216下午31016942-5869019.png",
+        "coze从入门到精通/assets/image-20251216下午31016942.png",
+        "coze从入门到精通/assets/image-20251221下午64549509-6313950.png",
+        "coze从入门到精通/assets/image-20251221下午64646062-6314006.png",
+        "coze从入门到精通/assets/image-20251221下午64812253-6314093.png",
+        "coze从入门到精通/assets/image-20251221下午64901314.png",
+        "coze从入门到精通/assets/image-20251221下午65101026-6314263.png",
+        "coze从入门到精通/assets/image-20251221下午65155619-6314317.png",
+        "coze从入门到精通/assets/image-20251221下午75614633-6318175.png",
+        "coze从入门到精通/assets/image-20251228上午110025699-6890826.png",
+        "coze从入门到精通/assets/image-20251228上午113441117-6892883.png",
+        "coze从入门到精通/assets/image-20251228上午113613178-6892974.png",
+        "coze从入门到精通/assets/image-20251228上午114313193-6893394.png",
+        "coze从入门到精通/assets/image-20251228上午114408286-6893449.png",
+        "coze从入门到精通/assets/image-20251228下午120719465-6894841.png",
+        "coze从入门到精通/assets/image-20251228下午120930207-6894971.png",
+        "coze从入门到精通/assets/image-20251228下午124328283-6897009.png",
+        "coze从入门到精通/assets/image-20251228下午124936249-6897377.png",
+        "coze从入门到精通/assets/image-20251228下午125714767-6897835.png",
+        "coze从入门到精通/assets/image-20251228下午125822386-6897903.png",
+        "coze从入门到精通/assets/image-20251228下午125904056-6897945.png",
+        "coze从入门到精通/assets/image-20251229下午50008142-6998809.png",
+        "coze从入门到精通/assets/image-20251229下午53322210-7000803.png",
+        "coze从入门到精通/assets/image-20251229下午53814205-7001095.png",
+        "coze从入门到精通/assets/image-20260308下午63033508-2965834.png",
+        "coze从入门到精通/assets/image-20260308下午63033508.png",
+        "coze从入门到精通/assets/image-20260308下午63352392-2966033.png",
+        "coze从入门到精通/assets/image-20260308下午63352392.png",
+        "coze从入门到精通/assets/image-20260308下午63416890-2966058.png",
+        "coze从入门到精通/assets/image-20260308下午63416890.png",
+        "coze从入门到精通/assets/image-20260308下午63440765-2966081.png",
+        "coze从入门到精通/assets/image-20260308下午63440765.png",
+        "coze从入门到精通/assets/image-20260308下午63547817-2966149.png",
+        "coze从入门到精通/assets/image-20260308下午63547817.png",
+        "coze从入门到精通/assets/image-20260308下午63819078-2966300.png",
+        "coze从入门到精通/assets/image-20260308下午63819078.png",
+        "coze从入门到精通/assets/image-20260308下午64435138-2966677.png",
+        "coze从入门到精通/assets/image-20260308下午64435138.png",
+        "coze从入门到精通/assets/image-20260308下午64732813-2966853.png",
+        "coze从入门到精通/assets/image-20260308下午64732813.png",
+        "coze从入门到精通/assets/image-20260308下午65951761-2967592.png",
+        "coze从入门到精通/assets/image-20260308下午65951761.png",
+        "coze从入门到精通/assets/image-20260308下午70049466-2967651.png",
+        "coze从入门到精通/assets/image-20260308下午70049466.png",
+        "coze从入门到精通/assets/image-20260308下午70215645-2967737.png",
+        "coze从入门到精通/assets/image-20260308下午70215645.png",
+        "coze从入门到精通/assets/image-20260308下午70323586-2967804.png",
+        "coze从入门到精通/assets/image-20260308下午70323586.png",
+        "coze从入门到精通/assets/image-20260308下午74159614-2970120.png",
+        "coze从入门到精通/assets/image-20260308下午74159614.png",
+        "coze从入门到精通/assets/image-20260308下午74312680-2970194.png",
+        "coze从入门到精通/assets/image-20260308下午74312680.png",
+        "coze从入门到精通/assets/image-20260313上午122649638-3332812.png",
+        "coze从入门到精通/assets/image-20260313上午122649638.png",
+        "coze从入门到精通/assets/image-20260313上午124028243-3333629.png",
+        "coze从入门到精通/assets/image-20260313上午124028243.png",
+        "coze从入门到精通/assets/image-20260315下午75721736-3575842.png",
+        "coze从入门到精通/assets/image-20260315下午75721736.png",
+        "coze从入门到精通/assets/image-20260315下午75801353-3575882.png",
+        "coze从入门到精通/assets/image-20260315下午75801353.png",
+        "coze从入门到精通/assets/image-20260315下午75952147-3575993.png",
+        "coze从入门到精通/assets/image-20260315下午75952147.png",
+        "coze从入门到精通/assets/image-20260315下午80226517-3576147.png",
+        "coze从入门到精通/assets/image-20260315下午80226517.png",
+        "coze从入门到精通/assets/image-20260315下午80253113-3576173.png",
+        "coze从入门到精通/assets/image-20260315下午80253113.png",
+        "coze从入门到精通/assets/image-20260316上午111421697-3630864.png",
+        "coze从入门到精通/assets/image-20260316上午111421697.png",
+        "coze从入门到精通/assets/image-20260316上午111504143-3630905.png",
+        "coze从入门到精通/assets/image-20260316上午111504143.png",
+        "coze从入门到精通/assets/image-20260316上午112417549-3631459.png",
+        "coze从入门到精通/assets/image-20260316上午112417549.png",
+        "coze从入门到精通/coze入门到精通.md",
+        "coze入门到精通.pdf"
+      ],
+      "skipped": [
+        {
+          "file": "_extracted/Workflow-huibengushi-draft-7849/Workflow-huibengushi-draft-7849/MANIFEST.yml",
+          "reason": "不支持的扩展名 .yml"
+        },
+        {
+          "file": "_extracted/Workflow-huibengushi-draft-7849/Workflow-huibengushi-draft-7849/workflow/huibengushi-draft.yaml",
+          "reason": "不支持的扩展名 .yaml"
+        }
+      ],
+      "warnings": [],
+      "scannedPdf": []
+    }
+  },
+  "day04": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [
+      {
+        "rel": "day04-OpenClaw部署-配置飞书-Skills-仅软件.zip",
+        "mb": 202.8
+      }
+    ],
+    "at": "2026-11-10T14:16:51.348Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day04.md",
+    "report": {
+      "converted": [
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/day21-课堂笔记.md",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/6bfc5e8725387d3bb644c4237f4da594_720-17738520096311.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/706f1083-731b-465d-b0c8-487948ee6755.jpg",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/976eead3e62a4cfffc6f28c341ab07a6_720.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318154759843.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318154831637.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318154949925.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318155142885.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318155308506.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318155408129.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318155447446.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318155644607.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318155814167.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318155927911.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318155957988.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318163200678.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318163230174.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318231034854.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318231219263-17739255088861.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318231219263.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318231833083.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318232035721-17739260608442.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318232035721-17739270586863.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318232035721.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318232454561.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318232605890.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318232648504-17739270586864.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318232648504.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318232708669-17739270586865.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318232708669.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318232912720-17739270586866.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318232912720.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318232957852-17739270586867.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318232957852.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318233012701-17739270586868.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318233012701.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318233045962.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318233255874.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318233702830.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318234144062.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318234558417.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318234656608.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318234717247.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318234809263.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260318234833380.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260319002518481.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260319002859628.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260319003223846.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260319003326757.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260319003430880.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260319003514993.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260319003929344.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260319004153834.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260319004234479.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260319203919610.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260319204952367.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260319205110387.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260319205400082.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260319205426290.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260319210138249.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260319210422414.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260319210912757.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260319211411610.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260319211558105.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260319211907130.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260319212511165.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260319212555632.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260319214844481.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260319215124352.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260319215318076.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260319215620247.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260319215908882.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260319220126883.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260319220240756.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260319221938385.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260319222434342.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/day21-课堂笔记/image-20260319224318030.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/6bfc5e8725387d3bb644c4237f4da594_720-17738520096311.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/6bfc5e8725387d3bb644c4237f4da594_720.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/706f1083-731b-465d-b0c8-487948ee6755.jpg",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/972efcfee412b4472e3fd35e3be06172_720.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/976eead3e62a4cfffc6f28c341ab07a6_720.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/1313fea66a4c3f2a32096b1de05962e9_720.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318030234100.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318142521550.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318142534617.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318142559949.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318142702685.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318142926746.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318143250208.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318143511210.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318144912629.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318145939807.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318150027445.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318150216469.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318150329270.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318150408689.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318150454431.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318151012623.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318151225744.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318151315903.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318151323194.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318151353431.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318151418232.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318151858707.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318154759843.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318154831637.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318154949925.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318155142885.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318155308506.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318155408129.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318155447446.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318155644607.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318155814167.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318155927911.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318155957988.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318160527036-17738657354761.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318160527036.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318160702145.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318160741457.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318163132632.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318163200678.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318163230174.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318231034854.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318231219263.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318231833083.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318232035721.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318232454561.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318232605890.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318232648504.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318232708669.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318232912720.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318232957852.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318233012701.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318233045962.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318233255874.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318233702830.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318234144062.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318234558417.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318234656608.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318234717247.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318234809263.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318234833380.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260318235442946.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260319000920783.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260319000942772.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260319001059813.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260319001207169.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260319002518481.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260319002859628.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260319003223846.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260319003326757.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260319003430880.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260319003514993.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260319003929344.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260319004153834.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260319004234479.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260319005211528.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260319005614459.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260319012259361.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260319024628671.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260319030521081.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260319033238023.png",
+        "_extracted/day04-OpenClaw部署-配置飞书-Skills-仅笔记/image/openClaw/image-20260319033550361.png"
+      ],
+      "skipped": [],
+      "warnings": [],
+      "scannedPdf": []
+    }
+  },
+  "day05": {
+    "downloaded": true,
+    "files": 0,
+    "gated": [
+      {
+        "rel": "Day05：coze从入门到精通之绘本短视频案例2.zip",
+        "mb": 99
+      }
+    ],
+    "blocked": false,
+    "at": "2026-11-10T14:16:52.735Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day05.md",
+    "report": {
+      "converted": [
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20250916下午15231058-8001952.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20250916下午15522936-8002124.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20250916下午15824926-8002307.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20250916下午22001083-8003602.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20250916下午125617779-7998578-8001808.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20250916下午125803900-7998686-8001830.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午22838410-5866520.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午22838410.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午23334800-5866817.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午23334800.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午23428038-5866869.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午23428038.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午23532355-5866934.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午23532355.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午24128892-5867290.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午24128892.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午24223714-5867346.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午24223714.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午24249713.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午24338243-5867420.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午24338243.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午24455716-5867497.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午24455716.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午24547444-5867549.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午24547444.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午24930286-5867771.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午24930286.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午25610151-5868171.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午25610151.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午25910422-5868351.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午25910422.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午30039097-5868441.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午30039097.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午30124954-5868486.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午30124954.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午30247305-5868570.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午30247305.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午30630459-5868792.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午30630459.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午30700825-5868822.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午30700825.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午30809069-5868891.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午30809069.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午30911672-5868953.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午30911672.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午30937958-5868979.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午30937958.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午31016942-5869019.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251216下午31016942.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251221下午64549509-6313950.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251221下午64646062-6314006.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251221下午64812253-6314093.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251221下午64901314.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251221下午65101026-6314263.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251221下午65155619-6314317.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251221下午75614633-6318175.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251228上午110025699-6890826.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251228上午113441117-6892883.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251228上午113613178-6892974.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251228上午114313193-6893394.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251228上午114408286-6893449.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251228下午120719465-6894841.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251228下午120930207-6894971.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251228下午124328283-6897009.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251228下午124936249-6897377.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251228下午125714767-6897835.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251228下午125822386-6897903.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251228下午125904056-6897945.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251229下午50008142-6998809.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251229下午53322210-7000803.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20251229下午53814205-7001095.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260308下午63033508-2965834.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260308下午63033508.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260308下午63352392-2966033.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260308下午63352392.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260308下午63416890-2966058.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260308下午63416890.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260308下午63440765-2966081.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260308下午63440765.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260308下午63547817-2966149.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260308下午63547817.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260308下午63819078-2966300.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260308下午63819078.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260308下午64435138-2966677.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260308下午64435138.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260308下午64732813-2966853.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260308下午64732813.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260308下午65951761-2967592.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260308下午65951761.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260308下午70049466-2967651.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260308下午70049466.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260308下午70215645-2967737.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260308下午70215645.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260308下午70323586-2967804.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260308下午70323586.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260308下午74159614-2970120.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260308下午74159614.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260308下午74312680-2970194.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260308下午74312680.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260313上午122649638-3332812.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260313上午122649638.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260313上午124028243-3333629.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260313上午124028243.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260315下午75721736-3575842.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260315下午75721736.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260315下午75801353-3575882.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260315下午75801353.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260315下午75952147-3575993.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260315下午75952147.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260315下午80226517-3576147.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260315下午80226517.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260315下午80253113-3576173.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260315下午80253113.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260316上午111421697-3630864.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260316上午111421697.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260316上午111504143-3630905.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260316上午111504143.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260316上午112417549-3631459.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260316上午112417549.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260320下午73143269-4006304.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260320下午73143269.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260320下午73210054-4006331.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260320下午73210054.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260320下午73350020-4006431.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260320下午73350020.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260320下午111631203-4019792.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260320下午111631203.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260322下午10352409-4155834.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260322下午10352409.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260322下午10442635-4155883.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260322下午10442635.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260322下午13341358-4157622.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260322下午13341358.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260322下午13407927-4157649.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260322下午13407927.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260322下午13510531-4157711.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260322下午13510531.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260322下午13548221-4157749.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260322下午13548221.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260322下午13632712-4157794.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260322下午13632712.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260322下午13700547-4157821.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260322下午13700547.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260322下午14037093-4158038.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260322下午14037093.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午105232457-4234353.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午105232457.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午105835908-4234717.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午105835908.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午110019791-4234821.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午110019791.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午110238169-4234959.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午110238169.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午110307677-4234988.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午110307677.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午110439333-4235080.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午110439333.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午110702566-4235223.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午110702566.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午110911426-4235352.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午110911426.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午111024149.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午111048149-4235448-4235528.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午111048149-4235448.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午111048149.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午111158489-4235520.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午111158489.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午111619508-4235780.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午111619508.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午111952612-4235995.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午111952612.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午112222293-4236143.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午112222293.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午112709395-4236430.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午112709395.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午113322423-4236803.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午113322423.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午113416419-4236857.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午113416419.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午114821370-4237702.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午114821370.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午115325701-4238006.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午115325701.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午115616726-4238177.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323上午115616726.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323下午120549863-4238751.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323下午120549863.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323下午120659993-4238821.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/assets/image-20260323下午120659993.png",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze从入门到精通/coze入门到精通.md",
+        "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/coze入门到精通.pdf"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_extracted/Day05：coze从入门到精通之绘本短视频案例2/Day05：coze从入门到精通之绘本短视频案例2/Workflow-douyin2XHS-draft-3073.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        },
+        {
+          "file": "_staging/Day05：coze从入门到精通之绘本短视频案例2.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    },
+    "mergedAt": "2026-11-10T14:45:53.210Z"
+  },
+  "day06-day07": {
+    "downloaded": true,
+    "files": 0,
+    "gated": [
+      {
+        "rel": "Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）.zip",
+        "mb": 99
+      }
+    ],
+    "blocked": false,
+    "at": "2026-11-10T14:16:53.348Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day06-day07.md",
+    "report": {
+      "converted": [
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20250916下午15231058-8001952.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20250916下午15522936-8002124.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20250916下午15824926-8002307.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20250916下午22001083-8003602.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20250916下午125617779-7998578-8001808.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20250916下午125803900-7998686-8001830.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午22838410-5866520.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午22838410.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午23334800-5866817.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午23334800.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午23428038-5866869.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午23428038.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午23532355-5866934.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午23532355.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午24128892-5867290.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午24128892.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午24223714-5867346.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午24223714.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午24249713.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午24338243-5867420.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午24338243.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午24455716-5867497.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午24455716.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午24547444-5867549.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午24547444.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午24930286-5867771.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午24930286.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午25610151-5868171.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午25610151.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午25910422-5868351.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午25910422.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午30039097-5868441.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午30039097.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午30124954-5868486.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午30124954.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午30247305-5868570.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午30247305.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午30630459-5868792.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午30630459.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午30700825-5868822.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午30700825.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午30809069-5868891.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午30809069.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午30911672-5868953.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午30911672.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午30937958-5868979.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午30937958.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午31016942-5869019.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251216下午31016942.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251221下午64549509-6313950.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251221下午64646062-6314006.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251221下午64812253-6314093.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251221下午64901314.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251221下午65101026-6314263.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251221下午65155619-6314317.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251221下午75614633-6318175.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251228上午110025699-6890826.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251228上午113441117-6892883.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251228上午113613178-6892974.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251228上午114313193-6893394.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251228上午114408286-6893449.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251228下午120719465-6894841.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251228下午120930207-6894971.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251228下午124328283-6897009.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251228下午124936249-6897377.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251228下午125714767-6897835.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251228下午125822386-6897903.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251228下午125904056-6897945.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251229下午50008142-6998809.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251229下午53322210-7000803.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20251229下午53814205-7001095.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260308下午63033508-2965834.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260308下午63033508.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260308下午63352392-2966033.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260308下午63352392.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260308下午63416890-2966058.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260308下午63416890.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260308下午63440765-2966081.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260308下午63440765.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260308下午63547817-2966149.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260308下午63547817.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260308下午63819078-2966300.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260308下午63819078.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260308下午64435138-2966677.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260308下午64435138.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260308下午64732813-2966853.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260308下午64732813.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260308下午65951761-2967592.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260308下午65951761.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260308下午70049466-2967651.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260308下午70049466.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260308下午70215645-2967737.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260308下午70215645.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260308下午70323586-2967804.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260308下午70323586.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260308下午74159614-2970120.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260308下午74159614.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260308下午74312680-2970194.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260308下午74312680.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260313上午122649638-3332812.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260313上午122649638.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260313上午124028243-3333629.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260313上午124028243.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260315下午75721736-3575842.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260315下午75721736.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260315下午75801353-3575882.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260315下午75801353.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260315下午75952147-3575993.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260315下午75952147.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260315下午80226517-3576147.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260315下午80226517.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260315下午80253113-3576173.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260315下午80253113.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260316上午111421697-3630864.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260316上午111421697.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260316上午111504143-3630905.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260316上午111504143.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260316上午112417549-3631459.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260316上午112417549.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260320下午73143269-4006304.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260320下午73143269.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260320下午73210054-4006331.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260320下午73210054.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260320下午73350020-4006431.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260320下午73350020.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260320下午111631203-4019792.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260320下午111631203.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260322下午10352409-4155834.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260322下午10352409.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260322下午10442635-4155883.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260322下午10442635.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260322下午13341358-4157622.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260322下午13341358.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260322下午13407927-4157649.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260322下午13407927.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260322下午13510531-4157711.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260322下午13510531.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260322下午13548221-4157749.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260322下午13548221.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260322下午13632712-4157794.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260322下午13632712.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260322下午13700547-4157821.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260322下午13700547.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260322下午14037093-4158038.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260322下午14037093.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午105232457-4234353.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午105232457.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午105835908-4234717.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午105835908.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午110019791-4234821.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午110019791.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午110238169-4234959.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午110238169.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午110307677-4234988.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午110307677.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午110439333-4235080.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午110439333.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午110702566-4235223.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午110702566.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午110911426-4235352.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午110911426.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午111024149.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午111048149-4235448-4235528.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午111048149-4235448.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午111048149.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午111158489-4235520.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午111158489.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午111619508-4235780.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午111619508.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午111952612-4235995.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午111952612.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午112222293-4236143.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午112222293.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午112709395-4236430.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午112709395.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午113322423-4236803.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午113322423.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午113416419-4236857.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午113416419.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午114821370-4237702.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午114821370.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午115325701-4238006.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午115325701.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午115616726-4238177.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323上午115616726.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323下午120549863-4238751.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323下午120549863.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323下午120659993-4238821.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/assets/image-20260323下午120659993.png",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze从入门到精通/coze入门到精通.md",
+        "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/coze入门到精通.pdf"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_extracted/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）/Workflow-douyin2XHS-draft-3073.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        },
+        {
+          "file": "_staging/Day06-Day07：coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    },
+    "mergedAt": "2026-11-10T14:46:07.953Z"
+  },
+  "day08": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:16:57.922Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day08.md",
+    "report": {
+      "converted": [
+        "_extracted/Workflow-TiXiao07-draft-6005/Workflow-TiXiao07-draft-6005/workflow/TiXiao07-draft.yaml"
+      ],
+      "skipped": [
+        {
+          "file": "_extracted/Workflow-TiXiao07-draft-6005/Workflow-TiXiao07-draft-6005/MANIFEST.yml",
+          "reason": "不支持的扩展名 .yml"
+        }
+      ],
+      "warnings": [],
+      "scannedPdf": []
+    },
+    "blocked": false,
+    "mergedAt": "2026-11-10T14:35:10.159Z"
+  },
+  "day09": {
+    "downloaded": true,
+    "files": 0,
+    "gated": [
+      {
+        "rel": "day09-影刀下载好看搞笑视频.zip",
+        "mb": 626.6
+      }
+    ],
+    "blocked": false,
+    "at": "2026-11-10T14:16:58.764Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day09.md",
+    "report": {
+      "converted": [
+        "_extracted/day09-影刀下载好看搞笑视频/day08-课堂笔记.md",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day08-课堂笔记/image-20260329204516028.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day08-课堂笔记/image-20260329205319369.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day08-课堂笔记/image-20260329212433942.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day08-课堂笔记/image-20260329212620513.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day08-课堂笔记/image-20260329214213469.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day08-课堂笔记/image-20260329214355542.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day08-课堂笔记/image-20260329214615833.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day08-课堂笔记/image-20260329214840259.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day08-课堂笔记/image-20260329214914027.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day08-课堂笔记/image-20260329215002131.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day08-课堂笔记/image-20260329215223780.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day08-课堂笔记/image-20260329215924519.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day08-课堂笔记/image-20260329220124062.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day08-课堂笔记/image-20260329220430346.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day08-课堂笔记/image-20260329220711978.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day08-课堂笔记/image-20260329221022233.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day08-课堂笔记/image-20260329221222438.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day08-课堂笔记/image-20260329221444637.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day08-课堂笔记/image-20260329221552222.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day08-课堂笔记/image-20260329222056487.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day08-课堂笔记/image-20260329222333986.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day08-课堂笔记/image-20260329222927164.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20250709145242056-17600071972691.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20250709151100707.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20250709151149152.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20251009204109088.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20251009204247714.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20251009204425198.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20251009210145541.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20251009210203374.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20251009210343683.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20251009211117750.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20251009211308418.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20251009211456570.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20251009212045633.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20251009212444553.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20251009212751062.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20251009213004291.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20251009213128178.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20251009213526491.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20251009214007685.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20251009214317245.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20251009214415260.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20251009221049381.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20251009221255262.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20251009221438324.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20251009221810952.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20251009222338416.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20251127123802118.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20260327192701022.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20260327192847587.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20260327193151959.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20260327193308337.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20260327193504189.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20260327194024109.png",
+        "_extracted/day09-影刀下载好看搞笑视频/image/day13-影刀RPA01/image-20260327194210802.png"
+      ],
+      "skipped": [
+        {
+          "file": "_extracted/day09-影刀下载好看搞笑视频/软件/ShadowBot-5.32.44-x64.exe",
+          "reason": "音视频/安装包，不汇总"
+        }
+      ],
+      "warnings": [
+        {
+          "file": "_staging/day09-影刀下载好看搞笑视频.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    },
+    "mergedAt": "2026-11-10T14:46:21.141Z"
+  },
+  "day10": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:17:02.296Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day10.md",
+    "report": {
+      "converted": [
+        "_extracted/day010-影刀RPA下载梨视频/day08-课堂笔记.md",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-课堂笔记/image-20260402203452500.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-课堂笔记/image-20260402203726427.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-课堂笔记/image-20260402204217812.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-课堂笔记/image-20260402205034603.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-课堂笔记/image-20260402205401123.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-课堂笔记/image-20260402205618492.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-课堂笔记/image-20260402210115837.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-课堂笔记/image-20260402210442024.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-课堂笔记/image-20260402211109364.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-课堂笔记/image-20260402211255691.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-课堂笔记/image-20260402211333916.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-课堂笔记/image-20260402213415655.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-课堂笔记/image-20260402214526112.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-课堂笔记/image-20260402214615352.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-课堂笔记/image-20260402215410261.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-课堂笔记/image-20260402215816243.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-影刀RPA02/image-20250709151100707.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-影刀RPA02/image-20250709151149152.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-影刀RPA02/image-20251009192124471.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-影刀RPA02/image-20251009210145541.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-影刀RPA02/image-20251009210203374.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-影刀RPA02/image-20251009210343683.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-影刀RPA02/image-20251009211117750.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-影刀RPA02/image-20251009211308418.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-影刀RPA02/image-20251009211456570.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-影刀RPA02/image-20251009212045633.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-影刀RPA02/image-20251009212444553.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-影刀RPA02/image-20251009212751062.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-影刀RPA02/image-20251009213004291.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-影刀RPA02/image-20251009213128178.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-影刀RPA02/image-20251009213526491.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-影刀RPA02/image-20251009214007685.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-影刀RPA02/image-20251009214317245.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-影刀RPA02/image-20251009214415260.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-影刀RPA02/image-20251011202054304.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-影刀RPA02/image-20251011202442372.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-影刀RPA02/image-20251011203131355.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-影刀RPA02/image-20251011203251443.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-影刀RPA02/image-20251011203753898.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-影刀RPA02/image-20251011203938901.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-影刀RPA02/image-20251011204659258.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-影刀RPA02/image-20251011204829132.png",
+        "_extracted/day010-影刀RPA下载梨视频/image/day08-影刀RPA02/image-20260402194546846.png"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day010-影刀RPA下载梨视频.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day11": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:17:08.574Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day11.md",
+    "report": {
+      "converted": [
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/day11-课堂笔记.md",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-获取抖音评论-企业微信自动回复消息/image-20250712220537131.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-获取抖音评论-企业微信自动回复消息/image-20251009192124471.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-获取抖音评论-企业微信自动回复消息/image-20251011202054304.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-获取抖音评论-企业微信自动回复消息/image-20251011202442372.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-获取抖音评论-企业微信自动回复消息/image-20251011203131355.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-获取抖音评论-企业微信自动回复消息/image-20251011203251443.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-获取抖音评论-企业微信自动回复消息/image-20251011203753898.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-获取抖音评论-企业微信自动回复消息/image-20251011203938901.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-获取抖音评论-企业微信自动回复消息/image-20251011204659258.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-获取抖音评论-企业微信自动回复消息/image-20251011204829132.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-获取抖音评论-企业微信自动回复消息/image-20251130201421160.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-获取抖音评论-企业微信自动回复消息/image-20251130202544194.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-获取抖音评论-企业微信自动回复消息/image-20251130202731387.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-获取抖音评论-企业微信自动回复消息/image-20251130203042413.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-获取抖音评论-企业微信自动回复消息/image-20251130203435540.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-获取抖音评论-企业微信自动回复消息/image-20251130203558722.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-获取抖音评论-企业微信自动回复消息/image-20251130204002556.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-获取抖音评论-企业微信自动回复消息/image-20251130204414470.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-获取抖音评论-企业微信自动回复消息/image-20251130204516351.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-获取抖音评论-企业微信自动回复消息/image-20251130204854626.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-获取抖音评论-企业微信自动回复消息/image-20251130215814878.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-获取抖音评论-企业微信自动回复消息/image-20251130215914582.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-获取抖音评论-企业微信自动回复消息/image-20251130220143053.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-获取抖音评论-企业微信自动回复消息/image-20251130220326046.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-获取抖音评论-企业微信自动回复消息/image-20251130220410254.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-获取抖音评论-企业微信自动回复消息/image-20251130220600348.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-获取抖音评论-企业微信自动回复消息/image-20251130220635166.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-获取抖音评论-企业微信自动回复消息/image-20251130220710919.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-获取抖音评论-企业微信自动回复消息/image-20251130220837627.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-获取抖音评论-企业微信自动回复消息/image-20251130220932807.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-获取抖音评论-企业微信自动回复消息/image-20251130221052256.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-获取抖音评论-企业微信自动回复消息/image-20251130221619858.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-获取抖音评论-企业微信自动回复消息/image-20260402194546846.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-课堂笔记/11.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-课堂笔记/22.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-课堂笔记/33-17757444768411.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-课堂笔记/33.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-课堂笔记/image-20260409202649815.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-课堂笔记/image-20260409202856260.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-课堂笔记/image-20260409203014675.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-课堂笔记/image-20260409203545178.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-课堂笔记/image-20260409203802950.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-课堂笔记/image-20260409204234960.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-课堂笔记/image-20260409205234697.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-课堂笔记/image-20260409205326638.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-课堂笔记/image-20260409205500180.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-课堂笔记/image-20260409210441241.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-课堂笔记/image-20260409210847224.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-课堂笔记/image-20260409211040669.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-课堂笔记/image-20260409214914154.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-课堂笔记/image-20260409215016354.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-课堂笔记/image-20260409215230878.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-课堂笔记/image-20260409215715633.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-课堂笔记/image-20260409215742953.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-课堂笔记/image-20260409220011039.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-课堂笔记/image-20260409220033002.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-课堂笔记/image-20260409220100949.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-课堂笔记/image-20260409220228504.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-课堂笔记/image-20260409220405548.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-课堂笔记/image-20260409220436146.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-课堂笔记/image-20260409220820185.png",
+        "_extracted/day11-获取抖音评论和企业微信自动回消息/image/day11-课堂笔记/image-20260409221231901.png"
+      ],
+      "skipped": [
+        {
+          "file": "_extracted/day11-获取抖音评论和企业微信自动回消息/资料/抖音评论.xlsx",
+          "reason": "不支持的扩展名 .xlsx"
+        },
+        {
+          "file": "_extracted/day11-获取抖音评论和企业微信自动回消息/资料/联系人.xls",
+          "reason": "不支持的扩展名 .xls"
+        }
+      ],
+      "warnings": [
+        {
+          "file": "_staging/day11-获取抖音评论和企业微信自动回消息.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day12": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:17:11.231Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day12.md",
+    "report": {
+      "converted": [
+        "_extracted/day12-影刀对接Coze自动回复/day12-课堂笔记.md",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-课堂笔记/image-20260412205512465.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-课堂笔记/image-20260412205637753.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-课堂笔记/image-20260412205725191.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-课堂笔记/image-20260412210121755.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-课堂笔记/image-20260412211843216.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-课堂笔记/image-20260412212736879.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-课堂笔记/image-20260412213004246.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-课堂笔记/image-20260412213145586.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-课堂笔记/image-20260412213430986.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-课堂笔记/image-20260412213520955.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-课堂笔记/image-20260412213619836.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-课堂笔记/image-20260412213806159.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-课堂笔记/image-20260412213959958.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-课堂笔记/image-20260412214102123.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-课堂笔记/image-20260412214312491.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-课堂笔记/image-20260412214505958.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-课堂笔记/image-20260412215423257.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-课堂笔记/image-20260412215743723.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-课堂笔记/image-20260412215957352.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-课堂笔记/image-20260412220109003.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-课堂笔记/image-20260412220204736.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-课堂笔记/image-20260412220232150.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-课堂笔记/image-20260412221025478.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-影刀对接Coze自动回复/image-20250622172308131.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-影刀对接Coze自动回复/image-20250622172321279.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-影刀对接Coze自动回复/image-20250911174752453.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-影刀对接Coze自动回复/image-20250911174809930.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-影刀对接Coze自动回复/image-20251011215358382.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-影刀对接Coze自动回复/image-20251011215445755.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-影刀对接Coze自动回复/image-20251011215703384.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-影刀对接Coze自动回复/image-20251011215934363.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-影刀对接Coze自动回复/image-20251011220044594.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-影刀对接Coze自动回复/image-20251011220103144.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-影刀对接Coze自动回复/image-20251011220525435.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-影刀对接Coze自动回复/image-20251011220756488.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-影刀对接Coze自动回复/image-20251011220934745.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-影刀对接Coze自动回复/image-20251011221357000.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-影刀对接Coze自动回复/image-20251128154116479.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-影刀对接Coze自动回复/image-20251128155700593.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-影刀对接Coze自动回复/image-20251128155816289.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-影刀对接Coze自动回复/image-20251128155945905.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-影刀对接Coze自动回复/image-20251128160002599.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-影刀对接Coze自动回复/image-20251128160124741.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-影刀对接Coze自动回复/image-20251128160200352.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-影刀对接Coze自动回复/image-20251128160224230.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-影刀对接Coze自动回复/image-20251128160246972.png",
+        "_extracted/day12-影刀对接Coze自动回复/image/day12-影刀对接Coze自动回复/image-20251128160309033.png"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day12-影刀对接Coze自动回复.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day13": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [
+      {
+        "rel": "day13-TraeAI编辑器使用-仅软件.rar",
+        "mb": 232.1
+      }
+    ],
+    "at": "2026-11-10T14:17:14.371Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day13.md",
+    "report": {
+      "converted": [
+        "_extracted/day13-TraeAI编辑器使用/day13-课堂笔记.md",
+        "_extracted/day13-TraeAI编辑器使用/image/day13-课堂笔记/image-20260416204251628.png",
+        "_extracted/day13-TraeAI编辑器使用/image/day13-课堂笔记/image-20260416204307295.png",
+        "_extracted/day13-TraeAI编辑器使用/image/day13-课堂笔记/image-20260416205635223.png",
+        "_extracted/day13-TraeAI编辑器使用/image/day13-课堂笔记/image-20260416205953585.png",
+        "_extracted/day13-TraeAI编辑器使用/image/day13-课堂笔记/image-20260416210040111.png",
+        "_extracted/day13-TraeAI编辑器使用/image/day13-课堂笔记/image-20260416210103815.png",
+        "_extracted/day13-TraeAI编辑器使用/image/day13-课堂笔记/image-20260416210300252.png",
+        "_extracted/day13-TraeAI编辑器使用/image/day13-课堂笔记/image-20260416210427556.png",
+        "_extracted/day13-TraeAI编辑器使用/image/day13-课堂笔记/image-20260416210452330.png",
+        "_extracted/day13-TraeAI编辑器使用/image/day13-课堂笔记/image-20260416211923401.png",
+        "_extracted/day13-TraeAI编辑器使用/image/day13-课堂笔记/image-20260416212308615.png",
+        "_extracted/day13-TraeAI编辑器使用/image/day13-课堂笔记/image-20260416212701981.png",
+        "_extracted/day13-TraeAI编辑器使用/image/day13-课堂笔记/image-20260416212755625.png",
+        "_extracted/day13-TraeAI编辑器使用/image/day13-课堂笔记/image-20260416221750869.png",
+        "_extracted/day13-TraeAI编辑器使用/image/day13-Trae介绍和使用/image-20250622172308131.png",
+        "_extracted/day13-TraeAI编辑器使用/image/day13-Trae介绍和使用/image-20250622172321279.png",
+        "_extracted/day13-TraeAI编辑器使用/image/day13-Trae介绍和使用/image-20250911174752453.png",
+        "_extracted/day13-TraeAI编辑器使用/image/day13-Trae介绍和使用/image-20250911174809930.png"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_extracted/day13-TraeAI编辑器使用/代码/diyigexiangmu.rar",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day14": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:17:19.709Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day14.md",
+    "report": {
+      "converted": [
+        "_extracted/day14-小游戏上线-换脸小程序需求/day14-课堂笔记.md",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-课堂笔记/image-20260419202756378.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-课堂笔记/image-20260419202834166.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-课堂笔记/image-20260419203021408.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-课堂笔记/image-20260419203222073.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-课堂笔记/image-20260419203234948.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-课堂笔记/image-20260419203344364.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-课堂笔记/image-20260419203549343.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-课堂笔记/image-20260419204059140.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-课堂笔记/image-20260419204159184.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-课堂笔记/image-20260419204236476.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-课堂笔记/image-20260419204318619.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-课堂笔记/image-20260419204430626.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-课堂笔记/image-20260419204653687.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-课堂笔记/image-20260419204830706.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-课堂笔记/image-20260419204946026.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-课堂笔记/image-20260419205027952.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-课堂笔记/image-20260419205439621.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-课堂笔记/image-20260419210104899.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-课堂笔记/image-20260419210611539.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-课堂笔记/image-20260419214140483.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-课堂笔记/image-20260419220417305.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20240401162948430.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20240401163023686.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20240401163050951.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20240401163142613.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20240401163812295.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20240401163835864.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20240401163920407.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20240401164834700.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20240401165216886.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20240401170838510.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20240401170910709.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20250625170206083-17653801972411.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20250911173035986.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20250911173123838.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20250911173431064.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20251211215158641.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20251214202456054.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20251214203310762.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20251214203817132.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20251214204215242.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20251214205503263.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20251214205544357.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20251214205635791.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20251214205711724.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20251214205927219.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20251214210058461.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20251214210347385.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20251214210503659.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20251214210907698.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20251214221808137.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20251214222708070.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20251214222738937.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20251214222834477.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20251214223109400.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20251214223216343.png",
+        "_extracted/day14-小游戏上线-换脸小程序需求/image/day14-小游戏上线-Trae开发微信小程序/image-20251214223322534.png"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_extracted/day14-小游戏上线-换脸小程序需求/代码/ChangFace.rar",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        },
+        {
+          "file": "_staging/day14-小游戏上线-换脸小程序需求.rar",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day15": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:17:28.795Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day15.md",
+    "report": {
+      "converted": [
+        "_extracted/day15-Trae实现换脸微信小程序02/资料/手绘首页.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/资料/图片.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/资料/test_source.jpg",
+        "_extracted/day15-Trae实现换脸微信小程序02/资料/test_target.jpg",
+        "_extracted/day15-Trae实现换脸微信小程序02/day15-课堂笔记.md",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-课堂笔记/image-20260423203900521.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-课堂笔记/image-20260423204920462.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-课堂笔记/image-20260423205655975.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-课堂笔记/image-20260423213952129.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-课堂笔记/image-20260423214140191.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-课堂笔记/image-20260423215307205.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-课堂笔记/image-20260423215454946.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-课堂笔记/image-20260423215652162.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-课堂笔记/image-20260423220134729.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-课堂笔记/image-20260423220638766.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-课堂笔记/image-20260423221528160.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-课堂笔记/image-20260423223139784.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20240401162948430.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20240401163023686.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20240401163050951.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20240401163142613.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20240401163812295.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20240401163835864.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20240401163920407.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20240401164834700.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20240401165216886.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20240401170838510.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20240401170910709.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20250625170206083-17653801972411.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20250911173035986.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20250911173123838.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20250911173431064.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20251030202156170.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20251030203247995.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20251030203809240.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20251030203911895.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20251030204118880.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20251211215158641.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20251214202456054.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20251214203310762.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20251214203817132.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20251214204215242.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20251214205503263.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20251214205544357.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20251214205635791.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20251214205711724.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20251214205927219.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20251214210058461.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20251214210347385.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20251214210503659.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20251214210907698.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20251214221808137.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20251214222708070.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20251214222738937.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20251214222834477.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20251214223109400.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20251214223216343.png",
+        "_extracted/day15-Trae实现换脸微信小程序02/image/day15-Trae开发微信小程序/image-20251214223322534.png"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_extracted/day15-Trae实现换脸微信小程序02/代码/ChangFace.rar",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        },
+        {
+          "file": "_extracted/day15-Trae实现换脸微信小程序02/代码/Coze_demo.rar",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        },
+        {
+          "file": "_staging/day15-Trae实现换脸微信小程序02.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day16": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [
+      {
+        "rel": "day16-Trae开发换脸微信小程序03-软件.zip",
+        "mb": 340.8
+      }
+    ],
+    "at": "2026-11-10T14:17:35.054Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day16.md",
+    "report": {
+      "converted": [
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/day16-课堂笔记.md",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-课堂笔记/image-20260426201149013.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-课堂笔记/image-20260426203718949.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-课堂笔记/image-20260426205522617.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-课堂笔记/image-20260426212634781.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-课堂笔记/image-20260426213622753.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-课堂笔记/image-20260426214110075.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-课堂笔记/image-20260426214406090.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-课堂笔记/image-20260426215430389.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-课堂笔记/image-20260426215456617.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-课堂笔记/image-20260426215611885.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-课堂笔记/image-20260426215646046.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-课堂笔记/image-20260426215827363.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-课堂笔记/image-20260426215851433.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-课堂笔记/image-20260426220002620.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-课堂笔记/image-20260426220157974.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-课堂笔记/image-20260426220216170.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-课堂笔记/image-20260426222622881.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20240401162948430.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20240401163023686.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20240401163050951.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20240401163142613.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20240401163812295.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20240401163835864.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20240401163920407.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20240401164834700.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20240401165216886.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20240401170838510.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20240401170910709.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20250625170206083-17653801972411.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20250911173035986.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20250911173123838.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20250911173431064.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20251214202456054.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20251214203310762.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20251214203817132.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20251214204215242.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20251214205503263.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20251214205544357.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20251214205635791.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20251214205711724.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20251214205927219.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20251214210058461.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20251214210347385.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20251214210503659.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20251214210907698.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20251214221808137.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20251214222708070.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20251214222738937.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20251214222834477.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20251214223109400.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20251214223216343.png",
+        "_extracted/day16-Trae开发换脸微信小程序03-笔记/image/day16-微信小程序开发03/image-20251214223322534.png"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_extracted/day16-Trae开发换脸微信小程序03-笔记/代码/ChangFace.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day17": {
+    "downloaded": true,
+    "files": 0,
+    "gated": [
+      {
+        "rel": "day17-Trae开发微信小程序04.zip",
+        "mb": 305.8
+      }
+    ],
+    "blocked": false,
+    "at": "2026-11-10T14:17:35.878Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day17.md",
+    "report": {
+      "converted": [
+        "_extracted/day17-Trae开发微信小程序04/day17-课堂笔记.md",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-课堂笔记/image-20240401162948430.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-课堂笔记/image-20240401163023686.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-课堂笔记/image-20240401163050951.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-课堂笔记/image-20240401163142613.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-课堂笔记/image-20240401163812295.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-课堂笔记/image-20240401163835864.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-课堂笔记/image-20240401163920407.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-课堂笔记/image-20260430200851780.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-课堂笔记/image-20260430201021099.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-课堂笔记/image-20260430201109489.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-课堂笔记/image-20260430201245239.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-课堂笔记/image-20260430201903952.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-课堂笔记/image-20260430202415601.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-课堂笔记/image-20260430203749478.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-课堂笔记/image-20260430204719963.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-课堂笔记/image-20260430204855770.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-课堂笔记/image-20260430204938784.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-课堂笔记/image-20260430205019058.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-课堂笔记/image-20260430205240309.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-课堂笔记/image-20260430205339131.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-课堂笔记/image-20260430205844005.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-课堂笔记/image-20260430211551700.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-课堂笔记/image-20260430213617260.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-课堂笔记/image-20260430213814398.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-课堂笔记/image-20260430214924896.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-课堂笔记/image-20260430221333542.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-课堂笔记/image-20260430221643101.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-课堂笔记/image-20260430222032749.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-Trae开发微信小程序04/image-20240401162948430.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-Trae开发微信小程序04/image-20240401163023686.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-Trae开发微信小程序04/image-20240401163050951.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-Trae开发微信小程序04/image-20240401163142613.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-Trae开发微信小程序04/image-20240401163812295.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-Trae开发微信小程序04/image-20240401163835864.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-Trae开发微信小程序04/image-20240401163920407.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-Trae开发微信小程序04/image-20240401164834700.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-Trae开发微信小程序04/image-20240401165216886.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-Trae开发微信小程序04/image-20240401170838510.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-Trae开发微信小程序04/image-20240401170910709.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-Trae开发微信小程序04/image-20240401173528007.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-Trae开发微信小程序04/image-20250629201000970.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-Trae开发微信小程序04/image-20250629205352682.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-Trae开发微信小程序04/image-20250629205500808.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-Trae开发微信小程序04/image-20250629205657159.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-Trae开发微信小程序04/image-20250629220933230.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-Trae开发微信小程序04/image-20250629221224480.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-Trae开发微信小程序04/image-20251210235249383.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-Trae开发微信小程序04/image-20251210235255484.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-Trae开发微信小程序04/image-20251214221808137.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-Trae开发微信小程序04/image-20251214222708070.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-Trae开发微信小程序04/image-20251214222738937.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-Trae开发微信小程序04/image-20251214222834477.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-Trae开发微信小程序04/image-20251214223109400.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-Trae开发微信小程序04/image-20251214223216343.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-Trae开发微信小程序04/image-20251214223322534.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-Trae开发微信小程序04/image-20251221202029430.png",
+        "_extracted/day17-Trae开发微信小程序04/image/day17-Trae开发微信小程序04/image-20251221202722356.png"
+      ],
+      "skipped": [
+        {
+          "file": "_extracted/day17-Trae开发微信小程序04/软件/wechat_devtools_2.01.2510290_win32_x64.exe",
+          "reason": "音视频/安装包，不汇总"
+        }
+      ],
+      "warnings": [
+        {
+          "file": "_extracted/day17-Trae开发微信小程序04/代码/ChangeFace.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        },
+        {
+          "file": "_staging/day17-Trae开发微信小程序04.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    },
+    "mergedAt": "2026-11-10T14:46:30.600Z"
+  },
+  "day18": {
+    "downloaded": true,
+    "files": 0,
+    "gated": [
+      {
+        "rel": "day18-微信小程序上线.rar",
+        "mb": 176.3
+      }
+    ],
+    "blocked": false,
+    "at": "2026-11-10T14:17:36.520Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day18.md",
+    "report": {
+      "converted": [
+        "_extracted/day18-微信小程序上线/资料/1.jpeg",
+        "_extracted/day18-微信小程序上线/资料/2.jpeg",
+        "_extracted/day18-微信小程序上线/资料/3.jpeg",
+        "_extracted/day18-微信小程序上线/资料/4.jpeg",
+        "_extracted/day18-微信小程序上线/资料/test_source.jpg",
+        "_extracted/day18-微信小程序上线/资料/test_target.jpg",
+        "_extracted/day18-微信小程序上线/day18-课堂笔记.md",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20251221202029430.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20251221202722356.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20251221225704783.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20251221225731944.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20260507192828935.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20260507192927225.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20260507194004663.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20260507194312894.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20260507195219520.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20260507201947299.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20260507202148099.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20260507202323796.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20260507202524508.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20260507205503057.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20260507211431073.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20260507213914505.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20260507214337519.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20260507214436281.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20260507220542331.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20260507221842675.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20260507222029243.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20260507223015867.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20260507223225969.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20260507224307904.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20260507224455038.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20260507224531896.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20260507224921250.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20260507225050540.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20260507225538547.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20260507225624384.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20260507230042748.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20260507230336264.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20260507230457821.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20260507230511064.png",
+        "_extracted/day18-微信小程序上线/image/day18-课堂笔记/image-20260507231208662.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703201422884-17781212082662.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703201422884.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703202410159-17781212082663.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703202410159.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703202818045-17781212082664.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703202818045.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703210618662-17781212082665.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703210618662.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703210911493-17781212082666.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703210911493.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703211725495-17781212082667.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703211725495.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703213050531-17781212082669.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703213050531.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703214929502-17781212082668.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703214929502.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703220432514-177812120826610.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703220432514.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703221207101-177812120826611.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703221207101.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703221246658-177812120826613.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703221246658.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703221319141-177812120826612.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703221319141.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703221414035-177812120826614.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703221414035.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703221452206-177812120826615.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703221452206.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703221658396-177812120826616.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703221658396.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703222448119-177812120826617.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703222448119.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703222600766-177812120826618.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703222600766.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703222625538-177812120826619.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703222625538.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703223104765-177812120826620.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703223104765.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703223212325-177812120826621.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703223212325.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703223328827-177812120826622.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20250703223328827.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20251219023757105-17781212082631.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20251221202029430.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20251221202722356.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20251221204616102.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20251221210716710.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20251221214439487.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20251221214635932.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20251221220349973.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20251221221953472.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20251221222225434.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20251221222812598.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20251221222941423.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20251221223146707.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20251221223634322.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20251221225023321.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20251221225639549.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20251221225704783.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20251221225731944.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20251221231152572.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20251221231605888.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20251221231712059.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20251221231820234.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20251221231930963.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20251221232150218.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20251221232310717.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20260507192828935.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20260507192927225.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20260507194004663.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20260507194312894.png",
+        "_extracted/day18-微信小程序上线/image/day18-微信小程序上线/image-20260507195219520.png"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_extracted/day18-微信小程序上线/资料/24897193_www.liuqingzheng.top_nginx.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        },
+        {
+          "file": "_extracted/day18-微信小程序上线/资料/ChangeFace.rar",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        },
+        {
+          "file": "_staging/day18-微信小程序上线.rar",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    },
+    "mergedAt": "2026-11-10T14:46:44.372Z"
+  },
+  "day19": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:17:41.693Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day19.md",
+    "report": {
+      "converted": [
+        "_extracted/day19-AI漫剧基础与市场前景/day19-AI漫剧基础与市场前景/1.AI漫剧基础与市场前景.md"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day19-AI漫剧基础与市场前景.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day20": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:17:43.795Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day20.md",
+    "report": {
+      "converted": [
+        "_extracted/day20-AI漫剧类目解析/day33-AI漫剧类目解析/2.AI漫剧类目全解析.md",
+        "_extracted/day20-AI漫剧类目解析/day33-AI漫剧类目解析/2026年4月审核规避要点.pdf"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day20-AI漫剧类目解析.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day21": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:17:45.439Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day21.md",
+    "report": {
+      "converted": [
+        "_extracted/day21-剧本创作/day21-剧本创作/1.剧本创作.md",
+        "_extracted/day21-剧本创作/day21-剧本创作/2.提示词.md",
+        "_extracted/day21-剧本创作/day21-剧本创作/第三课.assets/image-20260426131002665.png",
+        "_extracted/day21-剧本创作/day21-剧本创作/第三课.assets/image-20260426131533753.png",
+        "_extracted/day21-剧本创作/day21-剧本创作/第三课.assets/image-20260426135252493.png",
+        "_extracted/day21-剧本创作/day21-剧本创作/第三课.assets/image-20260426135508062.png",
+        "_extracted/day21-剧本创作/day21-剧本创作/剧本创作ALL.assets/image-20260426131002665.png",
+        "_extracted/day21-剧本创作/day21-剧本创作/剧本创作ALL.assets/image-20260426131533753.png"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day21-剧本创作.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day22": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:17:46.357Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day22.md",
+    "report": {
+      "converted": [
+        "_extracted/day22-模型+工具的使用/day22-模型+工具的使用/AI大模型和工具.assets/image-20260430084656553.png",
+        "_extracted/day22-模型+工具的使用/day22-模型+工具的使用/AI大模型和工具.assets/image-20260430084846198.png",
+        "_extracted/day22-模型+工具的使用/day22-模型+工具的使用/AI大模型和工具.assets/image-20260430092039562.png",
+        "_extracted/day22-模型+工具的使用/day22-模型+工具的使用/AI大模型和工具.md"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day22-模型+工具的使用.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day23": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:17:50.793Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day23.md",
+    "report": {
+      "converted": [
+        "_extracted/day23-漫剧全流程+提示词/day23-漫剧全流程+提示词/1.文案改写提示词/二创解说类文案改写.md",
+        "_extracted/day23-漫剧全流程+提示词/day23-漫剧全流程+提示词/1.文案改写提示词/二创剧情类文案改写.txt",
+        "_extracted/day23-漫剧全流程+提示词/day23-漫剧全流程+提示词/2.分段提示词/分段提示词.txt",
+        "_extracted/day23-漫剧全流程+提示词/day23-漫剧全流程+提示词/3.资产提示词/资产提示词-v2.txt",
+        "_extracted/day23-漫剧全流程+提示词/day23-漫剧全流程+提示词/3.资产提示词/read me.txt",
+        "_extracted/day23-漫剧全流程+提示词/day23-漫剧全流程+提示词/4.分镜和视频提示词/表格版-中等难度/分镜提示词.md",
+        "_extracted/day23-漫剧全流程+提示词/day23-漫剧全流程+提示词/4.分镜和视频提示词/表格版-中等难度/视频创作.md",
+        "_extracted/day23-漫剧全流程+提示词/day23-漫剧全流程+提示词/4.分镜和视频提示词/豆包-道影专用/分镜提示词 - 豆包专用.md",
+        "_extracted/day23-漫剧全流程+提示词/day23-漫剧全流程+提示词/4.分镜和视频提示词/首尾帧版/首尾帧分镜提示词-使用方法.md",
+        "_extracted/day23-漫剧全流程+提示词/day23-漫剧全流程+提示词/4.分镜和视频提示词/首尾帧版/首尾帧分镜提示词.md",
+        "_extracted/day23-漫剧全流程+提示词/day23-漫剧全流程+提示词/4.分镜和视频提示词/best版本-高级通用版/分镜提示词-best-v1.md",
+        "_extracted/day23-漫剧全流程+提示词/day23-漫剧全流程+提示词/4.分镜和视频提示词/best版本-高级通用版/分镜提示词-best-v2.md",
+        "_extracted/day23-漫剧全流程+提示词/day23-漫剧全流程+提示词/5.分镜优化器/AI 分镜描述词审核优化器.md",
+        "_extracted/day23-漫剧全流程+提示词/day23-漫剧全流程+提示词/漫剧制作流程+提示词改写 - 笔记.assets/image-20260524211100693.png",
+        "_extracted/day23-漫剧全流程+提示词/day23-漫剧全流程+提示词/漫剧制作流程+提示词改写 - 笔记.md"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day23-漫剧全流程+提示词.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day24": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:17:59.181Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day24.md",
+    "report": {
+      "converted": [
+        "_extracted/day24-解说类制作实操1/day24-解说类制作实操1/解说类实操/1.选文-原文/看见命数后，我当众追债三十二万，把吃软饭的世子送进地牢.txt",
+        "_extracted/day24-解说类制作实操1/day24-解说类制作实操1/解说类实操/1.选文-原文/书单资源.txt",
+        "_extracted/day24-解说类制作实操1/day24-解说类制作实操1/解说类实操/2.分集/第二集原文.txt",
+        "_extracted/day24-解说类制作实操1/day24-解说类制作实操1/解说类实操/2.分集/第一集原文.txt",
+        "_extracted/day24-解说类制作实操1/day24-解说类制作实操1/解说类实操/2.分集/命数-原文.txt",
+        "_extracted/day24-解说类制作实操1/day24-解说类制作实操1/解说类实操/2.分集/read me.txt",
+        "_extracted/day24-解说类制作实操1/day24-解说类制作实操1/解说类实操/3.改文/第一集改文后文案.txt",
+        "_extracted/day24-解说类制作实操1/day24-解说类制作实操1/解说类实操/3.改文/第一集原文.txt",
+        "_extracted/day24-解说类制作实操1/day24-解说类制作实操1/解说类实操/3.改文/read me.txt",
+        "_extracted/day24-解说类制作实操1/day24-解说类制作实操1/解说类实操/4.分段/第一集改文后文案.txt",
+        "_extracted/day24-解说类制作实操1/day24-解说类制作实操1/解说类实操/4.分段/分段后的文案.txt",
+        "_extracted/day24-解说类制作实操1/day24-解说类制作实操1/解说类实操/4.分段/read me.txt",
+        "_extracted/day24-解说类制作实操1/day24-解说类制作实操1/解说类实操/5.角色&资产推理/分段后的文案.txt",
+        "_extracted/day24-解说类制作实操1/day24-解说类制作实操1/解说类实操/5.角色&资产推理/资产&人物描述词.txt",
+        "_extracted/day24-解说类制作实操1/day24-解说类制作实操1/解说类实操/5.角色&资产推理/资产和人物图/多名市井百姓.png",
+        "_extracted/day24-解说类制作实操1/day24-解说类制作实操1/解说类实操/5.角色&资产推理/资产和人物图/古风仙侠市井街巷.png",
+        "_extracted/day24-解说类制作实操1/day24-解说类制作实操1/解说类实操/5.角色&资产推理/资产和人物图/昏暗地牢.png",
+        "_extracted/day24-解说类制作实操1/day24-解说类制作实操1/解说类实操/5.角色&资产推理/资产和人物图/江家府邸内院.png",
+        "_extracted/day24-解说类制作实操1/day24-解说类制作实操1/解说类实操/5.角色&资产推理/资产和人物图/江少衡(地牢求饶版).png",
+        "_extracted/day24-解说类制作实操1/day24-解说类制作实操1/解说类实操/5.角色&资产推理/资产和人物图/江少衡（高傲世子形态）.png",
+        "_extracted/day24-解说类制作实操1/day24-解说类制作实操1/解说类实操/5.角色&资产推理/资产和人物图/沈家内室.png",
+        "_extracted/day24-解说类制作实操1/day24-解说类制作实操1/解说类实操/5.角色&资产推理/资产和人物图/沈织玉.png",
+        "_extracted/day24-解说类制作实操1/day24-解说类制作实操1/解说类实操/5.角色&资产推理/资产和人物图/世子豪华宴客厅堂.png",
+        "_extracted/day24-解说类制作实操1/day24-解说类制作实操1/解说类实操/5.角色&资产推理/资产和人物图/一众宾客.png",
+        "_extracted/day24-解说类制作实操1/day24-解说类制作实操1/解说类实操/5.角色&资产推理/资产和人物图/云柔.png",
+        "_extracted/day24-解说类制作实操1/day24-解说类制作实操1/解说类实操/5.角色&资产推理/read me.txt",
+        "_extracted/day24-解说类制作实操1/day24-解说类制作实操1/解说类实操/6.镜头描述/分段+镜头描述.txt",
+        "_extracted/day24-解说类制作实操1/day24-解说类制作实操1/解说类实操/6.镜头描述/镜头描述提示词.txt",
+        "_extracted/day24-解说类制作实操1/day24-解说类制作实操1/解说类实操/6.镜头描述/镜头描述提示词作用.md",
+        "_extracted/day24-解说类制作实操1/day24-解说类制作实操1/解说类实操/7.分镜+视频创作/返回的分镜描述词.txt",
+        "_extracted/day24-解说类制作实操1/day24-解说类制作实操1/解说类实操/7.分镜+视频创作/分段+镜头描述.txt",
+        "_extracted/day24-解说类制作实操1/day24-解说类制作实操1/解说类实操/7.分镜+视频创作/read me.txt"
+      ],
+      "skipped": [
+        {
+          "file": "_extracted/day24-解说类制作实操1/day24-解说类制作实操1/解说类实操/7.分镜+视频创作/视频/1.mp4",
+          "reason": "音视频/安装包，不汇总"
+        }
+      ],
+      "warnings": [
+        {
+          "file": "_staging/day24-解说类制作实操1.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day25": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:18:10.542Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day25.md",
+    "report": {
+      "converted": [
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/1.选文-原文/看见命数后，我当众追债三十二万，把吃软饭的世子送进地牢.txt",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/1.选文-原文/书单资源.txt",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/2.分集/第一集原文.txt",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/2.分集/read me.txt",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/3.改文/第一集改文后文案.txt",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/3.改文/二创解说类文案改写.md",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/3.改文/read me.txt",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/4.分段/分段后的文案.txt",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/4.分段/分段提示词.txt",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/4.分段/read me.txt",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/5.角色&资产推理/分段后的文案.txt",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/5.角色&资产推理/资产&人物描述词.txt",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/5.角色&资产推理/资产和人物图/当铺柜台.png",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/5.角色&资产推理/资产和人物图/古风仙侠市井街巷.png",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/5.角色&资产推理/资产和人物图/昏暗地牢.png",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/5.角色&资产推理/资产和人物图/江老夫人.png",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/5.角色&资产推理/资产和人物图/江少衡-常态傲慢世子.png",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/5.角色&资产推理/资产和人物图/江少衡-地牢版.png",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/5.角色&资产推理/资产和人物图/偏院冷屋.png",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/5.角色&资产推理/资产和人物图/偏院暖房.png",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/5.角色&资产推理/资产和人物图/荣叔.png",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/5.角色&资产推理/资产和人物图/沈家府邸.png",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/5.角色&资产推理/资产和人物图/沈织玉.png",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/5.角色&资产推理/资产和人物图/围观百姓.png",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/5.角色&资产推理/资产和人物图/修仙护卫.png",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/5.角色&资产推理/资产和人物图/修仙宅院门外.png",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/5.角色&资产推理/资产和人物图/修仙宅院厅堂.png",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/5.角色&资产推理/资产和人物图/修仙宅院庭院.png",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/5.角色&资产推理/资产和人物图/云柔.png",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/5.角色&资产推理/资产提示词-v2.txt",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/5.角色&资产推理/read me.txt",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/6.镜头描述/分段+镜头描述.txt",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/6.镜头描述/镜头描述提示词.txt",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/6.镜头描述/镜头描述提示词作用.md",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/7.分镜+视频创作/表格版-中等难度/分镜提示词.md",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/7.分镜+视频创作/表格版-中等难度/视频创作.md",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/7.分镜+视频创作/豆包专用/分镜提示词 - 豆包专用.md",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/7.分镜+视频创作/返回的分镜描述词.txt",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/7.分镜+视频创作/分段+镜头描述.txt",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/7.分镜+视频创作/首尾帧版/首尾帧分镜提示词-使用方法.md",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/7.分镜+视频创作/首尾帧版/首尾帧分镜提示词.md",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/7.分镜+视频创作/best版本-高级通用版/分镜提示词-best-v1.md",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/7.分镜+视频创作/best版本-高级通用版/分镜提示词-best-v2.md",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/7.分镜+视频创作/best版本-高级通用版/AI 分镜描述词审核优化器.md",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/7.分镜+视频创作/best版本-高级通用版/read me.txt",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/7.分镜+视频创作/n宫格分镜图提示词/执行n宫格.txt",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/7.分镜+视频创作/n宫格分镜图提示词/n宫格分镜图提示词-v1.txt",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/7.分镜+视频创作/n宫格分镜图提示词/n宫格分镜图提示词-v2.txt",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/7.分镜+视频创作/read me.txt",
+        "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/9.剪辑出片/read me.txt"
+      ],
+      "skipped": [
+        {
+          "file": "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/7.分镜+视频创作/视频/1.mp4",
+          "reason": "音视频/安装包，不汇总"
+        },
+        {
+          "file": "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/7.分镜+视频创作/视频/2.mp4",
+          "reason": "音视频/安装包，不汇总"
+        },
+        {
+          "file": "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/7.分镜+视频创作/视频/3-1.mp4",
+          "reason": "音视频/安装包，不汇总"
+        },
+        {
+          "file": "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/7.分镜+视频创作/视频/3-2.mp4",
+          "reason": "音视频/安装包，不汇总"
+        },
+        {
+          "file": "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/7.分镜+视频创作/视频/4.mp4",
+          "reason": "音视频/安装包，不汇总"
+        },
+        {
+          "file": "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/7.分镜+视频创作/视频/5.mp4",
+          "reason": "音视频/安装包，不汇总"
+        },
+        {
+          "file": "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/7.分镜+视频创作/视频/6.mp4",
+          "reason": "音视频/安装包，不汇总"
+        },
+        {
+          "file": "_extracted/day25-解说类实操02/day25-解说类实操02/解说类实操/8.配音/炸翻全网_.mp3",
+          "reason": "音视频/安装包，不汇总"
+        }
+      ],
+      "warnings": [
+        {
+          "file": "_staging/day25-解说类实操02.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day26": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:18:18.352Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day26.md",
+    "report": {
+      "converted": [
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/1.原文/书单资源.txt",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/1.原文/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了.txt",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/2.分集/第一集.txt",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/2.分集/read me.txt",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/3.改写/第一集改写.txt",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/3.改写/二创解说类文案改写.md",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/3.改写/read me.txt",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/4.分段/分段后剧本文案.txt",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/4.分段/分段提示词.txt",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/5.分段演绎/分段后剧本文案.txt",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/5.分段演绎/分段演绎剧本文案.txt",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/5.分段演绎/镜头描述提示词.txt",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/5.分段演绎/read me.txt",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/6.人物资产推理/人物资产图/规避肖像图/纪父.png",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/6.人物资产推理/人物资产图/规避肖像图/纪家弟弟.png",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/6.人物资产推理/人物资产图/规避肖像图/纪母.png",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/6.人物资产推理/人物资产图/规避肖像图/纪招娣（重生后）.png",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/6.人物资产推理/人物资产图/规避肖像图/纪招娣（重生前）.png",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/6.人物资产推理/人物资产图/纪父.png",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/6.人物资产推理/人物资产图/纪家弟弟.png",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/6.人物资产推理/人物资产图/纪母.png",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/6.人物资产推理/人物资产图/纪招娣（重生后）.png",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/6.人物资产推理/人物资产图/纪招娣（重生前）.png",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/6.人物资产推理/人物资产图/郊外毛坯在建高层楼房.png",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/6.人物资产推理/人物资产图/老城院落老破小.png",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/6.人物资产推理/人物资产图/老式煤气管.png",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/6.人物资产推理/人物资产图/老式民居室内（抓阄现场）.png",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/6.人物资产推理/人物资产图/老式民居卧房（被害回忆场景）.png",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/6.人物资产推理/人物资产图/七八十年代老城居民区（外景）.png",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/6.人物资产推理/人物资产图/抓阄纸团（一大一小两个）.png",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/6.人物资产推理/人物资产推理结果.txt",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/6.人物资产推理/资产提示词-v2.txt",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/6.人物资产推理/read me.txt",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/7.分镜+视频创作/分段演绎剧本文案.txt",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/7.分镜+视频创作/分镜后内容.txt",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/7.分镜+视频创作/真人人脸过审核机制.md",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/7.分镜+视频创作/best版本-高级通用版/分镜提示词-best-v1.md",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/7.分镜+视频创作/best版本-高级通用版/分镜提示词-best-v2.md",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/7.分镜+视频创作/best版本-高级通用版/AI 分镜描述词审核优化器.md",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/7.分镜+视频创作/best版本-高级通用版/read me.txt",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/7.分镜+视频创作/n宫格分镜图提示词/执行n宫格.txt",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/7.分镜+视频创作/n宫格分镜图提示词/n宫格分镜图提示词-v1.txt",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/7.分镜+视频创作/n宫格分镜图提示词/n宫格分镜图提示词-v2.txt",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/7.分镜+视频创作/read me.txt",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/9.剪辑出片/read me.txt",
+        "_extracted/day26-仿真人实操/day26-仿真人实操/重生抓阄分房我依旧选老破小后，偷我人生的养父母坐牢了/注册谷歌邮箱方案.txt"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day26-仿真人实操.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day27": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:18:46.366Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day27.md",
+    "report": {
+      "converted": [
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/1.选文-分集/第一集.txt",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/2.改文/第一集改文后文案.txt",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/2.改文/二创解说类文案改写.md",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/2.改文/read me.txt",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/3.分段/分段后文案.txt",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/3.分段/分段提示词.txt",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/3.分段/read me.txt",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/4.分段演绎-分段镜头描述/分段演绎后内容.txt",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/4.分段演绎-分段镜头描述/画风.txt",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/4.分段演绎-分段镜头描述/镜头描述提示词.txt",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/4.分段演绎-分段镜头描述/镜头描述提示词作用.md",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/4.分段演绎-分段镜头描述/read me.txt",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/5.人物资产推理/人物资产图/皇后嬷嬷.png",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/5.人物资产推理/人物资产图/冷调暗沉空旷皇家正殿.png",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/5.人物资产推理/人物资产图/冷调昏暗冷宫偏殿.png",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/5.人物资产推理/人物资产图/冷暖反差瑶华宫主殿内室.png",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/5.人物资产推理/人物资产图/陆承煜.png",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/5.人物资产推理/人物资产图/苏明姝.png",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/5.人物资产推理/人物资产图/苏凝霜.png",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/5.人物资产推理/人物资产图/贴身宫女.png",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/5.人物资产推理/人物资产图/瑶华宫殿外廊檐.png",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/5.人物资产推理/人物资产图/瑶华宫梳妆内室.png",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/5.人物资产推理/人物资产图/瑶华宫正殿.png",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/5.人物资产推理/人物资产图/瑶华宫主殿内室.png",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/5.人物资产推理/人物资产图/一众宫廷宫人.png",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/5.人物资产推理/人物资产图/雨夜御书房外白玉石阶露台.png",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/5.人物资产推理/人物资产图/御书房宫外雨夜.png",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/5.人物资产推理/资产提示词-v2.txt",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/5.人物资产推理/read me.txt",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/6.分镜+视频创作/分镜描述词内容.txt",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/6.分镜+视频创作/人物对话修正后的分镜描述词.txt",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/6.分镜+视频创作/人物对话修正提示词模版.txt",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/6.分镜+视频创作/视频生成的read me.txt",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/6.分镜+视频创作/best版本-高级通用版/分镜提示词-best-v2.md",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/6.分镜+视频创作/best版本-高级通用版/AI 分镜描述词审核优化器.md",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/6.分镜+视频创作/best版本-高级通用版/read me.txt",
+        "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/7.配音/AI配音精选.md"
+      ],
+      "skipped": [
+        {
+          "file": "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/6.分镜+视频创作/视频/1-1.mp4",
+          "reason": "音视频/安装包，不汇总"
+        },
+        {
+          "file": "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/6.分镜+视频创作/视频/1-2.mp4",
+          "reason": "音视频/安装包，不汇总"
+        },
+        {
+          "file": "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/6.分镜+视频创作/视频/2.mp4",
+          "reason": "音视频/安装包，不汇总"
+        },
+        {
+          "file": "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/6.分镜+视频创作/视频/3.mp4",
+          "reason": "音视频/安装包，不汇总"
+        },
+        {
+          "file": "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/6.分镜+视频创作/视频/4.mp4",
+          "reason": "音视频/安装包，不汇总"
+        },
+        {
+          "file": "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/6.分镜+视频创作/视频/5.mp4",
+          "reason": "音视频/安装包，不汇总"
+        },
+        {
+          "file": "_extracted/day27-半解说实操/day27-半解说实操/半解说实现全流程/7.配音/最狠的复仇.mp3",
+          "reason": "音视频/安装包，不汇总"
+        }
+      ],
+      "warnings": [
+        {
+          "file": "_staging/day27-半解说实操.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day28": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:18:51.141Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day28.md",
+    "report": {
+      "converted": [
+        "_extracted/day28-平台政策解析/day28-平台政策解析/确权和发行 - .md",
+        "_extracted/day28-平台政策解析/day28-平台政策解析/虚拟手机号收验证码/操作.assets/image-20260611160345995.png",
+        "_extracted/day28-平台政策解析/day28-平台政策解析/虚拟手机号收验证码/操作.assets/image-20260611160857691.png",
+        "_extracted/day28-平台政策解析/day28-平台政策解析/虚拟手机号收验证码/操作.assets/image-20260611161404029.png",
+        "_extracted/day28-平台政策解析/day28-平台政策解析/虚拟手机号收验证码/操作.assets/image-20260611161625341.png",
+        "_extracted/day28-平台政策解析/day28-平台政策解析/虚拟手机号收验证码/操作.md"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day28-平台政策解析.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day29": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:18:54.902Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day29.md",
+    "report": {
+      "converted": [
+        "AI5-6期陪跑--开营仪式0618(1).pptx"
+      ],
+      "skipped": [],
+      "warnings": [],
+      "scannedPdf": []
+    }
+  },
+  "day30": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:19:28.517Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day30.md",
+    "report": {
+      "converted": [
+        "_extracted/day30/day30/Day02-7 天养号闭环：从低权重到高流量账号速成(1).pptx"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day30.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day31": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:19:45.861Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day31.md",
+    "report": {
+      "converted": [
+        "_extracted/day31/day44/Day03-养号+打造账号+数据笔记费！(1).pptx"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day31.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day32": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:20:04.563Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day32.md",
+    "report": {
+      "converted": [
+        "_extracted/day32/day45/Day04-独家起号-数据笔记+开店.pptx"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day32.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day33": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:20:23.431Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day33.md",
+    "report": {
+      "converted": [
+        "_extracted/day33/day46/Day05-开店+整体流程(1).pptx"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day33.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day34": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:20:41.955Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day34.md",
+    "report": {
+      "converted": [
+        "_extracted/day34/day47/Day06-选品实操.pptx"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day34.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day35": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:20:59.367Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day35.md",
+    "report": {
+      "converted": [
+        "_extracted/day35/day35/Day07-批量上架商品.pptx"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day35.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day36": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:21:15.739Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day36.md",
+    "report": {
+      "converted": [
+        "Day08-批量制作笔记.pptx"
+      ],
+      "skipped": [],
+      "warnings": [],
+      "scannedPdf": []
+    }
+  },
+  "day37": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:21:42.428Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day37.md",
+    "report": {
+      "converted": [
+        "_extracted/day37/day50/Day09-批量制作笔记+发布笔记涨(1).pptx"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day37.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day38": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:21:59.238Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day38.md",
+    "report": {
+      "converted": [
+        "_extracted/day38/day38/Day10-多账号矩阵+闲鱼基础.pptx"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day38.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day39": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:22:17.119Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day39.md",
+    "report": {
+      "converted": [
+        "_extracted/day39/day52/Day11-矩阵化闲鱼+选品.pptx"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day39.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day40": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:22:37.087Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day40.md",
+    "report": {
+      "converted": [
+        "_extracted/day40/day40/小红书全案电商--Gemini--0728(1).pptx"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day40.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day41": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:23:03.275Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day41.md",
+    "report": {
+      "converted": [
+        "_extracted/day41/day41/AI Agent5&6期陪跑营-关于AI方向补充.txt"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day41.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day42": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:23:05.479Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day42.md",
+    "report": {
+      "converted": [
+        "_extracted/day42/day42/Day13-进阶优化+智能体接单.pptx"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day42.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day43": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:23:21.546Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day43.md",
+    "report": {
+      "converted": [
+        "_extracted/day43/day56/Day14-接单引流变现(2).pptx"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day43.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day44": {
+    "downloaded": false,
+    "files": 0,
+    "blocked": "分享缺少该 day 单元（该单元未经网盘提供）",
+    "missingInShare": true,
+    "at": "2026-11-10T14:23:35.745Z"
+  },
+  "day45": {
+    "downloaded": false,
+    "files": 0,
+    "gated": [
+      {
+        "rel": "day45.zip",
+        "mb": 705.7
+      }
+    ],
+    "blocked": "大文件授权限制且章内无其他可用内容: day45.zip(705.7MB)",
+    "at": "2026-11-10T14:23:36.792Z"
+  },
+  "day46": {
+    "downloaded": true,
+    "files": 0,
+    "gated": [
+      {
+        "rel": "day46.zip",
+        "mb": 204.1
+      }
+    ],
+    "blocked": false,
+    "at": "2026-11-10T14:23:37.374Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day46.md",
+    "report": {
+      "converted": [
+        "_extracted/day46/day59/2026 AI陪跑-自媒体方向-0820 第二节 好脚本、好网感、好内容.pptx"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_extracted/day46/day59/2026 AI陪跑-自媒体方向-0820 第二节 好脚本、好网感、好内容.pptx",
+          "reason": ""
+        },
+        {
+          "file": "_staging/day46.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    },
+    "mergedAt": "2026-11-10T14:49:58.348Z"
+  },
+  "day47": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:23:40.268Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day47.md",
+    "report": {
+      "converted": [
+        "_extracted/day47/day60/AI应用接单流程与注意事项.txt"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day47.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day48": {
+    "downloaded": false,
+    "files": 0,
+    "blocked": "分享缺少该 day 单元（该单元未经网盘提供）",
+    "missingInShare": true,
+    "at": "2026-11-10T14:23:40.297Z"
+  },
+  "day49": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:23:41.445Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day49.md",
+    "report": {
+      "converted": [
+        "_extracted/day49/day62/Day16-个人售卖+找对标+拆解分析.pptx"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day49.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day50": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:23:59.457Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day50.md",
+    "report": {
+      "converted": [
+        "_extracted/day50/day63/Day17-整理资料库+拆解分析对标笔记.pptx"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day50.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day51": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:24:15.276Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day51.md",
+    "report": {
+      "converted": [
+        "_extracted/day51/day64/Day18-笔记制作+商品绑定.pptx"
+      ],
+      "skipped": [],
+      "warnings": [
+        {
+          "file": "_staging/day51.zip",
+          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
+        }
+      ],
+      "scannedPdf": []
+    }
+  },
+  "day52": {
+    "downloaded": true,
+    "files": 1,
+    "warnings": [],
+    "gated": [],
+    "at": "2026-11-10T14:24:28.514Z",
+    "merged": true,
+    "mdPath": "/workspace/project/output/ai-agent-6/00-day52.md",
+    "report": {
+      "converted": [
+        "Day19-笔记制作完善+个人售卖商品结合.pptx"
+      ],
+      "skipped": [],
+      "warnings": [],
+      "scannedPdf": []
+    }
+  }
+}

@@ -1,0 +1,1696 @@
+{
+  "items": [
+    {
+      "index": 1,
+      "title": "正式课程：直播七期",
+      "url": null
+    },
+    {
+      "index": 2,
+      "title": "day00-开班导学",
+      "url": null
+    },
+    {
+      "index": 3,
+      "title": "7期智能体开班导学",
+      "url": null
+    },
+    {
+      "index": 4,
+      "title": "day01-Coze智能体初识",
+      "url": null
+    },
+    {
+      "index": 5,
+      "title": "今日内容概述",
+      "url": null
+    },
+    {
+      "index": 6,
+      "title": "老师介绍",
+      "url": null
+    },
+    {
+      "index": 7,
+      "title": "课程介绍",
+      "url": null
+    },
+    {
+      "index": 8,
+      "title": "机器配置",
+      "url": null
+    },
+    {
+      "index": 9,
+      "title": "关于显卡",
+      "url": null
+    },
+    {
+      "index": 10,
+      "title": "AI相关名词解释",
+      "url": null
+    },
+    {
+      "index": 11,
+      "title": "AI相关名字解释2",
+      "url": null
+    },
+    {
+      "index": 12,
+      "title": "Coze创建智能体",
+      "url": null
+    },
+    {
+      "index": 13,
+      "title": "智能体发布",
+      "url": null
+    },
+    {
+      "index": 14,
+      "title": "day02-Coze智能体详解",
+      "url": null
+    },
+    {
+      "index": 15,
+      "title": "小回顾",
+      "url": null
+    },
+    {
+      "index": 16,
+      "title": "API和SDK的区别",
+      "url": null
+    },
+    {
+      "index": 17,
+      "title": "解释",
+      "url": null
+    },
+    {
+      "index": 18,
+      "title": "python通过API调用Coze智能体",
+      "url": null
+    },
+    {
+      "index": 19,
+      "title": "调用结果查看",
+      "url": null
+    },
+    {
+      "index": 20,
+      "title": "智能体选择模型",
+      "url": null
+    },
+    {
+      "index": 21,
+      "title": "大模型之生成多样性",
+      "url": null
+    },
+    {
+      "index": 22,
+      "title": "Top P",
+      "url": null
+    },
+    {
+      "index": 23,
+      "title": "重复性语句惩罚",
+      "url": null
+    },
+    {
+      "index": 24,
+      "title": "携带上下文轮数",
+      "url": null
+    },
+    {
+      "index": 25,
+      "title": "最大回复长度",
+      "url": null
+    },
+    {
+      "index": 26,
+      "title": "插件的使用",
+      "url": null
+    },
+    {
+      "index": 27,
+      "title": "day03-Coze智能体之知识-记忆-开场白",
+      "url": null
+    },
+    {
+      "index": 28,
+      "title": "知识库介绍-知识库之文本",
+      "url": null
+    },
+    {
+      "index": 29,
+      "title": "同学问题",
+      "url": null
+    },
+    {
+      "index": 30,
+      "title": "知识库之表格",
+      "url": null
+    },
+    {
+      "index": 31,
+      "title": "知识之图片",
+      "url": null
+    },
+    {
+      "index": 32,
+      "title": "知识库概念",
+      "url": null
+    },
+    {
+      "index": 33,
+      "title": "记忆之数据库",
+      "url": null
+    },
+    {
+      "index": 34,
+      "title": "记忆之变量-长期记忆-文件盒子",
+      "url": null
+    },
+    {
+      "index": 35,
+      "title": "智能体之对话体验",
+      "url": null
+    },
+    {
+      "index": 36,
+      "title": "对话体验之语音通话",
+      "url": null
+    },
+    {
+      "index": 37,
+      "title": "工作流介绍",
+      "url": null
+    },
+    {
+      "index": 38,
+      "title": "day04-英语口语纠音-换脸-草药识别工作流",
+      "url": null
+    },
+    {
+      "index": 39,
+      "title": "Coze工作流介绍",
+      "url": null
+    },
+    {
+      "index": 40,
+      "title": "草药识别案例前戏",
+      "url": null
+    },
+    {
+      "index": 41,
+      "title": "草药识别工作流完整",
+      "url": null
+    },
+    {
+      "index": 42,
+      "title": "换脸工作流分析",
+      "url": null
+    },
+    {
+      "index": 43,
+      "title": "换脸工作流及测试",
+      "url": null
+    },
+    {
+      "index": 44,
+      "title": "英语口语评分和纠音工作流",
+      "url": null
+    },
+    {
+      "index": 45,
+      "title": "英语口语纠音工作流及测试",
+      "url": null
+    },
+    {
+      "index": 46,
+      "title": "工作流不充会员导出方式",
+      "url": null
+    },
+    {
+      "index": 47,
+      "title": "day05-生成PPT和视频提取音频工作流-发布和导出",
+      "url": null
+    },
+    {
+      "index": 48,
+      "title": "ppt生成工作介绍",
+      "url": null
+    },
+    {
+      "index": 49,
+      "title": "根据链接地址PPT创造工作流",
+      "url": null
+    },
+    {
+      "index": 50,
+      "title": "生成ppt后续-演示",
+      "url": null
+    },
+    {
+      "index": 51,
+      "title": "同学问题解释",
+      "url": null
+    },
+    {
+      "index": 52,
+      "title": "视频提取音频工作流学习目标",
+      "url": null
+    },
+    {
+      "index": 53,
+      "title": "视频提取音频工作流流程",
+      "url": null
+    },
+    {
+      "index": 54,
+      "title": "视频提取音频工作流",
+      "url": null
+    },
+    {
+      "index": 55,
+      "title": "测试",
+      "url": null
+    },
+    {
+      "index": 56,
+      "title": "工作流发布",
+      "url": null
+    },
+    {
+      "index": 57,
+      "title": "导入导出两种方案",
+      "url": null
+    },
+    {
+      "index": 58,
+      "title": "智能体中使用工作流",
+      "url": null
+    },
+    {
+      "index": 59,
+      "title": "智能体和工作流总结",
+      "url": null
+    },
+    {
+      "index": 60,
+      "title": "day06-Coze工作流之口播数字人",
+      "url": null
+    },
+    {
+      "index": 61,
+      "title": "今日目标",
+      "url": null
+    },
+    {
+      "index": 62,
+      "title": "演示",
+      "url": null
+    },
+    {
+      "index": 63,
+      "title": "飞影数字人-克隆自己的音色",
+      "url": null
+    },
+    {
+      "index": 64,
+      "title": "工作拆分",
+      "url": null
+    },
+    {
+      "index": 65,
+      "title": "数字人开始节点",
+      "url": null
+    },
+    {
+      "index": 66,
+      "title": "数字人文字分支-选择器和大模型",
+      "url": null
+    },
+    {
+      "index": 67,
+      "title": "数字人文字分支-代码节点",
+      "url": null
+    },
+    {
+      "index": 68,
+      "title": "数字人文字分支-代码节点2",
+      "url": null
+    },
+    {
+      "index": 69,
+      "title": "代码注意事项",
+      "url": null
+    },
+    {
+      "index": 70,
+      "title": "数字人文字分支-生成数字人",
+      "url": null
+    },
+    {
+      "index": 71,
+      "title": "数字人音频视频分支-生成数字人",
+      "url": null
+    },
+    {
+      "index": 72,
+      "title": "代码节点",
+      "url": null
+    },
+    {
+      "index": 73,
+      "title": "数字人工作流后续",
+      "url": null
+    },
+    {
+      "index": 74,
+      "title": "工作流逻辑理顺",
+      "url": null
+    },
+    {
+      "index": 75,
+      "title": "day07-自动出试卷工作流",
+      "url": null
+    },
+    {
+      "index": 76,
+      "title": "自动出题工作流作用",
+      "url": null
+    },
+    {
+      "index": 77,
+      "title": "四种出题模式解释",
+      "url": null
+    },
+    {
+      "index": 78,
+      "title": "出题工作流演示",
+      "url": null
+    },
+    {
+      "index": 79,
+      "title": "自动出题工作流拆分",
+      "url": null
+    },
+    {
+      "index": 80,
+      "title": "自动出题工作流开始节点",
+      "url": null
+    },
+    {
+      "index": 81,
+      "title": "自动出题工作流选择器节点",
+      "url": null
+    },
+    {
+      "index": 82,
+      "title": "知识点出题分支",
+      "url": null
+    },
+    {
+      "index": 83,
+      "title": "文件出题分支",
+      "url": null
+    },
+    {
+      "index": 84,
+      "title": "错题图片出题分支",
+      "url": null
+    },
+    {
+      "index": 85,
+      "title": "知识库出题分支",
+      "url": null
+    },
+    {
+      "index": 86,
+      "title": "变量聚合",
+      "url": null
+    },
+    {
+      "index": 87,
+      "title": "生成word试卷节点和结束节点",
+      "url": null
+    },
+    {
+      "index": 88,
+      "title": "day08-低代码应用编写换脸程序01",
+      "url": null
+    },
+    {
+      "index": 89,
+      "title": "换脸工作流重制版",
+      "url": null
+    },
+    {
+      "index": 90,
+      "title": "换脸工作流重制完成",
+      "url": null
+    },
+    {
+      "index": 91,
+      "title": "低代码应用介绍",
+      "url": null
+    },
+    {
+      "index": 92,
+      "title": "低代码应用快速体验",
+      "url": null
+    },
+    {
+      "index": 93,
+      "title": "低代码平台-业务层",
+      "url": null
+    },
+    {
+      "index": 94,
+      "title": "低代码平台-用户界面",
+      "url": null
+    },
+    {
+      "index": 95,
+      "title": "一键换脸应用需求",
+      "url": null
+    },
+    {
+      "index": 96,
+      "title": "一键换脸应用功能拆分",
+      "url": null
+    },
+    {
+      "index": 97,
+      "title": "创建Coze数据库",
+      "url": null
+    },
+    {
+      "index": 98,
+      "title": "登录工作流",
+      "url": null
+    },
+    {
+      "index": 99,
+      "title": "day09-Coze低代码应用开发换脸程序02",
+      "url": null
+    },
+    {
+      "index": 100,
+      "title": "今日内容",
+      "url": null
+    },
+    {
+      "index": 101,
+      "title": "注册工作流分析",
+      "url": null
+    },
+    {
+      "index": 102,
+      "title": "注册工作流",
+      "url": null
+    },
+    {
+      "index": 103,
+      "title": "测试和同学问题",
+      "url": null
+    },
+    {
+      "index": 104,
+      "title": "用户界面创建和调整",
+      "url": null
+    },
+    {
+      "index": 105,
+      "title": "注册页面布局",
+      "url": null
+    },
+    {
+      "index": 106,
+      "title": "登录页面布局",
+      "url": null
+    },
+    {
+      "index": 107,
+      "title": "换脸页面布局",
+      "url": null
+    },
+    {
+      "index": 108,
+      "title": "换脸结果页面",
+      "url": null
+    },
+    {
+      "index": 109,
+      "title": "注册页面逻辑",
+      "url": null
+    },
+    {
+      "index": 110,
+      "title": "登录页面逻辑",
+      "url": null
+    },
+    {
+      "index": 111,
+      "title": "测试-同学问题",
+      "url": null
+    },
+    {
+      "index": 112,
+      "title": "换脸页面逻辑",
+      "url": null
+    },
+    {
+      "index": 113,
+      "title": "结果页面逻辑",
+      "url": null
+    },
+    {
+      "index": 114,
+      "title": "整体测试-换脸工作流调用失败",
+      "url": null
+    },
+    {
+      "index": 115,
+      "title": "讲在最后",
+      "url": null
+    },
+    {
+      "index": 116,
+      "title": "图像生成插件更新后问题",
+      "url": null
+    },
+    {
+      "index": 117,
+      "title": "day10-低代码平台开发-未来宝宝照片-场景穿越应用",
+      "url": null
+    },
+    {
+      "index": 118,
+      "title": "未来宝宝长相和场景穿越项目介绍",
+      "url": null
+    },
+    {
+      "index": 119,
+      "title": "换脸工作流优化",
+      "url": null
+    },
+    {
+      "index": 120,
+      "title": "未来宝宝长什么样工作流",
+      "url": null
+    },
+    {
+      "index": 121,
+      "title": "场景穿越工作流",
+      "url": null
+    },
+    {
+      "index": 122,
+      "title": "换脸应用完成",
+      "url": null
+    },
+    {
+      "index": 123,
+      "title": "未来宝宝长什么样应用-完成",
+      "url": null
+    },
+    {
+      "index": 124,
+      "title": "场景穿越应用-完成",
+      "url": null
+    },
+    {
+      "index": 125,
+      "title": "两次密码一致性校验",
+      "url": null
+    },
+    {
+      "index": 126,
+      "title": "发布到coze商店",
+      "url": null
+    },
+    {
+      "index": 127,
+      "title": "微信小程序真机演示",
+      "url": null
+    },
+    {
+      "index": 128,
+      "title": "Coze商店演示",
+      "url": null
+    },
+    {
+      "index": 129,
+      "title": "总结",
+      "url": null
+    },
+    {
+      "index": 130,
+      "title": "day11-AI编辑介绍和VibeCoding编程",
+      "url": null
+    },
+    {
+      "index": 131,
+      "title": "AI编辑器介绍",
+      "url": null
+    },
+    {
+      "index": 132,
+      "title": "Vibe coding介绍",
+      "url": null
+    },
+    {
+      "index": 133,
+      "title": "下载注册登录Trae",
+      "url": null
+    },
+    {
+      "index": 134,
+      "title": "普通模式和solo模式",
+      "url": null
+    },
+    {
+      "index": 135,
+      "title": "新建项目-新建文件-文件夹-字体调整",
+      "url": null
+    },
+    {
+      "index": 136,
+      "title": "安装python插件6",
+      "url": null
+    },
+    {
+      "index": 137,
+      "title": "Trae常用功能",
+      "url": null
+    },
+    {
+      "index": 138,
+      "title": "Vibe Coding快速体验",
+      "url": null
+    },
+    {
+      "index": 139,
+      "title": "day12-小游戏上线-Trae开发微信小程序01",
+      "url": null
+    },
+    {
+      "index": 140,
+      "title": "上线小游戏步骤",
+      "url": null
+    },
+    {
+      "index": 141,
+      "title": "购买云服务器并远程连接",
+      "url": null
+    },
+    {
+      "index": 142,
+      "title": "安装nginx",
+      "url": null
+    },
+    {
+      "index": 143,
+      "title": "上传游戏代码",
+      "url": null
+    },
+    {
+      "index": 144,
+      "title": "释放实例",
+      "url": null
+    },
+    {
+      "index": 145,
+      "title": "IT公司人员分配",
+      "url": null
+    },
+    {
+      "index": 146,
+      "title": "软件开发流程",
+      "url": null
+    },
+    {
+      "index": 147,
+      "title": "常见项目类型",
+      "url": null
+    },
+    {
+      "index": 148,
+      "title": "需求分析-Trae生成需求分析书",
+      "url": null
+    },
+    {
+      "index": 149,
+      "title": "day13-Trae开发微信小程序02",
+      "url": null
+    },
+    {
+      "index": 150,
+      "title": "回顾项目开发流程",
+      "url": null
+    },
+    {
+      "index": 151,
+      "title": "一键换脸小程序",
+      "url": null
+    },
+    {
+      "index": 152,
+      "title": "通过提示词生成UI示意图",
+      "url": null
+    },
+    {
+      "index": 153,
+      "title": "提示词生成示意图查看",
+      "url": null
+    },
+    {
+      "index": 154,
+      "title": "通过图片生成UI示意图",
+      "url": null
+    },
+    {
+      "index": 155,
+      "title": "手绘图生成UI示意图",
+      "url": null
+    },
+    {
+      "index": 156,
+      "title": "Django介绍",
+      "url": null
+    },
+    {
+      "index": 157,
+      "title": "Trae生成前后端架构文档",
+      "url": null
+    },
+    {
+      "index": 158,
+      "title": "python环境",
+      "url": null
+    },
+    {
+      "index": 159,
+      "title": "Django环境",
+      "url": null
+    },
+    {
+      "index": 160,
+      "title": "Python调用Coze换脸工作流",
+      "url": null
+    },
+    {
+      "index": 161,
+      "title": "微信小程序学习",
+      "url": null
+    },
+    {
+      "index": 162,
+      "title": "day14-Trae开发微信小程序03",
+      "url": null
+    },
+    {
+      "index": 163,
+      "title": "Python调用Coze工作流问题",
+      "url": null
+    },
+    {
+      "index": 164,
+      "title": "调用换脸工作流提示词",
+      "url": null
+    },
+    {
+      "index": 165,
+      "title": "项目执行流程图",
+      "url": null
+    },
+    {
+      "index": 166,
+      "title": "后端环境",
+      "url": null
+    },
+    {
+      "index": 167,
+      "title": "本地安装mysql",
+      "url": null
+    },
+    {
+      "index": 168,
+      "title": "安装mysql8",
+      "url": null
+    },
+    {
+      "index": 169,
+      "title": "修改mysql密码",
+      "url": null
+    },
+    {
+      "index": 170,
+      "title": "Navicat安装和破解",
+      "url": null
+    },
+    {
+      "index": 171,
+      "title": "Navicat连接mysql创建数据库",
+      "url": null
+    },
+    {
+      "index": 172,
+      "title": "Trae开发微信小程序后端",
+      "url": null
+    },
+    {
+      "index": 173,
+      "title": "Trae插件操作mysql",
+      "url": null
+    },
+    {
+      "index": 174,
+      "title": "启动和登录到后台管理",
+      "url": null
+    },
+    {
+      "index": 175,
+      "title": "微信小程序注册",
+      "url": null
+    },
+    {
+      "index": 176,
+      "title": "day15-Trae开发微信小程序04",
+      "url": null
+    },
+    {
+      "index": 177,
+      "title": "小程序配置",
+      "url": null
+    },
+    {
+      "index": 178,
+      "title": "微信小程序开发流程",
+      "url": null
+    },
+    {
+      "index": 179,
+      "title": "微信小程序成员",
+      "url": null
+    },
+    {
+      "index": 180,
+      "title": "创建微信小程序项目",
+      "url": null
+    },
+    {
+      "index": 181,
+      "title": "微信开发者工具界面",
+      "url": null
+    },
+    {
+      "index": 182,
+      "title": "项目目录结构",
+      "url": null
+    },
+    {
+      "index": 183,
+      "title": "纯净项目",
+      "url": null
+    },
+    {
+      "index": 184,
+      "title": "Trae开发微信小程序端",
+      "url": null
+    },
+    {
+      "index": 185,
+      "title": "小程序端不校验合法域名",
+      "url": null
+    },
+    {
+      "index": 186,
+      "title": "前后端联调",
+      "url": null
+    },
+    {
+      "index": 187,
+      "title": "day16-微信小程序完成和上线",
+      "url": null
+    },
+    {
+      "index": 188,
+      "title": "微信小程序图片问题",
+      "url": null
+    },
+    {
+      "index": 189,
+      "title": "微信底部Tab图标更换",
+      "url": null
+    },
+    {
+      "index": 190,
+      "title": "项目本地完整演示",
+      "url": null
+    },
+    {
+      "index": 191,
+      "title": "本地运行老师后端项目",
+      "url": null
+    },
+    {
+      "index": 192,
+      "title": "本地运行老师微信小程序端",
+      "url": null
+    },
+    {
+      "index": 193,
+      "title": "真机调试",
+      "url": null
+    },
+    {
+      "index": 194,
+      "title": "真机调试原理",
+      "url": null
+    },
+    {
+      "index": 195,
+      "title": "上线架构图",
+      "url": null
+    },
+    {
+      "index": 196,
+      "title": "day17-微信小程序上线",
+      "url": null
+    },
+    {
+      "index": 197,
+      "title": "云服务器安装python解释器",
+      "url": null
+    },
+    {
+      "index": 198,
+      "title": "云服务器安装nginx服务器",
+      "url": null
+    },
+    {
+      "index": 199,
+      "title": "安装mysql8-新建数据库",
+      "url": null
+    },
+    {
+      "index": 200,
+      "title": "安装uwsgi",
+      "url": null
+    },
+    {
+      "index": 201,
+      "title": "编写uwsgi配置文件",
+      "url": null
+    },
+    {
+      "index": 202,
+      "title": "修改代码-上传代码到服务器",
+      "url": null
+    },
+    {
+      "index": 203,
+      "title": "服务器安装项目依赖",
+      "url": null
+    },
+    {
+      "index": 204,
+      "title": "导入测试数据-访问后台管理",
+      "url": null
+    },
+    {
+      "index": 205,
+      "title": "配置admin访问",
+      "url": null
+    },
+    {
+      "index": 206,
+      "title": "配置证书",
+      "url": null
+    },
+    {
+      "index": 207,
+      "title": "域名购买-备案和解析",
+      "url": null
+    },
+    {
+      "index": 208,
+      "title": "小程序上线-体验",
+      "url": null
+    },
+    {
+      "index": 209,
+      "title": "替换自己的apikey",
+      "url": null
+    },
+    {
+      "index": 210,
+      "title": "day18-影刀RPA介绍和下载视频",
+      "url": null
+    },
+    {
+      "index": 211,
+      "title": "RPA是什么",
+      "url": null
+    },
+    {
+      "index": 212,
+      "title": "RPA使用场景",
+      "url": null
+    },
+    {
+      "index": 213,
+      "title": "常用RPA软件",
+      "url": null
+    },
+    {
+      "index": 214,
+      "title": "使用RPAFramework介绍",
+      "url": null
+    },
+    {
+      "index": 215,
+      "title": "影刀注册安装",
+      "url": null
+    },
+    {
+      "index": 216,
+      "title": "自动下载视频目标",
+      "url": null
+    },
+    {
+      "index": 217,
+      "title": "创建影刀自动化应用",
+      "url": null
+    },
+    {
+      "index": 218,
+      "title": "步骤拆分",
+      "url": null
+    },
+    {
+      "index": 219,
+      "title": "下载视频具体操作01",
+      "url": null
+    },
+    {
+      "index": 220,
+      "title": "下载视频具体操作02",
+      "url": null
+    },
+    {
+      "index": 221,
+      "title": "day19-影刀RPA-02",
+      "url": null
+    },
+    {
+      "index": 222,
+      "title": "获取抖音评论需求",
+      "url": null
+    },
+    {
+      "index": 223,
+      "title": "获取抖音评论01",
+      "url": null
+    },
+    {
+      "index": 224,
+      "title": "获取抖音评论02",
+      "url": null
+    },
+    {
+      "index": 225,
+      "title": "扩展",
+      "url": null
+    },
+    {
+      "index": 226,
+      "title": "微信自动发送文件目标",
+      "url": null
+    },
+    {
+      "index": 227,
+      "title": "注册企业微信",
+      "url": null
+    },
+    {
+      "index": 228,
+      "title": "企业微信自动发送消息拆分",
+      "url": null
+    },
+    {
+      "index": 229,
+      "title": "具体操作",
+      "url": null
+    },
+    {
+      "index": 230,
+      "title": "发版",
+      "url": null
+    },
+    {
+      "index": 231,
+      "title": "触发器",
+      "url": null
+    },
+    {
+      "index": 232,
+      "title": "企业微信自动操作问题",
+      "url": null
+    },
+    {
+      "index": 233,
+      "title": "day20-影刀RPA对接Coze实现自动回复",
+      "url": null
+    },
+    {
+      "index": 234,
+      "title": "影刀自动操作微信对接Coze回复",
+      "url": null
+    },
+    {
+      "index": 235,
+      "title": "创建路飞班主任智能体",
+      "url": null
+    },
+    {
+      "index": 236,
+      "title": "Python调用Coze智能体",
+      "url": null
+    },
+    {
+      "index": 237,
+      "title": "影刀编写python和安装模块",
+      "url": null
+    },
+    {
+      "index": 238,
+      "title": "问题修复",
+      "url": null
+    },
+    {
+      "index": 239,
+      "title": "影刀操作",
+      "url": null
+    },
+    {
+      "index": 240,
+      "title": "day21-漫剧初始+工具介绍",
+      "url": null
+    },
+    {
+      "index": 241,
+      "title": "day22-全流程01",
+      "url": null
+    },
+    {
+      "index": 242,
+      "title": "漫剧全流程01",
+      "url": null
+    },
+    {
+      "index": 243,
+      "title": "漫剧全流程02",
+      "url": null
+    },
+    {
+      "index": 244,
+      "title": "day23-解说实操",
+      "url": null
+    },
+    {
+      "index": 245,
+      "title": "解说实操01",
+      "url": null
+    },
+    {
+      "index": 246,
+      "title": "解说实操02",
+      "url": null
+    },
+    {
+      "index": 247,
+      "title": "day24-仿真人实操",
+      "url": null
+    },
+    {
+      "index": 248,
+      "title": "仿真人实操01",
+      "url": null
+    },
+    {
+      "index": 249,
+      "title": ".仿真人实操02",
+      "url": null
+    },
+    {
+      "index": 250,
+      "title": "day25-小说推文",
+      "url": null
+    },
+    {
+      "index": 251,
+      "title": "仿真人班解说-剪辑配音",
+      "url": null
+    },
+    {
+      "index": 252,
+      "title": "小说推文",
+      "url": null
+    },
+    {
+      "index": 253,
+      "title": "day26-即梦全流程",
+      "url": null
+    },
+    {
+      "index": 254,
+      "title": "即梦全流程 --",
+      "url": null
+    },
+    {
+      "index": 255,
+      "title": "day27-进阶+技巧",
+      "url": null
+    },
+    {
+      "index": 256,
+      "title": "进阶+技巧",
+      "url": null
+    },
+    {
+      "index": 257,
+      "title": "day28-发行",
+      "url": null
+    },
+    {
+      "index": 258,
+      "title": "发行",
+      "url": null
+    },
+    {
+      "index": 259,
+      "title": "day29-课程总结",
+      "url": null
+    },
+    {
+      "index": 260,
+      "title": "AI七期直播【4.23开课每周二周五】(30)-2026-08-18212905",
+      "url": null
+    },
+    {
+      "index": 261,
+      "title": "day01-开课开营",
+      "url": null
+    },
+    {
+      "index": 262,
+      "title": "9月4日 (1)",
+      "url": null
+    },
+    {
+      "index": 263,
+      "title": "认识小红书（上）",
+      "url": null
+    },
+    {
+      "index": 264,
+      "title": "认识小红书（下）",
+      "url": null
+    },
+    {
+      "index": 265,
+      "title": "项目准备",
+      "url": null
+    },
+    {
+      "index": 266,
+      "title": "day02-Ai赋能自媒体必做风口+避雷禁区+前期准备",
+      "url": null
+    },
+    {
+      "index": 267,
+      "title": "基础理论入门小红书",
+      "url": null
+    },
+    {
+      "index": 268,
+      "title": "变现流程",
+      "url": null
+    },
+    {
+      "index": 269,
+      "title": "前期准备及注意事项",
+      "url": null
+    },
+    {
+      "index": 270,
+      "title": "day03-账号全流程搭建：从低权重到高流量账号速成",
+      "url": null
+    },
+    {
+      "index": 271,
+      "title": "小红书主流变现方式拆解",
+      "url": null
+    },
+    {
+      "index": 272,
+      "title": "养号（上）",
+      "url": null
+    },
+    {
+      "index": 273,
+      "title": "养号（下）",
+      "url": null
+    },
+    {
+      "index": 274,
+      "title": "人设搭建",
+      "url": null
+    },
+    {
+      "index": 275,
+      "title": "day04-Codex注册登录使用及小红书实战案例",
+      "url": null
+    },
+    {
+      "index": 276,
+      "title": "使用codex前期准备",
+      "url": null
+    },
+    {
+      "index": 277,
+      "title": "codex实操流程及案例（上）",
+      "url": null
+    },
+    {
+      "index": 278,
+      "title": "codex实操流程及案例（下）",
+      "url": null
+    },
+    {
+      "index": 279,
+      "title": "day05-新号独家激活流量玩法——数据笔记",
+      "url": null
+    },
+    {
+      "index": 280,
+      "title": "账号实名自助解除",
+      "url": null
+    },
+    {
+      "index": 281,
+      "title": "认识小红书",
+      "url": null
+    },
+    {
+      "index": 282,
+      "title": "认识数据类笔记",
+      "url": null
+    },
+    {
+      "index": 283,
+      "title": "搬运制作数据笔记及注意事项",
+      "url": null
+    },
+    {
+      "index": 284,
+      "title": "day06-选赛道+整理资料库",
+      "url": null
+    },
+    {
+      "index": 285,
+      "title": "赛道选取（上）",
+      "url": null
+    },
+    {
+      "index": 286,
+      "title": "赛道选取(下）",
+      "url": null
+    },
+    {
+      "index": 287,
+      "title": "整理资料库",
+      "url": null
+    },
+    {
+      "index": 288,
+      "title": "day07-搬运爆款变现笔记",
+      "url": null
+    },
+    {
+      "index": 289,
+      "title": "认识笔记类型",
+      "url": null
+    },
+    {
+      "index": 290,
+      "title": "判断爆款笔记",
+      "url": null
+    },
+    {
+      "index": 291,
+      "title": "搬运爆款变现笔记",
+      "url": null
+    },
+    {
+      "index": 292,
+      "title": "day08-AI帮你批量找对标笔记，拿来借鉴不抄袭，快速出高流量内容",
+      "url": null
+    },
+    {
+      "index": 293,
+      "title": "codex安装问题",
+      "url": null
+    },
+    {
+      "index": 294,
+      "title": "手动找对标笔记（上）",
+      "url": null
+    },
+    {
+      "index": 295,
+      "title": "手动找对标笔记（下）",
+      "url": null
+    },
+    {
+      "index": 296,
+      "title": "Codex找对标笔记",
+      "url": null
+    },
+    {
+      "index": 297,
+      "title": "day09-拆解分析对标笔记",
+      "url": null
+    },
+    {
+      "index": 298,
+      "title": "资料展示类笔记拆解分析 · 封面（上）",
+      "url": null
+    },
+    {
+      "index": 299,
+      "title": "资料展示类笔记拆解分析 · 封面（下）",
+      "url": null
+    },
+    {
+      "index": 300,
+      "title": "资料展示类笔记拆解分析 · 内容（上）",
+      "url": null
+    },
+    {
+      "index": 301,
+      "title": "资料展示类笔记拆解分析 · 内容（下）",
+      "url": null
+    },
+    {
+      "index": 302,
+      "title": "day10-笔记制作01",
+      "url": null
+    },
+    {
+      "index": 303,
+      "title": "资料笔记封面制作（上）",
+      "url": null
+    },
+    {
+      "index": 304,
+      "title": "资料笔记封面制作（下）",
+      "url": null
+    },
+    {
+      "index": 305,
+      "title": "资料笔记内容制作",
+      "url": null
+    },
+    {
+      "index": 306,
+      "title": "day11-笔记制作02",
+      "url": null
+    },
+    {
+      "index": 307,
+      "title": "PS + AI 图片制作",
+      "url": null
+    },
+    {
+      "index": 308,
+      "title": "自行排版笔记制作",
+      "url": null
+    },
+    {
+      "index": 309,
+      "title": "商品商家基本操作",
+      "url": null
+    },
+    {
+      "index": 310,
+      "title": "day12-商品SKU+闲鱼变现全流程筹备",
+      "url": null
+    },
+    {
+      "index": 311,
+      "title": "商品的sku",
+      "url": null
+    },
+    {
+      "index": 312,
+      "title": "认识闲鱼",
+      "url": null
+    },
+    {
+      "index": 313,
+      "title": "选品方式与账号基础设置",
+      "url": null
+    },
+    {
+      "index": 314,
+      "title": "鱼小铺和商品发布流程",
+      "url": null
+    },
+    {
+      "index": 315,
+      "title": "day13-闲鱼选品及批量矩阵化操作",
+      "url": null
+    },
+    {
+      "index": 316,
+      "title": "选品理论基础",
+      "url": null
+    },
+    {
+      "index": 317,
+      "title": "闲鱼工具安装与配置",
+      "url": null
+    },
+    {
+      "index": 318,
+      "title": "闲鱼助手使用（上）",
+      "url": null
+    },
+    {
+      "index": 319,
+      "title": "闲鱼助手使用（下）",
+      "url": null
+    },
+    {
+      "index": 320,
+      "title": "day14-闲鱼选品进阶+细节处理",
+      "url": null
+    },
+    {
+      "index": 321,
+      "title": "淘宝选品（上）",
+      "url": null
+    },
+    {
+      "index": 322,
+      "title": "淘宝选品（下）",
+      "url": null
+    },
+    {
+      "index": 323,
+      "title": "鱼小铺榜单选品",
+      "url": null
+    },
+    {
+      "index": 324,
+      "title": "闲鱼自动发货及超级擦亮",
+      "url": null
+    },
+    {
+      "index": 325,
+      "title": "day15-玩转小红书引流，避开导流违规大坑",
+      "url": null
+    },
+    {
+      "index": 326,
+      "title": "小红书引流整体流程及前期准备",
+      "url": null
+    },
+    {
+      "index": 327,
+      "title": "引流方式--私信视频引流(上）",
+      "url": null
+    },
+    {
+      "index": 328,
+      "title": "引流方式--私信视频引流（下）",
+      "url": null
+    },
+    {
+      "index": 329,
+      "title": "其它引流方式介绍",
+      "url": null
+    },
+    {
+      "index": 330,
+      "title": "day16-普通笔记与商品笔记",
+      "url": null
+    },
+    {
+      "index": 331,
+      "title": "个人售卖图片及上架",
+      "url": null
+    },
+    {
+      "index": 332,
+      "title": "普通笔记与商品笔记",
+      "url": null
+    },
+    {
+      "index": 333,
+      "title": "引导性笔记制作",
+      "url": null
+    },
+    {
+      "index": 334,
+      "title": "day17-小红书接单引流笔记制作",
+      "url": null
+    },
+    {
+      "index": 335,
+      "title": "私域微信养号",
+      "url": null
+    },
+    {
+      "index": 336,
+      "title": "拆解分析对标笔记",
+      "url": null
+    },
+    {
+      "index": 337,
+      "title": "笔记制作",
+      "url": null
+    },
+    {
+      "index": 338,
+      "title": "codex安装",
+      "url": null
+    }
+  ],
+  "snapshot": "/workspace/project/logs/toc-ai-agent-7-1794230715637.json",
+  "at": "2026-11-09T13:25:15.639Z"
+}

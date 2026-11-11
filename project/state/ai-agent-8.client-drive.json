@@ -1,0 +1,46 @@
+{
+  "files": {
+    "day23.zip": {
+      "status": "archived",
+      "archivedAt": "2026-11-06T14:46:40.074Z",
+      "bytes": 131791932,
+      "dest": "downloads/ai-agent-8/_manual/day23.zip",
+      "trigger": "client-scheme-click"
+    },
+    "day21.zip": {
+      "status": "archived",
+      "archivedAt": "2026-11-06T14:46:40.074Z",
+      "bytes": 1294981727,
+      "dest": "downloads/ai-agent-8/_manual/day21.zip",
+      "trigger": "client-scheme-click"
+    },
+    "day17-微信小程序-上线.zip": {
+      "status": "archived",
+      "archivedAt": "2026-11-06T14:46:40.074Z",
+      "bytes": 246179547,
+      "dest": "downloads/ai-agent-8/_manual/day17-微信小程序-上线.zip",
+      "trigger": "client-scheme-click"
+    },
+    "day07-产品经理之PRD-需求评审-思维图-流程图-figma安装.rar": {
+      "status": "archived",
+      "archivedAt": "2026-11-06T14:46:40.065Z",
+      "bytes": 153190965,
+      "dest": "downloads/ai-agent-8/_manual/day07-产品经理之PRD-需求评审-思维图-流程图-figma安装.rar",
+      "trigger": "client-scheme-click"
+    },
+    "day10-小游戏上线-提示词工程.zip": {
+      "status": "archived",
+      "archivedAt": "2026-11-06T14:46:40.074Z",
+      "bytes": 86768074,
+      "dest": "downloads/ai-agent-8/_manual/day10-小游戏上线-提示词工程.zip",
+      "trigger": "client-scheme-click"
+    },
+    "day16-Codex开发微信小程序端-前后端联调-根据figma调整布局.zip": {
+      "status": "archived",
+      "archivedAt": "2026-11-06T14:46:40.074Z",
+      "bytes": 255092553,
+      "dest": "downloads/ai-agent-8/_manual/day16-Codex开发微信小程序端-前后端联调-根据figma调整布局.zip",
+      "trigger": "client-scheme-click"
+    }
+  }
+}

@@ -1,0 +1,564 @@
+{
+  "courseId": "ai-agent-7",
+  "generatedAt": "2026-11-09T14:11:43.677Z",
+  "rootUnit": null,
+  "targetDir": "/自动上传/课程/Luffy/AI 智能体/7 期",
+  "mainChapterCount": 29,
+  "peipaoChapterCount": 17,
+  "chapters": [
+    {
+      "track": "main",
+      "day": 1,
+      "slug": "day01",
+      "webIndex": 4,
+      "webTitle": "day01-Coze智能体初识",
+      "titleOverride": null,
+      "units": [
+        "day01-Coze智能体初识.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 2,
+      "slug": "day02",
+      "webIndex": 14,
+      "webTitle": "day02-Coze智能体详解",
+      "titleOverride": null,
+      "units": [
+        "day02-Coze智能体详解.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 3,
+      "slug": "day03",
+      "webIndex": 27,
+      "webTitle": "day03-Coze智能体之知识-记忆-开场白",
+      "titleOverride": null,
+      "units": [
+        "day03-Coze智能体之知识-记忆-开场白.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 4,
+      "slug": "day04",
+      "webIndex": 38,
+      "webTitle": "day04-英语口语纠音-换脸-草药识别工作流",
+      "titleOverride": null,
+      "units": [
+        "day04-英语口语纠音-换脸-草药识别工作流.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 5,
+      "slug": "day05",
+      "webIndex": 47,
+      "webTitle": "day05-生成PPT和视频提取音频工作流-发布和导出",
+      "titleOverride": null,
+      "units": [
+        "day05-生成PPT和视频提取音频工作流-发布和导出.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 6,
+      "slug": "day06",
+      "webIndex": 60,
+      "webTitle": "day06-Coze工作流之口播数字人",
+      "titleOverride": null,
+      "units": [
+        "day06-Coze工作流之口播数字人.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 7,
+      "slug": "day07",
+      "webIndex": 75,
+      "webTitle": "day07-自动出试卷工作流",
+      "titleOverride": null,
+      "units": [
+        "day07-自动出试卷工作流.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 8,
+      "slug": "day08",
+      "webIndex": 88,
+      "webTitle": "day08-低代码应用编写换脸程序01",
+      "titleOverride": null,
+      "units": [
+        "day08-低代码应用编写换脸程序01.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 9,
+      "slug": "day09",
+      "webIndex": 99,
+      "webTitle": "day09-Coze低代码应用开发换脸程序02",
+      "titleOverride": null,
+      "units": [
+        "day09-Coze低代码应用开发换脸程序02.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 10,
+      "slug": "day10",
+      "webIndex": 117,
+      "webTitle": "day10-低代码平台开发-未来宝宝照片-场景穿越应用",
+      "titleOverride": null,
+      "units": [
+        "day10-低代码平台开发-未来宝宝照片-场景穿越应用.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 11,
+      "slug": "day11",
+      "webIndex": 130,
+      "webTitle": "day11-AI编辑介绍和VibeCoding编程",
+      "titleOverride": null,
+      "units": [
+        "day11-AI编辑介绍和VibeCoding编程"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 12,
+      "slug": "day12",
+      "webIndex": 139,
+      "webTitle": "day12-小游戏上线-Trae开发微信小程序01",
+      "titleOverride": null,
+      "units": [
+        "day12-小游戏上线-Trae开发微信小程序01.rar"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 13,
+      "slug": "day13",
+      "webIndex": 149,
+      "webTitle": "day13-Trae开发微信小程序02",
+      "titleOverride": null,
+      "units": [
+        "day13-Trae开发微信小程序02.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 14,
+      "slug": "day14",
+      "webIndex": 162,
+      "webTitle": "day14-Trae开发微信小程序03",
+      "titleOverride": null,
+      "units": [
+        "day14-Trae开发微信小程序03.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 15,
+      "slug": "day15",
+      "webIndex": 176,
+      "webTitle": "day15-Trae开发微信小程序04",
+      "titleOverride": null,
+      "units": [
+        "day15-Trae开发微信小程序04"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 16,
+      "slug": "day16",
+      "webIndex": 187,
+      "webTitle": "day16-微信小程序完成和上线",
+      "titleOverride": null,
+      "units": [
+        "day16-微信小程序完成和上线.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 17,
+      "slug": "day17",
+      "webIndex": 196,
+      "webTitle": "day17-微信小程序上线",
+      "titleOverride": null,
+      "units": [
+        "day17-微信小程序上线.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 18,
+      "slug": "day18",
+      "webIndex": 210,
+      "webTitle": "day18-影刀RPA介绍和下载视频",
+      "titleOverride": null,
+      "units": [
+        "day18-影刀RPA介绍和下载视频.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 19,
+      "slug": "day19",
+      "webIndex": 221,
+      "webTitle": "day19-影刀RPA-02",
+      "titleOverride": null,
+      "units": [
+        "day19-影刀RPA-02.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 20,
+      "slug": "day20",
+      "webIndex": 233,
+      "webTitle": "day20-影刀RPA对接Coze实现自动回复",
+      "titleOverride": null,
+      "units": [
+        "day20-影刀RPA对接Coze实现自动回复.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 21,
+      "slug": "day21",
+      "webIndex": 240,
+      "webTitle": "day21-漫剧初始+工具介绍",
+      "titleOverride": null,
+      "units": [
+        "day21-漫剧初始+工具介绍"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 22,
+      "slug": "day22",
+      "webIndex": 241,
+      "webTitle": "day22-全流程01",
+      "titleOverride": null,
+      "units": [
+        "day22-全流程01"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 23,
+      "slug": "day23",
+      "webIndex": 244,
+      "webTitle": "day23-解说实操",
+      "titleOverride": null,
+      "units": [
+        "day23-解说实操"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 24,
+      "slug": "day24",
+      "webIndex": 247,
+      "webTitle": "day24-仿真人实操",
+      "titleOverride": null,
+      "units": [
+        "day24-仿真人实操"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 25,
+      "slug": "day25",
+      "webIndex": 250,
+      "webTitle": "day25-小说推文",
+      "titleOverride": null,
+      "units": [
+        "day25-小说推文"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 26,
+      "slug": "day26",
+      "webIndex": 253,
+      "webTitle": "day26-即梦全流程",
+      "titleOverride": null,
+      "units": [
+        "day26-即梦全流程"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 27,
+      "slug": "day27",
+      "webIndex": 255,
+      "webTitle": "day27-进阶+技巧",
+      "titleOverride": null,
+      "units": [
+        "day27-进阶+技巧"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 28,
+      "slug": "day28",
+      "webIndex": 257,
+      "webTitle": "day28-发行",
+      "titleOverride": null,
+      "units": [
+        "day28-发行"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "main",
+      "day": 29,
+      "slug": "day29",
+      "webIndex": 259,
+      "webTitle": "day29-课程总结",
+      "titleOverride": "day29：AI智能体7期直播总结",
+      "units": [
+        "day29.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "peipao",
+      "day": 1,
+      "slug": "peipao-day01",
+      "webIndex": 261,
+      "webTitle": "day01-开课开营",
+      "titleOverride": null,
+      "units": [
+        "陪跑课件/day01开课开营"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "peipao",
+      "day": 2,
+      "slug": "peipao-day02",
+      "webIndex": 266,
+      "webTitle": "day02-Ai赋能自媒体必做风口+避雷禁区+前期准备",
+      "titleOverride": null,
+      "units": [
+        "陪跑课件/day02"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "peipao",
+      "day": 3,
+      "slug": "peipao-day03",
+      "webIndex": 270,
+      "webTitle": "day03-账号全流程搭建：从低权重到高流量账号速成",
+      "titleOverride": null,
+      "units": [
+        "陪跑课件/day03.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "peipao",
+      "day": 4,
+      "slug": "peipao-day04",
+      "webIndex": 275,
+      "webTitle": "day04-Codex注册登录使用及小红书实战案例",
+      "titleOverride": null,
+      "units": [
+        "陪跑课件/day04.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "peipao",
+      "day": 5,
+      "slug": "peipao-day05",
+      "webIndex": 279,
+      "webTitle": "day05-新号独家激活流量玩法——数据笔记",
+      "titleOverride": null,
+      "units": [
+        "陪跑课件/day05.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "peipao",
+      "day": 6,
+      "slug": "peipao-day06",
+      "webIndex": 284,
+      "webTitle": "day06-选赛道+整理资料库",
+      "titleOverride": null,
+      "units": [
+        "陪跑课件/day06.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "peipao",
+      "day": 7,
+      "slug": "peipao-day07",
+      "webIndex": 288,
+      "webTitle": "day07-搬运爆款变现笔记",
+      "titleOverride": null,
+      "units": [
+        "陪跑课件/day07"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "peipao",
+      "day": 8,
+      "slug": "peipao-day08",
+      "webIndex": 292,
+      "webTitle": "day08-AI帮你批量找对标笔记，拿来借鉴不抄袭，快速出高流量内容",
+      "titleOverride": null,
+      "units": [
+        "陪跑课件/day08.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "peipao",
+      "day": 9,
+      "slug": "peipao-day09",
+      "webIndex": 297,
+      "webTitle": "day09-拆解分析对标笔记",
+      "titleOverride": null,
+      "units": [
+        "陪跑课件/day09.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "peipao",
+      "day": 10,
+      "slug": "peipao-day10",
+      "webIndex": 302,
+      "webTitle": "day10-笔记制作01",
+      "titleOverride": null,
+      "units": [
+        "陪跑课件/day10.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "peipao",
+      "day": 11,
+      "slug": "peipao-day11",
+      "webIndex": 306,
+      "webTitle": "day11-笔记制作02",
+      "titleOverride": null,
+      "units": [
+        "陪跑课件/day11.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "peipao",
+      "day": 12,
+      "slug": "peipao-day12",
+      "webIndex": 310,
+      "webTitle": "day12-商品SKU+闲鱼变现全流程筹备",
+      "titleOverride": null,
+      "units": [
+        "陪跑课件/day12.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "peipao",
+      "day": 13,
+      "slug": "peipao-day13",
+      "webIndex": 315,
+      "webTitle": "day13-闲鱼选品及批量矩阵化操作",
+      "titleOverride": null,
+      "units": [
+        "陪跑课件/day13.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "peipao",
+      "day": 14,
+      "slug": "peipao-day14",
+      "webIndex": 320,
+      "webTitle": "day14-闲鱼选品进阶+细节处理",
+      "titleOverride": null,
+      "units": [
+        "陪跑课件/day14.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "peipao",
+      "day": 15,
+      "slug": "peipao-day15",
+      "webIndex": 325,
+      "webTitle": "day15-玩转小红书引流，避开导流违规大坑",
+      "titleOverride": null,
+      "units": [
+        "陪跑课件/day15.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "peipao",
+      "day": 16,
+      "slug": "peipao-day16",
+      "webIndex": 330,
+      "webTitle": "day16-普通笔记与商品笔记",
+      "titleOverride": null,
+      "units": [
+        "陪跑课件/day16.zip"
+      ],
+      "unitCount": 1
+    },
+    {
+      "track": "peipao",
+      "day": 17,
+      "slug": "peipao-day17",
+      "webIndex": 334,
+      "webTitle": "day17-小红书接单引流笔记制作",
+      "titleOverride": null,
+      "units": [
+        "陪跑课件/day17.zip"
+      ],
+      "unitCount": 1
+    }
+  ],
+  "unitLayout": "direct-main-and-peipao-subdir",
+  "updatedAt": "2026-11-09T14:14:08.147Z"
+}
