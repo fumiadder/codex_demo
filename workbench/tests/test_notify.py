@@ -415,6 +415,9 @@ class NotifyServerTests(unittest.TestCase):
     def test_maintenance_throttle_and_bad_meta_skipped(self):
         cookie, _, space = self.register()
         self.create_task(cookie, space["id"], due=self.day(-1))
+        # 认证请求触发的 maybe_cleanup 可能已推进模块级节流时间戳；此处显式归零，
+        # 让断言只验证「非强制调用可立即执行」本身，不受前面请求时序影响。
+        notify._last_maintenance = 0.0
         notify.run_maintenance(self.server)
         self.assertEqual(self.table_count("notifications"), 1)
         # 60s 节流：不带 force 的第二次调用直接跳过。
