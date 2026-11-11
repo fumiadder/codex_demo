@@ -1,3 +1,7 @@
-2026/11/11-21:37:04.234 1778 Reusing MANIFEST /workspace/project/browser-profile/Default/Session Storage/MANIFEST-000001
-2026/11/11-21:37:04.235 1778 Recovering log #3
-2026/11/11-21:37:04.235 1778 Reusing old log /workspace/project/browser-profile/Default/Session Storage/000003.log 
+2026/11/11-22:08:16.598 3f72 Reusing MANIFEST /workspace/project/browser-profile/Default/Session Storage/MANIFEST-000001
+2026/11/11-22:08:16.598 3f72 Recovering log #71
+2026/11/11-22:08:16.599 3f72 Level-0 table #75: started
+2026/11/11-22:08:16.601 3f72 Level-0 table #75: 7207 bytes OK
+2026/11/11-22:08:16.601 3f72 Recovering log #74
+2026/11/11-22:08:16.602 3f72 Reusing old log /workspace/project/browser-profile/Default/Session Storage/000074.log 
+2026/11/11-22:08:16.603 3f72 Delete type=0 #71

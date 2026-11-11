@@ -435,15 +435,18 @@
     "day28": {
       "slug": "day28",
       "title": "day28-平台政策解析",
-      "status": "staged",
+      "status": "published",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day28.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day28.preview.md",
-      "imageCount": 3,
-      "cached": 0,
-      "uploadedNow": 3,
+      "imageCount": 7,
+      "cached": 7,
+      "uploadedNow": 0,
       "failed": [],
       "duplicateImagesRemoved": 0,
-      "stagedAt": "2026-11-11T10:36:38.475Z"
+      "stagedAt": "2026-11-11T14:09:06.650Z",
+      "approvedAt": "2026-11-11T14:09:47.436Z",
+      "publishedAt": "2026-11-11T14:09:51.158Z",
+      "postId": "23633082"
     },
     "day29": {
       "slug": "day29",

@@ -1,2 +1,3 @@
-2026/11/11-21:36:23.601 171d Creating DB /workspace/project/browser-profile/Default/Local Storage/leveldb since it was missing.
-2026/11/11-21:36:23.628 171d Reusing MANIFEST /workspace/project/browser-profile/Default/Local Storage/leveldb/MANIFEST-000001
+2026/11/11-22:08:01.887 3ebc Reusing MANIFEST /workspace/project/browser-profile/Default/Local Storage/leveldb/MANIFEST-000001
+2026/11/11-22:08:01.888 3ebc Recovering log #62
+2026/11/11-22:08:01.889 3ebc Reusing old log /workspace/project/browser-profile/Default/Local Storage/leveldb/000062.log 

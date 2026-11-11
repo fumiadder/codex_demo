@@ -526,5 +526,21 @@
     "isNew": true,
     "gated": "approved",
     "reviewPending": false
+  },
+  "day28": {
+    "postId": "23633082",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23633082.html",
+    "published": true,
+    "deleted": false,
+    "images": 5,
+    "verify": {
+      "httpOk": true,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-11T14:09:51.157Z",
+    "isNew": true,
+    "gated": "approved",
+    "reviewPending": false
   }
 }

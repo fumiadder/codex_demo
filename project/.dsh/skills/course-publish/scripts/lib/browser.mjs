@@ -10,8 +10,10 @@ let _context;
 export async function getContext({ headless = false } = {}) {
   if (_context) return _context;
   mkdirSync(paths.browserProfile, { recursive: true });
+  const proxyServer = process.env.HTTPS_PROXY || process.env.https_proxy || process.env.HTTP_PROXY || process.env.http_proxy;
   _context = await chromium.launchPersistentContext(paths.browserProfile, {
     headless,
+    proxy: proxyServer ? { server: proxyServer } : undefined,
     viewport: { width: 1440, height: 900 },
     locale: "zh-CN",
     timezoneId: "Asia/Shanghai",

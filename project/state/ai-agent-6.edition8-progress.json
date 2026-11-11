@@ -2327,7 +2327,7 @@
     "files": 1,
     "warnings": [],
     "gated": [],
-    "at": "2026-11-10T14:18:51.141Z",
+    "at": "2026-11-11T13:55:05.183Z",
     "merged": true,
     "mdPath": "/workspace/project/output/ai-agent-6/00-day28.md",
     "report": {
@@ -2437,7 +2437,7 @@
     "files": 1,
     "warnings": [],
     "gated": [],
-    "at": "2026-11-10T14:20:23.431Z",
+    "at": "2026-11-11T13:57:45.454Z",
     "merged": true,
     "mdPath": "/workspace/project/output/ai-agent-6/00-day33.md",
     "report": {
@@ -2459,7 +2459,7 @@
     "files": 1,
     "warnings": [],
     "gated": [],
-    "at": "2026-11-10T14:20:41.955Z",
+    "at": "2026-11-11T13:58:01.815Z",
     "merged": true,
     "mdPath": "/workspace/project/output/ai-agent-6/00-day34.md",
     "report": {
@@ -2481,7 +2481,7 @@
     "files": 1,
     "warnings": [],
     "gated": [],
-    "at": "2026-11-10T14:20:59.367Z",
+    "at": "2026-11-11T13:58:16.813Z",
     "merged": true,
     "mdPath": "/workspace/project/output/ai-agent-6/00-day35.md",
     "report": {
@@ -2503,7 +2503,7 @@
     "files": 1,
     "warnings": [],
     "gated": [],
-    "at": "2026-11-10T14:21:15.739Z",
+    "at": "2026-11-11T13:58:33.705Z",
     "merged": true,
     "mdPath": "/workspace/project/output/ai-agent-6/00-day36.md",
     "report": {
@@ -2520,7 +2520,7 @@
     "files": 1,
     "warnings": [],
     "gated": [],
-    "at": "2026-11-10T14:21:42.428Z",
+    "at": "2026-11-11T13:59:04.076Z",
     "merged": true,
     "mdPath": "/workspace/project/output/ai-agent-6/00-day37.md",
     "report": {
@@ -2542,7 +2542,7 @@
     "files": 1,
     "warnings": [],
     "gated": [],
-    "at": "2026-11-10T14:21:59.238Z",
+    "at": "2026-11-11T13:59:19.503Z",
     "merged": true,
     "mdPath": "/workspace/project/output/ai-agent-6/00-day38.md",
     "report": {
@@ -2564,7 +2564,7 @@
     "files": 1,
     "warnings": [],
     "gated": [],
-    "at": "2026-11-10T14:22:17.119Z",
+    "at": "2026-11-11T13:59:38.259Z",
     "merged": true,
     "mdPath": "/workspace/project/output/ai-agent-6/00-day39.md",
     "report": {
@@ -2586,7 +2586,7 @@
     "files": 1,
     "warnings": [],
     "gated": [],
-    "at": "2026-11-10T14:22:37.087Z",
+    "at": "2026-11-11T13:59:55.553Z",
     "merged": true,
     "mdPath": "/workspace/project/output/ai-agent-6/00-day40.md",
     "report": {
@@ -2630,7 +2630,7 @@
     "files": 1,
     "warnings": [],
     "gated": [],
-    "at": "2026-11-10T14:23:05.479Z",
+    "at": "2026-11-11T14:00:14.378Z",
     "merged": true,
     "mdPath": "/workspace/project/output/ai-agent-6/00-day42.md",
     "report": {
@@ -2652,7 +2652,7 @@
     "files": 1,
     "warnings": [],
     "gated": [],
-    "at": "2026-11-10T14:23:21.546Z",
+    "at": "2026-11-11T14:00:40.750Z",
     "merged": true,
     "mdPath": "/workspace/project/output/ai-agent-6/00-day43.md",
     "report": {
@@ -2689,7 +2689,7 @@
     "at": "2026-11-10T14:23:36.792Z"
   },
   "day46": {
-    "downloaded": true,
+    "downloaded": false,
     "files": 0,
     "gated": [
       {
@@ -2697,28 +2697,8 @@
         "mb": 204.1
       }
     ],
-    "blocked": false,
-    "at": "2026-11-10T14:23:37.374Z",
-    "merged": true,
-    "mdPath": "/workspace/project/output/ai-agent-6/00-day46.md",
-    "report": {
-      "converted": [
-        "_extracted/day46/day59/2026 AI陪跑-自媒体方向-0820 第二节 好脚本、好网感、好内容.pptx"
-      ],
-      "skipped": [],
-      "warnings": [
-        {
-          "file": "_extracted/day46/day59/2026 AI陪跑-自媒体方向-0820 第二节 好脚本、好网感、好内容.pptx",
-          "reason": ""
-        },
-        {
-          "file": "_staging/day46.zip",
-          "reason": "压缩包应在下载阶段解压；如看到此条说明漏解压"
-        }
-      ],
-      "scannedPdf": []
-    },
-    "mergedAt": "2026-11-10T14:49:58.348Z"
+    "blocked": "大文件授权限制且章内无其他可用内容: day46.zip(204.1MB)",
+    "at": "2026-11-11T13:57:33.901Z"
   },
   "day47": {
     "downloaded": true,
@@ -2754,7 +2734,7 @@
     "files": 1,
     "warnings": [],
     "gated": [],
-    "at": "2026-11-10T14:23:41.445Z",
+    "at": "2026-11-11T14:00:57.366Z",
     "merged": true,
     "mdPath": "/workspace/project/output/ai-agent-6/00-day49.md",
     "report": {
@@ -2776,7 +2756,7 @@
     "files": 1,
     "warnings": [],
     "gated": [],
-    "at": "2026-11-10T14:23:59.457Z",
+    "at": "2026-11-11T14:01:13.350Z",
     "merged": true,
     "mdPath": "/workspace/project/output/ai-agent-6/00-day50.md",
     "report": {
@@ -2798,7 +2778,7 @@
     "files": 1,
     "warnings": [],
     "gated": [],
-    "at": "2026-11-10T14:24:15.276Z",
+    "at": "2026-11-11T14:01:30.130Z",
     "merged": true,
     "mdPath": "/workspace/project/output/ai-agent-6/00-day51.md",
     "report": {
@@ -2820,7 +2800,7 @@
     "files": 1,
     "warnings": [],
     "gated": [],
-    "at": "2026-11-10T14:24:28.514Z",
+    "at": "2026-11-11T14:01:46.350Z",
     "merged": true,
     "mdPath": "/workspace/project/output/ai-agent-6/00-day52.md",
     "report": {

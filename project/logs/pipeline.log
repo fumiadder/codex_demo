@@ -45,3 +45,141 @@
 [2026-11-11T13:16:23.019Z] [INFO] ✓ 新发文 day20 23632817
 [2026-11-11T13:36:23.763Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
 [2026-11-11T13:37:00.476Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T13:53:37.534Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T13:54:13.603Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T13:54:54.735Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T13:54:58.846Z] [INFO] ✓ 百度登录态有效，bdstoken = 已获取
+[2026-11-11T13:55:04.437Z] [INFO] ▶ 下载 day28 day28-平台政策解析.zip
+[2026-11-11T13:55:05.211Z] [INFO] ✓ 已合并 day28 -> 00-day28.md 
+[2026-11-11T13:56:11.695Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T13:56:15.677Z] [INFO] ✓ 百度登录态有效，bdstoken = 已获取
+[2026-11-11T13:56:41.198Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T13:56:45.450Z] [INFO] ✓ 百度登录态有效，bdstoken = 已获取
+[2026-11-11T13:57:23.498Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T13:57:27.552Z] [INFO] ✓ 百度登录态有效，bdstoken = 已获取
+[2026-11-11T13:57:33.082Z] [INFO] ▶ 下载 day46 day46.zip
+[2026-11-11T13:57:33.904Z] [ERROR] 章节挂起 day46 大文件授权限制且章内无其他可用内容: day46.zip(204.1MB)
+[2026-11-11T13:57:34.982Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T13:57:39.055Z] [INFO] ✓ 百度登录态有效，bdstoken = 已获取
+[2026-11-11T13:57:44.681Z] [INFO] ▶ 下载 day33 day33.zip
+[2026-11-11T13:57:50.186Z] [INFO] ✓ 已合并 day33 -> 00-day33.md 
+[2026-11-11T13:57:51.204Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T13:57:55.177Z] [INFO] ✓ 百度登录态有效，bdstoken = 已获取
+[2026-11-11T13:58:00.739Z] [INFO] ▶ 下载 day34 day34.zip
+[2026-11-11T13:58:05.275Z] [INFO] ✓ 已合并 day34 -> 00-day34.md 
+[2026-11-11T13:58:06.322Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T13:58:10.217Z] [INFO] ✓ 百度登录态有效，bdstoken = 已获取
+[2026-11-11T13:58:15.776Z] [INFO] ▶ 下载 day35 day35.zip
+[2026-11-11T13:58:20.238Z] [INFO] ✓ 已合并 day35 -> 00-day35.md 
+[2026-11-11T13:58:21.193Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T13:58:25.251Z] [INFO] ✓ 百度登录态有效，bdstoken = 已获取
+[2026-11-11T13:58:30.783Z] [INFO] ▶ 下载 day36 day36
+[2026-11-11T13:58:31.730Z] [INFO] 文件夹单元 day36 远端有效文件 1
+[2026-11-11T13:58:36.880Z] [INFO] ✓ 已合并 day36 -> 00-day36.md 
+[2026-11-11T13:58:52.180Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T13:58:56.479Z] [INFO] ✓ 百度登录态有效，bdstoken = 已获取
+[2026-11-11T13:59:02.053Z] [INFO] ▶ 下载 day37 day37.zip
+[2026-11-11T13:59:07.393Z] [INFO] ✓ 已合并 day37 -> 00-day37.md 
+[2026-11-11T13:59:08.392Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T13:59:13.226Z] [INFO] ✓ 百度登录态有效，bdstoken = 已获取
+[2026-11-11T13:59:18.767Z] [INFO] ▶ 下载 day38 day38.zip
+[2026-11-11T13:59:22.725Z] [INFO] ✓ 已合并 day38 -> 00-day38.md 
+[2026-11-11T13:59:23.799Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T13:59:28.461Z] [INFO] ✓ 百度登录态有效，bdstoken = 已获取
+[2026-11-11T13:59:37.275Z] [INFO] ▶ 下载 day39 day39.zip
+[2026-11-11T13:59:41.624Z] [INFO] ✓ 已合并 day39 -> 00-day39.md 
+[2026-11-11T13:59:42.576Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T13:59:47.038Z] [INFO] ✓ 百度登录态有效，bdstoken = 已获取
+[2026-11-11T13:59:52.747Z] [INFO] ▶ 下载 day40 day40.zip
+[2026-11-11T14:00:02.348Z] [INFO] ✓ 已合并 day40 -> 00-day40.md 
+[2026-11-11T14:00:03.428Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T14:00:07.564Z] [INFO] ✓ 百度登录态有效，bdstoken = 已获取
+[2026-11-11T14:00:13.114Z] [INFO] ▶ 下载 day42 day42.zip
+[2026-11-11T14:00:19.225Z] [INFO] ✓ 已合并 day42 -> 00-day42.md 
+[2026-11-11T14:00:29.402Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T14:00:33.986Z] [INFO] ✓ 百度登录态有效，bdstoken = 已获取
+[2026-11-11T14:00:39.638Z] [INFO] ▶ 下载 day43 day43.zip
+[2026-11-11T14:00:44.486Z] [INFO] ✓ 已合并 day43 -> 00-day43.md 
+[2026-11-11T14:00:45.666Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T14:00:49.657Z] [INFO] ✓ 百度登录态有效，bdstoken = 已获取
+[2026-11-11T14:00:55.361Z] [INFO] ▶ 下载 day49 day49.zip
+[2026-11-11T14:01:01.352Z] [INFO] ✓ 已合并 day49 -> 00-day49.md 
+[2026-11-11T14:01:02.422Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T14:01:06.856Z] [INFO] ✓ 百度登录态有效，bdstoken = 已获取
+[2026-11-11T14:01:12.412Z] [INFO] ▶ 下载 day50 day50.zip
+[2026-11-11T14:01:17.059Z] [INFO] ✓ 已合并 day50 -> 00-day50.md 
+[2026-11-11T14:01:18.025Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T14:01:23.641Z] [INFO] ✓ 百度登录态有效，bdstoken = 已获取
+[2026-11-11T14:01:29.375Z] [INFO] ▶ 下载 day51 day51.zip
+[2026-11-11T14:01:32.934Z] [INFO] ✓ 已合并 day51 -> 00-day51.md 
+[2026-11-11T14:01:33.928Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T14:01:38.641Z] [INFO] ✓ 百度登录态有效，bdstoken = 已获取
+[2026-11-11T14:01:44.237Z] [INFO] ▶ 下载 day52 day52
+[2026-11-11T14:01:44.653Z] [INFO] 文件夹单元 day52 远端有效文件 1
+[2026-11-11T14:01:49.285Z] [INFO] ✓ 已合并 day52 -> 00-day52.md 
+[2026-11-11T14:02:12.555Z] [INFO] 待暂存章节 1 
+[2026-11-11T14:02:12.956Z] [INFO] ✓ 博客园凭证有效，blogid = 751643 blogName = fuminer
+[2026-11-11T14:02:13.387Z] [ERROR] 暂存失败 day28 图片配额/权限受限(403)，已暂停，恢复后续传：day28
+[2026-11-11T14:02:13.387Z] [WARN] 配额暂停，剩余章节保留待续传
+[2026-11-11T14:04:11.838Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T14:04:16.264Z] [INFO] ✓ 百度登录态有效，bdstoken = 已获取
+[2026-11-11T14:04:22.155Z] [INFO] 跳过已下载 day33
+[2026-11-11T14:04:29.546Z] [INFO] ✓ 已合并 day33 -> 00-day33.md 
+[2026-11-11T14:04:53.418Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T14:04:58.138Z] [INFO] ✓ 百度登录态有效，bdstoken = 已获取
+[2026-11-11T14:05:03.660Z] [INFO] 跳过已下载 day34
+[2026-11-11T14:05:09.024Z] [INFO] ✓ 已合并 day34 -> 00-day34.md 
+[2026-11-11T14:05:09.950Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T14:05:14.606Z] [INFO] ✓ 百度登录态有效，bdstoken = 已获取
+[2026-11-11T14:05:20.046Z] [INFO] 跳过已下载 day35
+[2026-11-11T14:05:25.704Z] [INFO] ✓ 已合并 day35 -> 00-day35.md 
+[2026-11-11T14:05:26.577Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T14:05:30.406Z] [INFO] ✓ 百度登录态有效，bdstoken = 已获取
+[2026-11-11T14:05:35.951Z] [INFO] 跳过已下载 day36
+[2026-11-11T14:05:40.501Z] [INFO] ✓ 已合并 day36 -> 00-day36.md 
+[2026-11-11T14:05:41.408Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T14:05:46.204Z] [INFO] ✓ 百度登录态有效，bdstoken = 已获取
+[2026-11-11T14:05:51.717Z] [INFO] 跳过已下载 day37
+[2026-11-11T14:05:56.384Z] [INFO] ✓ 已合并 day37 -> 00-day37.md 
+[2026-11-11T14:05:57.284Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T14:06:01.159Z] [INFO] ✓ 百度登录态有效，bdstoken = 已获取
+[2026-11-11T14:06:06.674Z] [INFO] 跳过已下载 day38
+[2026-11-11T14:06:12.013Z] [INFO] ✓ 已合并 day38 -> 00-day38.md 
+[2026-11-11T14:06:12.943Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T14:06:16.910Z] [INFO] ✓ 百度登录态有效，bdstoken = 已获取
+[2026-11-11T14:06:22.446Z] [INFO] 跳过已下载 day39
+[2026-11-11T14:06:28.826Z] [INFO] ✓ 已合并 day39 -> 00-day39.md 
+[2026-11-11T14:06:29.699Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T14:06:33.510Z] [INFO] ✓ 百度登录态有效，bdstoken = 已获取
+[2026-11-11T14:06:39.066Z] [INFO] 跳过已下载 day40
+[2026-11-11T14:06:49.660Z] [INFO] ✓ 已合并 day40 -> 00-day40.md 
+[2026-11-11T14:06:50.541Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T14:06:54.448Z] [INFO] ✓ 百度登录态有效，bdstoken = 已获取
+[2026-11-11T14:07:00.162Z] [INFO] 跳过已下载 day42
+[2026-11-11T14:07:06.029Z] [INFO] ✓ 已合并 day42 -> 00-day42.md 
+[2026-11-11T14:07:06.924Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T14:07:11.104Z] [INFO] ✓ 百度登录态有效，bdstoken = 已获取
+[2026-11-11T14:07:16.675Z] [INFO] 跳过已下载 day43
+[2026-11-11T14:07:25.278Z] [INFO] ✓ 已合并 day43 -> 00-day43.md 
+[2026-11-11T14:07:26.165Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T14:07:29.947Z] [INFO] ✓ 百度登录态有效，bdstoken = 已获取
+[2026-11-11T14:07:36.514Z] [INFO] 跳过已下载 day49
+[2026-11-11T14:07:44.429Z] [INFO] ✓ 已合并 day49 -> 00-day49.md 
+[2026-11-11T14:07:45.370Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T14:07:49.244Z] [INFO] ✓ 百度登录态有效，bdstoken = 已获取
+[2026-11-11T14:07:54.770Z] [INFO] 跳过已下载 day50
+[2026-11-11T14:08:01.076Z] [INFO] ✓ 已合并 day50 -> 00-day50.md 
+[2026-11-11T14:08:01.978Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T14:08:05.832Z] [INFO] ✓ 百度登录态有效，bdstoken = 已获取
+[2026-11-11T14:08:11.247Z] [INFO] 跳过已下载 day51
+[2026-11-11T14:08:15.384Z] [INFO] ✓ 已合并 day51 -> 00-day51.md 
+[2026-11-11T14:08:16.300Z] [INFO] 浏览器已启动，profile: /workspace/project/browser-profile
+[2026-11-11T14:08:20.191Z] [INFO] ✓ 百度登录态有效，bdstoken = 已获取
+[2026-11-11T14:08:25.746Z] [INFO] 跳过已下载 day52
+[2026-11-11T14:08:29.034Z] [INFO] ✓ 已合并 day52 -> 00-day52.md 
+[2026-11-11T14:09:06.277Z] [INFO] 待暂存章节 1 
+[2026-11-11T14:09:06.625Z] [INFO] ✓ 博客园凭证有效，blogid = 751643 blogName = fuminer
+[2026-11-11T14:09:06.651Z] [INFO] ✓ 暂存 day28 图片7（新传0/缓存7）
+[2026-11-11T14:09:48.094Z] [INFO] 待发布（已批准） 1 篇
+[2026-11-11T14:09:48.415Z] [INFO] ✓ 博客园凭证有效，blogid = 751643 blogName = fuminer
+[2026-11-11T14:09:50.429Z] [INFO] ✓ 新发文 day28 23633082

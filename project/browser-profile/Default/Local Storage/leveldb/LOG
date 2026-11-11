@@ -1,3 +1,5 @@
-2026/11/11-21:37:00.372 1778 Reusing MANIFEST /workspace/project/browser-profile/Default/Local Storage/leveldb/MANIFEST-000001
-2026/11/11-21:37:00.373 1778 Recovering log #3
-2026/11/11-21:37:00.373 1778 Reusing old log /workspace/project/browser-profile/Default/Local Storage/leveldb/000003.log 
+2026/11/11-22:08:16.205 3f78 Reusing MANIFEST /workspace/project/browser-profile/Default/Local Storage/leveldb/MANIFEST-000001
+2026/11/11-22:08:16.206 3f78 Recovering log #62
+2026/11/11-22:08:16.206 3f78 Level-0 table #65: started
+2026/11/11-22:08:16.210 3f78 Level-0 table #65: 20875 bytes OK
+2026/11/11-22:08:16.214 3f78 Delete type=0 #62
