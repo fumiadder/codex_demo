@@ -307,7 +307,7 @@
     "day20": {
       "slug": "day20",
       "title": "day20-AI漫剧类目解析",
-      "status": "approved",
+      "status": "published",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day20.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day20.preview.md",
       "imageCount": 0,
@@ -316,7 +316,9 @@
       "failed": [],
       "duplicateImagesRemoved": 0,
       "stagedAt": "2026-11-11T10:36:25.724Z",
-      "approvedAt": "2026-11-11T12:37:01.955Z"
+      "approvedAt": "2026-11-11T12:37:01.955Z",
+      "publishedAt": "2026-11-11T13:16:23.365Z",
+      "postId": "23632817"
     },
     "day21": {
       "slug": "day21",
