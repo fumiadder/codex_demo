@@ -126,5 +126,37 @@
     "isNew": true,
     "gated": "approved",
     "reviewPending": false
+  },
+  "day05": {
+    "postId": "23632612",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23632612.html",
+    "published": true,
+    "deleted": false,
+    "images": 78,
+    "verify": {
+      "httpOk": true,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-11T12:37:34.243Z",
+    "isNew": true,
+    "gated": "approved",
+    "reviewPending": false
+  },
+  "day08": {
+    "postId": "23632624",
+    "postUrl": "https://www.cnblogs.com/fuminer/p/23632624.html",
+    "published": true,
+    "deleted": false,
+    "images": 0,
+    "verify": {
+      "httpOk": true,
+      "titleOk": true,
+      "badImages": []
+    },
+    "at": "2026-11-11T12:39:51.930Z",
+    "isNew": true,
+    "gated": "approved",
+    "reviewPending": false
   }
 }

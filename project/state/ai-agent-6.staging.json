@@ -83,7 +83,7 @@
     "day08": {
       "slug": "day08",
       "title": "day08-coze从入门到精通之自媒体运营案例2（抖音转小红书转存飞书&批量化）",
-      "status": "staged",
+      "status": "published",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day08.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day08.preview.md",
       "imageCount": 0,
@@ -91,7 +91,10 @@
       "uploadedNow": 0,
       "failed": [],
       "duplicateImagesRemoved": 0,
-      "stagedAt": "2026-11-11T10:32:53.641Z"
+      "stagedAt": "2026-11-11T10:32:53.641Z",
+      "approvedAt": "2026-11-11T12:37:01.955Z",
+      "publishedAt": "2026-11-11T12:39:51.931Z",
+      "postId": "23632624"
     },
     "day10": {
       "slug": "day10",
@@ -144,7 +147,7 @@
     "day05": {
       "slug": "day05",
       "title": "day05-coze从入门到精通之绘本短视频案例2",
-      "status": "staged",
+      "status": "published",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day05.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day05.preview.md",
       "imageCount": 78,
@@ -152,12 +155,15 @@
       "uploadedNow": 26,
       "failed": [],
       "duplicateImagesRemoved": 0,
-      "stagedAt": "2026-11-11T10:32:53.597Z"
+      "stagedAt": "2026-11-11T10:32:53.597Z",
+      "approvedAt": "2026-11-11T12:37:01.952Z",
+      "publishedAt": "2026-11-11T12:37:34.255Z",
+      "postId": "23632612"
     },
     "day06-day07": {
       "slug": "day06-day07",
       "title": "day06-day07-coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）",
-      "status": "staged",
+      "status": "approved",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day06-day07.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day06-day07.preview.md",
       "imageCount": 78,
@@ -165,12 +171,13 @@
       "uploadedNow": 0,
       "failed": [],
       "duplicateImagesRemoved": 0,
-      "stagedAt": "2026-11-11T10:32:53.625Z"
+      "stagedAt": "2026-11-11T10:32:53.625Z",
+      "approvedAt": "2026-11-11T12:37:01.955Z"
     },
     "day09": {
       "slug": "day09",
       "title": "day09-影刀下载好看搞笑视频",
-      "status": "staged",
+      "status": "approved",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day09.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day09.preview.md",
       "imageCount": 22,
@@ -178,12 +185,13 @@
       "uploadedNow": 22,
       "failed": [],
       "duplicateImagesRemoved": 0,
-      "stagedAt": "2026-11-11T10:33:31.543Z"
+      "stagedAt": "2026-11-11T10:33:31.543Z",
+      "approvedAt": "2026-11-11T12:37:01.955Z"
     },
     "day13": {
       "slug": "day13",
       "title": "day13-TraeAI编辑器使用",
-      "status": "staged",
+      "status": "approved",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day13.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day13.preview.md",
       "imageCount": 13,
@@ -191,12 +199,13 @@
       "uploadedNow": 10,
       "failed": [],
       "duplicateImagesRemoved": 0,
-      "stagedAt": "2026-11-11T10:33:49.349Z"
+      "stagedAt": "2026-11-11T10:33:49.349Z",
+      "approvedAt": "2026-11-11T12:37:01.955Z"
     },
     "day14": {
       "slug": "day14",
       "title": "day14-小游戏上线-换脸小程序需求",
-      "status": "staged",
+      "status": "approved",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day14.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day14.preview.md",
       "imageCount": 21,
@@ -204,12 +213,13 @@
       "uploadedNow": 21,
       "failed": [],
       "duplicateImagesRemoved": 0,
-      "stagedAt": "2026-11-11T10:34:25.919Z"
+      "stagedAt": "2026-11-11T10:34:25.919Z",
+      "approvedAt": "2026-11-11T12:37:01.955Z"
     },
     "day15": {
       "slug": "day15",
       "title": "day15-Trae实现换脸微信小程序02",
-      "status": "staged",
+      "status": "approved",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day15.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day15.preview.md",
       "imageCount": 12,
@@ -217,12 +227,13 @@
       "uploadedNow": 12,
       "failed": [],
       "duplicateImagesRemoved": 0,
-      "stagedAt": "2026-11-11T10:34:44.927Z"
+      "stagedAt": "2026-11-11T10:34:44.927Z",
+      "approvedAt": "2026-11-11T12:37:01.955Z"
     },
     "day16": {
       "slug": "day16",
       "title": "day16-Trae开发换脸微信小程序03",
-      "status": "staged",
+      "status": "approved",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day16.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day16.preview.md",
       "imageCount": 17,
@@ -230,12 +241,13 @@
       "uploadedNow": 17,
       "failed": [],
       "duplicateImagesRemoved": 0,
-      "stagedAt": "2026-11-11T10:35:12.613Z"
+      "stagedAt": "2026-11-11T10:35:12.613Z",
+      "approvedAt": "2026-11-11T12:37:01.955Z"
     },
     "day17": {
       "slug": "day17",
       "title": "day17-Trae开发微信小程序04",
-      "status": "staged",
+      "status": "approved",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day17.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day17.preview.md",
       "imageCount": 25,
@@ -243,12 +255,13 @@
       "uploadedNow": 18,
       "failed": [],
       "duplicateImagesRemoved": 0,
-      "stagedAt": "2026-11-11T10:35:41.900Z"
+      "stagedAt": "2026-11-11T10:35:41.900Z",
+      "approvedAt": "2026-11-11T12:37:01.955Z"
     },
     "day18": {
       "slug": "day18",
       "title": "day18-微信小程序上线",
-      "status": "staged",
+      "status": "approved",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day18.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day18.preview.md",
       "imageCount": 34,
@@ -256,12 +269,13 @@
       "uploadedNow": 26,
       "failed": [],
       "duplicateImagesRemoved": 0,
-      "stagedAt": "2026-11-11T10:36:25.688Z"
+      "stagedAt": "2026-11-11T10:36:25.688Z",
+      "approvedAt": "2026-11-11T12:37:01.955Z"
     },
     "day19": {
       "slug": "day19",
       "title": "day19-AI漫剧基础与市场前景",
-      "status": "staged",
+      "status": "approved",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day19.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day19.preview.md",
       "imageCount": 0,
@@ -269,12 +283,13 @@
       "uploadedNow": 0,
       "failed": [],
       "duplicateImagesRemoved": 0,
-      "stagedAt": "2026-11-11T10:36:25.713Z"
+      "stagedAt": "2026-11-11T10:36:25.713Z",
+      "approvedAt": "2026-11-11T12:37:01.955Z"
     },
     "day20": {
       "slug": "day20",
       "title": "day20-AI漫剧类目解析",
-      "status": "staged",
+      "status": "approved",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day20.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day20.preview.md",
       "imageCount": 0,
@@ -282,12 +297,13 @@
       "uploadedNow": 0,
       "failed": [],
       "duplicateImagesRemoved": 0,
-      "stagedAt": "2026-11-11T10:36:25.724Z"
+      "stagedAt": "2026-11-11T10:36:25.724Z",
+      "approvedAt": "2026-11-11T12:37:01.955Z"
     },
     "day21": {
       "slug": "day21",
       "title": "day21-剧本创作",
-      "status": "staged",
+      "status": "approved",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day21.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day21.preview.md",
       "imageCount": 3,
@@ -295,12 +311,13 @@
       "uploadedNow": 3,
       "failed": [],
       "duplicateImagesRemoved": 0,
-      "stagedAt": "2026-11-11T10:36:29.589Z"
+      "stagedAt": "2026-11-11T10:36:29.589Z",
+      "approvedAt": "2026-11-11T12:37:01.955Z"
     },
     "day22": {
       "slug": "day22",
       "title": "day22-模型+工具的使用",
-      "status": "staged",
+      "status": "approved",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day22.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day22.preview.md",
       "imageCount": 3,
@@ -308,12 +325,13 @@
       "uploadedNow": 3,
       "failed": [],
       "duplicateImagesRemoved": 0,
-      "stagedAt": "2026-11-11T10:36:33.619Z"
+      "stagedAt": "2026-11-11T10:36:33.619Z",
+      "approvedAt": "2026-11-11T12:37:01.955Z"
     },
     "day23": {
       "slug": "day23",
       "title": "day23-漫剧全流程+提示词",
-      "status": "staged",
+      "status": "approved",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day23.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day23.preview.md",
       "imageCount": 1,
@@ -321,12 +339,13 @@
       "uploadedNow": 1,
       "failed": [],
       "duplicateImagesRemoved": 0,
-      "stagedAt": "2026-11-11T10:36:34.307Z"
+      "stagedAt": "2026-11-11T10:36:34.307Z",
+      "approvedAt": "2026-11-11T12:37:01.955Z"
     },
     "day24": {
       "slug": "day24",
       "title": "day24-解说类制作实操1",
-      "status": "staged",
+      "status": "approved",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day24.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day24.preview.md",
       "imageCount": 0,
@@ -334,12 +353,13 @@
       "uploadedNow": 0,
       "failed": [],
       "duplicateImagesRemoved": 0,
-      "stagedAt": "2026-11-11T10:36:34.328Z"
+      "stagedAt": "2026-11-11T10:36:34.328Z",
+      "approvedAt": "2026-11-11T12:37:01.955Z"
     },
     "day25": {
       "slug": "day25",
       "title": "day25-解说类实操02",
-      "status": "staged",
+      "status": "approved",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day25.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day25.preview.md",
       "imageCount": 0,
@@ -347,12 +367,13 @@
       "uploadedNow": 0,
       "failed": [],
       "duplicateImagesRemoved": 0,
-      "stagedAt": "2026-11-11T10:36:34.348Z"
+      "stagedAt": "2026-11-11T10:36:34.348Z",
+      "approvedAt": "2026-11-11T12:37:01.955Z"
     },
     "day26": {
       "slug": "day26",
       "title": "day26-仿真人实操",
-      "status": "staged",
+      "status": "approved",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day26.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day26.preview.md",
       "imageCount": 0,
@@ -360,12 +381,13 @@
       "uploadedNow": 0,
       "failed": [],
       "duplicateImagesRemoved": 0,
-      "stagedAt": "2026-11-11T10:36:34.365Z"
+      "stagedAt": "2026-11-11T10:36:34.365Z",
+      "approvedAt": "2026-11-11T12:37:01.955Z"
     },
     "day27": {
       "slug": "day27",
       "title": "day27-半解说实操",
-      "status": "staged",
+      "status": "approved",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day27.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day27.preview.md",
       "imageCount": 0,
@@ -373,7 +395,8 @@
       "uploadedNow": 0,
       "failed": [],
       "duplicateImagesRemoved": 0,
-      "stagedAt": "2026-11-11T10:36:34.380Z"
+      "stagedAt": "2026-11-11T10:36:34.380Z",
+      "approvedAt": "2026-11-11T12:37:01.955Z"
     },
     "day28": {
       "slug": "day28",
@@ -391,7 +414,7 @@
     "day29": {
       "slug": "day29",
       "title": "day29-Ai陪跑营——开课开营",
-      "status": "staged",
+      "status": "approved",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day29.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day29.preview.md",
       "imageCount": 24,
@@ -399,12 +422,13 @@
       "uploadedNow": 15,
       "failed": [],
       "duplicateImagesRemoved": 0,
-      "stagedAt": "2026-11-11T10:37:16.663Z"
+      "stagedAt": "2026-11-11T10:37:16.663Z",
+      "approvedAt": "2026-11-11T12:37:01.955Z"
     },
     "day30": {
       "slug": "day30",
       "title": "day30-7 天养号闭环+邪修笔记",
-      "status": "staged",
+      "status": "approved",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day30.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day30.preview.md",
       "imageCount": 9,
@@ -412,12 +436,13 @@
       "uploadedNow": 8,
       "failed": [],
       "duplicateImagesRemoved": 0,
-      "stagedAt": "2026-11-11T10:37:32.721Z"
+      "stagedAt": "2026-11-11T10:37:32.721Z",
+      "approvedAt": "2026-11-11T12:37:01.955Z"
     },
     "day31": {
       "slug": "day31",
       "title": "day31-养号实操+打造账号",
-      "status": "staged",
+      "status": "approved",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day31.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day31.preview.md",
       "imageCount": 12,
@@ -425,12 +450,13 @@
       "uploadedNow": 10,
       "failed": [],
       "duplicateImagesRemoved": 0,
-      "stagedAt": "2026-11-11T10:37:53.446Z"
+      "stagedAt": "2026-11-11T10:37:53.446Z",
+      "approvedAt": "2026-11-11T12:37:01.955Z"
     },
     "day32": {
       "slug": "day32",
       "title": "day32-数据笔记+开店",
-      "status": "staged",
+      "status": "approved",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day32.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day32.preview.md",
       "imageCount": 18,
@@ -438,7 +464,8 @@
       "uploadedNow": 11,
       "failed": [],
       "duplicateImagesRemoved": 0,
-      "stagedAt": "2026-11-11T10:38:28.216Z"
+      "stagedAt": "2026-11-11T10:38:28.216Z",
+      "approvedAt": "2026-11-11T12:37:01.955Z"
     }
   }
 }
