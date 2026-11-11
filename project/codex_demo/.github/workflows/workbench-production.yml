@@ -1,0 +1,143 @@
+name: Workbench production deployment
+
+on:
+  workflow_run:
+    workflows: [Workbench CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: '已通过 Workbench CI 且属于 main 的完整 40 位提交 SHA'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: workbench-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: >-
+      github.event.repository.private == false &&
+      ((github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
+       (github.event.workflow_run.conclusion == 'success' &&
+        github.event.workflow_run.event == 'push' &&
+        github.event.workflow_run.head_branch == 'main' &&
+        github.event.workflow_run.head_repository.full_name == github.repository))
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    env:
+      GH_TOKEN: ${{ github.token }}
+      DEPLOY_SHA: ${{ github.event.workflow_run.head_sha || inputs.commit }}
+      REPOSITORY: ${{ github.repository }}
+      DEPLOY_EVENT: ${{ github.event_name }}
+    steps:
+      - name: Verify exact commit has successful CI
+        id: source
+        run: |
+          python3 - <<'PY'
+          import json, os, re, subprocess
+          sha = os.environ['DEPLOY_SHA']
+          if not re.fullmatch(r'[a-f0-9]{40}', sha):
+              raise SystemExit('完整 40 位 SHA 无效；未部署')
+          repo = os.environ['REPOSITORY']
+          result = subprocess.check_output(['gh', 'api', f'repos/{repo}/actions/workflows/workbench-ci.yml/runs?head_sha={sha}&status=completed&per_page=100'])
+          runs = json.loads(result)['workflow_runs']
+          if not any(r['conclusion']=='success' and r['event']=='push' and r['head_branch']=='main' and r['head_sha']==sha and r['head_repository']['full_name']==repo for r in runs):
+              raise SystemExit('此 main 提交尚无成功的 Workbench CI；未部署')
+          comparison = json.loads(subprocess.check_output(['gh', 'api', f'repos/{repo}/compare/{sha}...main']))
+          if comparison['status'] not in ('identical', 'ahead'):
+              raise SystemExit('此提交不属于 main 当前历史；未部署')
+          if os.environ['DEPLOY_EVENT'] == 'workflow_run':
+              head = json.loads(subprocess.check_output(['gh','api',f'repos/{repo}/git/ref/heads/main']))['object']['sha']
+              if sha != head:
+                  with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as f:
+                      f.write('### 未部署\n此 CI 提交已被新的 main 提交取代，跳过旧版本自动发布。\n')
+                  with open(os.environ['GITHUB_OUTPUT'], 'a') as f: f.write('ready=false\n')
+                  raise SystemExit(0)
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f: f.write('ready=true\n')
+          PY
+      - name: Read CI-validated source
+        if: steps.source.outputs.ready == 'true'
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ env.DEPLOY_SHA }}
+          persist-credentials: false
+      - name: Check authorized server credentials
+        if: steps.source.outputs.ready == 'true'
+        id: target
+        env:
+          SSH_HOST: ${{ secrets.WORKBENCH_SSH_HOST }}
+          SSH_USER: ${{ secrets.WORKBENCH_SSH_USER }}
+          SSH_PORT: ${{ secrets.WORKBENCH_SSH_PORT }}
+          SSH_KEY: ${{ secrets.WORKBENCH_SSH_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.WORKBENCH_SSH_KNOWN_HOSTS }}
+        run: |
+          python3 - <<'PY'
+          import os, pathlib, re
+          required = ('SSH_HOST','SSH_USER','SSH_KEY','SSH_KNOWN_HOSTS')
+          missing = [key for key in required if not os.environ.get(key)]
+          output = pathlib.Path(os.environ['GITHUB_OUTPUT'])
+          if missing:
+              with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as f:
+                  f.write('### 未部署\n生产服务器部署凭据尚未配置，当前公网服务未改动。\n')
+              with output.open('a') as f: f.write('ready=false\n')
+              raise SystemExit(0)
+          host, user = os.environ['SSH_HOST'], os.environ['SSH_USER']
+          port = os.environ.get('SSH_PORT') or '22'
+          if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9.:-]{0,252}', host) or not re.fullmatch(r'[a-z_][a-z0-9_-]{0,31}', user) or not port.isdigit() or not 1 <= int(port) <= 65535:
+              raise SystemExit('服务器 SSH 配置格式错误；未部署')
+          directory = pathlib.Path(os.environ['RUNNER_TEMP']) / 'workbench-ssh'
+          directory.mkdir(mode=0o700)
+          for name, value in [('key', os.environ['SSH_KEY']), ('known_hosts', os.environ['SSH_KNOWN_HOSTS'])]:
+              path = directory / name
+              path.write_text(value.rstrip('\n')+'\n')
+              path.chmod(0o600)
+          with output.open('a') as f: f.write('ready=true\n')
+          PY
+          if [ -f "$RUNNER_TEMP/workbench-ssh/known_hosts" ]; then
+            ssh-keygen -l -f "$RUNNER_TEMP/workbench-ssh/known_hosts" > /dev/null
+          fi
+      - name: Package source and deploy to authorized host
+        if: steps.target.outputs.ready == 'true'
+        env:
+          SSH_HOST: ${{ secrets.WORKBENCH_SSH_HOST }}
+          SSH_USER: ${{ secrets.WORKBENCH_SSH_USER }}
+          SSH_PORT: ${{ secrets.WORKBENCH_SSH_PORT }}
+        run: |
+          set -euo pipefail
+          archive="$RUNNER_TEMP/workbench-$DEPLOY_SHA.tar.gz"
+          python3 workbench/scripts/package_release.py --sha "$DEPLOY_SHA" --output "$archive"
+          ssh_opts=(-i "$RUNNER_TEMP/workbench-ssh/key" -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$RUNNER_TEMP/workbench-ssh/known_hosts" -o ConnectTimeout=15)
+          ssh "${ssh_opts[@]}" -p "${SSH_PORT:-22}" "$SSH_USER@$SSH_HOST" 'umask 077; mkdir -p /srv/zhixu/incoming /srv/zhixu/releases; test -f /srv/zhixu/shared/.env'
+          scp "${ssh_opts[@]}" -P "${SSH_PORT:-22}" "$archive" "$SSH_USER@$SSH_HOST:/srv/zhixu/incoming/$DEPLOY_SHA.tar.gz"
+          ssh "${ssh_opts[@]}" -p "${SSH_PORT:-22}" "$SSH_USER@$SSH_HOST" "bash -s -- $DEPLOY_SHA" <<'REMOTE'
+          set -euo pipefail
+          umask 077
+          source_sha=$1
+          [[ "$source_sha" =~ ^[a-f0-9]{40}$ ]]
+          deploy_root=/srv/zhixu
+          release_dir="$deploy_root/releases/$source_sha"
+          if [[ ! -d "$release_dir" ]]; then
+            stage=$(mktemp -d "$deploy_root/releases/.stage.XXXXXXXX")
+            trap 'rm -rf -- "$stage"' EXIT
+            tar -xzf "$deploy_root/incoming/$source_sha.tar.gz" --no-same-owner -C "$stage"
+            [[ $(cat "$stage/SOURCE_SHA") == "$source_sha" ]]
+            mv "$stage" "$release_dir"
+            trap - EXIT
+          fi
+          [[ -f "$release_dir/SOURCE_SHA" && $(cat "$release_dir/SOURCE_SHA") == "$source_sha" ]]
+          bash "$release_dir/scripts/deploy.sh" --root "$deploy_root" --sha "$source_sha"
+          rm -f -- "$deploy_root/incoming/$source_sha.tar.gz"
+          REMOTE
+          echo '### 已部署' >> "$GITHUB_STEP_SUMMARY"
+          echo '已验证提交完成生产更新、备份和 HTTPS 健康检查；数据卷保持不变。' >> "$GITHUB_STEP_SUMMARY"
+      - name: Remove temporary SSH credentials
+        if: always()
+        run: rm -rf -- "$RUNNER_TEMP/workbench-ssh"
