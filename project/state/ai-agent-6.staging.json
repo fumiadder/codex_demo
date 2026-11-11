@@ -385,7 +385,7 @@
     "day25": {
       "slug": "day25",
       "title": "day25-解说类实操02",
-      "status": "approved",
+      "status": "published",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day25.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day25.preview.md",
       "imageCount": 0,
@@ -394,12 +394,14 @@
       "failed": [],
       "duplicateImagesRemoved": 0,
       "stagedAt": "2026-11-11T10:36:34.348Z",
-      "approvedAt": "2026-11-11T12:37:01.955Z"
+      "approvedAt": "2026-11-11T12:37:01.955Z",
+      "publishedAt": "2026-11-11T12:50:56.047Z",
+      "postId": "23632695"
     },
     "day26": {
       "slug": "day26",
       "title": "day26-仿真人实操",
-      "status": "approved",
+      "status": "published",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day26.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day26.preview.md",
       "imageCount": 0,
@@ -408,12 +410,14 @@
       "failed": [],
       "duplicateImagesRemoved": 0,
       "stagedAt": "2026-11-11T10:36:34.365Z",
-      "approvedAt": "2026-11-11T12:37:01.955Z"
+      "approvedAt": "2026-11-11T12:37:01.955Z",
+      "publishedAt": "2026-11-11T12:51:42.056Z",
+      "postId": "23632698"
     },
     "day27": {
       "slug": "day27",
       "title": "day27-半解说实操",
-      "status": "approved",
+      "status": "published",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day27.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day27.preview.md",
       "imageCount": 0,
@@ -422,7 +426,9 @@
       "failed": [],
       "duplicateImagesRemoved": 0,
       "stagedAt": "2026-11-11T10:36:34.380Z",
-      "approvedAt": "2026-11-11T12:37:01.955Z"
+      "approvedAt": "2026-11-11T12:37:01.955Z",
+      "publishedAt": "2026-11-11T12:52:28.086Z",
+      "postId": "23632702"
     },
     "day28": {
       "slug": "day28",
@@ -440,7 +446,7 @@
     "day29": {
       "slug": "day29",
       "title": "day29-Ai陪跑营——开课开营",
-      "status": "approved",
+      "status": "published",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day29.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day29.preview.md",
       "imageCount": 24,
@@ -449,12 +455,14 @@
       "failed": [],
       "duplicateImagesRemoved": 0,
       "stagedAt": "2026-11-11T10:37:16.663Z",
-      "approvedAt": "2026-11-11T12:37:01.955Z"
+      "approvedAt": "2026-11-11T12:37:01.955Z",
+      "publishedAt": "2026-11-11T12:53:17.105Z",
+      "postId": "23632705"
     },
     "day30": {
       "slug": "day30",
       "title": "day30-7 天养号闭环+邪修笔记",
-      "status": "approved",
+      "status": "published",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day30.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day30.preview.md",
       "imageCount": 9,
@@ -463,12 +471,14 @@
       "failed": [],
       "duplicateImagesRemoved": 0,
       "stagedAt": "2026-11-11T10:37:32.721Z",
-      "approvedAt": "2026-11-11T12:37:01.955Z"
+      "approvedAt": "2026-11-11T12:37:01.955Z",
+      "publishedAt": "2026-11-11T12:54:04.069Z",
+      "postId": "23632711"
     },
     "day31": {
       "slug": "day31",
       "title": "day31-养号实操+打造账号",
-      "status": "approved",
+      "status": "published",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day31.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day31.preview.md",
       "imageCount": 12,
@@ -477,12 +487,14 @@
       "failed": [],
       "duplicateImagesRemoved": 0,
       "stagedAt": "2026-11-11T10:37:53.446Z",
-      "approvedAt": "2026-11-11T12:37:01.955Z"
+      "approvedAt": "2026-11-11T12:37:01.955Z",
+      "publishedAt": "2026-11-11T12:54:51.506Z",
+      "postId": "23632714"
     },
     "day32": {
       "slug": "day32",
       "title": "day32-数据笔记+开店",
-      "status": "approved",
+      "status": "published",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day32.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day32.preview.md",
       "imageCount": 18,
@@ -491,7 +503,41 @@
       "failed": [],
       "duplicateImagesRemoved": 0,
       "stagedAt": "2026-11-11T10:38:28.216Z",
-      "approvedAt": "2026-11-11T12:37:01.955Z"
+      "approvedAt": "2026-11-11T12:37:01.955Z",
+      "publishedAt": "2026-11-11T12:55:39.576Z",
+      "postId": "23632718"
+    },
+    "day41": {
+      "slug": "day41",
+      "title": "day41-关于第一阶段陪跑梳理总结",
+      "status": "published",
+      "mdPath": "/workspace/project/output/ai-agent-6/00-day41.md",
+      "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day41.preview.md",
+      "imageCount": 0,
+      "cached": 0,
+      "uploadedNow": 0,
+      "failed": [],
+      "duplicateImagesRemoved": 0,
+      "stagedAt": "2026-11-11T13:05:56.605Z",
+      "approvedAt": "2026-11-11T13:06:07.742Z",
+      "publishedAt": "2026-11-11T13:06:20.304Z",
+      "postId": "23632775"
+    },
+    "day47": {
+      "slug": "day47",
+      "title": "day47-AI应用接单流程与注意事项",
+      "status": "published",
+      "mdPath": "/workspace/project/output/ai-agent-6/00-day47.md",
+      "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day47.preview.md",
+      "imageCount": 0,
+      "cached": 0,
+      "uploadedNow": 0,
+      "failed": [],
+      "duplicateImagesRemoved": 0,
+      "stagedAt": "2026-11-11T13:05:57.166Z",
+      "approvedAt": "2026-11-11T13:06:07.745Z",
+      "publishedAt": "2026-11-11T13:06:23.472Z",
+      "postId": "23632776"
     }
   }
 }
