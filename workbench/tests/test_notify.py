@@ -284,10 +284,12 @@ class NotifyServerTests(unittest.TestCase):
         conn.close()
         return response.status, body, result_headers
 
-    def create_task(self, cookie, sid, title="整理周报", due=None, status="todo"):
+    def create_task(self, cookie, sid, title="整理周报", due=None, status="todo", remind_at=None):
         meta = {}
         if due is not None:
             meta["due"] = due
+        if remind_at is not None:
+            meta["remindAt"] = remind_at
         return self.request("POST", f"/api/spaces/{sid}/items",
                             {"kind": "task", "area": "work", "title": title,
                              "status": status, "meta": meta}, cookie=cookie)
@@ -338,7 +340,8 @@ class NotifyServerTests(unittest.TestCase):
         self.assertEqual(note["dedup_key"], f"task-due:{item_id}:{yesterday}")
         self.assertEqual(note["read"], 0)
         self.assertEqual(json.loads(note["data"]),
-                         {"itemId": item_id, "spaceId": space["id"], "due": yesterday})
+                         {"title": "整理周报", "body": f"任务「整理周报」已于 {yesterday} 到期，请及时处理。",
+                          "itemId": item_id, "spaceId": space["id"], "due": yesterday})
         self.assertIn(yesterday, note["body"])
         self.assertIn("整理周报", note["title"])
 
@@ -351,6 +354,41 @@ class NotifyServerTests(unittest.TestCase):
         self.assertEqual(body["unreadCount"], 1)
         self.assertEqual(len(body["notifications"]), 1)
         self.assertEqual(body["notifications"][0]["id"], note["id"])
+
+    def test_scheduled_remind_creates_notification_with_remind_at(self):
+        cookie, user, space = self.register()
+        # 1 分钟前到达提醒时刻，仍在 15 分钟补发窗口内。
+        remind_at = time.strftime("%Y-%m-%dT%H:%M", time.localtime(time.time() - 60))
+        status, body = self.create_task(cookie, space["id"], remind_at=remind_at)
+        self.assertEqual(status, 201, body)
+        item_id = body["item"]["id"]
+
+        notify.run_maintenance(self.server, force=True)
+        self.assertEqual(self.table_count("notifications"), 1)
+        with self.server.db() as conn:
+            note = conn.execute("SELECT * FROM notifications").fetchone()
+        self.assertEqual(note["user_id"], user["id"])
+        self.assertEqual(note["type"], "task.due")
+        self.assertEqual(note["dedup_key"], f"task-remind:{item_id}:{remind_at}")
+        self.assertEqual(note["read"], 0)
+        data = json.loads(note["data"])
+        self.assertEqual(data["itemId"], item_id)
+        self.assertEqual(data["spaceId"], space["id"])
+        self.assertEqual(data["remindAt"], remind_at)
+        self.assertIn("提醒时间到了", note["body"])
+
+        # 第二次维护不重复通知。
+        notify.run_maintenance(self.server, force=True)
+        self.assertEqual(self.table_count("notifications"), 1)
+
+    def test_future_remind_at_suppresses_due_notification(self):
+        cookie, _, space = self.register()
+        # 设了未来提醒时间的任务即使今天到期，也只等提醒时间，不走「按日期到期」路径。
+        remind_at = time.strftime("%Y-%m-%dT%H:%M", time.localtime(time.time() + 3600))
+        status, body = self.create_task(cookie, space["id"], due=self.day(0), remind_at=remind_at)
+        self.assertEqual(status, 201, body)
+        notify.run_maintenance(self.server, force=True)
+        self.assertEqual(self.table_count("notifications"), 0)
 
     def test_recurring_task_new_due_creates_new_notification(self):
         cookie, _, space = self.register()
@@ -377,6 +415,9 @@ class NotifyServerTests(unittest.TestCase):
     def test_maintenance_throttle_and_bad_meta_skipped(self):
         cookie, _, space = self.register()
         self.create_task(cookie, space["id"], due=self.day(-1))
+        # 认证请求触发的 maybe_cleanup 可能已推进模块级节流时间戳；此处显式归零，
+        # 让断言只验证「非强制调用可立即执行」本身，不受前面请求时序影响。
+        notify._last_maintenance = 0.0
         notify.run_maintenance(self.server)
         self.assertEqual(self.table_count("notifications"), 1)
         # 60s 节流：不带 force 的第二次调用直接跳过。
