@@ -163,7 +163,7 @@
     "day06-day07": {
       "slug": "day06-day07",
       "title": "day06-day07-coze从入门到精通之自媒体运营案例（抖音转小红书转存飞书&批量化）",
-      "status": "approved",
+      "status": "published",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day06-day07.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day06-day07.preview.md",
       "imageCount": 78,
@@ -172,12 +172,14 @@
       "failed": [],
       "duplicateImagesRemoved": 0,
       "stagedAt": "2026-11-11T10:32:53.625Z",
-      "approvedAt": "2026-11-11T12:37:01.955Z"
+      "approvedAt": "2026-11-11T12:37:01.955Z",
+      "publishedAt": "2026-11-11T12:40:44.471Z",
+      "postId": "23632628"
     },
     "day09": {
       "slug": "day09",
       "title": "day09-影刀下载好看搞笑视频",
-      "status": "approved",
+      "status": "published",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day09.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day09.preview.md",
       "imageCount": 22,
@@ -186,12 +188,14 @@
       "failed": [],
       "duplicateImagesRemoved": 0,
       "stagedAt": "2026-11-11T10:33:31.543Z",
-      "approvedAt": "2026-11-11T12:37:01.955Z"
+      "approvedAt": "2026-11-11T12:37:01.955Z",
+      "publishedAt": "2026-11-11T12:41:34.185Z",
+      "postId": "23632633"
     },
     "day13": {
       "slug": "day13",
       "title": "day13-TraeAI编辑器使用",
-      "status": "approved",
+      "status": "published",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day13.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day13.preview.md",
       "imageCount": 13,
@@ -200,12 +204,14 @@
       "failed": [],
       "duplicateImagesRemoved": 0,
       "stagedAt": "2026-11-11T10:33:49.349Z",
-      "approvedAt": "2026-11-11T12:37:01.955Z"
+      "approvedAt": "2026-11-11T12:37:01.955Z",
+      "publishedAt": "2026-11-11T12:42:21.369Z",
+      "postId": "23632637"
     },
     "day14": {
       "slug": "day14",
       "title": "day14-小游戏上线-换脸小程序需求",
-      "status": "approved",
+      "status": "published",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day14.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day14.preview.md",
       "imageCount": 21,
@@ -214,12 +220,14 @@
       "failed": [],
       "duplicateImagesRemoved": 0,
       "stagedAt": "2026-11-11T10:34:25.919Z",
-      "approvedAt": "2026-11-11T12:37:01.955Z"
+      "approvedAt": "2026-11-11T12:37:01.955Z",
+      "publishedAt": "2026-11-11T12:43:09.137Z",
+      "postId": "23632640"
     },
     "day15": {
       "slug": "day15",
       "title": "day15-Trae实现换脸微信小程序02",
-      "status": "approved",
+      "status": "published",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day15.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day15.preview.md",
       "imageCount": 12,
@@ -228,12 +236,14 @@
       "failed": [],
       "duplicateImagesRemoved": 0,
       "stagedAt": "2026-11-11T10:34:44.927Z",
-      "approvedAt": "2026-11-11T12:37:01.955Z"
+      "approvedAt": "2026-11-11T12:37:01.955Z",
+      "publishedAt": "2026-11-11T12:43:55.951Z",
+      "postId": "23632646"
     },
     "day16": {
       "slug": "day16",
       "title": "day16-Trae开发换脸微信小程序03",
-      "status": "approved",
+      "status": "published",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day16.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day16.preview.md",
       "imageCount": 17,
@@ -242,12 +252,14 @@
       "failed": [],
       "duplicateImagesRemoved": 0,
       "stagedAt": "2026-11-11T10:35:12.613Z",
-      "approvedAt": "2026-11-11T12:37:01.955Z"
+      "approvedAt": "2026-11-11T12:37:01.955Z",
+      "publishedAt": "2026-11-11T12:44:43.231Z",
+      "postId": "23632655"
     },
     "day17": {
       "slug": "day17",
       "title": "day17-Trae开发微信小程序04",
-      "status": "approved",
+      "status": "published",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day17.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day17.preview.md",
       "imageCount": 25,
@@ -256,12 +268,14 @@
       "failed": [],
       "duplicateImagesRemoved": 0,
       "stagedAt": "2026-11-11T10:35:41.900Z",
-      "approvedAt": "2026-11-11T12:37:01.955Z"
+      "approvedAt": "2026-11-11T12:37:01.955Z",
+      "publishedAt": "2026-11-11T12:45:31.195Z",
+      "postId": "23632659"
     },
     "day18": {
       "slug": "day18",
       "title": "day18-微信小程序上线",
-      "status": "approved",
+      "status": "published",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day18.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day18.preview.md",
       "imageCount": 34,
@@ -270,12 +284,14 @@
       "failed": [],
       "duplicateImagesRemoved": 0,
       "stagedAt": "2026-11-11T10:36:25.688Z",
-      "approvedAt": "2026-11-11T12:37:01.955Z"
+      "approvedAt": "2026-11-11T12:37:01.955Z",
+      "publishedAt": "2026-11-11T12:46:19.685Z",
+      "postId": "23632664"
     },
     "day19": {
       "slug": "day19",
       "title": "day19-AI漫剧基础与市场前景",
-      "status": "approved",
+      "status": "published",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day19.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day19.preview.md",
       "imageCount": 0,
@@ -284,7 +300,9 @@
       "failed": [],
       "duplicateImagesRemoved": 0,
       "stagedAt": "2026-11-11T10:36:25.713Z",
-      "approvedAt": "2026-11-11T12:37:01.955Z"
+      "approvedAt": "2026-11-11T12:37:01.955Z",
+      "publishedAt": "2026-11-11T12:47:05.659Z",
+      "postId": "23632668"
     },
     "day20": {
       "slug": "day20",
@@ -303,7 +321,7 @@
     "day21": {
       "slug": "day21",
       "title": "day21-剧本创作",
-      "status": "approved",
+      "status": "published",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day21.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day21.preview.md",
       "imageCount": 3,
@@ -312,12 +330,14 @@
       "failed": [],
       "duplicateImagesRemoved": 0,
       "stagedAt": "2026-11-11T10:36:29.589Z",
-      "approvedAt": "2026-11-11T12:37:01.955Z"
+      "approvedAt": "2026-11-11T12:37:01.955Z",
+      "publishedAt": "2026-11-11T12:47:51.720Z",
+      "postId": "23632674"
     },
     "day22": {
       "slug": "day22",
       "title": "day22-模型+工具的使用",
-      "status": "approved",
+      "status": "published",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day22.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day22.preview.md",
       "imageCount": 3,
@@ -326,12 +346,14 @@
       "failed": [],
       "duplicateImagesRemoved": 0,
       "stagedAt": "2026-11-11T10:36:33.619Z",
-      "approvedAt": "2026-11-11T12:37:01.955Z"
+      "approvedAt": "2026-11-11T12:37:01.955Z",
+      "publishedAt": "2026-11-11T12:48:37.757Z",
+      "postId": "23632679"
     },
     "day23": {
       "slug": "day23",
       "title": "day23-漫剧全流程+提示词",
-      "status": "approved",
+      "status": "published",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day23.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day23.preview.md",
       "imageCount": 1,
@@ -340,12 +362,14 @@
       "failed": [],
       "duplicateImagesRemoved": 0,
       "stagedAt": "2026-11-11T10:36:34.307Z",
-      "approvedAt": "2026-11-11T12:37:01.955Z"
+      "approvedAt": "2026-11-11T12:37:01.955Z",
+      "publishedAt": "2026-11-11T12:49:23.956Z",
+      "postId": "23632686"
     },
     "day24": {
       "slug": "day24",
       "title": "day24-解说类制作实操1",
-      "status": "approved",
+      "status": "published",
       "mdPath": "/workspace/project/output/ai-agent-6/00-day24.md",
       "previewPath": "/workspace/project/output/ai-agent-6/previews/00-day24.preview.md",
       "imageCount": 0,
@@ -354,7 +378,9 @@
       "failed": [],
       "duplicateImagesRemoved": 0,
       "stagedAt": "2026-11-11T10:36:34.328Z",
-      "approvedAt": "2026-11-11T12:37:01.955Z"
+      "approvedAt": "2026-11-11T12:37:01.955Z",
+      "publishedAt": "2026-11-11T12:50:09.990Z",
+      "postId": "23632690"
     },
     "day25": {
       "slug": "day25",
