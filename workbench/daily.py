@@ -50,6 +50,8 @@ ENTRY_LIST_LIMIT = 500
 MAX_TITLE = 200
 MAX_SUMMARY = 1000
 MAX_BODY = 100_000
+MAX_TAGS = 8
+MAX_TAG_CHARS = 20
 MAX_DIGEST_CHARS = 600
 DIGEST_TARGET_CHARS = 300
 STAGING_TTL = 3600
@@ -153,6 +155,27 @@ def clean_text(value, limit):
         return ""
     value = CONTROL_CHARS.sub("", value).strip()
     return value[:limit]
+
+
+def clean_tags(raw):
+    if raw is None:
+        return []
+    if not isinstance(raw, list):
+        raise ValueError("标签必须是数组")
+    result = []
+    seen = set()
+    for tag in raw:
+        if not isinstance(tag, str):
+            raise ValueError("标签必须是字符串")
+        tag = tag.strip()
+        if not tag or len(tag) > MAX_TAG_CHARS:
+            raise ValueError("每个标签需为 1 至 20 个字符")
+        if tag not in seen:
+            seen.add(tag)
+            result.append(tag)
+    if len(result) > MAX_TAGS:
+        raise ValueError("最多添加 8 个标签")
+    return result
 
 
 def valid_date(value):
@@ -713,6 +736,10 @@ def list_entries(handler, conn, sid, query):
 def create_entry(handler, conn, server, sid, uid, data, provider):
     if not isinstance(data, dict):
         fail(handler, 400, "请求内容必须为对象")
+    try:
+        tags = clean_tags(data.get("tags"))
+    except ValueError as exc:
+        fail(handler, 400, str(exc))
     area = data.get("area", "work")
     if area not in ("work", "life"):
         fail(handler, 400, "请选择工作或生活分类")
@@ -744,7 +771,8 @@ def create_entry(handler, conn, server, sid, uid, data, provider):
         fail(handler, 409, f"每个空间最多保存 {ENTRY_LIST_LIMIT} 条今日记录，请先整理已有内容")
     entry_id, now, entry_date = uuid.uuid4().hex, stamp(), today_str()
     ai_status = "pending" if getattr(provider, "enabled", False) and image_ids else "disabled"
-    meta = {"ai": {"status": ai_status, "model": "", "title": "", "summary": "",
+    meta = {"tags": tags,
+            "ai": {"status": ai_status, "model": "", "title": "", "summary": "",
                    "tags": [], "suggestions": [], "recognizedAt": "", "applied": False},
             "convertedSuggestions": [], "source": "daily"}
     if not title:
@@ -799,6 +827,12 @@ def patch_entry(handler, conn, sid, uid, row, data):
     if not isinstance(data, dict):
         fail(handler, 400, "请求内容必须为对象")
     meta = json.loads(row["meta"])
+    try:
+        new_tags = clean_tags(data["tags"]) if "tags" in data else None
+    except ValueError as exc:
+        fail(handler, 400, str(exc))
+    if new_tags is not None:
+        meta["tags"] = new_tags
     title, summary, body, area, status = row["title"], row["summary"], row["body"], row["area"], row["status"]
     manual = False
     if "area" in data:

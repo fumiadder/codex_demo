@@ -76,7 +76,7 @@ class FakeVision:
         return "今天主要推进了项目周会和上线准备，待跟进会议纪要与上线清单。"
 
 
-class DailyTests(unittest.TestCase):
+class EntryHandler(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         if Image is None:
@@ -502,6 +502,51 @@ class DailyTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             daily.inspect_image(bomb_png_bytes(50000, 50000))
         self.assertEqual(daily.inspect_image(png_bytes()), (96, 64))
+
+    def test_create_accepts_manual_tags(self):
+        status, body, _ = self.request(
+            "POST", f"{self.prefix}/entries",
+            {"area": "work", "title": "阅读", "body": "阅读记录", "tags": ["学习", "阅读"]},
+            self.owner)
+        self.assertEqual(status, 201, body)
+        self.assertEqual(body["entry"]["meta"]["tags"], ["学习", "阅读"])
+        self.assertEqual(body["entry"]["meta"]["ai"]["tags"], [])
+
+    def test_patch_replaces_tags(self):
+        _, body, _ = self.request(
+            "POST", f"{self.prefix}/entries",
+            {"area": "work", "title": "阅读", "body": "阅读记录", "tags": ["学习"]},
+            self.owner)
+        entry_id = body["entry"]["id"]
+        status, patched, _ = self.request(
+            "PATCH", f"{self.prefix}/entries/{entry_id}",
+            {"tags": ["工作", "阅读"]}, self.owner)
+        self.assertEqual(status, 200, patched)
+        self.assertEqual(patched["entry"]["meta"]["tags"], ["工作", "阅读"])
+        self.assertFalse(patched["entry"]["meta"]["ai"]["applied"])
+
+    def test_tags_validation(self):
+        for bad in ("学习", [123], [f"标签{i}" for i in range(9)], ["超" * 21]):
+            with self.subTest(tags=bad):
+                status, body, _ = self.request(
+                    "POST", f"{self.prefix}/entries",
+                    {"area": "work", "title": "x", "body": "x", "tags": bad}, self.owner)
+                self.assertEqual(status, 400, body)
+                self.assertIn("标签", body["error"])
+
+    def test_ai_tags_stay_separate(self):
+        _, created, _ = self.make_entry(images=1, body="周会记录")
+        entry_id = created["entry"]["id"]
+        status, recognized, _ = self.request(
+            "POST", f"{self.prefix}/entries/{entry_id}/recognize", {}, self.owner)
+        self.assertEqual(status, 200, recognized)
+        ai_tags = recognized["entry"]["meta"]["ai"]["tags"]
+        status, body, _ = self.request(
+            "PATCH", f"{self.prefix}/entries/{entry_id}",
+            {"tags": ["学习"]}, self.owner)
+        self.assertEqual(status, 200, body)
+        self.assertEqual(body["entry"]["meta"]["tags"], ["学习"])
+        self.assertEqual(body["entry"]["meta"]["ai"]["tags"], ai_tags)
 
 
 if __name__ == "__main__":
