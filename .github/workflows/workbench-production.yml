@@ -1,6 +1,8 @@
 name: Workbench production deployment
 
 on:
+  push:
+    branches: [temp/reviewed-main-migration-20261112]
   workflow_run:
     workflows: [Workbench CI]
     types: [completed]
@@ -24,14 +26,14 @@ jobs:
   deploy:
     if: >-
       github.event.repository.private == false &&
-      github.event_name == 'workflow_dispatch' &&
+      (github.event_name == 'workflow_dispatch' || github.event_name == 'push') &&
       github.ref == 'refs/heads/temp/reviewed-main-migration-20261112'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: production
     env:
       GH_TOKEN: ${{ github.token }}
-      DEPLOY_SHA: ${{ github.event.workflow_run.head_sha || inputs.commit }}
+      DEPLOY_SHA: e78c21c7251d034ec72fa0a6e581d931567ea681
       REPOSITORY: ${{ github.repository }}
       DEPLOY_EVENT: ${{ github.event_name }}
       PREVIOUS_SHA: 6d57269f2bf3be952af89c5d0606a09c446c941e
