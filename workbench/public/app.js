@@ -1402,7 +1402,7 @@ function demoItems() {
     updated_at: stamp(age),
     space_id: "demo-personal",
   });
-  return [
+  const items = [
     make(
       "d1",
       "task",
@@ -1615,6 +1615,8 @@ function demoItems() {
       9,
     ),
   ];
+  items[0].images = [];
+  return items;
 }
 function enterDemo() {
   state.demo = true;
@@ -3042,6 +3044,10 @@ async function loadSpaceTags() {
       const counts = new Map();
       for (const item of state.demoStore[state.space.id] || []) {
         for (const tagName of new Set(itemTags(item)))
+          counts.set(tagName, (counts.get(tagName) || 0) + 1);
+      }
+      for (const entry of state.demoDaily[state.space.id] || []) {
+        for (const tagName of new Set(itemTags(entry)))
           counts.set(tagName, (counts.get(tagName) || 0) + 1);
       }
       state.spaceTags = [...counts.entries()]
@@ -7243,7 +7249,7 @@ function buildDemoDailyEntry(items, body, tags) {
 }
 function demoDailyEntries() {
   const now = new Date().toISOString();
-  const demoMeta = () => ({
+  const demoMeta = (tags) => ({
     ai: {
       status: "disabled",
       model: "",
@@ -7254,10 +7260,11 @@ function demoDailyEntries() {
       recognizedAt: "",
       applied: false,
     },
+    tags,
     convertedSuggestions: [],
     source: "daily",
   });
-  const makeDemoEntry = (area, title, body) => ({
+  const makeDemoEntry = (area, title, body, tags) => ({
     id: `local-demo-${randomUUID()}`,
     spaceId: "demo-personal",
     area,
@@ -7266,7 +7273,7 @@ function demoDailyEntries() {
     summary: "",
     body,
     status: "active",
-    meta: demoMeta(),
+    meta: demoMeta(tags),
     createdBy: "demo-user",
     createdAt: now,
     updatedAt: now,
@@ -7277,16 +7284,19 @@ function demoDailyEntries() {
       "work",
       "演示：拍一张白板开始记录",
       "演示模式下，拍照记录只保存在当前浏览器，不会上传或调用 AI。",
+      ["工作"],
     ),
     makeDemoEntry(
       "life",
       "周末散步时拍下的小路",
       "路边的树影落在墙上，走慢一点才注意到。",
+      ["生活"],
     ),
     makeDemoEntry(
       "life",
       "家里做的一顿晚饭",
       "两菜一汤，认真吃饭也是生活里的小记录。",
+      ["生活", "美食"],
     ),
   ];
 }
