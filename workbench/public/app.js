@@ -3052,7 +3052,7 @@ async function loadSpaceTags() {
     }
     state.tagsLoadedSpace = state.space.id;
     // 首次加载发生在 render 期间，拉取完成后补一次渲染让筛选条出现
-    if (["tasks", "notes"].includes(state.view)) render();
+    if (["tasks", "notes", "calendar"].includes(state.view)) render();
   } catch (err) {
     toast(errorMessage(err), true);
   } finally {
@@ -4842,25 +4842,38 @@ function taskTimeLabel(item) {
   if (start) return `${start} 起`;
   return "全天";
 }
-// 某一天的日程条目：任务（含重复任务落点）+ 今日记录。
-function agendaEntriesFor(dateString) {
-  const tasks = [];
+// 日历视图数据：待办与记录合并，标签筛选共用 itemMatchesTag。
+function calendarEntries(dateKey) {
+  const result = [];
   currentItems("task").forEach((item) => {
-    if (!item.meta?.due) return;
-    if (nextOccurrences(item, 3).includes(dateString)) tasks.push(item);
+    if (!item.meta?.due || !nextOccurrences(item, 3).includes(dateKey)) return;
+    if (!itemMatchesTag(item, state.tagFilter)) return;
+    result.push({
+      kind: "item",
+      source: item,
+      time: item.meta?.startTime || "99:99",
+    });
   });
-  tasks.sort((a, b) => {
-    const sa = a.meta?.startTime || "99:99";
-    const sb = b.meta?.startTime || "99:99";
-    return sa.localeCompare(sb);
-  });
-  const entries = [];
-  for (const entry of state.daily.entries || []) {
+  (state.daily.entries || []).forEach((entry) => {
     // 接口返回 camelCase 的 entryDate；兼容 snake_case 以防内部结构变化。
     const entryDate = entry.entryDate || entry.entry_date;
-    if (entryDate === dateString) entries.push(entry);
-  }
-  return { tasks, daily: entries };
+    if (
+      entryDate !== dateKey ||
+      entry.area !== state.area ||
+      entry.status === "archived" ||
+      !itemMatchesTag(entry, state.tagFilter)
+    )
+      return;
+    result.push({ kind: "daily", source: entry, time: entry.createdAt || "" });
+  });
+  result.sort((a, b) =>
+    a.kind === b.kind
+      ? a.time.localeCompare(b.time)
+      : a.kind === "item"
+        ? -1
+        : 1,
+  );
+  return result;
 }
 function renderAgenda(content) {
   const today = dailyDateString();
@@ -4869,6 +4882,7 @@ function renderAgenda(content) {
   if (!state_.agendaDays) state_.agendaDays = 37;
   const from = state_.agendaFrom;
   const days = state_.agendaDays;
+  renderTagFilterBar(content);
   const card = el("section", "card agenda-card");
   const nav = el("div", "calendar-nav");
   nav.append(
@@ -4893,8 +4907,8 @@ function renderAgenda(content) {
   let renderedGroups = 0;
   for (let index = 0; index < days; index++) {
     const dateString = addDays(from, index);
-    const { tasks, daily } = agendaEntriesFor(dateString);
-    if (!tasks.length && !daily.length && dateString !== today) continue;
+    const entries = calendarEntries(dateString);
+    if (!entries.length && dateString !== today) continue;
     renderedGroups += 1;
     const group = el("section", "agenda-group");
     const head = el("div", "agenda-head");
@@ -4906,8 +4920,14 @@ function renderAgenda(content) {
     if (dateString === today) head.append(el("span", "agenda-today", "今天"));
     group.append(head);
     const body = el("div", "agenda-items");
-    if (!tasks.length && !daily.length) {
-      body.append(el("p", "agenda-empty", "暂无日程安排"));
+    if (!entries.length) {
+      body.append(
+        el(
+          "p",
+          "agenda-empty",
+          state.tagFilter ? "该日期没有匹配当前标签的内容。" : "暂无日程安排",
+        ),
+      );
       // 今天没有安排也允许快速新建
       if (writable())
         body.append(
@@ -4916,23 +4936,25 @@ function renderAgenda(content) {
           ),
         );
     }
-    tasks.forEach((item) => {
-      const row = button("", "agenda-item", () => showEditor("task", item));
-      row.type = "button";
-      if (item.status === "done") row.classList.add("is-done");
-      const time = el("span", "agenda-time", taskTimeLabel(item));
-      const title = el("strong", "agenda-title", item.title);
-      row.append(time, title);
-      if (item.meta?.recurrence?.freq)
-        row.append(el("span", "agenda-badge", "重复"));
-      body.append(row);
-    });
-    daily.forEach((entry) => {
-      const row = button("", "agenda-item agenda-daily", () => showDailyEntry(entry));
+    entries.forEach(({ kind, source }) => {
+      if (kind === "item") {
+        const item = source;
+        const row = button("", "agenda-item", () => showEditor("task", item));
+        row.type = "button";
+        if (item.status === "done") row.classList.add("is-done");
+        const time = el("span", "agenda-time", taskTimeLabel(item));
+        const title = el("strong", "agenda-title", item.title);
+        row.append(time, title);
+        if (item.meta?.recurrence?.freq)
+          row.append(el("span", "agenda-badge", "重复"));
+        body.append(row);
+        return;
+      }
+      const row = button("", "agenda-item agenda-daily", () => showDailyEntry(source));
       row.type = "button";
       row.append(
         el("span", "agenda-time", "记录"),
-        el("strong", "agenda-title", describeEntry("daily", entry, 80)),
+        el("strong", "agenda-title", describeEntry("daily", source, 80)),
       );
       body.append(row);
     });
@@ -4951,6 +4973,7 @@ function renderAgenda(content) {
   content.append(card);
 }
 function renderCalendar(content) {
+  loadSpaceTags();
   // 顶部模式切换：日历（月视图）/ 日程（时间线）
   const switcher = el("div", "calendar-mode-switch");
   const mode = state.calendar.mode === "agenda" ? "agenda" : "month";
@@ -4975,6 +4998,10 @@ function renderCalendar(content) {
     renderAgenda(content);
     return;
   }
+  // 月历也需要「今日记录」数据；加载函数自带重入守卫。
+  if (state.space && state.daily.loadedSpace !== state.space.id && !state.daily.loading) {
+    loadDailyEntries();
+  }
   if (!state.calendar.month)
     state.calendar.month = dailyDateString().slice(0, 7);
   const monthValue = state.calendar.month;
@@ -4983,16 +5010,13 @@ function renderCalendar(content) {
   const offset = weekdayIndex(firstDay);
   const gridStart = new Date(year, month - 1, 1 - offset);
   const today = dailyDateString();
-  // 收集月格内每个日期对应的任务
+  // 收集本月每个日期的待办与记录，月历与日程共用同一套装配逻辑。
   const byDate = new Map();
-  currentItems("task").forEach((item) => {
-    if (!item.meta?.due) return;
-    nextOccurrences(item, 3).forEach((dateString) => {
-      if (!dateString.startsWith(monthValue)) return;
-      if (!byDate.has(dateString)) byDate.set(dateString, []);
-      byDate.get(dateString).push(item);
-    });
-  });
+  const daysInMonth = new Date(year, month, 0).getDate();
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateString = isoDateString(new Date(year, month - 1, day));
+    byDate.set(dateString, calendarEntries(dateString));
+  }
   const card = el("section", "card calendar-card");
   const nav = el("div", "calendar-nav");
   nav.append(
@@ -5046,15 +5070,28 @@ function renderCalendar(content) {
     cell.append(dayNumber);
     const entries = byDate.get(dateString) || [];
     const entryWrap = el("div", "calendar-entries");
-    entries.slice(0, 3).forEach((item) => {
-      const entry = button("", "calendar-entry", (event) => {
+    entries.slice(0, 3).forEach(({ kind, source }) => {
+      if (kind === "daily") {
+        const row = button("", "calendar-entry agenda-daily", (event) => {
+          event.stopPropagation();
+          showDailyEntry(source);
+        });
+        row.append(
+          el("span", "calendar-entry-dot"),
+          el("span", "", describeEntry("daily", source, 14)),
+        );
+        entryWrap.append(row);
+        return;
+      }
+      const item = source;
+      const row = button("", "calendar-entry", (event) => {
         event.stopPropagation();
         showEditor("task", item);
       });
-      if (item.status === "done") entry.classList.add("is-done");
-      if (item.meta?.recurrence?.freq) entry.classList.add("is-recurring");
-      entry.append(el("span", "calendar-entry-dot"), el("span", "", item.title));
-      entryWrap.append(entry);
+      if (item.status === "done") row.classList.add("is-done");
+      if (item.meta?.recurrence?.freq) row.classList.add("is-recurring");
+      row.append(el("span", "calendar-entry-dot"), el("span", "", item.title));
+      entryWrap.append(row);
     });
     if (entries.length > 3)
       entryWrap.append(el("span", "calendar-more", `+${entries.length - 3}`));
@@ -5073,6 +5110,7 @@ function renderCalendar(content) {
     grid.append(cell);
   }
   card.append(grid);
+  renderTagFilterBar(content);
   content.append(card);
   if (state.calendar.filter) {
     const detail = el("section", "card calendar-day-detail");
@@ -5086,14 +5124,27 @@ function renderCalendar(content) {
         : el("span", "readonly-pill", "这个空间为只读"),
     );
     detail.append(head);
-    const dayTasks = byDate.get(state.calendar.filter) || [];
+    const dayEntries = calendarEntries(state.calendar.filter);
     const list = el("div", "task-list");
-    if (dayTasks.length) dayTasks.forEach((item) => list.append(taskRow(item)));
+    if (dayEntries.length)
+      dayEntries.forEach(({ kind, source }) => {
+        if (kind === "item") {
+          list.append(taskRow(source));
+          return;
+        }
+        const row = button("", "agenda-item agenda-daily", () => showDailyEntry(source));
+        row.type = "button";
+        row.append(
+          el("span", "agenda-time", "记录"),
+          el("strong", "agenda-title", describeEntry("daily", source, 80)),
+        );
+        list.append(row);
+      });
     else
       emptyState(
         list,
         "calendar",
-        "这一天还没有安排",
+        state.tagFilter ? "该日期没有匹配当前标签的内容。" : "这一天还没有安排",
         "新建一件待办，或点击其他日期查看。",
         writable() ? "新建待办" : null,
         () => showEditor("task", null, { due: state.calendar.filter }),
