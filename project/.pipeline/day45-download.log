@@ -1,2 +1,6 @@
 [11:04:59] start day45 expect=739980294
 [11:04:59] attempt 1 resume_from=77848576
+[20:52:35] start day45 expect=739980294
+[20:52:35] attempt 1 resume_from=84140032
+curl: (35) OpenSSL SSL_connect: SSL_ERROR_SYSCALL in connection to d.pcs.baidu.com:443 
+[20:52:43] attempt 2 resume_from=84140032
