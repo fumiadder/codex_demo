@@ -1,0 +1,71 @@
+<style>
+  .calendar-options { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; margin-top:24px; }
+  .calendar-option { cursor:pointer; border:2px solid transparent; border-radius:16px; overflow:hidden; background:#fff; transition:.18s ease; }
+  .calendar-option:hover { transform:translateY(-2px); }
+  .calendar-option.selected { border-color:#557463; box-shadow:0 0 0 3px rgba(85,116,99,.13); }
+  .option-head { display:flex; gap:10px; align-items:center; padding:15px 16px 10px; }
+  .option-letter { display:grid; place-items:center; width:26px; height:26px; border-radius:50%; background:#e8ede9; color:#345044; font-weight:700; }
+  .option-head h3 { margin:0; font-size:16px; }
+  .option-copy { padding:0 16px 15px; margin:0; color:#68736d; font-size:13px; line-height:1.55; min-height:62px; }
+  .mini-calendar { padding:12px; background:#f6f4ee; border-top:1px solid #e6e2d9; }
+  .week,.days { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+  .week { color:#8a8e88; font-size:9px; text-align:center; margin-bottom:5px; }
+  .day { background:#fff; border-radius:6px; min-height:52px; padding:5px 3px; font-size:10px; color:#626a65; overflow:hidden; }
+  .day.active { outline:1px solid #6b8b78; }
+  .num { display:block; margin-bottom:4px; font-weight:650; }
+  .entry { display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border-radius:3px; padding:2px 3px; margin-top:2px; background:#e7efe8; color:#365545; font-size:8px; text-align:left; }
+  .entry.peach { background:#f5e8df; color:#795441; }
+  .more { display:block; color:#7d847f; font-size:8px; margin-top:3px; }
+  .dot { display:inline-block; width:5px; height:5px; border-radius:50%; background:#6d8e79; margin:1px; }
+  .agenda-below { margin:7px 4px 2px; padding:7px; border-radius:6px; background:#fff; text-align:left; font-size:9px; color:#48534c; }
+  .agenda-below b { display:block; margin-bottom:4px; }
+  .thumb { display:inline-block; width:18px; height:14px; border-radius:3px; margin-right:3px; vertical-align:middle; background:linear-gradient(135deg,#c8d9cd,#edcfb5); }
+  .tall .day { min-height:92px; }
+  .tall .entry { white-space:normal; font-size:8px; padding:4px 3px; }
+  .recommend { color:#557463; font-size:12px; font-weight:650; margin-left:auto; }
+  @media(max-width:900px){ .calendar-options{grid-template-columns:1fr;} .option-copy{min-height:0;} }
+</style>
+<h2>日期下面，日程要展示到什么程度？</h2>
+<p class="subtitle">三种方式都会保留“点击日期查看完整日程”。请选择最接近你想法的一种。</p>
+<div class="calendar-options">
+  <div class="option calendar-option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="option-head"><span class="option-letter">A</span><h3>日期格内显示摘要</h3><span class="recommend">推荐</span></div>
+    <p class="option-copy">每天直接显示最多 2 条标题，带标签颜色；超出显示“另有 N 条”，图片在完整日程中展示。</p>
+    <div class="mini-calendar">
+      <div class="week"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div>
+      <div class="days">
+        <div class="day"><span class="num">9</span></div><div class="day"><span class="num">10</span><span class="entry">学习英语</span></div>
+        <div class="day active"><span class="num">11</span><span class="entry">读书 30 页</span><span class="entry peach">项目复盘</span><span class="more">另有 1 条</span></div>
+        <div class="day"><span class="num">12</span><span class="entry">英语听力</span></div><div class="day"><span class="num">13</span></div>
+        <div class="day"><span class="num">14</span><span class="entry peach">周末徒步</span></div><div class="day"><span class="num">15</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="option calendar-option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="option-head"><span class="option-letter">B</span><h3>月历下方显示当日列表</h3></div>
+    <p class="option-copy">日期格里只保留小标记，选中日期的图片、标签和完整日程统一展示在整个月历下面。</p>
+    <div class="mini-calendar">
+      <div class="week"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div>
+      <div class="days">
+        <div class="day"><span class="num">9</span></div><div class="day"><span class="num">10</span><span class="dot"></span></div>
+        <div class="day active"><span class="num">11</span><span class="dot"></span><span class="dot"></span></div>
+        <div class="day"><span class="num">12</span><span class="dot"></span></div><div class="day"><span class="num">13</span></div>
+        <div class="day"><span class="num">14</span><span class="dot"></span></div><div class="day"><span class="num">15</span></div>
+      </div>
+      <div class="agenda-below"><b>11 日 · 3 条日程</b><span class="thumb"></span>读书 30 页 · 学习<br><span class="thumb"></span>项目复盘 · 工作</div>
+    </div>
+  </div>
+  <div class="option calendar-option tall" data-choice="c" onclick="toggleSelect(this)">
+    <div class="option-head"><span class="option-letter">C</span><h3>日期格内完整展开</h3></div>
+    <p class="option-copy">标题、图片和标签都直接塞进日期格；信息最完整，但内容多时月历会很高，手机上较拥挤。</p>
+    <div class="mini-calendar">
+      <div class="week"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div>
+      <div class="days">
+        <div class="day"><span class="num">9</span></div><div class="day"><span class="num">10</span><span class="entry">学习<br>英语听力</span></div>
+        <div class="day active"><span class="num">11</span><span class="entry"><span class="thumb"></span>读书 30 页<br>#学习</span><span class="entry peach">项目复盘<br>#工作</span></div>
+        <div class="day"><span class="num">12</span><span class="entry">英语听力<br>#学习</span></div><div class="day"><span class="num">13</span></div>
+        <div class="day"><span class="num">14</span><span class="entry peach"><span class="thumb"></span>徒步<br>#生活</span></div><div class="day"><span class="num">15</span></div>
+      </div>
+    </div>
+  </div>
+</div>
