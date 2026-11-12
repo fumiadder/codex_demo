@@ -478,6 +478,24 @@ class FolioHandler(BaseHTTPRequestHandler):
         result["meta"] = json.loads(result["meta"])
         return result
 
+    def attach_item_images(self, db, rows, payloads):
+        task_ids = [r["id"] for r in rows if r["kind"] == "task"]
+        if not task_ids:
+            return
+        marks = ",".join("?" * len(task_ids))
+        images = db.execute(
+            f"SELECT id,item_id,name,mime,size,created_at FROM files "
+            f"WHERE item_id IN ({marks}) ORDER BY created_at,id", task_ids).fetchall()
+        grouped = {}
+        for image in images:
+            grouped.setdefault(image["item_id"], []).append({
+                "id": image["id"], "name": image["name"], "mime": image["mime"],
+                "size": image["size"], "url": f"/api/files/{image['id']}",
+                "createdAt": image["created_at"]})
+        for payload in payloads:
+            if payload["kind"] == "task":
+                payload["images"] = grouped.get(payload["id"], [])
+
     def item_input(self, data, current=None):
         current = current or {}
         kind = data.get("kind", current.get("kind", "note"))
@@ -995,13 +1013,18 @@ class FolioHandler(BaseHTTPRequestHandler):
                     if area is not None and area not in ("work", "life"):
                         raise APIError(400, "分类无效")
                     rows = conn.execute("SELECT * FROM items WHERE space_id=?" + (" AND area=?" if area else "") + " ORDER BY created_at DESC,id DESC LIMIT 2000", (sid, area) if area else (sid,)).fetchall()
-                    result = {"items": [self.item_json(row) for row in rows]}
+                    payloads = [self.item_json(row) for row in rows]
+                    self.attach_item_images(conn, rows, payloads)
+                    result = {"items": payloads}
                 elif method == "POST":
                     values = self.item_input(self.read_json())
                     self.check_item_capacity(conn, sid)
                     iid, stamp = new_id(), now_iso()
                     conn.execute("INSERT INTO items VALUES (?,?,?,?,?,?,?,?,?,?,?)", (iid, sid, *values, uid, stamp, stamp))
-                    result = {"item": self.item_json(conn.execute("SELECT * FROM items WHERE id=?", (iid,)).fetchone())}
+                    row = conn.execute("SELECT * FROM items WHERE id=?", (iid,)).fetchone()
+                    payload = self.item_json(row)
+                    self.attach_item_images(conn, [row], [payload])
+                    result = {"item": payload}
                 else:
                     raise APIError(405, "不支持此请求方法")
             elif match := re.fullmatch(rf"/api/spaces/({ID_RE})/tags", path):
@@ -1046,7 +1069,10 @@ class FolioHandler(BaseHTTPRequestHandler):
                                 status = "active"
                     conn.execute("UPDATE items SET kind=?,area=?,title=?,body=?,status=?,meta=?,updated_at=? WHERE id=?",
                                  (kind, area, title, body, status, meta_str, now_iso(), row["id"]))
-                    result = {"item": self.item_json(conn.execute("SELECT * FROM items WHERE id=?", (row["id"],)).fetchone())}
+                    row = conn.execute("SELECT * FROM items WHERE id=?", (row["id"],)).fetchone()
+                    payload = self.item_json(row)
+                    self.attach_item_images(conn, [row], [payload])
+                    result = {"item": payload}
                 elif method == "DELETE":
                     for file in conn.execute("SELECT * FROM files WHERE item_id=?", (row["id"],)).fetchall():
                         storage_jobs.queue_delete(conn, "uploads", file["id"], file["space_id"], file["size"])
