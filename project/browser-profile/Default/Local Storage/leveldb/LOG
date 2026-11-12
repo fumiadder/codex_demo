@@ -1,3 +1,5 @@
-2026/11/12-08:05:22.681 c2d Reusing MANIFEST /workspace/project/browser-profile/Default/Local Storage/leveldb/MANIFEST-000001
-2026/11/12-08:05:22.688 c2d Recovering log #66
-2026/11/12-08:05:22.692 c2d Reusing old log /workspace/project/browser-profile/Default/Local Storage/leveldb/000066.log 
+2026/11/12-11:04:45.930 c03 Reusing MANIFEST /workspace/project/browser-profile/Default/Local Storage/leveldb/MANIFEST-000001
+2026/11/12-11:04:45.932 c03 Recovering log #66
+2026/11/12-11:04:45.936 c03 Level-0 table #68: started
+2026/11/12-11:04:45.948 c03 Level-0 table #68: 20445 bytes OK
+2026/11/12-11:04:45.953 c03 Delete type=0 #66
