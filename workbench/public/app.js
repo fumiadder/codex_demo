@@ -4875,6 +4875,69 @@ function calendarEntries(dateKey) {
   );
   return result;
 }
+// 日历与日程共用的图片展示：待办用私有文件 URL，记录用鉴权对象 URL
+function entryImages(target) {
+  if (target.kind === "item") return Array.isArray(target.source.images) ? target.source.images : [];
+  return (target.source.images || []).map((img) => ({ ...img, url: dailyImageURL(img) }));
+}
+function openImageViewer(images, startIndex = 0) {
+  if (!images.length) return;
+  let current = Math.max(0, Math.min(startIndex, images.length - 1));
+  let onKeyDown = null;
+  showModal("图片预览", (body) => {
+    const wrap = el("div", "daily-lightbox");
+    const img = el("img");
+    const counter = el("span", "daily-lightbox-count");
+    const renderImage = () => {
+      if (images[current]?.url) img.src = images[current].url;
+      img.alt = images[current]?.name || "图片";
+      counter.textContent = `${current + 1} / ${images.length}`;
+    };
+    renderImage();
+    wrap.append(img);
+    body.append(wrap, counter);
+    if (images.length > 1) {
+      const goPrev = () => { current = (current - 1 + images.length) % images.length; renderImage(); };
+      const goNext = () => { current = (current + 1) % images.length; renderImage(); };
+      const controls = el("div", "daily-lightbox-controls");
+      controls.append(button("上一张", "button secondary", goPrev), button("下一张", "button primary", goNext));
+      body.append(controls);
+      onKeyDown = (event) => {
+        if (event.key === "ArrowLeft") { event.preventDefault(); goPrev(); }
+        else if (event.key === "ArrowRight") { event.preventDefault(); goNext(); }
+      };
+      document.addEventListener("keydown", onKeyDown);
+      modalCleanup = () => document.removeEventListener("keydown", onKeyDown);
+    }
+  });
+}
+function appendEntryMedia(row, target, { compact = false } = {}) {
+  const images = entryImages(target);
+  if (!images.length) return;
+  const thumb = el("button", compact ? "entry-thumb compact" : "entry-thumb");
+  thumb.type = "button";
+  thumb.setAttribute("aria-label", `查看 ${images.length} 张图片`);
+  const img = el("img");
+  if (images[0].url) img.src = images[0].url;
+  img.alt = images[0].name || "首图";
+  img.loading = "lazy";
+  img.addEventListener("error", () => { thumb.classList.add("is-broken"); img.remove(); });
+  thumb.append(img);
+  if (images.length > 1) thumb.append(el("span", "entry-thumb-count", `${images.length} 张`));
+  thumb.addEventListener("click", (event) => {
+    event.stopPropagation();
+    openImageViewer(images, 0);
+  });
+  row.append(thumb);
+}
+function appendEntryTags(row, target, limit = 2) {
+  const tags = itemTags(target.source);
+  if (!tags.length) return;
+  const wrap = el("span", "entry-tags");
+  tags.slice(0, limit).forEach((name) => wrap.append(el("span", "tag", name)));
+  if (tags.length > limit) wrap.append(el("span", "entry-tags-more", `+${tags.length - limit}`));
+  row.append(wrap);
+}
 function renderAgenda(content) {
   const today = dailyDateString();
   const state_ = state.calendar;
@@ -4947,6 +5010,8 @@ function renderAgenda(content) {
         row.append(time, title);
         if (item.meta?.recurrence?.freq)
           row.append(el("span", "agenda-badge", "重复"));
+        appendEntryMedia(row, { kind: "item", source: item });
+        appendEntryTags(row, { kind: "item", source: item }, 3);
         body.append(row);
         return;
       }
@@ -4956,6 +5021,8 @@ function renderAgenda(content) {
         el("span", "agenda-time", "记录"),
         el("strong", "agenda-title", describeEntry("daily", source, 80)),
       );
+      appendEntryMedia(row, { kind: "daily", source });
+      appendEntryTags(row, { kind: "daily", source }, 3);
       body.append(row);
     });
     group.append(body);
@@ -5078,8 +5145,10 @@ function renderCalendar(content) {
         });
         row.append(
           el("span", "calendar-entry-dot"),
-          el("span", "", describeEntry("daily", source, 14)),
+          el("span", "calendar-entry-title", describeEntry("daily", source, 14)),
         );
+        appendEntryMedia(row, { kind: "daily", source }, { compact: true });
+        appendEntryTags(row, { kind: "daily", source }, 2);
         entryWrap.append(row);
         return;
       }
@@ -5090,7 +5159,12 @@ function renderCalendar(content) {
       });
       if (item.status === "done") row.classList.add("is-done");
       if (item.meta?.recurrence?.freq) row.classList.add("is-recurring");
-      row.append(el("span", "calendar-entry-dot"), el("span", "", item.title));
+      row.append(
+        el("span", "calendar-entry-dot"),
+        el("span", "calendar-entry-title", item.title),
+      );
+      appendEntryMedia(row, { kind: "item", source: item }, { compact: true });
+      appendEntryTags(row, { kind: "item", source: item }, 2);
       entryWrap.append(row);
     });
     if (entries.length > 3)
@@ -5138,6 +5212,8 @@ function renderCalendar(content) {
           el("span", "agenda-time", "记录"),
           el("strong", "agenda-title", describeEntry("daily", source, 80)),
         );
+        appendEntryMedia(row, { kind: "daily", source }, { compact: true });
+        appendEntryTags(row, { kind: "daily", source }, 2);
         list.append(row);
       });
     else
@@ -7281,50 +7357,7 @@ function renderDailyEntryActions(entry, ai) {
   return actions;
 }
 function showDailyLightbox(images, index) {
-  let current = index;
-  // Escape 已由 <dialog> 的 cancel 事件统一处理（见 modal 监听），这里只绑定
-  // 方向键；监听仅在灯箱打开期间生效，关闭时经 modalCleanup 移除，不泄漏到其他视图。
-  let onKeyDown = null;
-  showModal("图片预览", (body) => {
-    const wrap = el("div", "daily-lightbox");
-    const img = el("img");
-    const counter = el("span", "daily-lightbox-count");
-    const renderImage = () => {
-      const url = dailyImageURL(images[current]);
-      if (url) img.src = url;
-      img.alt = images[current]?.name || "记录图片";
-      counter.textContent = `${current + 1} / ${images.length}`;
-    };
-    renderImage();
-    wrap.append(img);
-    body.append(wrap, counter);
-    if (images.length > 1) {
-      const goPrev = () => {
-        current = (current - 1 + images.length) % images.length;
-        renderImage();
-      };
-      const goNext = () => {
-        current = (current + 1) % images.length;
-        renderImage();
-      };
-      const controls = el("div", "daily-lightbox-controls");
-      const prev = button("上一张", "button secondary", goPrev);
-      const next = button("下一张", "button primary", goNext);
-      controls.append(prev, next);
-      body.append(controls);
-      onKeyDown = (event) => {
-        if (event.key === "ArrowLeft") {
-          event.preventDefault();
-          goPrev();
-        } else if (event.key === "ArrowRight") {
-          event.preventDefault();
-          goNext();
-        }
-      };
-      document.addEventListener("keydown", onKeyDown);
-      modalCleanup = () => document.removeEventListener("keydown", onKeyDown);
-    }
-  });
+  openImageViewer(images.map((img) => ({ ...img, url: dailyImageURL(img) })), index);
 }
 async function recognizeDailyEntry(entry, { silent = false } = {}) {
   if (!visionEnabled()) {

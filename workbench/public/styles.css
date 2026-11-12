@@ -6460,3 +6460,19 @@ form label + label {
   color: var(--text);
   font-size: 14px;
 }
+
+/* 日历与日程的首图与标签展示 */
+.calendar-entry { flex-wrap: wrap; row-gap: 2px; }
+.calendar-entry-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.entry-thumb { position: relative; width: 40px; height: 40px; flex: 0 0 40px; padding: 0; border: 0; border-radius: 8px; overflow: hidden; background: var(--surface-2, #eee); cursor: zoom-in; }
+.entry-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.entry-thumb.compact { width: 28px; height: 28px; flex-basis: 28px; border-radius: 6px; }
+.entry-thumb-count { position: absolute; right: 0; bottom: 0; padding: 0 3px; font-size: 10px; line-height: 14px; color: #fff; background: rgba(0,0,0,.65); border-radius: 4px 0 0 0; }
+.entry-thumb.is-broken { background: repeating-linear-gradient(45deg, #ddd, #ddd 4px, #eee 4px, #eee 8px); }
+.entry-tags { display: inline-flex; gap: 4px; max-width: 100%; overflow: hidden; }
+.entry-tags .tag { font-size: 10px; padding: 0 6px; border-radius: 999px; background: var(--tag-bg, #eef); white-space: nowrap; }
+.entry-tags-more { font-size: 10px; color: var(--muted); }
+@media (max-width: 760px) {
+  .calendar-entry { gap: 3px; }
+  .entry-thumb.compact { width: 22px; height: 22px; flex-basis: 22px; }
+}
