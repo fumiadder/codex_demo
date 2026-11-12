@@ -24,6 +24,7 @@ const state = {
   spaceTags: [],
   tagsLoadedSpace: null,
   tagsLoading: false,
+  tagsRequest: 0,
   search: { query: "", results: [], loading: false, request: 0, queried: "", error: "" },
   calendar: { month: "", filter: null, mode: "month" },
   notifications: { items: [], unread: 0, loaded: false, loading: false },
@@ -55,6 +56,7 @@ const state = {
     month: "",
     loading: false,
     loadedSpace: null,
+    request: 0,
     composer: [],
   },
 };
@@ -1652,6 +1654,7 @@ function enterDemo() {
     month: "",
     loading: false,
     loadedSpace: null,
+    request: 0,
     composer: [],
   };
   dailyConfigPromise = null;
@@ -1745,6 +1748,10 @@ function openBedtime(panel = "") {
 function showAuth() {
   bedtimeBoundary("logout");
   ++state.sessionEpoch;
+  ++state.tagsRequest;
+  state.tagsLoadedSpace = null;
+  state.tagsLoading = false;
+  state.spaceTags = [];
   ++state.authRequest;
   ++state.request;
   closeModal();
@@ -1768,6 +1775,7 @@ function showAuth() {
     month: "",
     loading: false,
     loadedSpace: null,
+    request: 0,
     composer: [],
   };
   dailyConfigPromise = null;
@@ -1822,10 +1830,14 @@ async function switchSpace(id) {
   state.items = [];
   state.daily.entries = [];
   state.daily.digests = {};
+  state.daily.month = "";
+  state.daily.loading = false;
   state.daily.loadedSpace = null;
+  ++state.daily.request;
   state.daily.composer = [];
   state.tagFilter = null;
   state.spaceTags = [];
+  ++state.tagsRequest;
   state.tagsLoadedSpace = null;
   state.tagsLoading = false;
   state.calendar = { month: "", filter: null };
@@ -2285,7 +2297,8 @@ function showDayEntries(dateString) {
 // 当日回顾：按四类分组列出所选日期的全部内容。
 function renderDayReview(content) {
   const dateString = homeCalendar.day || dailyDateString();
-  if (state.space && state.daily.loadedSpace !== state.space.id && !state.daily.loading) {
+  if (state.space && (state.daily.loadedSpace !== state.space.id ||
+      state.daily.month !== dailyDateString().slice(0, 7))) {
     loadDailyEntries();
   }
   const [y, m, d] = dateString.split("-").map(Number);
@@ -2510,7 +2523,8 @@ function renderStatusList(content) {
 
 // 本月日程：从今天往回排到 1 号，可滚动查看更早的内容。
 function renderMonthAgenda(content) {
-  if (state.space && state.daily.loadedSpace !== state.space.id && !state.daily.loading) {
+  if (state.space && (state.daily.loadedSpace !== state.space.id ||
+      state.daily.month !== dailyDateString().slice(0, 7))) {
     loadDailyEntries();
   }
   const today = dailyDateString();
@@ -3038,32 +3052,44 @@ function toolbar(content, actionText, action, iconName = "plus") {
 async function loadSpaceTags() {
   if (!state.space || state.tagsLoadedSpace === state.space.id) return;
   if (state.tagsLoading) return;
+  const spaceId = state.space.id;
+  const session = state.sessionEpoch;
+  const request = ++state.tagsRequest;
+  const isCurrent = () => request === state.tagsRequest &&
+    session === state.sessionEpoch && state.space?.id === spaceId;
   state.tagsLoading = true;
   try {
+    let tags;
     if (state.demo) {
       const counts = new Map();
-      for (const item of state.demoStore[state.space.id] || []) {
+      for (const item of state.demoStore[spaceId] || []) {
         for (const tagName of new Set(itemTags(item)))
           counts.set(tagName, (counts.get(tagName) || 0) + 1);
       }
-      for (const entry of state.demoDaily[state.space.id] || []) {
+      for (const entry of state.demoDaily[spaceId] || []) {
         for (const tagName of new Set(itemTags(entry)))
           counts.set(tagName, (counts.get(tagName) || 0) + 1);
       }
-      state.spaceTags = [...counts.entries()]
+      tags = [...counts.entries()]
         .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
         .map(([name, count]) => ({ name, count }));
     } else {
-      const result = await api(`/api/spaces/${state.space.id}/tags`);
-      state.spaceTags = Array.isArray(result.tags) ? result.tags : [];
+      const result = await api(`/api/spaces/${spaceId}/tags`);
+      tags = Array.isArray(result.tags) ? result.tags : [];
     }
-    state.tagsLoadedSpace = state.space.id;
+    if (!isCurrent()) return;
+    state.spaceTags = tags;
+    state.tagsLoadedSpace = spaceId;
+    if (state.tagFilter && !tags.some((entry) => entry.name === state.tagFilter)) {
+      state.tagFilter = null;
+    }
     // 首次加载发生在 render 期间，拉取完成后补一次渲染让筛选条出现
     if (["tasks", "notes", "calendar", "daily"].includes(state.view)) render();
   } catch (err) {
-    toast(errorMessage(err), true);
+    if (isCurrent()) toast(errorMessage(err), true);
   } finally {
-    state.tagsLoading = false;
+    if (request === state.tagsRequest && session === state.sessionEpoch)
+      state.tagsLoading = false;
   }
 }
 // 标签筛选条：点标签筛选、再点取消；viewer 也可使用（读权限）
@@ -5210,19 +5236,21 @@ function renderCalendar(content) {
   if (mode === "agenda") {
     // 日程需要「今日记录」数据；若当前空间尚未加载过，触发一次加载
     // （loadDailyEntries 自带重入守卫，不会递归）。
-    if (state.space && state.daily.loadedSpace !== state.space.id && !state.daily.loading) {
+    if (state.space && (state.daily.loadedSpace !== state.space.id ||
+        state.daily.month !== dailyDateString().slice(0, 7))) {
       loadDailyEntries();
     }
     renderAgenda(content);
     return;
   }
-  // 月历也需要「今日记录」数据；加载函数自带重入守卫。
-  if (state.space && state.daily.loadedSpace !== state.space.id && !state.daily.loading) {
-    loadDailyEntries();
-  }
   if (!state.calendar.month)
     state.calendar.month = dailyDateString().slice(0, 7);
   const monthValue = state.calendar.month;
+  // 月历按当前展示月份加载记录，不能用自然当月的缓存替代其他月份。
+  if (state.space && (state.daily.loadedSpace !== state.space.id ||
+      state.daily.month !== monthValue)) {
+    loadDailyEntries(monthValue);
+  }
   const [year, month] = monthValue.split("-").map(Number);
   const firstDay = new Date(year, month - 1, 1);
   const offset = weekdayIndex(firstDay);
@@ -5260,7 +5288,8 @@ function renderCalendar(content) {
   ["周一", "周二", "周三", "周四", "周五", "周六", "周日"].forEach((name) =>
     weekdayHeader.append(el("span", "", name)),
   );
-  card.append(weekdayHeader);
+  const scroll = el("div", "calendar-scroll");
+  scroll.append(weekdayHeader);
   const grid = el("div", "calendar-grid");
   for (let index = 0; index < 42; index++) {
     const cellDate = new Date(
@@ -5334,7 +5363,8 @@ function renderCalendar(content) {
     });
     grid.append(cell);
   }
-  card.append(grid);
+  scroll.append(grid);
+  card.append(scroll);
   renderTagFilterBar(content);
   content.append(card);
   if (state.calendar.filter) {
@@ -6765,41 +6795,51 @@ async function loadDailyConfig() {
       });
   return dailyConfigPromise;
 }
-async function loadDailyEntries() {
+async function loadDailyEntries(month = dailyDateString().slice(0, 7)) {
   if (!state.space) return;
+  const spaceId = state.space.id;
+  const session = state.sessionEpoch;
+  if (state.daily.loadedSpace === spaceId && state.daily.month === month) {
+    render();
+    return;
+  }
   await loadDailyConfig();
+  if (session !== state.sessionEpoch || state.space?.id !== spaceId) return;
   if (state.demo) {
-    if (!state.demoDaily[state.space.id])
-      state.demoDaily[state.space.id] = demoDailyEntries();
-    state.daily.entries = state.demoDaily[state.space.id];
+    if (!state.demoDaily[spaceId])
+      state.demoDaily[spaceId] = demoDailyEntries();
+    state.daily.entries = state.demoDaily[spaceId];
     state.daily.digests = {};
-    state.daily.loadedSpace = state.space.id;
+    state.daily.month = month;
+    state.daily.loadedSpace = spaceId;
     render();
     return;
   }
-  if (state.daily.loadedSpace === state.space.id) {
-    render();
-    return;
-  }
-  // The loading flag is also the re-entrancy guard: render() can re-enter this
-  // function through the overview card, so without it the calls recurse forever.
-  if (state.daily.loading) return;
-  state.daily.loading = true;
+  const requestKey = `${spaceId}:${month}`;
+  // loading 同时记录请求键：相同请求重入时复用，不同月份或空间可继续加载。
+  if (state.daily.loading === requestKey) return;
+  const request = ++state.daily.request;
+  const isCurrent = () => request === state.daily.request &&
+    session === state.sessionEpoch && state.space?.id === spaceId;
+  state.daily.loading = requestKey;
   render();
   try {
-    const month = dailyDateString().slice(0, 7);
     const result = await api(
-      `/api/spaces/${state.space.id}/daily/entries?month=${month}`,
+      `/api/spaces/${spaceId}/daily/entries?month=${month}`,
     );
+    if (!isCurrent()) return;
     state.daily.entries = result.entries || [];
     state.daily.digests = result.digests || {};
     state.daily.month = result.month || month;
-    state.daily.loadedSpace = state.space.id;
+    state.daily.loadedSpace = spaceId;
   } catch (err) {
-    toast(errorMessage(err), true);
+    if (isCurrent()) toast(errorMessage(err), true);
+  } finally {
+    if (request === state.daily.request && session === state.sessionEpoch) {
+      state.daily.loading = false;
+      render();
+    }
   }
-  state.daily.loading = false;
-  render();
 }
 function upsertDailyEntry(entry) {
   const index = state.daily.entries.findIndex((item) => item.id === entry.id);
@@ -7713,6 +7753,8 @@ function deleteDailyEntry(entry) {
             state.objectURLs.delete(image.localURL);
           }
         }
+        state.tagsLoadedSpace = null;
+        loadSpaceTags();
         closeModal();
         render();
         toast(state.demo ? "已从本地演示移除" : "记录已删除");

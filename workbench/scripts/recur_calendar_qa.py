@@ -11,11 +11,15 @@
 
 任一断言失败以非 0 退出码结束；全程监听 pageerror 与 dialog。
 """
+import base64
+import json
 import os
 import re
 import sys
 import tempfile
 import threading
+import time
+import traceback
 import uuid
 from datetime import date, datetime, timedelta
 from pathlib import Path
@@ -43,6 +47,7 @@ def check(label, fn):
     except Exception as exc:  # noqa: BLE001 - QA 脚本需要收集全部失败
         FAILURES.append(f"{label}: {exc}")
         print("FAIL", label, "->", repr(exc), flush=True)
+        traceback.print_exc()
 
 
 def register(page):
@@ -490,6 +495,380 @@ def check_calendar_real(page):
     report("真实模式：月历落格/导航/重复落点/日期详情通过")
 
 
+def daily_payload(title, entry_date, tag):
+    return {
+        "entries": [{
+            "id": uuid.uuid4().hex,
+            "spaceId": "qa-space",
+            "area": "work",
+            "entryDate": entry_date,
+            "title": title,
+            "summary": "",
+            "body": title,
+            "status": "active",
+            "meta": {"tags": [tag]},
+            "createdBy": "qa-user",
+            "createdAt": entry_date + "T08:00:00.000Z",
+            "updatedAt": entry_date + "T08:00:00.000Z",
+            "images": [],
+        }],
+        "digests": {},
+        "month": entry_date[:7],
+    }
+
+
+def check_calendar_month_loading(page):
+    """切换月份必须请求该月记录，而非复用自然当月缓存。"""
+    previous_day = date.today().replace(day=1) - timedelta(days=1)
+    previous_month = previous_day.isoformat()[:7]
+    title = "QA 跨月记录 " + uuid.uuid4().hex[:6]
+    requested_months = []
+    pattern = re.compile(r"/api/spaces/[^/]+/daily/entries\?month=")
+
+    def handle_daily(route):
+        month = route.request.url.rsplit("month=", 1)[-1]
+        requested_months.append(month)
+        payload = daily_payload(title, previous_day.isoformat(), "历史") \
+            if month == previous_month else {"entries": [], "digests": {}, "month": month}
+        route.fulfill(
+            status=200,
+            content_type="application/json",
+            body=json.dumps(payload, ensure_ascii=False),
+        )
+
+    page.route(pattern, handle_daily)
+    try:
+        page.evaluate("navigate('calendar')")
+        page.locator("button.calendar-nav-btn", has_text="今天").click()
+        page.locator("button.calendar-nav-btn", has_text="上一月").click()
+        expect(page.locator(
+            ".calendar-grid .calendar-entry.agenda-daily", has_text=title,
+        )).to_have_count(1)
+        assert previous_month in requested_months, requested_months
+    finally:
+        page.unroute(pattern, handle_daily)
+    report("真实模式：月历切换月份会加载对应今日记录")
+
+
+def check_space_response_isolation(page):
+    """旧空间的慢 daily/tags 回包不能覆盖刚切换到的新空间。"""
+    second = page.evaluate(
+        """async (name) => {
+            const result = await api('/api/spaces', 'POST', {name});
+            state.spaces.push(result.space);
+            return result.space;
+        }""",
+        "QA 慢响应空间 " + uuid.uuid4().hex[:4],
+    )
+    old_sid = page.evaluate("state.space.id")
+    new_sid = second["id"]
+    current_month = today_str()[:7]
+    old_title = "QA 旧空间慢记录"
+    new_title = "QA 新空间记录"
+    pending = {"daily": [], "tags": []}
+    daily_pattern = re.compile(r"/api/spaces/[^/]+/daily/entries\?month=")
+    tags_pattern = re.compile(r"/api/spaces/[^/]+/tags$")
+
+    def fulfill(route, payload):
+        route.fulfill(
+            status=200,
+            content_type="application/json",
+            body=json.dumps(payload, ensure_ascii=False),
+        )
+
+    def handle_daily(route):
+        if f"/spaces/{old_sid}/" in route.request.url:
+            pending["daily"].append(route)
+        elif f"/spaces/{new_sid}/" in route.request.url:
+            fulfill(route, daily_payload(new_title, today_str(), "新空间标签"))
+        else:
+            route.continue_()
+
+    def handle_tags(route):
+        if f"/spaces/{old_sid}/" in route.request.url:
+            pending["tags"].append(route)
+        elif f"/spaces/{new_sid}/" in route.request.url:
+            fulfill(route, {"tags": [{"name": "新空间标签", "count": 1}]})
+        else:
+            route.continue_()
+
+    page.route(daily_pattern, handle_daily)
+    page.route(tags_pattern, handle_tags)
+    try:
+        page.wait_for_function("() => !state.daily.loading && !state.tagsLoading")
+        page.evaluate(
+            """() => {
+                state.daily.loadedSpace = null;
+                state.daily.month = '';
+                state.tagsLoadedSpace = null;
+                loadDailyEntries();
+                loadSpaceTags();
+            }""",
+        )
+        deadline = time.monotonic() + 10
+        while (not pending["daily"] or not pending["tags"]) and time.monotonic() < deadline:
+            page.wait_for_timeout(50)
+        assert pending["daily"] and pending["tags"], "旧空间请求未进入延迟队列"
+        page.evaluate("(sid) => switchSpace(sid)", new_sid)
+        page.wait_for_function(
+            """(sid) => state.space?.id === sid &&
+                state.daily.loadedSpace === sid && state.tagsLoadedSpace === sid""",
+            arg=new_sid,
+        )
+        assert page.evaluate("state.daily.entries[0]?.title") == new_title
+        assert page.evaluate("state.spaceTags[0]?.name") == "新空间标签"
+
+        # 上一月月历与自然当月总览可能各留下一个旧空间请求，全部释放后逐一核验隔离。
+        daily_count = len(pending["daily"])
+        tags_count = len(pending["tags"])
+        for index in range(daily_count):
+            fulfill(
+                pending["daily"].pop(0),
+                daily_payload(f"{old_title} {index + 1}", today_str(), "旧空间标签")
+                | {"month": current_month},
+            )
+            page.wait_for_timeout(50)
+            assert page.evaluate("state.daily.entries[0]?.title") == new_title
+        for _ in range(tags_count):
+            fulfill(
+                pending["tags"].pop(0),
+                {"tags": [{"name": "旧空间标签", "count": 1}]},
+            )
+            page.wait_for_timeout(50)
+            assert page.evaluate("state.spaceTags[0]?.name") == "新空间标签"
+        page.wait_for_timeout(250)
+        assert page.evaluate("state.space.id") == new_sid
+        assert page.evaluate("state.daily.entries[0]?.title") == new_title
+        assert page.evaluate("state.spaceTags[0]?.name") == "新空间标签"
+        assert all(not routes for routes in pending.values()), {
+            name: len(routes) for name, routes in pending.items()
+        }
+    finally:
+        for routes in pending.values():
+            for route in routes:
+                try:
+                    route.continue_()
+                except Exception as exc:  # 已取消或已释放的请求无需重复处理
+                    if "already handled" not in str(exc):
+                        raise
+        page.unroute(daily_pattern, handle_daily)
+        page.unroute(tags_pattern, handle_tags)
+    report("真实模式：旧空间慢回包不会污染新空间记录与标签")
+
+
+def check_calendar_images_tags_real(page, image_path):
+    """重复待办的真实首图、标签筛选、日程联动与日期格响应式布局。"""
+    title = "QA 月历图片学习 " + uuid.uuid4().hex[:6]
+    control_title = "QA 月历无标签对照 " + uuid.uuid4().hex[:6]
+    open_editor_for_new_task(page)
+    fill_task_title(page, title)
+    set_due(page, today_str())
+    select_freq(page, "每天")
+    tag_input = page.locator("#modal .tag-editor input")
+    tag_input.fill("学习")
+    tag_input.press("Enter")
+    expect(page.locator("#modal .tag-chip", has_text="学习")).to_have_count(1)
+    page.locator("#modal input[type='file']").set_input_files(str(image_path))
+
+    sid = page.evaluate("state.space.id")
+    with page.expect_response(
+        lambda response: response.request.method == "POST"
+        and response.url.endswith(f"/api/spaces/{sid}/items")
+    ) as created_response:
+        with page.expect_response(
+            lambda response: response.request.method == "POST"
+            and re.search(r"/api/items/[a-f0-9]{32}/images$", response.url) is not None
+        ) as uploaded_response:
+            save_modal(page)
+    assert created_response.value.status == 201
+    created_item = created_response.value.json()["item"]
+    assert "images" in created_item and created_item["images"] == [], created_item
+    assert uploaded_response.value.status == 201
+    uploaded = uploaded_response.value.json()
+    assert len(uploaded.get("images", [])) >= 1, uploaded
+    image = uploaded["image"]
+    assert image["mime"] == "image/png", image
+    assert image["size"] == image_path.stat().st_size, image
+    assert image["url"].startswith("/api/files/"), image
+
+    page.wait_for_function(
+        """(title) => {
+            const item = state.items.find((entry) => entry.title === title);
+            return item && Array.isArray(item.images) && item.images.length >= 1;
+        }""",
+        arg=title,
+    )
+    item = item_by_title(page, title)
+    assert item["id"] == created_item["id"]
+    assert item["meta"]["recurrence"]["freq"] == "daily", item["meta"]
+    assert item["meta"].get("tags") == ["学习"], item["meta"]
+    assert any(entry["id"] == image["id"] for entry in item["images"]), item["images"]
+    persisted = page.evaluate(
+        """async ({ sid, id }) => {
+            const result = await api(`/api/spaces/${sid}/items`);
+            return result.items.find((entry) => entry.id === id);
+        }""",
+        {"sid": sid, "id": item["id"]},
+    )
+    assert persisted and any(
+        entry["id"] == image["id"] for entry in persisted.get("images", [])
+    ), persisted
+
+    open_editor_for_new_task(page)
+    fill_task_title(page, control_title)
+    set_due(page, today_str())
+    save_modal(page)
+    control = item_by_title(page, control_title)
+    assert control["meta"].get("tags") == [], control["meta"]
+
+    page.evaluate("navigate('calendar')")
+    expect(page.locator(".calendar-grid .calendar-cell")).to_have_count(42)
+    learning = page.locator(".tag-filter-bar .tag-filter-chip").filter(
+        has_text=re.compile(r"^学习\s+\d+$"),
+    )
+    expect(learning).to_be_visible()
+    occurrences = page.evaluate(
+        """(title) => {
+            const item = state.items.find((entry) => entry.title === title);
+            return nextOccurrences(item, 3);
+        }""",
+        title,
+    )
+    assert len(occurrences) == 3, occurrences
+    month_dates = [value for value in occurrences if value.startswith(today_str()[:7])]
+    assert month_dates, occurrences
+    calendar_rows = page.locator(".calendar-grid .calendar-entry", has_text=title)
+    expect(calendar_rows).to_have_count(len(month_dates))
+    actual_dates = calendar_rows.evaluate_all(
+        """(rows) => rows.map((row) =>
+            row.closest('.calendar-cell').getAttribute('aria-label').slice(0, 10)
+        ).sort()""",
+    )
+    assert actual_dates == sorted(month_dates), (actual_dates, month_dates)
+    expect(
+        calendar_rows.locator(".entry-thumb.compact img"),
+    ).to_have_count(len(month_dates))
+    expect(
+        calendar_rows.locator(".entry-tags .tag", has_text="学习"),
+    ).to_have_count(len(month_dates))
+    first_image = calendar_rows.locator(".entry-thumb.compact img").first
+    expect(first_image).to_have_attribute("src", image["url"])
+    first_image.scroll_into_view_if_needed()
+    first_image.evaluate("(element) => element.decode()")
+    assert first_image.evaluate("(element) => element.naturalWidth") == 1
+    expect(
+        page.locator(".calendar-grid .calendar-entry", has_text=control_title),
+    ).to_have_count(1)
+
+    learning.click()
+    expect(learning).to_have_attribute("aria-pressed", "true")
+    expect(calendar_rows).to_have_count(len(month_dates))
+    filtered_dates = calendar_rows.evaluate_all(
+        """(rows) => rows.map((row) =>
+            row.closest('.calendar-cell').getAttribute('aria-label').slice(0, 10)
+        ).sort()""",
+    )
+    assert filtered_dates == actual_dates
+    expect(
+        page.locator(".calendar-grid .calendar-entry", has_text=control_title),
+    ).to_have_count(0)
+    assert page.locator(".calendar-grid .calendar-entry").evaluate_all(
+        """(rows) => rows.every((row) =>
+            [...row.querySelectorAll('.entry-tags .tag')]
+                .some((tag) => tag.textContent === '学习')
+        )""",
+    )
+
+    page.locator(".calendar-mode-btn", has_text="日程").click()
+    expect(page.locator(".agenda-list")).to_be_visible()
+    agenda_dates = [
+        value for value in occurrences if shift_day(-7) <= value <= shift_day(29)
+    ]
+    assert agenda_dates == occurrences, (agenda_dates, occurrences)
+    agenda_rows = page.locator(".agenda-list .agenda-item", has_text=title)
+    expect(agenda_rows).to_have_count(len(agenda_dates))
+    expect(agenda_rows.locator(".entry-thumb img")).to_have_count(len(agenda_dates))
+    expect(
+        page.locator(".agenda-list .agenda-item", has_text=control_title),
+    ).to_have_count(0)
+    assert page.locator(".agenda-list .agenda-item").evaluate_all(
+        """(rows) => rows.every((row) =>
+            [...row.querySelectorAll('.entry-tags .tag')]
+                .some((tag) => tag.textContent === '学习')
+        )""",
+    )
+
+    page.locator(".calendar-mode-btn", has_text="日历").click()
+    expect(page.locator(".calendar-grid")).to_be_visible()
+    learning.click()
+    expect(learning).to_have_attribute("aria-pressed", "false")
+    expect(calendar_rows).to_have_count(len(month_dates))
+    expect(
+        page.locator(".calendar-grid .calendar-entry", has_text=control_title),
+    ).to_have_count(1)
+    page.locator(".calendar-mode-btn", has_text="日程").click()
+    expect(agenda_rows).to_have_count(len(agenda_dates))
+    expect(
+        page.locator(".agenda-list .agenda-item", has_text=control_title),
+    ).to_have_count(1)
+    page.locator(".calendar-mode-btn", has_text="日历").click()
+    expect(page.locator(".calendar-grid")).to_be_visible()
+
+    for width, height in ((320, 720), (375, 812), (1920, 1080)):
+        page.set_viewport_size({"width": width, "height": height})
+        page.wait_for_timeout(100)
+        layout = page.evaluate(
+            """() => ({
+                viewport: innerWidth,
+                documentWidth: document.documentElement.scrollWidth,
+                containers: ['.calendar-scroll', '.calendar-card', '#view-content', '.main-content', '.workspace-body', 'body']
+                    .map((selector) => {
+                        const node = document.querySelector(selector);
+                        if (!node) return { selector };
+                        const rect = node.getBoundingClientRect();
+                        return { selector, left: rect.left, right: rect.right,
+                            width: rect.width, clientWidth: node.clientWidth,
+                            scrollWidth: node.scrollWidth,
+                            overflowX: getComputedStyle(node).overflowX };
+                    }),
+                cells: [...document.querySelectorAll('.calendar-grid .calendar-cell')]
+                    .map((cell) => {
+                        const bounds = cell.getBoundingClientRect();
+                        return {
+                            date: cell.getAttribute('aria-label'),
+                            clientWidth: cell.clientWidth,
+                            scrollWidth: cell.scrollWidth,
+                            parts: [...cell.querySelectorAll('.entry-thumb, .entry-tags')]
+                                .filter((part) => part.getClientRects().length)
+                                .map((part) => {
+                                    const rect = part.getBoundingClientRect();
+                                    return {
+                                        className: part.className,
+                                        left: rect.left - bounds.left,
+                                        right: rect.right - bounds.left,
+                                        cellWidth: bounds.width,
+                                    };
+                                }),
+                        };
+                    }),
+            })""",
+        )
+        assert layout["documentWidth"] <= width, (width, layout["containers"])
+        assert len(layout["cells"]) == 42
+        for cell in layout["cells"]:
+            assert cell["scrollWidth"] <= cell["clientWidth"], (width, cell)
+            for part in cell["parts"]:
+                # getBoundingClientRect 使用子像素，允许最多 1px 的舍入误差。
+                assert part["left"] >= -1, (width, cell["date"], part)
+                assert part["right"] <= part["cellWidth"] + 1, (
+                    width,
+                    cell["date"],
+                    part,
+                )
+    page.set_viewport_size({"width": 1440, "height": 1000})
+    report("真实模式：重复待办首图/标签筛选/日程恢复及 320/375/1920px 布局通过")
+
+
 def check_markdown_real(page):
     """Markdown 渲染与 XSS 降级：无 script 执行、javascript: 链接不可点。"""
     title = "QA Markdown 笔记 " + uuid.uuid4().hex[:6]
@@ -645,6 +1024,12 @@ def check_demo_mode(base, playwright):
 
 def main():
     with tempfile.TemporaryDirectory(prefix="zhixu-recur-qa-") as data:
+        image_path = Path(data) / "calendar-pixel.png"
+        image_path.write_bytes(
+            base64.b64decode(
+                "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9Zl9sAAAAASUVORK5CYII="
+            )
+        )
         server = FolioServer(
             ("127.0.0.1", 0),
             data_dir=data,
@@ -685,6 +1070,12 @@ def main():
                 check("真实模式多标签", lambda: check_tags_real(page))
                 check("真实模式跨空间搜索", lambda: check_search_real(page))
                 check("真实模式月历", lambda: check_calendar_real(page))
+                check("真实模式月历跨月记录", lambda: check_calendar_month_loading(page))
+                check("真实模式空间慢响应隔离", lambda: check_space_response_isolation(page))
+                check(
+                    "真实模式月历图片与标签筛选",
+                    lambda: check_calendar_images_tags_real(page, image_path),
+                )
                 check("真实模式 Markdown", lambda: check_markdown_real(page))
                 check("窄屏与 reduced-motion", lambda: check_narrow_and_motion(base, playwright))
                 check("演示模式", lambda: check_demo_mode(base, playwright))
@@ -692,6 +1083,8 @@ def main():
                 assert not page_errors, "Page errors: " + " | ".join(page_errors)
                 assert not dialogs, "Dialogs: " + " | ".join(dialogs)
                 report("全程无 pageerror、无浏览器 dialog")
+                # 延迟路由场景可能留下已取消的请求；关闭前忽略其清理异常。
+                page.unroute_all(behavior="ignoreErrors")
                 context.close()
                 browser.close()
         finally:

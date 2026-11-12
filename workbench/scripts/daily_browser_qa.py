@@ -82,11 +82,23 @@ with tempfile.TemporaryDirectory(prefix="zhixu-daily-qa-") as data:
             expect(page.locator(".daily-upload.ready")).to_have_count(2)
             expect(page.locator(".daily-counter")).to_have_text("2/9 张")
 
+            # Manual tags are edited in the quick composer and sent with creation.
+            tag_input = page.locator(".daily-composer .tag-editor input[aria-label='添加标签']")
+            tag_input.fill("学习")
+            tag_input.press("Enter")
+            expect(page.locator(".daily-composer .tag-chip-name")).to_have_text("学习")
             page.locator(".daily-note").fill("周会白板：确认上线节奏")
-            page.locator(".daily-composer .button.primary").click()
+            with page.expect_response(
+                lambda response: response.request.method == "POST"
+                and response.url.endswith("/daily/entries")
+            ) as create_response:
+                page.locator(".daily-composer .button.primary").click()
+            create_payload = create_response.value.request.post_data_json
+            assert create_payload["tags"] == ["学习"], create_payload
             expect(page.locator(".daily-entry")).to_have_count(1)
             entry = page.locator(".daily-entry").first
             expect(entry).to_contain_text("周会白板：确认上线节奏")
+            expect(entry.locator(".entry-tags .tag", has_text="学习")).to_have_count(1)
             expect(entry.locator(".daily-image-grid .daily-image-tile")).to_have_count(2)
             # Vision is disconnected, so the card says so instead of inventing a result.
             expect(entry.locator(".daily-ai.disabled")).to_contain_text("待连接")
@@ -110,6 +122,19 @@ with tempfile.TemporaryDirectory(prefix="zhixu-daily-qa-") as data:
             page.locator("#modal textarea").first.fill("手动整理的摘要内容")
             page.locator("#modal .button.primary").click()
             expect(entry.locator(".daily-summary")).to_contain_text("手动整理的摘要内容")
+
+            # Seed a same-day task with another tag as a filtering control.
+            control_title = "QA 工作对照待办"
+            control_item = page.evaluate("""async (title) => {
+              const item = await saveItem({
+                kind: 'task', area: state.area, title, body: '', status: 'active',
+                meta: {due: dailyDateString(), priority: 'normal', tags: ['工作']},
+              });
+              await loadSpaceTags();
+              return item;
+            }""", control_title)
+            assert control_item["meta"]["due"] == page.evaluate("dailyDateString()")
+            assert control_item["meta"]["tags"] == ["工作"], control_item
 
             # Today's capture appears only inside this month's schedule.
             page.evaluate("navigate('overview')")
@@ -155,6 +180,117 @@ with tempfile.TemporaryDirectory(prefix="zhixu-daily-qa-") as data:
             page.keyboard.press("Enter")
             expect(page.locator("#modal .daily-detail-body")).to_have_text("周会白板：确认上线节奏")
             page.keyboard.press("Escape")
+
+            # Month cells expose the same record's first image, count and manual tag.
+            mode_switch = page.locator(".calendar-mode-switch")
+            mode_switch.get_by_role("button", name="日历", exact=True).click()
+            today_cell = page.locator(".calendar-cell.today")
+            expect(today_cell).to_have_count(1)
+            calendar_record = today_cell.locator(
+                ".calendar-entry.agenda-daily", has_text="周会白板：确认上线节奏")
+            calendar_control = today_cell.locator(".calendar-entry", has_text=control_title)
+            expect(calendar_record).to_have_count(1)
+            expect(calendar_record.locator(".entry-thumb.compact")).to_be_visible()
+            expect(calendar_record.locator(".entry-thumb.compact img")).to_be_visible()
+            expect(calendar_record.locator(".entry-thumb-count")).to_have_text("2 张")
+            expect(calendar_record.locator(".entry-tags .tag", has_text="学习")).to_have_count(1)
+            expect(calendar_control).to_have_count(1)
+            expect(calendar_control.locator(".entry-tags .tag", has_text="工作")).to_have_count(1)
+
+            # Pick today so filtering can also prove month/selection stability.
+            today_cell.locator(".calendar-day").click()
+            expect(page.locator(".calendar-cell.today.picked")).to_have_count(1)
+            month_before = page.evaluate("state.calendar.month")
+            selected_before = page.evaluate("state.calendar.filter")
+            assert selected_before == page.evaluate("dailyDateString()")
+            study_filter = page.locator(".tag-filter-bar .tag-filter-chip", has_text="学习")
+            expect(study_filter).to_have_count(1)
+            study_filter.click()
+            expect(study_filter).to_have_attribute("aria-pressed", "true")
+            expect(calendar_record).to_have_count(1)
+            expect(calendar_control).to_have_count(0)
+            expect(today_cell.locator(".calendar-entry")).to_have_count(1)
+
+            # Agenda uses the same filter; its thumbnail opens the common viewer.
+            mode_switch.get_by_role("button", name="日程", exact=True).click()
+            filtered_agenda = page.locator(".agenda-group", has_text="今天")
+            filtered_record = filtered_agenda.locator(
+                ".agenda-item.agenda-daily", has_text="周会白板：确认上线节奏")
+            expect(filtered_record).to_have_count(1)
+            expect(filtered_agenda.locator(".agenda-item", has_text=control_title)).to_have_count(0)
+            expect(filtered_agenda.locator(".agenda-item")).to_have_count(1)
+            filtered_record.locator(".entry-thumb").click()
+            expect(page.locator("#modal .daily-lightbox img")).to_be_visible()
+            expect(page.locator("#modal .daily-lightbox-count")).to_have_text("1 / 2")
+            page.keyboard.press("ArrowRight")
+            expect(page.locator("#modal .daily-lightbox-count")).to_have_text("2 / 2")
+            page.keyboard.press("Escape")
+            expect(page.locator("#modal")).not_to_be_visible()
+
+            # Clearing the tag restores both views without changing month/date.
+            mode_switch.get_by_role("button", name="日历", exact=True).click()
+            expect(calendar_control).to_have_count(0)
+            study_filter.click()
+            expect(study_filter).to_have_attribute("aria-pressed", "false")
+            expect(calendar_record).to_have_count(1)
+            expect(calendar_control).to_have_count(1)
+            expect(today_cell.locator(".calendar-entry")).to_have_count(2)
+            assert page.evaluate("state.calendar.month") == month_before
+            assert page.evaluate("state.calendar.filter") == selected_before
+            for width, height in ((375, 844), (1920, 1080)):
+                page.set_viewport_size({"width": width, "height": height})
+                expect(page.locator(".calendar-grid")).to_be_visible()
+                expect(calendar_record.locator(".calendar-entry-title")).to_be_visible()
+                expect(calendar_record.locator(
+                    ".entry-tags .tag", has_text="学习")).to_be_visible()
+                thumbnail_box = calendar_record.locator(".entry-thumb.compact").bounding_box()
+                assert thumbnail_box is not None
+                assert abs(thumbnail_box["width"] - 40) <= 0.5, (width, thumbnail_box)
+                assert abs(thumbnail_box["height"] - 40) <= 0.5, (width, thumbnail_box)
+                no_overflow(page)
+            page.set_viewport_size({"width": 1440, "height": 1000})
+            mode_switch.get_by_role("button", name="日程", exact=True).click()
+            restored_agenda = page.locator(".agenda-group", has_text="今天")
+            expect(restored_agenda.locator(
+                ".agenda-item.agenda-daily", has_text="周会白板：确认上线节奏")).to_have_count(1)
+            expect(restored_agenda.locator(".agenda-item", has_text=control_title)).to_have_count(1)
+            assert page.evaluate("state.calendar.month") == month_before
+            assert page.evaluate("state.calendar.filter") == selected_before
+            print("PASS calendar tags, filtering, common lightbox and responsive overflow", flush=True)
+
+            # Deleting the active unique tag must clear filtering and preserve the selected date.
+            page.locator(".calendar-mode-btn", has_text="日历").click()
+            temporary_entry = page.evaluate("""async () => {
+              const result = await api(
+                `/api/spaces/${state.space.id}/daily/entries`, 'POST',
+                {body: 'QA 待删除标签记录', imageIds: [], area: state.area,
+                 tags: ['临时标签']},
+              );
+              upsertDailyEntry(result.entry);
+              state.tagsLoadedSpace = null;
+              await loadSpaceTags();
+              render();
+              return result.entry;
+            }""")
+            temporary_tag_filter = page.locator(
+                ".tag-filter-bar .tag-filter-chip", has_text="临时标签")
+            expect(temporary_tag_filter).to_have_count(1)
+            temporary_tag_filter.click()
+            expect(calendar_record).to_have_count(0)
+            page.evaluate("(entry) => deleteDailyEntry(entry)", temporary_entry)
+            page.locator("#modal").get_by_role(
+                "button", name="确认删除", exact=True).click()
+            expect(page.locator("#modal")).not_to_be_visible()
+            assert not page.evaluate(
+                "(id) => state.daily.entries.some((entry) => entry.id === id)",
+                arg=temporary_entry["id"],
+            )
+            expect(temporary_tag_filter).to_have_count(0)
+            expect(calendar_record).to_have_count(1)
+            assert page.evaluate("state.tagFilter") is None
+            assert page.evaluate("state.calendar.filter") == selected_before
+            print("PASS deleting the active unique tag clears filtering and its chip", flush=True)
+
             page.locator('[data-view="overview"]').click()
             print("PASS today records merge into month agenda and open as non-navigating dialogs", flush=True)
 
