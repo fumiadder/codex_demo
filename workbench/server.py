@@ -613,6 +613,22 @@ class FolioHandler(BaseHTTPRequestHandler):
             legacy = meta.get("tag")
             if isinstance(legacy, str) and legacy:
                 counts[legacy] = counts.get(legacy, 0) + 1
+        daily_rows = conn.execute("SELECT meta FROM daily_entries WHERE space_id=?", (sid,)).fetchall()
+        for row in daily_rows:
+            try:
+                meta = json.loads(row["meta"] or "{}")
+            except (ValueError, TypeError):
+                continue
+            if not isinstance(meta, dict):
+                continue
+            tags = meta.get("tags")
+            if not isinstance(tags, list):
+                continue
+            for tag in tags:
+                if isinstance(tag, str):
+                    tag = tag.strip()
+                    if tag:
+                        counts[tag] = counts.get(tag, 0) + 1
         ordered = sorted(counts.items(), key=lambda item: (-item[1], item[0]))[:50]
         return {"tags": [{"name": name, "count": count} for name, count in ordered]}
 

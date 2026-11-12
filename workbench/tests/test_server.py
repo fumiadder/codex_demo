@@ -1298,6 +1298,28 @@ class ServerTests(unittest.TestCase):
                                       cookie=cookie)[0], 404)
         self.assertEqual(self.request("POST", f"/api/spaces/{sid}/tags", {}, cookie=cookie)[0], 405)
 
+    def test_tags_include_daily_entries_not_ai(self):
+        cookie, _, space = self.register()
+        sid = space["id"]
+        status, body, _ = self.task(cookie, sid, meta={"tags": ["学习"]})
+        self.assertEqual(status, 201, body)
+        status, created, _ = self.request(
+            "POST", f"/api/spaces/{sid}/daily/entries",
+            {"area": "work", "title": "阅读", "body": "阅读记录", "tags": ["学习", "阅读"]},
+            cookie=cookie)
+        self.assertEqual(status, 201, created)
+        with self.server.db() as conn:
+            conn.execute(
+                "UPDATE daily_entries SET meta=? WHERE id=?",
+                (json.dumps({"tags": ["学习", "阅读"], "ai": {"tags": ["AI标签"]}},
+                            ensure_ascii=False), created["entry"]["id"]))
+        status, body, _ = self.request("GET", f"/api/spaces/{sid}/tags", cookie=cookie)
+        self.assertEqual(status, 200, body)
+        counts = {tag["name"]: tag["count"] for tag in body["tags"]}
+        self.assertEqual(counts.get("学习"), 2)
+        self.assertEqual(counts.get("阅读"), 1)
+        self.assertNotIn("AI标签", counts)
+
     # ---------- 跨空间搜索 ----------
 
     def seed_daily_row(self, sid, uid, title, summary="摘要", body="正文", entry_id=None):
