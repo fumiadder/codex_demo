@@ -1,18 +1,7 @@
-2026/11/11-22:08:02.238 3ebc Reusing MANIFEST /workspace/project/browser-profile/Default/Session Storage/MANIFEST-000001
-2026/11/11-22:08:02.239 3ebc Recovering log #69
-2026/11/11-22:08:02.239 3ebc Level-0 table #72: started
-2026/11/11-22:08:02.242 3ebc Level-0 table #72: 7181 bytes OK
-2026/11/11-22:08:02.242 3ebc Recovering log #71
-2026/11/11-22:08:02.242 3ebc Reusing old log /workspace/project/browser-profile/Default/Session Storage/000071.log 
-2026/11/11-22:08:02.244 3ebc Delete type=0 #69
-2026/11/11-22:08:02.244 3ec3 Compacting 4@0 + 1@1 files
-2026/11/11-22:08:02.247 3ec3 Generated table #73@0: 13 keys, 6945 bytes
-2026/11/11-22:08:02.247 3ec3 Compacted 4@0 + 1@1 files => 6945 bytes
-2026/11/11-22:08:02.248 3ec3 compacted to: files[ 0 2 0 0 0 0 0 ]
-2026/11/11-22:08:02.249 3ec3 Delete type=2 #64
-2026/11/11-22:08:02.249 3ec3 Delete type=2 #66
-2026/11/11-22:08:02.249 3ec3 Delete type=2 #68
-2026/11/11-22:08:02.249 3ec3 Delete type=2 #70
-2026/11/11-22:08:02.249 3ec3 Delete type=2 #72
-2026/11/11-22:08:15.398 3ece Level-0 table #75: started
-2026/11/11-22:08:15.400 3ece Level-0 table #75: 7207 bytes OK
+2026/11/11-22:08:16.598 3f72 Reusing MANIFEST /workspace/project/browser-profile/Default/Session Storage/MANIFEST-000001
+2026/11/11-22:08:16.598 3f72 Recovering log #71
+2026/11/11-22:08:16.599 3f72 Level-0 table #75: started
+2026/11/11-22:08:16.601 3f72 Level-0 table #75: 7207 bytes OK
+2026/11/11-22:08:16.601 3f72 Recovering log #74
+2026/11/11-22:08:16.602 3f72 Reusing old log /workspace/project/browser-profile/Default/Session Storage/000074.log 
+2026/11/11-22:08:16.603 3f72 Delete type=0 #71
