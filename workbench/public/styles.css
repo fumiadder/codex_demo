@@ -4955,7 +4955,7 @@ form label + label {
   background: var(--green);
   flex-shrink: 0;
 }
-.calendar-entry span:last-child {
+.calendar-entry span.calendar-entry-title {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -4993,7 +4993,11 @@ form label + label {
   .calendar-entry {
     padding: 2px 4px;
   }
-  .calendar-entry span:last-child {
+  /* 窄屏日期格只保留圆点与首图，标题和标签让位，避免挤压 */
+  .calendar-entry span.calendar-entry-title {
+    display: none;
+  }
+  .calendar-entry .entry-tags {
     display: none;
   }
   .calendar-entry .calendar-entry-dot {
@@ -6476,6 +6480,11 @@ form label + label {
   .calendar-entry { gap: 3px; }
   .entry-thumb.compact { width: 22px; height: 22px; flex-basis: 22px; }
 }
+
+/* 日程行的首图与标签换行展示，避免挤压标题 */
+.agenda-item { flex-wrap: wrap; }
+.agenda-item .entry-thumb { margin-left: auto; }
+.agenda-item .entry-tags { flex-basis: 100%; padding-left: 26px; }
 
 .item-image-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
 .item-image-cell { position: relative; width: 72px; height: 72px; }
