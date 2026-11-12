@@ -3052,7 +3052,7 @@ async function loadSpaceTags() {
     }
     state.tagsLoadedSpace = state.space.id;
     // 首次加载发生在 render 期间，拉取完成后补一次渲染让筛选条出现
-    if (["tasks", "notes", "calendar"].includes(state.view)) render();
+    if (["tasks", "notes", "calendar", "daily"].includes(state.view)) render();
   } catch (err) {
     toast(errorMessage(err), true);
   } finally {
@@ -6771,6 +6771,7 @@ function renderDailyComposer() {
   note.placeholder = "今天做了什么？写一句就好，也可以语音转文字或上传附件…";
   note.maxLength = 100000;
   note.setAttribute("aria-label", "记录附言");
+  const composerTags = buildTagEditor([]);
   const bottom = el("div", "daily-composer-bottom");
   const counter = el("span", "daily-counter", "");
   const submit = button(
@@ -6786,7 +6787,15 @@ function renderDailyComposer() {
       ? "原图保存在当前空间，识别在服务端完成，不会替换原图。"
       : "图片识别待连接服务端模型，可先保存图片并手动填写摘要。",
   );
-  card.append(picker, strip, note, bottom, hint);
+  card.append(
+    picker,
+    strip,
+    note,
+    labelField("标签", composerTags.node),
+    bottom,
+    hint,
+  );
+  card._tagEditor = composerTags;
   strip._submit = submit;
   renderComposerStrip(strip, counter);
   card._strip = strip;
@@ -6988,6 +6997,7 @@ function removeComposerImage(tempId) {
 }
 async function submitDailyEntry(note, submit) {
   if (!ensureWrite()) return;
+  const tagEditor = note.closest(".daily-composer")?._tagEditor;
   const items = state.daily.composer;
   const body = note.value.trim();
   if (!items.length && !body) {
@@ -7009,7 +7019,8 @@ async function submitDailyEntry(note, submit) {
   try {
     let entry;
     if (state.demo) {
-      entry = buildDemoDailyEntry(items, body);
+      const tags = tagEditor ? tagEditor.getTags() : [];
+      entry = buildDemoDailyEntry(items, body, tags);
       state.demoDaily[sid].unshift(entry);
       state.daily.entries = state.demoDaily[sid];
     } else {
@@ -7017,6 +7028,7 @@ async function submitDailyEntry(note, submit) {
         imageIds: items.map((item) => item.uploadId),
         body,
         area: state.area,
+        tags: tagEditor ? tagEditor.getTags() : [],
       });
       entry = result.entry;
       upsertDailyEntry(entry);
@@ -7027,6 +7039,8 @@ async function submitDailyEntry(note, submit) {
     }
     state.daily.composer = [];
     note.value = "";
+    state.tagsLoadedSpace = null;
+    loadSpaceTags();
     render();
     toast(state.demo ? "已保存到本地演示" : "记录已保存");
     if (!state.demo && visionEnabled() && entry.images?.length) {
@@ -7037,7 +7051,7 @@ async function submitDailyEntry(note, submit) {
     submit.disabled = false;
   }
 }
-function buildDemoDailyEntry(items, body) {
+function buildDemoDailyEntry(items, body, tags) {
   const now = new Date().toISOString();
   const entryId = `local-${randomUUID()}`;
   return {
@@ -7060,6 +7074,7 @@ function buildDemoDailyEntry(items, body) {
         recognizedAt: "",
         applied: false,
       },
+      tags,
       convertedSuggestions: [],
       source: "daily",
     },
@@ -7150,6 +7165,12 @@ function renderDailyEntry(entry) {
     card.append(body);
   }
   if (entry.images?.length) card.append(renderDailyImageGrid(entry));
+  const tags = itemTags(entry);
+  if (tags.length) {
+    const tagWrap = el("div", "entry-tags");
+    tags.forEach((name) => tagWrap.append(el("span", "tag", name)));
+    card.append(tagWrap);
+  }
   if (ai.status === "pending") {
     const pending = el("div", "daily-ai pending");
     pending.append(
@@ -7450,10 +7471,12 @@ function editDailyEntry(entry) {
       ],
       entry.area,
     );
+    const tagEditor = buildTagEditor(itemTags(entry));
     form.append(
       labelField("摘要", summary),
       labelField("附言", note),
       labelField("所属分区", area),
+      labelField("标签", tagEditor.node),
     );
     const error = el("p", "form-error");
     const save = el("button", "button primary", "保存修改");
@@ -7477,9 +7500,11 @@ function editDailyEntry(entry) {
           summary: summary.value.trim(),
           body: content,
           area: area.value,
+          tags: tagEditor.getTags(),
         };
         if (state.demo) {
           Object.assign(entry, payload);
+          entry.meta = { ...(entry.meta || {}), tags: payload.tags };
           entry.updatedAt = new Date().toISOString();
         } else {
           const result = await api(
@@ -7489,6 +7514,8 @@ function editDailyEntry(entry) {
           );
           upsertDailyEntry(result.entry);
         }
+        state.tagsLoadedSpace = null;
+        loadSpaceTags();
         closeModal();
         render();
         toast("记录已更新");
