@@ -1510,5 +1510,85 @@ class ServerTests(unittest.TestCase):
         self.assertEqual(status, 200)
 
 
+    # ---------- 待办图片 ----------
+
+    PNG = base64.b64decode(
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==")
+
+    def upload_item_image(self, cookie, item_id, content=None, name="a.png",
+                          mime="image/png", filename="a.png"):
+        content = self.PNG if content is None else content
+        boundary = "folio-image-boundary"
+        raw = (f'--{boundary}\r\nContent-Disposition: form-data; name="file"; '
+               f'filename="{filename}"\r\nContent-Type: {mime}\r\n\r\n').encode() + content \
+            + f"\r\n--{boundary}--\r\n".encode()
+        return self.request("POST", f"/api/items/{item_id}/images", cookie=cookie, raw=raw,
+            headers={"Content-Type": f"multipart/form-data; boundary={boundary}"})
+
+    def test_item_image_upload_and_list(self):
+        cookie, _, space = self.register()
+        _, body, _ = self.post_item(cookie, space["id"])
+        item_id = body["item"]["id"]
+        status, uploaded, _ = self.upload_item_image(cookie, item_id)
+        self.assertEqual(status, 201, uploaded)
+        self.assertEqual(len(uploaded["images"]), 1)
+        self.assertEqual(uploaded["images"][0]["mime"], "image/png")
+        self.assertTrue(uploaded["images"][0]["url"].startswith("/api/files/"))
+        status, items, _ = self.request("GET", f"/api/spaces/{space['id']}/items", cookie=cookie)
+        self.assertEqual(len(items["items"][0]["images"]), 1)
+
+    def test_item_image_rejects_non_image_and_overflow(self):
+        cookie, _, space = self.register()
+        _, body, _ = self.post_item(cookie, space["id"])
+        item_id = body["item"]["id"]
+        status, error, _ = self.upload_item_image(cookie, item_id, content=b"plain text",
+            mime="text/plain", filename="a.txt")
+        self.assertEqual(status, 400, error)
+        for _ in range(9):
+            self.assertEqual(self.upload_item_image(cookie, item_id)[0], 201)
+        status, error, _ = self.upload_item_image(cookie, item_id)
+        self.assertEqual(status, 409, error)
+        self.assertIn("9", error["error"])
+
+    def test_item_image_delete(self):
+        cookie, _, space = self.register()
+        _, body, _ = self.post_item(cookie, space["id"])
+        item_id = body["item"]["id"]
+        _, uploaded, _ = self.upload_item_image(cookie, item_id)
+        file_id = uploaded["images"][0]["id"]
+        status, result, _ = self.request("DELETE", f"/api/items/{item_id}/images/{file_id}", cookie=cookie)
+        self.assertEqual(status, 200, result)
+        self.assertEqual(result["images"], [])
+        with self.server.db() as db:
+            self.assertIsNone(db.execute("SELECT 1 FROM files WHERE id=?", (file_id,)).fetchone())
+
+    def test_item_image_viewer_cannot_write(self):
+        owner, _, space = self.register()
+        viewer, _, _ = self.register("viewer@example.com", "只读")
+        self.member(owner, space["id"], "viewer@example.com", "viewer")
+        _, body, _ = self.post_item(owner, space["id"])
+        item_id = body["item"]["id"]
+        status, error, _ = self.upload_item_image(viewer, item_id)
+        self.assertEqual(status, 403, error)
+
+    def test_item_image_scoped_to_task_and_member(self):
+        cookie, _, space = self.register()
+        _, body, _ = self.post_item(cookie, space["id"], kind="note")
+        note_id = body["item"]["id"]
+        status, _, _ = self.upload_item_image(cookie, note_id)
+        self.assertEqual(status, 400)
+        other, _, _ = self.register("other@example.com")
+        _, body, _ = self.post_item(cookie, space["id"])
+        status, _, _ = self.upload_item_image(other, body["item"]["id"])
+        self.assertEqual(status, 404)
+
+    def test_item_images_do_not_leak_to_media(self):
+        cookie, _, space = self.register()
+        self.upload(cookie, space["id"], content=b"media bytes", name="m.txt")
+        status, items, _ = self.request("GET", f"/api/spaces/{space['id']}/items", cookie=cookie)
+        media = [i for i in items["items"] if i["kind"] == "media"][0]
+        self.assertNotIn("images", media)
+
+
 if __name__ == "__main__":
     unittest.main()

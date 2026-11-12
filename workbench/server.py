@@ -48,6 +48,8 @@ from persistence import Database
 PASSWORD_ITERATIONS = 310_000
 SESSION_SECONDS = 14 * 24 * 60 * 60
 MAX_UPLOAD_BYTES = 25 * 1024 * 1024
+MAX_ITEM_IMAGES = 9
+ITEM_IMAGE_MIMES = frozenset({"image/png", "image/jpeg", "image/gif", "image/webp"})
 MAX_JSON_BYTES = 1024 * 1024
 ID_RE = r"[a-f0-9]{32}"
 EMAIL_RE = re.compile(r"^[^\s@\x00-\x1f]+@[^\s@\x00-\x1f]+\.[^\s@\x00-\x1f]+$")
@@ -910,11 +912,19 @@ class FolioHandler(BaseHTTPRequestHandler):
             if method not in ("GET", "HEAD"):
                 conn.commit()
                 upload_route = re.fullmatch(rf"/api/spaces/({ID_RE})/uploads", path)
+                image_upload_route = re.fullmatch(rf"/api/items/({ID_RE})/images", path)
                 if method == "POST" and upload_route:
                     # Reject unauthorized uploads before reading large bodies.
                     self.membership(conn, upload_route[1], user["id"], write=True)
                     conn.commit()
                     self._prepared_upload = self.prepare_upload()
+                elif method == "POST" and image_upload_route:
+                    item = conn.execute("SELECT space_id FROM items WHERE id=?", (image_upload_route[1],)).fetchone()
+                    if not item:
+                        raise APIError(404, "待办不存在或无权访问")
+                    self.membership(conn, item["space_id"], user["id"], write=True)
+                    conn.commit()
+                    self._prepared_upload = self.prepare_upload(empty_status=400)
                 elif (method in ("POST", "PATCH", "PUT") and path != "/api/auth/logout") or (method == "DELETE" and path == "/api/me/account"):
                     self.read_json()
                 else:
@@ -1001,6 +1011,22 @@ class FolioHandler(BaseHTTPRequestHandler):
                 # 读权限即可：成员（含查看者）都能看到空间共享条目的标签聚合。
                 self.membership(conn, sid, uid)
                 result = self.space_tags(conn, sid)
+            elif match := re.fullmatch(rf"/api/items/({ID_RE})/images", path):
+                if method != "POST":
+                    raise APIError(405, "不支持此请求方法")
+                item = conn.execute("SELECT * FROM items WHERE id=?", (match[1],)).fetchone()
+                if not item:
+                    raise APIError(404, "待办不存在或无权访问")
+                self.membership(conn, item["space_id"], uid, write=True)
+                result = self.upload_item_image(conn, item, uid)
+            elif match := re.fullmatch(rf"/api/items/({ID_RE})/images/({ID_RE})", path):
+                if method != "DELETE":
+                    raise APIError(405, "不支持此请求方法")
+                item = conn.execute("SELECT * FROM items WHERE id=?", (match[1],)).fetchone()
+                if not item:
+                    raise APIError(404, "待办不存在或无权访问")
+                self.membership(conn, item["space_id"], uid, write=True)
+                result = self.delete_item_image(conn, item, match[2])
             elif match := re.fullmatch(rf"/api/items/({ID_RE})", path):
                 row = conn.execute("SELECT * FROM items WHERE id=?", (match[1],)).fetchone()
                 if not row:
@@ -1305,7 +1331,7 @@ class FolioHandler(BaseHTTPRequestHandler):
         # Active formats including HTML and SVG remain downloadable only.
         return "application/octet-stream"
 
-    def prepare_upload(self):
+    def prepare_upload(self, empty_status=413):
         if not self.server.upload_slots.acquire(blocking=False):
             raise APIError(429, "上传任务较多，请稍后重试")
         self._upload_slot = True
@@ -1339,7 +1365,9 @@ class FolioHandler(BaseHTTPRequestHandler):
         if len(files) != 1:
             raise APIError(400, "每次请选择一个文件")
         filename, declared, payload = files[0]
-        if not payload or len(payload) > MAX_UPLOAD_BYTES:
+        if not payload:
+            raise APIError(empty_status, "请选择图片" if empty_status == 400 else "文件须为 1 字节至 25 MB")
+        if len(payload) > MAX_UPLOAD_BYTES:
             raise APIError(413, "文件须为 1 字节至 25 MB")
         filename = filename.replace("\\", "/").split("/")[-1]
         filename = self.string(filename, "文件名称", 255, True)
@@ -1351,6 +1379,86 @@ class FolioHandler(BaseHTTPRequestHandler):
         title = self.string(fields.get("title", filename), "标题", 200, True)
         mime = self.sniff_mime(payload, filename, declared)
         return filename, mime, payload, area, title
+
+    @staticmethod
+    def item_image_payload(db, item_id):
+        rows = db.execute(
+            "SELECT id,name,mime,size,created_at FROM files WHERE item_id=? ORDER BY created_at,id",
+            (item_id,)).fetchall()
+        return [{"id": r["id"], "name": r["name"], "mime": r["mime"], "size": r["size"],
+                 "url": "/api/files/" + r["id"], "createdAt": r["created_at"]} for r in rows]
+
+    def upload_item_image(self, conn, item, uid):
+        filename, mime, payload, _, _ = self._prepared_upload
+        if item["kind"] != "task":
+            raise APIError(400, "仅待办条目支持图片")
+        if mime not in ITEM_IMAGE_MIMES:
+            raise APIError(400, "仅支持 PNG、JPEG、GIF 或 WebP 图片")
+        item_id, sid = item["id"], item["space_id"]
+
+        # The reservation is durable while object I/O runs without the DB writer lock.
+        conn.commit()
+        self.server.cleanup_media()
+        conn.execute("BEGIN IMMEDIATE")
+        self.current_user(conn)
+        item = conn.execute("SELECT * FROM items WHERE id=?", (item_id,)).fetchone()
+        if not item:
+            raise APIError(404, "待办不存在或无权访问")
+        self.membership(conn, sid, uid, write=True)
+        if item["kind"] != "task":
+            raise APIError(400, "仅待办条目支持图片")
+        space_bytes, total_bytes = storage_jobs.usage(conn, sid)
+        if space_bytes + len(payload) > self.server.max_space_storage:
+            raise APIError(413, "空间存储容量已满，请先删除不需要的文件")
+        if total_bytes + len(payload) > self.server.max_total_storage:
+            raise APIError(507, "服务器可用存储不足，请联系管理员")
+        count = conn.execute("SELECT COUNT(*) FROM files WHERE item_id=?", (item_id,)).fetchone()[0]
+        if count >= MAX_ITEM_IMAGES:
+            raise APIError(409, "每条待办最多 9 张图片")
+        if self.server.media_storage.backend == "local" and shutil.disk_usage(self.server.data_dir).free < len(payload) + 100*1024*1024:
+            raise APIError(507, "服务器可用存储不足，请联系管理员")
+        file_id, stamp = new_id(), now_iso()
+        storage_jobs.reserve(conn, "uploads", file_id, sid, len(payload))
+        conn.commit()
+        try:
+            self.server.media_storage.put("uploads", file_id, payload, mime)
+            conn.execute("BEGIN IMMEDIATE")
+            self.current_user(conn)
+            item = conn.execute("SELECT * FROM items WHERE id=?", (item_id,)).fetchone()
+            if not item:
+                raise APIError(404, "待办不存在或无权访问")
+            self.membership(conn, sid, uid, write=True)
+            if item["kind"] != "task":
+                raise APIError(400, "仅待办条目支持图片")
+            count = conn.execute("SELECT COUNT(*) FROM files WHERE item_id=?", (item_id,)).fetchone()[0]
+            if count >= MAX_ITEM_IMAGES:
+                raise APIError(409, "每条待办最多 9 张图片")
+            storage_jobs.assert_pending(conn, "uploads", file_id)
+            conn.execute("INSERT INTO files VALUES (?,?,?,?,?,?,?)",
+                (file_id, sid, item_id, filename, mime, len(payload), stamp))
+            storage_jobs.publish(conn, "uploads", file_id)
+            images = self.item_image_payload(conn, item_id)
+            image = next(image for image in images if image["id"] == file_id)
+            conn.commit()
+            return {"image": image, "images": images}
+        except Exception:
+            try:
+                conn.rollback()
+            except sqlite3.Error:
+                pass
+            storage_jobs.abandon(self.server, "uploads", file_id, sid, len(payload))
+            raise
+
+    def delete_item_image(self, conn, item, file_id):
+        row = conn.execute("SELECT * FROM files WHERE id=? AND item_id=?", (file_id, item["id"])).fetchone()
+        if not row:
+            raise APIError(404, "图片不存在")
+        conn.execute("DELETE FROM files WHERE id=?", (file_id,))
+        storage_jobs.queue_delete(conn, "uploads", file_id, item["space_id"], row["size"])
+        images = self.item_image_payload(conn, item["id"])
+        conn.commit()
+        self.server.cleanup_media()
+        return {"ok": True, "images": images}
 
     def upload(self, conn, sid, uid):
         filename, mime, payload, area, title = self._prepared_upload
