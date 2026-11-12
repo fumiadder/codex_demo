@@ -2907,6 +2907,7 @@ function taskRow(item) {
   const miniList = renderSubtaskMiniList(item);
   if (miniList) body.append(miniList);
   row.append(check, body);
+  appendEntryMedia(row, { kind: "item", source: item }, { compact: true });
   if (meta.priority === "high" && item.status !== "done")
     row.append(el("span", "tag orange priority-tag", "优先"));
   const tags = itemTags(item);
@@ -3807,6 +3808,8 @@ function showEditor(kind, item, prefill = {}) {
       tagField.classList.add("editor-meta-wide");
       meta.append(tagField);
       let due, priority, status, recurEditor, subtaskEditor, startTime, endTime, remindAt;
+      let imageInput, uploadItemImages;
+      let pendingImages = [];
       if (kind === "task") {
         const prefillMeta = prefill.meta || {};
         due = input("date", "", item?.meta?.due || prefillMeta.due || prefill.due || "");
@@ -3868,6 +3871,132 @@ function showEditor(kind, item, prefill = {}) {
         const subtaskField = labelField("子任务（最多 20 项）", subtaskEditor.node);
         subtaskField.classList.add("editor-meta-wide");
         meta.append(subtaskField);
+        const imageList = el("div", "item-image-list");
+        imageInput = el("input");
+        imageInput.type = "file";
+        imageInput.accept = "image/png,image/jpeg,image/gif,image/webp";
+        imageInput.multiple = true;
+        const imageControls = el("div");
+        imageControls.append(
+          imageList,
+          el("p", "form-help", "最多 9 张，单张不超过 25 MB；支持 PNG、JPEG、GIF、WebP"),
+        );
+        if (canEdit) imageControls.append(imageInput);
+        const imageField = labelField("图片", imageControls);
+        imageField.classList.add("editor-meta-wide");
+        meta.append(imageField);
+
+        uploadItemImages = async (itemId, files) => {
+          const target =
+            state.items.find((entry) => entry.id === itemId) ||
+            (item?.id === itemId ? item : null);
+          let images = Array.isArray(target?.images) ? target.images : [];
+          if (images.length + files.length > 9) {
+            toast("每条待办最多 9 张图片", true);
+            return { images, failed: true };
+          }
+          let failed = false;
+          // 单张失败时提示并继续后续，尽量保留其他已选图片。
+          for (const file of files) {
+            try {
+              if (file.size < 1 || file.size > MAX_UPLOAD_MB * 1024 * 1024)
+                throw new Error(`「${file.name}」须在 1 字节到 ${MAX_UPLOAD_MB} MB 之间。`);
+              if (!imageInput.accept.split(",").includes(file.type))
+                throw new Error(`「${file.name}」仅支持 PNG、JPEG、GIF 或 WebP 图片。`);
+              if (state.demo) {
+                const url = URL.createObjectURL(file);
+                state.objectURLs.add(url);
+                images = [
+                  ...images,
+                  {
+                    id: `local-${randomUUID()}`,
+                    name: file.name,
+                    mime: file.type,
+                    size: file.size,
+                    url,
+                  },
+                ];
+              } else {
+                const data = new FormData();
+                data.append("file", file);
+                const result = await api(`/api/items/${itemId}/images`, "POST", data);
+                images = result.images || [];
+              }
+              if (target) target.images = images;
+              if (item?.id === itemId) item.images = images;
+            } catch (err) {
+              failed = true;
+              toast(errorMessage(err), true);
+            }
+          }
+          return { images, failed };
+        };
+
+        function renderItemImages(images) {
+          imageList.replaceChildren();
+          images.forEach((image, index) => {
+            const cell = el("span", "item-image-cell");
+            const img = el("img");
+            img.src = image.url;
+            img.alt = image.name;
+            img.addEventListener("click", (event) => {
+              event.preventDefault();
+              openImageViewer(images, index);
+            });
+            cell.append(img);
+            if (canEdit) {
+              const remove = button("删除", "item-image-remove", async () => {
+                if (!window.confirm(`确定删除图片「${image.name}」？`)) return;
+                remove.disabled = true;
+                try {
+                  let nextImages;
+                  if (state.demo) nextImages = images.filter((entry) => entry.id !== image.id);
+                  else {
+                    const result = await api(
+                      `/api/items/${item.id}/images/${image.id}`,
+                      "DELETE",
+                    );
+                    nextImages = result.images || [];
+                  }
+                  item.images = nextImages;
+                  const stored = state.items.find((entry) => entry.id === item.id);
+                  if (stored) stored.images = nextImages;
+                  renderItemImages(nextImages);
+                  render();
+                } catch (err) {
+                  toast(errorMessage(err), true);
+                  remove.disabled = false;
+                }
+              });
+              remove.setAttribute("aria-label", `删除图片 ${image.name}`);
+              cell.append(remove);
+            }
+            imageList.append(cell);
+          });
+        }
+        renderItemImages(item?.images || []);
+        if (canEdit)
+          imageInput.addEventListener("change", async () => {
+            const files = [...imageInput.files];
+            if (!files.length) return;
+            if (!item) {
+              pendingImages = files;
+              imageInput.value = "";
+              return;
+            }
+            imageInput.disabled = true;
+            save.disabled = true;
+            try {
+              const result = await uploadItemImages(item.id, files);
+              item.images = result.images;
+              renderItemImages(result.images);
+              render();
+            } finally {
+              imageInput.disabled = false;
+              imageInput.value = "";
+              save.disabled = false;
+            }
+          });
       }
       form.append(meta);
       const error = el("p", "form-error");
@@ -3969,9 +4098,25 @@ function showEditor(kind, item, prefill = {}) {
             if (subtasks.length) nextMeta.subtasks = subtasks;
             else delete nextMeta.subtasks;
           }
-          await saveItem(fields, item?.id);
+          const saved = await saveItem(fields, item?.id);
+          if (kind === "task" && item?.images && !saved.images) {
+            saved.images = item.images;
+            render();
+          }
+          let imageUploadFailed = false;
+          if (kind === "task") {
+            const files = item ? [...imageInput.files] : pendingImages;
+            if (files.length) {
+              const result = await uploadItemImages(saved.id, files);
+              saved.images = result.images;
+              imageUploadFailed = result.failed;
+              if (!item) pendingImages = [];
+              render();
+            }
+          }
           closeModal();
-          toast(state.demo ? "已保存到本地演示" : "记录已保存");
+          if (imageUploadFailed) toast("待办已保存，部分图片上传失败", true);
+          else toast(state.demo ? "已保存到本地演示" : "记录已保存");
         } catch (err) {
           error.textContent = errorMessage(err);
           save.disabled = false;
