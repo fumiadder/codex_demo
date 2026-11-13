@@ -1,8 +1,6 @@
 name: Workbench production deployment
 
 on:
-  push:
-    branches: [temp/reviewed-main-migration-20261112]
   workflow_run:
     workflows: [Workbench CI]
     types: [completed]
@@ -26,19 +24,19 @@ jobs:
   deploy:
     if: >-
       github.event.repository.private == false &&
-      (github.event_name == 'workflow_dispatch' || github.event_name == 'push') &&
-      github.ref == 'refs/heads/temp/reviewed-main-migration-20261112'
+      ((github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
+       (github.event.workflow_run.conclusion == 'success' &&
+        github.event.workflow_run.event == 'push' &&
+        github.event.workflow_run.head_branch == 'main' &&
+        github.event.workflow_run.head_repository.full_name == github.repository))
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     environment: production
     env:
       GH_TOKEN: ${{ github.token }}
-      DEPLOY_SHA: e78c21c7251d034ec72fa0a6e581d931567ea681
+      DEPLOY_SHA: ${{ github.event.workflow_run.head_sha || inputs.commit }}
       REPOSITORY: ${{ github.repository }}
       DEPLOY_EVENT: ${{ github.event_name }}
-      PREVIOUS_SHA: 6d57269f2bf3be952af89c5d0606a09c446c941e
-      PREVIOUS_SCHEMA: 03580192107b6c43748c237d619c4bf7af72430a4d27772d9e513b0e670ce278
-      TARGET_SCHEMA: 4dc3767fa0ea8e4c797f0150926a8f6962c1fef97d863e75a57ff81f9412ff5f
     steps:
       - name: Verify exact commit has successful CI
         id: source
@@ -48,8 +46,6 @@ jobs:
           sha = os.environ['DEPLOY_SHA']
           if not re.fullmatch(r'[a-f0-9]{40}', sha):
               raise SystemExit('完整 40 位 SHA 无效；未部署')
-          if sha != 'e78c21c7251d034ec72fa0a6e581d931567ea681':
-              raise SystemExit('一次性审核工作流仅允许已审核的 main 提交；未部署')
           repo = os.environ['REPOSITORY']
           result = subprocess.check_output(['gh', 'api', f'repos/{repo}/actions/workflows/workbench-ci.yml/runs?head_sha={sha}&status=completed&per_page=100'])
           runs = json.loads(result)['workflow_runs']
@@ -121,16 +117,11 @@ jobs:
           ssh_opts=(-i "$RUNNER_TEMP/workbench-ssh/key" -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$RUNNER_TEMP/workbench-ssh/known_hosts" -o ConnectTimeout=15)
           ssh "${ssh_opts[@]}" -p "${SSH_PORT:-22}" "$SSH_USER@$SSH_HOST" 'umask 077; mkdir -p /srv/zhixu/incoming /srv/zhixu/releases; test -f /srv/zhixu/shared/.env'
           scp "${ssh_opts[@]}" -P "${SSH_PORT:-22}" "$archive" "$SSH_USER@$SSH_HOST:/srv/zhixu/incoming/$DEPLOY_SHA.tar.gz"
-          ssh "${ssh_opts[@]}" -p "${SSH_PORT:-22}" "$SSH_USER@$SSH_HOST" "bash -s -- $DEPLOY_SHA $PREVIOUS_SHA $PREVIOUS_SCHEMA $TARGET_SCHEMA" <<'REMOTE'
+          ssh "${ssh_opts[@]}" -p "${SSH_PORT:-22}" "$SSH_USER@$SSH_HOST" "bash -s -- $DEPLOY_SHA" <<'REMOTE'
           set -euo pipefail
           umask 077
           source_sha=$1
-          previous_sha=$2
-          previous_schema=$3
-          target_schema=$4
-          [[ "$source_sha" == e78c21c7251d034ec72fa0a6e581d931567ea681 ]]
-          [[ "$previous_sha" == 6d57269f2bf3be952af89c5d0606a09c446c941e ]]
-          [[ "$previous_schema" =~ ^[a-f0-9]{64}$ && "$target_schema" =~ ^[a-f0-9]{64}$ ]]
+          [[ "$source_sha" =~ ^[a-f0-9]{40}$ ]]
           deploy_root=/srv/zhixu
           release_dir="$deploy_root/releases/$source_sha"
           if [[ ! -d "$release_dir" ]]; then
@@ -142,29 +133,7 @@ jobs:
             trap - EXIT
           fi
           [[ -f "$release_dir/SOURCE_SHA" && $(cat "$release_dir/SOURCE_SHA") == "$source_sha" ]]
-          [[ $(cat "$deploy_root/state/current-sha") == "$previous_sha" ]]
-          previous_release=$(readlink -f "$deploy_root/current")
-          [[ "$previous_release" == "$deploy_root/releases/$previous_sha" ]]
-          [[ $(cat "$previous_release/SOURCE_SHA") == "$previous_sha" ]]
-          [[ $(python3 "$previous_release/scripts/ops_backup.py" schema "$previous_release/server.py") == "$previous_schema" ]]
-          [[ $(python3 "$release_dir/scripts/ops_backup.py" schema "$release_dir/server.py") == "$target_schema" ]]
-          reviewed_script="$release_dir/scripts/.deploy-reviewed-$source_sha.sh"
-          rm -f -- "$reviewed_script"
-          cp "$release_dir/scripts/deploy.sh" "$reviewed_script"
-          trap 'rm -f -- "$reviewed_script"' EXIT
-          python3 - "$reviewed_script" <<'PY'
-          import pathlib, sys
-          path = pathlib.Path(sys.argv[1])
-          text = path.read_text()
-          original = '''  [[ "$previous_schema" == "$SCHEMA_HASH" ]] || { echo 'Schema change refused before stopping app; reviewed migration and recovery plan required' >&2; exit 4; }'''
-          reviewed = '''  [[ "$previous_schema" == "$REVIEWED_PREVIOUS_SCHEMA" && "$SCHEMA_HASH" == "$REVIEWED_TARGET_SCHEMA" && "$source_sha" == "$REVIEWED_TARGET_SHA" ]] || { echo 'Reviewed source or schema transition mismatch' >&2; exit 4; }'''
-          if text.count(original) != 1:
-              raise SystemExit('Permanent schema gate was not found exactly once')
-          path.write_text(text.replace(original, reviewed))
-          PY
-          bash -n "$release_dir/scripts/deploy.sh"
-          bash -n "$reviewed_script"
-          REVIEWED_PREVIOUS_SCHEMA="$previous_schema" REVIEWED_TARGET_SCHEMA="$target_schema" REVIEWED_TARGET_SHA="$source_sha" bash "$reviewed_script" --root "$deploy_root" --sha "$source_sha"
+          bash "$release_dir/scripts/deploy.sh" --root "$deploy_root" --sha "$source_sha"
           rm -f -- "$deploy_root/incoming/$source_sha.tar.gz"
           REMOTE
           echo '### 已部署' >> "$GITHUB_STEP_SUMMARY"
