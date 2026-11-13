@@ -30,7 +30,7 @@ jobs:
         github.event.workflow_run.head_branch == 'main' &&
         github.event.workflow_run.head_repository.full_name == github.repository))
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 60
     environment: production
     env:
       GH_TOKEN: ${{ github.token }}
@@ -133,6 +133,7 @@ jobs:
             trap - EXIT
           fi
           [[ -f "$release_dir/SOURCE_SHA" && $(cat "$release_dir/SOURCE_SHA") == "$source_sha" ]]
+          export PIP_INDEX_URL=https://mirrors.aliyun.com/pypi/simple/
           bash "$release_dir/scripts/deploy.sh" --root "$deploy_root" --sha "$source_sha"
           rm -f -- "$deploy_root/incoming/$source_sha.tar.gz"
           REMOTE
