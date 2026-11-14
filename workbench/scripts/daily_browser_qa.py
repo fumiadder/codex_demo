@@ -392,6 +392,50 @@ with tempfile.TemporaryDirectory(prefix="zhixu-daily-qa-") as data:
             assert not errors, "Page errors: " + " | ".join(errors)
             print("PASS daily capture, staged upload, no-key degradation, editing and mobile layout", flush=True)
             context.close()
+
+            # Demo entries keep using their local object URLs after saving. They
+            # must remain usable in both the daily grid and the calendar lightbox.
+            demo_context = browser.new_context(
+                viewport={"width": 1440, "height": 1000},
+                locale="zh-CN", timezone_id="Asia/Shanghai",
+            )
+            demo_page = demo_context.new_page()
+            demo_errors = []
+            demo_page.on("pageerror", lambda error: demo_errors.append(str(error)))
+            demo_page.goto(base, wait_until="networkidle")
+            demo_page.locator("#demo-button").click()
+            expect(demo_page.locator("#demo-banner")).to_be_visible()
+            demo_page.get_by_role("button", name="今日记录", exact=True).click()
+            demo_page.set_input_files("#daily-file-input", [str(first), str(second)])
+            expect(demo_page.locator(".daily-upload.ready")).to_have_count(2)
+            demo_page.locator(".daily-note").fill("演示双图保存后仍可查看")
+            demo_page.locator(".daily-composer .button.primary").click()
+            demo_entry = demo_page.locator(".daily-entry", has_text="演示双图保存后仍可查看")
+            demo_images = demo_entry.locator(".daily-image-grid img")
+            expect(demo_images).to_have_count(2)
+            expect(demo_images.nth(0)).to_have_js_property("naturalWidth", 640)
+            expect(demo_images.nth(1)).to_have_js_property("naturalWidth", 640)
+
+            demo_page.locator('[data-view="overview"]').click()
+            demo_page.get_by_role("button", name="日历日程", exact=True).click()
+            demo_record = demo_page.locator(
+                ".calendar-cell.today .calendar-entry.agenda-daily",
+                has_text="演示双图保存后仍可查看",
+            )
+            demo_thumb = demo_record.locator(".entry-thumb.compact")
+            expect(demo_thumb).to_be_visible()
+            expect(demo_record.locator(".entry-thumb-count")).to_have_text("2 张")
+            expect(demo_thumb.locator("img")).to_be_visible()
+            expect(demo_thumb.locator("img")).to_have_js_property("naturalWidth", 640)
+            demo_thumb.click()
+            expect(demo_page.locator("#modal .daily-lightbox img")).to_be_visible()
+            expect(demo_page.locator(".daily-lightbox-count")).to_have_text("1 / 2")
+            demo_page.keyboard.press("ArrowRight")
+            expect(demo_page.locator(".daily-lightbox-count")).to_have_text("2 / 2")
+            expect(demo_page.locator("#modal .daily-lightbox img")).to_have_js_property("naturalWidth", 640)
+            assert not demo_errors, "Demo page errors: " + " | ".join(demo_errors)
+            print("PASS demo saved images remain visible in daily, calendar and lightbox", flush=True)
+            demo_context.close()
             browser.close()
     finally:
         server.shutdown()

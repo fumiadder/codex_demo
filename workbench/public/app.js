@@ -7225,8 +7225,10 @@ async function submitDailyEntry(note, submit) {
       upsertDailyEntry(entry);
     }
     for (const item of items) {
-      URL.revokeObjectURL(item.localURL);
-      state.objectURLs.delete(item.localURL);
+      if (!state.demo) {
+        URL.revokeObjectURL(item.localURL);
+        state.objectURLs.delete(item.localURL);
+      }
     }
     state.daily.composer = [];
     note.value = "";
