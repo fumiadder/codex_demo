@@ -1,0 +1,27 @@
+{
+  "provider": "render",
+  "serviceId": "srv-db32fonavr4c739idbg0",
+  "deployId": "dep-db32fpnavr4c739idef0",
+  "url": "https://zhixu-free-test.onrender.com",
+  "dashboardUrl": "https://dashboard.render.com/web/srv-db32fonavr4c739idbg0",
+  "repository": "https://github.com/fumiadder/codex_demo",
+  "branch": "deploy/zhixu-free-test",
+  "applicationCommit": "3d4bb527f95407b6591c19e449e929dcc06f3307",
+  "status": "live",
+  "deployedAt": "2026-10-07T11:07:58Z",
+  "plan": "free",
+  "region": "singapore",
+  "autoDeploy": false,
+  "storagePersistence": "ephemeral",
+  "publicVerification": {
+    "status": "passed",
+    "groups": 12,
+    "verifiedAt": "2026-10-07T11:19:18Z",
+    "workflowRunId": 37613219063,
+    "workflowJobId": 112765254460,
+    "workflowUrl": "https://github.com/fumiadder/codex_demo/actions/runs/37613219063",
+    "testCommit": "02417cef77947facab8578ecbc783129e987e076",
+    "location": "GitHub-hosted standard Linux runner, central US"
+  },
+  "mainlandReachability": "not independently tested"
+}

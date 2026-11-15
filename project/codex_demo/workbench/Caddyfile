@@ -1,0 +1,10 @@
+{
+	# Empty by default for domain deployments. Set CADDY_EXTRA_GLOBAL=local_certs
+	# for an IP-only server so Caddy issues its own internal self-signed certificate
+	# instead of attempting the public ACME flow.
+	{$CADDY_EXTRA_GLOBAL:}
+}
+{$WORKSPACE_SITE_ADDRESS} {
+	encode zstd gzip
+	reverse_proxy app:8000
+}

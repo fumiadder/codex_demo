@@ -1,0 +1,14 @@
+data
+**/__pycache__
+**/*.pyc
+.git
+.env
+.env.*
+!*.example
+node_modules
+*.zip
+tests
+backups
+artifacts
+.agents
+skills

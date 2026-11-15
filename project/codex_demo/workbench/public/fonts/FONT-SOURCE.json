@@ -1,0 +1,27 @@
+{
+  "family": "Zhixu Sleep Sans",
+  "upstream_family": "Noto Sans SC",
+  "license": "SIL Open Font License 1.1",
+  "upstream_repository": "https://github.com/google/fonts",
+  "upstream_commit": "2eb0b48d5f760f62e286216f0859a8c540dbc1bd",
+  "upstream_url": "https://raw.githubusercontent.com/google/fonts/2eb0b48d5f760f62e286216f0859a8c540dbc1bd/ofl/notosanssc/NotoSansSC%5Bwght%5D.ttf",
+  "upstream_sha256": "a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da",
+  "fonttools_version": "4.61.1",
+  "brotli_version": "1.2.0",
+  "modifications": [
+    "Subset Unicode glyphs to GB2312, existing UI and story text, Latin and punctuation.",
+    "Restrict wght axis to 400–500, with default 400.",
+    "Rename the derivative family to Zhixu Sleep Sans and encode as WOFF2."
+  ],
+  "file": "zhixu-sleep-sans-sc-v1.woff2",
+  "bytes": 1720228,
+  "sha256": "f6fb892ef7acc3c63e7b2454ca7205e037009b95fa4c1bb87defa0c111d58a0c",
+  "weight_range": [
+    400,
+    500
+  ],
+  "unicode_cmap_count": 7860,
+  "gb2312_han_characters": 6763,
+  "gb2312_han_missing": 0,
+  "fallback": "Other characters use the operating system font; this is a subset, not a complete Unicode Chinese font."
+}
