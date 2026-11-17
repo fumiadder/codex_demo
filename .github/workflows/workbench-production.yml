@@ -41,7 +41,8 @@ jobs:
       DEPLOY_SHA: ${{ github.event.workflow_run.head_sha || inputs.commit }}
       REPOSITORY: ${{ github.repository }}
       DEPLOY_EVENT: ${{ github.event_name }}
-      ACCESS_IP: ${{ inputs.public_ip || '' }}
+      # 备案期间临时使用公网 IP；备案后恢复为空字符串，并从服务器备份恢复原域名配置。
+      ACCESS_IP: ${{ inputs.public_ip || '8.136.157.178' }}
     steps:
       - name: Verify exact commit has successful CI
         id: source
