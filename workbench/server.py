@@ -536,6 +536,16 @@ class FolioHandler(BaseHTTPRequestHandler):
                 r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}", value
             ):
                 raise APIError(400, "提醒时间格式应为 YYYY-MM-DDTHH:MM")
+        # 每日提醒：HH:MM（24 小时制），空串表示关闭。
+        if "remindDaily" in meta and meta["remindDaily"]:
+            value = meta["remindDaily"]
+            valid_daily = (
+                isinstance(value, str)
+                and re.fullmatch(r"[0-2]\d:[0-5]\d", value)
+                and int(value[:2]) <= 23
+            )
+            if not valid_daily:
+                raise APIError(400, "每日提醒时间格式应为 HH:MM")
         if "recurrence" in meta:
             try:
                 recur.validate_recurrence(meta["recurrence"])

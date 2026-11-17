@@ -154,6 +154,27 @@ def _parse_remind_at(value):
     return int(time.mktime(parsed.timetuple()))
 
 
+DAILY_TIME_RE = re.compile(r"^([0-2]\d):([0-5]\d)$")
+
+
+def _parse_daily_time(value):
+    """解析每日提醒时刻 meta.remindDaily（HH:MM，24 小时制）；非法返回 None。"""
+    if not isinstance(value, str):
+        return None
+    match = DAILY_TIME_RE.fullmatch(value.strip())
+    if not match:
+        return None
+    hour, minute = int(match[1]), int(match[2])
+    if hour > 23:
+        return None
+    return hour, minute
+
+
+def _daily_moment_today(hour, minute, today):
+    """上海时区当天的 HH:MM 对应的 Unix 秒，时区换算与一次性提醒保持一致。"""
+    return _parse_remind_at(f"{today}T{hour:02d}:{minute:02d}")
+
+
 def _valid_due(value):
     if not isinstance(value, str) or not DUE_RE.fullmatch(value):
         return False
@@ -357,6 +378,20 @@ def _scan_user(conn, uid, today, now):
             continue
         if not isinstance(meta, dict):
             continue
+        # 最高优先：每日定时提醒（meta.remindDaily，形如 07:30）。合法时刻下当天
+        # 到点即提醒，按「任务+日期」去重保证每天最多一条；当天未到点也不再回退到
+        # 到期/一次性路径，避免同一天重复打扰。非法值则忽略并继续走原有逻辑。
+        daily = _parse_daily_time(meta.get("remindDaily"))
+        if daily is not None:
+            moment = _daily_moment_today(daily[0], daily[1], today)
+            if moment is not None and now >= moment:
+                dedup_key = f"task-daily:{item['id']}:{today}"
+                if dedup_key not in existing:
+                    existing.add(dedup_key)
+                    pending.append((item, item["space_id"], meta["remindDaily"].strip(), dedup_key))
+                continue
+            # 当天时刻未到：静默，不产生任何兜底通知。
+            continue
         # 优先：任务设置了具体提醒时间（meta.remindAt，形如 2026-11-10T09:00）
         remind_at = meta.get("remindAt")
         if remind_at:
@@ -409,7 +444,11 @@ def _persist_notifications(server, uid, pending, today):
             notification_id = uuid.uuid4().hex
             stamp = _stamp()
             title = item["title"]
-            if dedup_key.startswith("task-remind:"):
+            if dedup_key.startswith("task-daily:"):
+                # 每日定时提醒：第三元是用户设置的 HH:MM 时刻。
+                body = f"任务「{title}」的每日提醒时间到了（{due}）。"
+                payload = {"title": title, "body": body, "itemId": item["id"], "spaceId": sid, "remindDaily": due}
+            elif dedup_key.startswith("task-remind:"):
                 # 定时提醒：提醒时间就是用户设置的那个时刻，更口语化
                 body = f"任务「{title}」的提醒时间到了（{due.replace('T', ' ')}）。"
                 payload = {"title": title, "body": body, "itemId": item["id"], "spaceId": sid, "remindAt": due}

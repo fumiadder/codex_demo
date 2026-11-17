@@ -284,12 +284,15 @@ class NotifyServerTests(unittest.TestCase):
         conn.close()
         return response.status, body, result_headers
 
-    def create_task(self, cookie, sid, title="整理周报", due=None, status="todo", remind_at=None):
+    def create_task(self, cookie, sid, title="整理周报", due=None, status="todo",
+                    remind_at=None, remind_daily=None):
         meta = {}
         if due is not None:
             meta["due"] = due
         if remind_at is not None:
             meta["remindAt"] = remind_at
+        if remind_daily is not None:
+            meta["remindDaily"] = remind_daily
         return self.request("POST", f"/api/spaces/{sid}/items",
                             {"kind": "task", "area": "work", "title": title,
                              "status": status, "meta": meta}, cookie=cookie)
@@ -389,6 +392,101 @@ class NotifyServerTests(unittest.TestCase):
         self.assertEqual(status, 201, body)
         notify.run_maintenance(self.server, force=True)
         self.assertEqual(self.table_count("notifications"), 0)
+
+    def test_daily_reminder_fires_once_today_and_repeats_next_day(self):
+        cookie, user, space = self.register()
+        # 以「当前本地时间 2 分钟前」的时刻作为每日提醒，落在 15 分钟补发窗口内。
+        now = int(time.time())
+        local = time.localtime(now - 120)
+        hhmm = time.strftime("%H:%M", local)
+        today = time.strftime("%Y-%m-%d", local)
+        status, body = self.create_task(cookie, space["id"], remind_daily=hhmm)
+        self.assertEqual(status, 201, body)
+        item_id = body["item"]["id"]
+
+        with mock.patch.object(notify, "_now", return_value=now), \
+                mock.patch.object(notify, "_today", return_value=today):
+            notify.run_maintenance(self.server, force=True)
+            self.assertEqual(self.table_count("notifications"), 1)
+            # 同日第二次维护不重复。
+            notify.run_maintenance(self.server, force=True)
+            self.assertEqual(self.table_count("notifications"), 1)
+            note = self._all_notifications()[0]
+            self.assertEqual(note["user_id"], user["id"])
+            self.assertEqual(note["dedup_key"], f"task-daily:{item_id}:{today}")
+
+        # 次日同一时刻：新的一天重新触发，去重键带新日期。
+        next_now = now + 86400
+        next_local = time.localtime(next_now - 120)
+        next_day = time.strftime("%Y-%m-%d", next_local)
+        with mock.patch.object(notify, "_now", return_value=next_now), \
+                mock.patch.object(notify, "_today", return_value=next_day):
+            notify.run_maintenance(self.server, force=True)
+        self.assertEqual(self.table_count("notifications"), 2)
+        keys = {row["dedup_key"] for row in self._all_notifications()}
+        self.assertEqual(
+            keys,
+            {f"task-daily:{item_id}:{today}", f"task-daily:{item_id}:{next_day}"},
+        )
+
+    def test_daily_reminder_future_time_silent(self):
+        cookie, _, space = self.register()
+        # 提醒时刻在 1 小时后；同时任务已过期，验证不会回退产生到期通知。
+        future = time.strftime("%H:%M", time.localtime(time.time() + 3600))
+        status, body = self.create_task(
+            cookie, space["id"], due=self.day(-1), remind_daily=future,
+        )
+        self.assertEqual(status, 201, body)
+        notify.run_maintenance(self.server, force=True)
+        self.assertEqual(self.table_count("notifications"), 0)
+
+    def test_done_task_daily_reminder_suppressed(self):
+        cookie, _, space = self.register()
+        past = time.strftime("%H:%M", time.localtime(time.time() - 120))
+        status, body = self.create_task(
+            cookie, space["id"], status="done", remind_daily=past,
+        )
+        self.assertEqual(status, 201, body)
+        notify.run_maintenance(self.server, force=True)
+        self.assertEqual(self.table_count("notifications"), 0)
+
+    def test_invalid_daily_time_falls_through_to_due(self):
+        cookie, _, space = self.register()
+        yesterday = self.day(-1)
+        # 服务端 API 会拒绝非法 remindDaily；这里直接写库模拟绕过校验的存量脏数据，
+        # 扫描层应容错忽略它，按原有「按日期到期」路径照常通知。
+        status, body = self.create_task(cookie, space["id"], due=yesterday)
+        self.assertEqual(status, 201, body)
+        item_id = body["item"]["id"]
+        with self.server.db() as conn:
+            row = conn.execute("SELECT meta FROM items WHERE id = ?", (item_id,)).fetchone()
+            meta = json.loads(row["meta"])
+            meta["remindDaily"] = "25:99"
+            conn.execute("UPDATE items SET meta = ? WHERE id = ?",
+                         (json.dumps(meta, ensure_ascii=False), item_id))
+        notify.run_maintenance(self.server, force=True)
+        self.assertEqual(self.table_count("notifications"), 1)
+        note = self._all_notifications()[0]
+        self.assertTrue(note["dedup_key"].startswith("task-due:"))
+
+    def test_daily_reminder_payload_and_dedup_key(self):
+        cookie, _, space = self.register()
+        hhmm = time.strftime("%H:%M", time.localtime(time.time() - 60))
+        today = time.strftime("%Y-%m-%d", time.localtime())
+        status, body = self.create_task(
+            cookie, space["id"], title="喝水", remind_daily=hhmm,
+        )
+        self.assertEqual(status, 201, body)
+        item_id = body["item"]["id"]
+        notify.run_maintenance(self.server, force=True)
+        note = self._all_notifications()[0]
+        self.assertEqual(note["dedup_key"], f"task-daily:{item_id}:{today}")
+        self.assertIn("每日提醒", note["body"])
+        self.assertIn(hhmm, note["body"])
+        data = json.loads(note["data"])
+        self.assertEqual(data["remindDaily"], hhmm)
+        self.assertEqual(data["itemId"], item_id)
+        self.assertEqual(data["spaceId"], space["id"])
 
     def test_recurring_task_new_due_creates_new_notification(self):
         cookie, _, space = self.register()
