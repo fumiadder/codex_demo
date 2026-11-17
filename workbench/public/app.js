@@ -3839,7 +3839,7 @@ function showEditor(kind, item, prefill = {}) {
       const tagField = labelField("标签（最多 8 个，每个 ≤20 字）", tagEditor.node);
       tagField.classList.add("editor-meta-wide");
       meta.append(tagField);
-      let due, priority, status, recurEditor, subtaskEditor, startTime, endTime, remindAt;
+      let due, priority, status, recurEditor, subtaskEditor, startTime, endTime, remindAt, remindDaily;
       let imageInput, uploadItemImages;
       let pendingImages = [];
       if (kind === "task") {
@@ -3870,9 +3870,17 @@ function showEditor(kind, item, prefill = {}) {
           item?.meta?.remindAt || prefillMeta.remindAt || "",
         );
         remindAt.setAttribute("aria-label", "提醒时间");
+        // 每日提醒：固定时刻每天重复，完成或删除任务后自动停止。
+        remindDaily = input(
+          "time",
+          "",
+          item?.meta?.remindDaily || prefillMeta.remindDaily || "",
+        );
+        remindDaily.setAttribute("aria-label", "每日提醒时间");
         meta.append(
           labelField("计划日期", due),
           labelField("提醒时间（可选）", remindAt),
+          labelField("每日提醒（可选，每天到点）", remindDaily),
           labelField("优先级", priority),
           labelField("当前状态", status),
           labelField("开始时间（可选）", startTime),
@@ -4121,6 +4129,9 @@ function showEditor(kind, item, prefill = {}) {
             // 提醒时间：空值表示不提醒（按计划日期当天提醒）。
             if (remindAt.value) nextMeta.remindAt = remindAt.value;
             else delete nextMeta.remindAt;
+            // 每日提醒：空值表示不启用每天定时提醒。
+            if (remindDaily.value) nextMeta.remindDaily = remindDaily.value;
+            else delete nextMeta.remindDaily;
             if (endValue) nextMeta.endTime = endValue;
             else delete nextMeta.endTime;
             const recurrence = recurEditor.getRecurrence();

@@ -189,6 +189,28 @@ def checks(base):
         expect(page.locator("#view-content")).to_contain_text("手机上留下的一句话")
         report("手机弹窗录入并真实保存笔记")
 
+        # 完整任务编辑器：设置每日提醒时刻，验证窄屏不溢出、真实保存并可回显。
+        page.evaluate("showEditor('task')")
+        expect(page.locator("#modal")).to_be_visible()
+        daily_field = page.get_by_label("每日提醒时间")
+        expect(daily_field).to_be_visible()
+        assert daily_field.get_attribute("type") == "time"
+        daily_field.fill("07:30")
+        page.locator("#modal input[placeholder='想推进哪件事？']").fill("每天喝水")
+        no_overflow(page)
+        page.locator("#modal").get_by_role("button", name="保存记录", exact=True).click()
+        expect(page.locator("#modal")).not_to_be_visible()
+        saved = page.evaluate("""() => state.items.find(i => i.title === '每天喝水')""")
+        assert saved and saved["meta"].get("remindDaily") == "07:30", saved
+        report("320px 窄屏任务编辑器可设置并真实保存每日提醒")
+        # 重新打开同一条任务，确认每日提醒时刻正确回显。
+        page.evaluate("showEditor('task', state.items.find(i => i.meta.remindDaily === '07:30'))")
+        expect(page.locator("#modal")).to_be_visible()
+        expect(page.get_by_label("每日提醒时间")).to_have_value("07:30")
+        no_overflow(page)
+        page.locator("#modal").get_by_role("button", name="取消", exact=True).click()
+        report("每日提醒时刻在任务编辑器中正确回显且无横向溢出")
+
         for width, height in [(320, 720), (360, 780), (390, 844), (430, 932), (844, 390)]:
             page.set_viewport_size({"width": width, "height": height})
             page.wait_for_timeout(280)

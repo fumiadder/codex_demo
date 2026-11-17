@@ -1252,6 +1252,10 @@ class ServerTests(unittest.TestCase):
             {"tags": ["", "x"]},
             {"tags": ["x" * 21]},
             {"tags": [f"标签{i}" for i in range(9)]},
+            {"remindDaily": "25:00"},
+            {"remindDaily": "9:00"},
+            {"remindDaily": "ab:30"},
+            {"remindDaily": "12:60"},
         ]
         for bad_meta in bad_cases:
             with self.subTest(bad_meta=bad_meta):
@@ -1272,6 +1276,13 @@ class ServerTests(unittest.TestCase):
         self.assertEqual(status, 400)
         _, listing, _ = self.request("GET", f"/api/spaces/{sid}/items", cookie=cookie)
         self.assertEqual(listing["items"][0]["meta"]["recurrence"]["freq"], "weekly")
+        # 合法每日提醒时刻放行，空串也放行（用于关闭提醒）。
+        status, body, _ = self.post_item(cookie, sid, title="每日提醒", meta={"remindDaily": "07:30"})
+        self.assertEqual(status, 201, body)
+        self.assertEqual(body["item"]["meta"]["remindDaily"], "07:30")
+        status, body, _ = self.post_item(cookie, sid, title="关闭提醒", meta={"remindDaily": ""})
+        self.assertEqual(status, 201, body)
+        self.assertEqual(body["item"]["meta"].get("remindDaily", ""), "")
         # 旧的单值 meta.tag 字段不受新校验影响。
         status, body, _ = self.post_item(cookie, sid, title="旧标签", meta={"tag": "旧版单标签"})
         self.assertEqual(status, 201, body)
