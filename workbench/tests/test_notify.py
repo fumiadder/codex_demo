@@ -493,10 +493,18 @@ class NotifyServerTests(unittest.TestCase):
 
     # ----- 中文定时规则 remindSchedule ------------------------------------- #
     @staticmethod
-    def _shanghai_epoch(day, hour=10, minute=0):
-        """上海时区某天 HH:MM 对应的 Unix 秒。"""
-        stamp = datetime(day.year, day.month, day.day, hour, minute, tzinfo=SHANGHAI_TZ)
-        return int(stamp.timestamp())
+    def _local_moment(day, hour, minute=0):
+        """本地时区某天 HH:MM 的 Unix 秒；与生产 time.mktime 的换算保持一致，
+        这样无论 CI 运行在 UTC 还是 UTC+8 都能稳定断言。"""
+        moment = datetime.combine(day, datetime.min.time()).replace(
+            hour=hour, minute=minute, second=0, microsecond=0)
+        return int(time.mktime(moment.timetuple()))
+
+    def _run_forced(self):
+        # force 会推进模块级节流时间戳；每个用例归零，避免污染后续依赖非强制
+        # 调用节流行为的用例（test_maintenance_throttle_and_bad_meta_skipped）。
+        notify._last_maintenance = 0.0
+        notify.run_maintenance(self.server, force=True)
 
     def test_schedule_weekly_fires_on_matching_weekday_with_dedup(self):
         cookie, user, space = self.register()
@@ -506,13 +514,13 @@ class NotifyServerTests(unittest.TestCase):
         self.assertEqual(status, 201, body)
         item_id = body["item"]["id"]
         today_str = today.isoformat()
-        now = self._shanghai_epoch(today, 10)
+        now = self._local_moment(today, 10)
         with mock.patch.object(notify, "_now", return_value=now), \
                 mock.patch.object(notify, "_today", return_value=today_str):
-            notify.run_maintenance(self.server, force=True)
+            self._run_forced()
             self.assertEqual(self.table_count("notifications"), 1)
-            # 同日再次维护不去重外不重复。
-            notify.run_maintenance(self.server, force=True)
+            # 同日再次维护去重，不重复产生。
+            self._run_forced()
             self.assertEqual(self.table_count("notifications"), 1)
         note = self._all_notifications()[0]
         self.assertEqual(note["dedup_key"], f"task-remind:{item_id}:{today_str}")
@@ -531,10 +539,10 @@ class NotifyServerTests(unittest.TestCase):
             cookie, space["id"], due=self.day(-1), remind_schedule=rule,
         )
         self.assertEqual(status, 201, body)
-        now = self._shanghai_epoch(today, 10)
+        now = self._local_moment(today, 10)
         with mock.patch.object(notify, "_now", return_value=now), \
                 mock.patch.object(notify, "_today", return_value=today.isoformat()):
-            notify.run_maintenance(self.server, force=True)
+            self._run_forced()
         # 今天不该响：即使任务已到期也不产生任何兜底通知。
         self.assertEqual(self.table_count("notifications"), 0)
 
@@ -545,10 +553,10 @@ class NotifyServerTests(unittest.TestCase):
         status, body = self.create_task(cookie, space["id"], remind_schedule=rule)
         self.assertEqual(status, 201, body)
         # 当前时刻是上午 10 点，晚于 09:00、早于 18:00。
-        now = self._shanghai_epoch(today, 10)
+        now = self._local_moment(today, 10)
         with mock.patch.object(notify, "_now", return_value=now), \
                 mock.patch.object(notify, "_today", return_value=today.isoformat()):
-            notify.run_maintenance(self.server, force=True)
+            self._run_forced()
         self.assertEqual(self.table_count("notifications"), 0)
 
     def test_schedule_done_task_suppressed(self):
@@ -559,10 +567,10 @@ class NotifyServerTests(unittest.TestCase):
             cookie, space["id"], status="done", remind_schedule=rule,
         )
         self.assertEqual(status, 201, body)
-        now = self._shanghai_epoch(today, 10)
+        now = self._local_moment(today, 10)
         with mock.patch.object(notify, "_now", return_value=now), \
                 mock.patch.object(notify, "_today", return_value=today.isoformat()):
-            notify.run_maintenance(self.server, force=True)
+            self._run_forced()
         self.assertEqual(self.table_count("notifications"), 0)
 
     def test_schedule_monthly_day_31_fires_on_month_end(self):
@@ -573,10 +581,10 @@ class NotifyServerTests(unittest.TestCase):
         item_id = body["item"]["id"]
         # 2027-02 只有 28 天，31 号规则收敛到 28 号月末触发。
         end_day = date(2027, 2, 28)
-        now = self._shanghai_epoch(end_day, 10)
+        now = self._local_moment(end_day, 10)
         with mock.patch.object(notify, "_now", return_value=now), \
                 mock.patch.object(notify, "_today", return_value=end_day.isoformat()):
-            notify.run_maintenance(self.server, force=True)
+            self._run_forced()
         self.assertEqual(self.table_count("notifications"), 1)
         note = self._all_notifications()[0]
         self.assertEqual(note["dedup_key"], f"task-remind:{item_id}:2027-02-28")
@@ -591,6 +599,7 @@ class NotifyServerTests(unittest.TestCase):
         status, body = self.create_task(cookie, space["id"], remind_daily=hhmm)
         self.assertEqual(status, 201, body)
         item_id = body["item"]["id"]
+        notify._last_maintenance = 0.0
         with mock.patch.object(notify, "_now", return_value=now), \
                 mock.patch.object(notify, "_today", return_value=today):
             notify.run_maintenance(self.server, force=True)
