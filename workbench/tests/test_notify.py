@@ -13,7 +13,7 @@ import threading
 import time
 import unittest
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from unittest import mock
 from urllib.error import HTTPError
@@ -285,7 +285,7 @@ class NotifyServerTests(unittest.TestCase):
         return response.status, body, result_headers
 
     def create_task(self, cookie, sid, title="整理周报", due=None, status="todo",
-                    remind_at=None, remind_daily=None):
+                    remind_at=None, remind_daily=None, remind_schedule=None):
         meta = {}
         if due is not None:
             meta["due"] = due
@@ -293,6 +293,8 @@ class NotifyServerTests(unittest.TestCase):
             meta["remindAt"] = remind_at
         if remind_daily is not None:
             meta["remindDaily"] = remind_daily
+        if remind_schedule is not None:
+            meta["remindSchedule"] = remind_schedule
         return self.request("POST", f"/api/spaces/{sid}/items",
                             {"kind": "task", "area": "work", "title": title,
                              "status": status, "meta": meta}, cookie=cookie)
@@ -413,7 +415,7 @@ class NotifyServerTests(unittest.TestCase):
             self.assertEqual(self.table_count("notifications"), 1)
             note = self._all_notifications()[0]
             self.assertEqual(note["user_id"], user["id"])
-            self.assertEqual(note["dedup_key"], f"task-daily:{item_id}:{today}")
+            self.assertEqual(note["dedup_key"], f"task-remind:{item_id}:{today}")
 
         # 次日同一时刻：新的一天重新触发，去重键带新日期。
         next_now = now + 86400
@@ -426,7 +428,7 @@ class NotifyServerTests(unittest.TestCase):
         keys = {row["dedup_key"] for row in self._all_notifications()}
         self.assertEqual(
             keys,
-            {f"task-daily:{item_id}:{today}", f"task-daily:{item_id}:{next_day}"},
+            {f"task-remind:{item_id}:{today}", f"task-remind:{item_id}:{next_day}"},
         )
 
     def test_daily_reminder_future_time_silent(self):
@@ -480,13 +482,139 @@ class NotifyServerTests(unittest.TestCase):
         item_id = body["item"]["id"]
         notify.run_maintenance(self.server, force=True)
         note = self._all_notifications()[0]
-        self.assertEqual(note["dedup_key"], f"task-daily:{item_id}:{today}")
-        self.assertIn("每日提醒", note["body"])
+        self.assertEqual(note["dedup_key"], f"task-remind:{item_id}:{today}")
+        self.assertIn("定时提醒", note["body"])
         self.assertIn(hhmm, note["body"])
         data = json.loads(note["data"])
-        self.assertEqual(data["remindDaily"], hhmm)
+        # 旧 remindDaily 被归一化为「每天」规则，行为保持每天到点提醒。
+        self.assertEqual(data["remindSchedule"], {"kind": "daily", "time": hhmm})
         self.assertEqual(data["itemId"], item_id)
         self.assertEqual(data["spaceId"], space["id"])
+
+    # ----- 中文定时规则 remindSchedule ------------------------------------- #
+    @staticmethod
+    def _shanghai_epoch(day, hour=10, minute=0):
+        """上海时区某天 HH:MM 对应的 Unix 秒。"""
+        stamp = datetime(day.year, day.month, day.day, hour, minute, tzinfo=SHANGHAI_TZ)
+        return int(stamp.timestamp())
+
+    def test_schedule_weekly_fires_on_matching_weekday_with_dedup(self):
+        cookie, user, space = self.register()
+        today = datetime.now(SHANGHAI_TZ).date()
+        rule = {"kind": "weekly", "time": "09:00", "weekdays": ["MO", "TU", "WE", "TH", "FR", "SA", "SU"]}
+        status, body = self.create_task(cookie, space["id"], title="周提醒", remind_schedule=rule)
+        self.assertEqual(status, 201, body)
+        item_id = body["item"]["id"]
+        today_str = today.isoformat()
+        now = self._shanghai_epoch(today, 10)
+        with mock.patch.object(notify, "_now", return_value=now), \
+                mock.patch.object(notify, "_today", return_value=today_str):
+            notify.run_maintenance(self.server, force=True)
+            self.assertEqual(self.table_count("notifications"), 1)
+            # 同日再次维护不去重外不重复。
+            notify.run_maintenance(self.server, force=True)
+            self.assertEqual(self.table_count("notifications"), 1)
+        note = self._all_notifications()[0]
+        self.assertEqual(note["dedup_key"], f"task-remind:{item_id}:{today_str}")
+        self.assertIn("定时提醒", note["body"])
+        data = json.loads(note["data"])
+        self.assertEqual(data["remindSchedule"], rule)
+
+    def test_schedule_weekly_skips_non_matching_weekday(self):
+        cookie, _, space = self.register()
+        today = datetime.now(SHANGHAI_TZ).date()
+        # 只选「明天」对应的星期，今天必然不命中。
+        tomorrow = today + timedelta(days=1)
+        target = ["MO", "TU", "WE", "TH", "FR", "SA", "SU"][tomorrow.weekday()]
+        rule = {"kind": "weekly", "time": "09:00", "weekdays": [target]}
+        status, body = self.create_task(
+            cookie, space["id"], due=self.day(-1), remind_schedule=rule,
+        )
+        self.assertEqual(status, 201, body)
+        now = self._shanghai_epoch(today, 10)
+        with mock.patch.object(notify, "_now", return_value=now), \
+                mock.patch.object(notify, "_today", return_value=today.isoformat()):
+            notify.run_maintenance(self.server, force=True)
+        # 今天不该响：即使任务已到期也不产生任何兜底通知。
+        self.assertEqual(self.table_count("notifications"), 0)
+
+    def test_schedule_before_time_is_silent(self):
+        cookie, _, space = self.register()
+        today = datetime.now(SHANGHAI_TZ).date()
+        rule = {"kind": "daily", "time": "18:00"}
+        status, body = self.create_task(cookie, space["id"], remind_schedule=rule)
+        self.assertEqual(status, 201, body)
+        # 当前时刻是上午 10 点，晚于 09:00、早于 18:00。
+        now = self._shanghai_epoch(today, 10)
+        with mock.patch.object(notify, "_now", return_value=now), \
+                mock.patch.object(notify, "_today", return_value=today.isoformat()):
+            notify.run_maintenance(self.server, force=True)
+        self.assertEqual(self.table_count("notifications"), 0)
+
+    def test_schedule_done_task_suppressed(self):
+        cookie, _, space = self.register()
+        today = datetime.now(SHANGHAI_TZ).date()
+        rule = {"kind": "weekdays", "time": "09:00"}
+        status, body = self.create_task(
+            cookie, space["id"], status="done", remind_schedule=rule,
+        )
+        self.assertEqual(status, 201, body)
+        now = self._shanghai_epoch(today, 10)
+        with mock.patch.object(notify, "_now", return_value=now), \
+                mock.patch.object(notify, "_today", return_value=today.isoformat()):
+            notify.run_maintenance(self.server, force=True)
+        self.assertEqual(self.table_count("notifications"), 0)
+
+    def test_schedule_monthly_day_31_fires_on_month_end(self):
+        cookie, _, space = self.register()
+        rule = {"kind": "monthly", "time": "09:00", "monthDay": 31}
+        status, body = self.create_task(cookie, space["id"], title="月末复盘", remind_schedule=rule)
+        self.assertEqual(status, 201, body)
+        item_id = body["item"]["id"]
+        # 2027-02 只有 28 天，31 号规则收敛到 28 号月末触发。
+        end_day = date(2027, 2, 28)
+        now = self._shanghai_epoch(end_day, 10)
+        with mock.patch.object(notify, "_now", return_value=now), \
+                mock.patch.object(notify, "_today", return_value=end_day.isoformat()):
+            notify.run_maintenance(self.server, force=True)
+        self.assertEqual(self.table_count("notifications"), 1)
+        note = self._all_notifications()[0]
+        self.assertEqual(note["dedup_key"], f"task-remind:{item_id}:2027-02-28")
+
+    def test_legacy_remind_daily_still_fires_after_schedule_change(self):
+        # 旧数据只有 remindDaily、没有 remindSchedule：行为与每日规则一致，
+        # 去重键沿用新的 task-remind 前缀（每天一条、跨天重响）。
+        cookie, _, space = self.register()
+        now = int(time.time())
+        hhmm = time.strftime("%H:%M", time.localtime(now - 120))
+        today = time.strftime("%Y-%m-%d", time.localtime(now - 120))
+        status, body = self.create_task(cookie, space["id"], remind_daily=hhmm)
+        self.assertEqual(status, 201, body)
+        item_id = body["item"]["id"]
+        with mock.patch.object(notify, "_now", return_value=now), \
+                mock.patch.object(notify, "_today", return_value=today):
+            notify.run_maintenance(self.server, force=True)
+        note = self._all_notifications()[0]
+        self.assertEqual(note["dedup_key"], f"task-remind:{item_id}:{today}")
+        self.assertIn(hhmm, note["body"])
+
+    def test_invalid_schedule_falls_through_to_due(self):
+        # 绕过 API 校验直接写脏数据：非法 remindSchedule 应容错忽略，走到期路径。
+        cookie, _, space = self.register()
+        yesterday = self.day(-1)
+        status, body = self.create_task(cookie, space["id"], due=yesterday)
+        self.assertEqual(status, 201, body)
+        item_id = body["item"]["id"]
+        with self.server.db() as conn:
+            row = conn.execute("SELECT meta FROM items WHERE id = ?", (item_id,)).fetchone()
+            meta = json.loads(row["meta"])
+            meta["remindSchedule"] = {"kind": "daily"}  # 缺 time
+            conn.execute("UPDATE items SET meta = ? WHERE id = ?",
+                         (json.dumps(meta, ensure_ascii=False), item_id))
+        notify.run_maintenance(self.server, force=True)
+        self.assertEqual(self.table_count("notifications"), 1)
+        note = self._all_notifications()[0]
+        self.assertTrue(note["dedup_key"].startswith("task-due:"))
 
     def test_recurring_task_new_due_creates_new_notification(self):
         cookie, _, space = self.register()

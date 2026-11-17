@@ -189,45 +189,67 @@ def checks(base):
         expect(page.locator("#view-content")).to_contain_text("手机上留下的一句话")
         report("手机弹窗录入并真实保存笔记")
 
-        # 完整任务编辑器：设置每日提醒时刻，验证窄屏不溢出、真实保存并可回显。
+        # 完整任务编辑器：用中文规则设置「每周一、周三 07:30」定时提醒，
+        # 验证窄屏不溢出、真实保存并可回显（界面不出现 cron 表达式）。
         page.evaluate("showEditor('task')")
         expect(page.locator("#modal")).to_be_visible()
-        daily_field = page.get_by_label("每日提醒时间")
-        expect(daily_field).to_be_visible()
-        assert daily_field.get_attribute("type") == "time"
-        daily_field.fill("07:30")
-        page.locator("#modal input[placeholder='想推进哪件事？']").fill("每天喝水")
+        time_field = page.locator(".remind-editor").get_by_label("定时提醒时刻")
+        expect(time_field).to_be_visible()
+        assert time_field.get_attribute("type") == "time"
+        time_field.fill("07:30")
+        rule_select = page.locator(".remind-editor").get_by_label("定时提醒规则")
+        rule_select.select_option("weekly")
+        page.locator(".remind-weekdays .weekday-toggle[aria-label='周一']").click()
+        page.locator(".remind-weekdays .weekday-toggle[aria-label='周三']").click()
+        page.locator("#modal input[placeholder='想推进哪件事？']").fill("每周例会准备")
         no_overflow(page)
         page.locator("#modal").get_by_role("button", name="保存记录", exact=True).click()
         expect(page.locator("#modal")).not_to_be_visible()
-        saved = page.evaluate("""() => state.items.find(i => i.title === '每天喝水')""")
-        assert saved and saved["meta"].get("remindDaily") == "07:30", saved
-        report("320px 窄屏任务编辑器可设置并真实保存每日提醒")
-        # 重新打开同一条任务，确认每日提醒时刻正确回显。
-        page.evaluate("showEditor('task', state.items.find(i => i.meta.remindDaily === '07:30'))")
+        saved = page.evaluate("""() => state.items.find(i => i.title === '每周例会准备')""")
+        assert saved and saved["meta"].get("remindSchedule") == {
+            "kind": "weekly", "time": "07:30", "weekdays": ["MO", "WE"],
+        }, saved
+        report("320px 窄屏任务编辑器可设置并真实保存每周定时提醒")
+        # 重新打开同一条任务，确认规则与时刻正确回显、周几按钮呈选中态。
+        page.evaluate("showEditor('task', state.items.find(i => i.title === '每周例会准备'))")
         expect(page.locator("#modal")).to_be_visible()
-        expect(page.get_by_label("每日提醒时间")).to_have_value("07:30")
+        expect(page.locator(".remind-editor").get_by_label("定时提醒时刻")).to_have_value("07:30")
+        expect(page.locator(".remind-editor").get_by_label("定时提醒规则")).to_have_value("weekly")
+        expect(page.locator(".remind-weekdays .weekday-toggle[aria-label='周一']")) \
+            .to_have_attribute("aria-pressed", "true")
+        expect(page.locator(".remind-weekdays .weekday-toggle[aria-label='周三']")) \
+            .to_have_attribute("aria-pressed", "true")
         no_overflow(page)
         page.locator("#modal").get_by_role("button", name="取消", exact=True).click()
-        report("每日提醒时刻在任务编辑器中正确回显且无横向溢出")
+        report("定时提醒规则在任务编辑器中正确回显且无横向溢出")
 
-        # 快速「记一笔」弹窗：勾选设为待办后，每日提醒字段出现、可保存。
+        # 快速「记一笔」弹窗：勾选设为待办后，定时规则出现；附件入口为 + 图标按钮。
         page.locator("#mobile-capture").click()
         expect(page.locator("#modal")).to_be_visible()
-        page.locator(".capture-note").fill("快速弹窗里的每日提醒")
+        attach = page.locator(".quick-tools .icon-button[aria-label='上传附件']")
+        expect(attach).to_be_visible()
+        # + 图标按钮内不再出现「上传附件」文字，仅保留无障碍名称。
+        assert attach.inner_text().strip() == ""
+        page.locator(".capture-note").fill("快速弹窗里的定时提醒")
         page.locator(".capture-toggle input").check()
-        quick_daily = page.locator(".capture-task-fields").get_by_label("每日提醒时间")
-        expect(quick_daily).to_be_visible()
-        assert quick_daily.get_attribute("type") == "time"
-        quick_daily.fill("21:05")
+        quick_time = page.locator(".capture-task-fields .remind-editor").get_by_label("定时提醒时刻")
+        expect(quick_time).to_be_visible()
+        quick_time.fill("21:05")
+        quick_rule = page.locator(".capture-task-fields .remind-editor").get_by_label("定时提醒规则")
+        quick_rule.select_option("monthly")
+        month_input = page.locator(".capture-task-fields .remind-editor").get_by_label("每月几号提醒")
+        expect(month_input).to_be_visible()
+        month_input.fill("15")
         no_overflow(page)
         page.locator("#modal").get_by_role("button", name="保存", exact=True).click()
         expect(page.locator("#modal")).not_to_be_visible()
         quick_saved = page.evaluate(
-            "() => state.items.find(i => i.title === '快速弹窗里的每日提醒')"
+            "() => state.items.find(i => i.title === '快速弹窗里的定时提醒')"
         )
-        assert quick_saved and quick_saved["meta"].get("remindDaily") == "21:05", quick_saved
-        report("320px 窄屏快速记一笔可设置并真实保存每日提醒")
+        assert quick_saved and quick_saved["meta"].get("remindSchedule") == {
+            "kind": "monthly", "time": "21:05", "monthDay": 15,
+        }, quick_saved
+        report("320px 窄屏快速记一笔可设置每月定时提醒，附件入口为 + 图标")
 
         for width, height in [(320, 720), (360, 780), (390, 844), (430, 932), (844, 390)]:
             page.set_viewport_size({"width": width, "height": height})

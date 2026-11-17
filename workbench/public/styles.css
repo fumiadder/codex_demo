@@ -6336,29 +6336,12 @@ form label + label {
   flex: 1;
 }
 
-/* 记一笔弹窗：待办字段左右对齐。
-   日期 input 与 select 的原生高度不同（49 vs 44），这里统一固定高度，
-   并让两个 label 采用相同的行高，标签与控件就会在同一水平线上。 */
-.capture-task-fields {
-  align-items: start;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-}
-.capture-task-fields > label {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  gap: 6px;
-  min-width: 0;
-  font-size: 13px;
-  line-height: 1.4;
-}
-
 /* 记一笔弹窗：待办字段左右并排且水平对齐。
    注意 form label + label 的全局 margin-top:19px 会把第二个字段推下去，
    这里必须显式归零，日期与优先级才会在同一条基线上。 */
 .capture-task-fields {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
   align-items: start;
   margin: 8px 0;
@@ -6382,12 +6365,72 @@ form label + label {
   box-sizing: border-box;
   line-height: normal;
 }
+/* 定时提醒内含时刻 + 规则 + 周几/月几号，跨整行展示避免与其它字段挤压。 */
+.capture-task-fields > .capture-remind {
+  grid-column: 1 / -1;
+}
 @media (max-width: 420px) {
   .capture-task-fields {
     grid-template-columns: minmax(0, 1fr);
   }
   .capture-task-fields > label + label {
     margin-top: 12px;
+  }
+}
+
+/* ---- 编辑器/快速弹窗：定时提醒规则 ---- */
+.remind-editor {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px;
+  background: var(--sand);
+}
+.remind-editor > label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.remind-editor input,
+.remind-editor select {
+  width: 100%;
+  min-height: 40px;
+  padding: 0 10px;
+  box-sizing: border-box;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--text);
+}
+.remind-weekdays[hidden],
+.remind-editor > label[hidden] {
+  display: none;
+}
+.remind-weekdays {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 6px;
+}
+.remind-label {
+  font-size: 11px;
+  color: var(--muted);
+}
+.remind-hint {
+  grid-column: 1 / -1;
+  margin: 0;
+  min-height: 4px;
+  font-size: 11px;
+  color: var(--green);
+}
+@media (max-width: 420px) {
+  .remind-editor {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

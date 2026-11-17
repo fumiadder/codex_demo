@@ -36,6 +36,7 @@ import bedtime
 import daily
 import export
 import notify
+import schedule
 import settings
 import identity
 import webpush
@@ -546,6 +547,12 @@ class FolioHandler(BaseHTTPRequestHandler):
             )
             if not valid_daily:
                 raise APIError(400, "每日提醒时间格式应为 HH:MM")
+        # 中文定时规则：每天/工作日/每周指定几天/每月几号 + HH:MM，结构由 schedule 校验。
+        if "remindSchedule" in meta and meta["remindSchedule"] is not None:
+            try:
+                schedule.validate_remind_schedule(meta["remindSchedule"])
+            except ValueError as exc:
+                raise APIError(400, f"定时提醒规则无效：{exc}") from None
         if "recurrence" in meta:
             try:
                 recur.validate_recurrence(meta["recurrence"])

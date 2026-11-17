@@ -1256,6 +1256,15 @@ class ServerTests(unittest.TestCase):
             {"remindDaily": "9:00"},
             {"remindDaily": "ab:30"},
             {"remindDaily": "12:60"},
+            {"remindSchedule": "daily"},
+            {"remindSchedule": {"kind": "daily"}},
+            {"remindSchedule": {"kind": "daily", "time": "24:00"}},
+            {"remindSchedule": {"kind": "yearly", "time": "09:00"}},
+            {"remindSchedule": {"kind": "weekly", "time": "09:00"}},
+            {"remindSchedule": {"kind": "weekly", "time": "09:00", "weekdays": ["XX"]}},
+            {"remindSchedule": {"kind": "weekly", "time": "09:00", "weekdays": ["MO", "MO"]}},
+            {"remindSchedule": {"kind": "monthly", "time": "09:00"}},
+            {"remindSchedule": {"kind": "monthly", "time": "09:00", "monthDay": 32}},
         ]
         for bad_meta in bad_cases:
             with self.subTest(bad_meta=bad_meta):
@@ -1283,6 +1292,19 @@ class ServerTests(unittest.TestCase):
         status, body, _ = self.post_item(cookie, sid, title="关闭提醒", meta={"remindDaily": ""})
         self.assertEqual(status, 201, body)
         self.assertEqual(body["item"]["meta"].get("remindDaily", ""), "")
+        # 中文定时规则：四种 kind 全部放行并原样回传。
+        valid_schedules = [
+            {"kind": "daily", "time": "07:30"},
+            {"kind": "weekdays", "time": "09:00"},
+            {"kind": "weekly", "time": "09:00", "weekdays": ["MO", "WE", "FR"]},
+            {"kind": "monthly", "time": "09:00", "monthDay": 31},
+        ]
+        for index, rule in enumerate(valid_schedules):
+            status, body, _ = self.post_item(
+                cookie, sid, title=f"定时规则{index}", meta={"remindSchedule": rule}
+            )
+            self.assertEqual(status, 201, body)
+            self.assertEqual(body["item"]["meta"]["remindSchedule"], rule)
         # 旧的单值 meta.tag 字段不受新校验影响。
         status, body, _ = self.post_item(cookie, sid, title="旧标签", meta={"tag": "旧版单标签"})
         self.assertEqual(status, 201, body)

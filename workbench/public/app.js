@@ -467,6 +467,13 @@ const RECUR_WEEKDAY_CN = {
   MO: "周一", TU: "周二", WE: "周三", TH: "周四",
   FR: "周五", SA: "周六", SU: "周日",
 };
+// 定时提醒规则：界面只展示中文选项，落库的 kind 英文值与后端 schedule.py 对齐。
+const REMIND_KIND_OPTIONS = [
+  ["daily", "每天"],
+  ["weekdays", "工作日（周一至周五）"],
+  ["weekly", "每周指定几天"],
+  ["monthly", "每月几号"],
+];
 const TAG_LIMIT = 8;
 const TAG_MAX_LENGTH = 20;
 const SUBTASK_LIMIT = 20;
@@ -3724,6 +3731,98 @@ function buildRecurrenceEditor(initialRec, getDue) {
   };
 }
 
+// 定时提醒编辑器：时刻 + 中文规则下拉，按规则展开周几按钮组或月几号输入。
+// 用户全程只看到中文，不接触 cron 表达式；返回结构与后端 schedule.py 对齐。
+function buildRemindScheduleEditor(initialSchedule, initialDaily) {
+  // 兼容旧的 remindDaily（HH:MM）：等价为「每天」规则。
+  const legacy =
+    initialDaily && /^[0-2]\d:[0-5]\d$/.test(initialDaily) && initialDaily.slice(0, 2) <= "23"
+      ? { kind: "daily", time: initialDaily }
+      : null;
+  const initial =
+    initialSchedule && REMIND_KIND_OPTIONS.some(([key]) => key === initialSchedule.kind)
+      ? initialSchedule
+      : legacy;
+  const draft = initial
+    ? {
+        kind: initial.kind,
+        time: initial.time || "",
+        weekdays: Array.isArray(initial.weekdays) ? [...initial.weekdays] : [],
+        monthDay: Number.isInteger(initial.monthDay) ? initial.monthDay : 1,
+      }
+    : { kind: "daily", time: "", weekdays: [], monthDay: 1 };
+  const node = el("div", "remind-editor");
+  const timeInput = input("time", "", draft.time);
+  timeInput.setAttribute("aria-label", "定时提醒时刻");
+  const timeField = labelField("提醒时刻", timeInput);
+  const kindSelect = select(REMIND_KIND_OPTIONS, draft.kind);
+  kindSelect.setAttribute("aria-label", "定时提醒规则");
+  const kindField = labelField("重复规则", kindSelect);
+  // 周几按钮组（复用重复设置的 weekday-toggle 样式，保持视觉一致）。
+  const weekdayWrap = el("div", "remind-weekdays");
+  weekdayWrap.append(el("span", "remind-label", "提醒在星期"));
+  const weekdayGroup = el("div", "weekday-toggle-group");
+  const weekdayButtons = new Map();
+  RECUR_WEEKDAYS.forEach((day) => {
+    const toggle = button(RECUR_WEEKDAY_CN[day].slice(1), "weekday-toggle");
+    toggle.type = "button";
+    toggle.setAttribute("aria-pressed", String(draft.weekdays.includes(day)));
+    toggle.setAttribute("aria-label", RECUR_WEEKDAY_CN[day]);
+    toggle.addEventListener("click", () => {
+      const picked = new Set(draft.weekdays);
+      if (picked.has(day)) picked.delete(day);
+      else picked.add(day);
+      draft.weekdays = RECUR_WEEKDAYS.filter((name) => picked.has(name));
+      sync();
+    });
+    weekdayButtons.set(day, toggle);
+    weekdayGroup.append(toggle);
+  });
+  weekdayWrap.append(weekdayGroup);
+  // 每月几号。
+  const monthDayInput = input("number", "几号", String(draft.monthDay));
+  monthDayInput.min = "1";
+  monthDayInput.max = "31";
+  monthDayInput.step = "1";
+  monthDayInput.setAttribute("aria-label", "每月几号提醒");
+  const monthDayField = labelField("每月几号", monthDayInput);
+  const hint = el("p", "remind-hint");
+  hint.setAttribute("aria-live", "polite");
+  node.append(timeField, kindField, weekdayWrap, monthDayField, hint);
+  function sync() {
+    weekdayWrap.hidden = draft.kind !== "weekly";
+    monthDayField.hidden = draft.kind !== "monthly";
+    weekdayButtons.forEach((toggle, day) =>
+      toggle.setAttribute("aria-pressed", String(draft.weekdays.includes(day))),
+    );
+  }
+  kindSelect.addEventListener("change", () => {
+    draft.kind = kindSelect.value;
+    sync();
+  });
+  monthDayInput.addEventListener("input", () => {
+    const value = Number.parseInt(monthDayInput.value, 10);
+    draft.monthDay = Number.isInteger(value) ? Math.min(31, Math.max(1, value)) : 1;
+  });
+  sync();
+  return {
+    node,
+    // 未填时刻视为不启用（返回 null，调用方删除 meta 字段）。
+    getSchedule() {
+      if (!timeInput.value) return null;
+      const rule = { kind: draft.kind, time: timeInput.value };
+      if (draft.kind === "weekly") {
+        if (!draft.weekdays.length) return null;
+        rule.weekdays = [...draft.weekdays];
+      } else if (draft.kind === "monthly") {
+        rule.monthDay = draft.monthDay;
+      }
+      return rule;
+    },
+  };
+}
+
+
 // 子任务编辑器：勾选框 + 文本 + 删除，最多 20 项
 function buildSubtaskEditor(initialSubtasks) {
   const rows = (Array.isArray(initialSubtasks) ? initialSubtasks : [])
@@ -3839,7 +3938,7 @@ function showEditor(kind, item, prefill = {}) {
       const tagField = labelField("标签（最多 8 个，每个 ≤20 字）", tagEditor.node);
       tagField.classList.add("editor-meta-wide");
       meta.append(tagField);
-      let due, priority, status, recurEditor, subtaskEditor, startTime, endTime, remindAt, remindDaily;
+      let due, priority, status, recurEditor, subtaskEditor, startTime, endTime, remindAt, remindEditor;
       let imageInput, uploadItemImages;
       let pendingImages = [];
       if (kind === "task") {
@@ -3870,17 +3969,18 @@ function showEditor(kind, item, prefill = {}) {
           item?.meta?.remindAt || prefillMeta.remindAt || "",
         );
         remindAt.setAttribute("aria-label", "提醒时间");
-        // 每日提醒：固定时刻每天重复，完成或删除任务后自动停止。
-        remindDaily = input(
-          "time",
-          "",
-          item?.meta?.remindDaily || prefillMeta.remindDaily || "",
+        // 定时提醒规则：中文可选（每天/工作日/每周指定几天/每月几号）+ 时刻，
+        // 到点推送站内通知与微信/Webhook，完成或删除任务后自动停止。
+        remindEditor = buildRemindScheduleEditor(
+          item?.meta?.remindSchedule || prefillMeta.remindSchedule,
+          item?.meta?.remindDaily || prefillMeta.remindDaily,
         );
-        remindDaily.setAttribute("aria-label", "每日提醒时间");
+        const remindField = labelField("定时提醒（可选）", remindEditor.node);
+        remindField.classList.add("editor-meta-wide");
         meta.append(
           labelField("计划日期", due),
           labelField("提醒时间（可选）", remindAt),
-          labelField("每日提醒（可选，每天到点）", remindDaily),
+          remindField,
           labelField("优先级", priority),
           labelField("当前状态", status),
           labelField("开始时间（可选）", startTime),
@@ -4129,9 +4229,11 @@ function showEditor(kind, item, prefill = {}) {
             // 提醒时间：空值表示不提醒（按计划日期当天提醒）。
             if (remindAt.value) nextMeta.remindAt = remindAt.value;
             else delete nextMeta.remindAt;
-            // 每日提醒：空值表示不启用每天定时提醒。
-            if (remindDaily.value) nextMeta.remindDaily = remindDaily.value;
-            else delete nextMeta.remindDaily;
+            // 定时提醒规则：未填时刻或周几未选表示不启用；同时清理旧的每日字段。
+            const remindSchedule = remindEditor.getSchedule();
+            if (remindSchedule) nextMeta.remindSchedule = remindSchedule;
+            else delete nextMeta.remindSchedule;
+            delete nextMeta.remindDaily;
             if (endValue) nextMeta.endTime = endValue;
             else delete nextMeta.endTime;
             const recurrence = recurEditor.getRecurrence();
@@ -4258,13 +4360,14 @@ function showNew(opts = {}) {
       ],
       "normal",
     );
-    // 每日提醒：固定时刻每天重复，完成或删除待办后自动停止；留空即不启用。
-    const remindDaily = input("time", "", "");
-    remindDaily.setAttribute("aria-label", "每日提醒时间");
+    // 定时提醒：中文规则（每天/工作日/每周/每月）+ 时刻；未填时刻即不启用。
+    const remindEditor = buildRemindScheduleEditor(null, "");
+    const remindField = labelField("定时提醒（可选）", remindEditor.node);
+    remindField.classList.add("capture-remind");
     taskFields.append(
       labelField("计划日期", due),
       labelField("优先级", priority),
-      labelField("每日提醒（可选，每天到点）", remindDaily),
+      remindField,
     );
     taskFields.hidden = !asTask;
     toggle.addEventListener("change", () => {
@@ -4273,9 +4376,9 @@ function showNew(opts = {}) {
       else note.placeholder = "随手记一句：想法、发生了什么、想做的事…";
     });
 
-    // 附件与语音
+    // 附件与语音：附件用 + 图标按钮，视觉更轻、与工具区对齐。
     const tools = el("div", "quick-tools");
-    const attach = button("上传附件", "button soft compact", () => chooseFiles(), "upload");
+    const attach = iconButton("plus", "上传附件", () => chooseFiles());
     const voice = button("语音转文字", "button soft compact", () => {
       startDailyDictation(note, voice);
     }, "mic");
@@ -4307,7 +4410,8 @@ function showNew(opts = {}) {
             due: due.value || dailyDateString(),
             priority: priority.value,
           };
-          if (remindDaily.value) taskMeta.remindDaily = remindDaily.value;
+          const remindSchedule = remindEditor.getSchedule();
+          if (remindSchedule) taskMeta.remindSchedule = remindSchedule;
           await saveItem({
             kind: "task",
             area: state.area,

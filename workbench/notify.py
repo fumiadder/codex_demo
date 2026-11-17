@@ -21,6 +21,7 @@ import ipaddress
 import json
 import logging
 import re
+import schedule
 import secrets
 import socket
 import sys
@@ -173,6 +174,26 @@ def _parse_daily_time(value):
 def _daily_moment_today(hour, minute, today):
     """上海时区当天的 HH:MM 对应的 Unix 秒，时区换算与一次性提醒保持一致。"""
     return _parse_remind_at(f"{today}T{hour:02d}:{minute:02d}")
+
+
+def _resolve_remind_rule(meta):
+    """从 meta 解析出归一化定时规则 dict；无规则或非法时返回 None。
+
+    优先使用结构化 remindSchedule；旧数据只有 remindDaily（HH:MM）时等价为
+    「每天」规则，保证历史待办继续按天提醒。
+    """
+    rule = meta.get("remindSchedule")
+    if isinstance(rule, dict):
+        try:
+            schedule.validate_remind_schedule(rule)
+        except ValueError:
+            return None
+        return rule
+    daily = _parse_daily_time(meta.get("remindDaily"))
+    if daily:
+        hour, minute = daily
+        return {"kind": "daily", "time": f"{hour:02d}:{minute:02d}"}
+    return None
 
 
 def _valid_due(value):
@@ -378,18 +399,20 @@ def _scan_user(conn, uid, today, now):
             continue
         if not isinstance(meta, dict):
             continue
-        # 最高优先：每日定时提醒（meta.remindDaily，形如 07:30）。合法时刻下当天
-        # 到点即提醒，按「任务+日期」去重保证每天最多一条；当天未到点也不再回退到
-        # 到期/一次性路径，避免同一天重复打扰。非法值则忽略并继续走原有逻辑。
-        daily = _parse_daily_time(meta.get("remindDaily"))
-        if daily is not None:
-            moment = _daily_moment_today(daily[0], daily[1], today)
+        # 最高优先：定时提醒规则（meta.remindSchedule；旧数据 remindDaily 等价为
+        # 「每天」）。规则命中当天且到点即提醒，按「任务+日期」去重保证每天最多
+        # 一条；当天不该响或时刻未到都静默，不回退到期/一次性路径以免重复打扰。
+        # 非法规则容错忽略并继续走原有逻辑。
+        rule = _resolve_remind_rule(meta)
+        if rule is not None:
+            if not schedule.schedule_due_today(rule, today):
+                continue
+            moment = _daily_moment_today(int(rule["time"][:2]), int(rule["time"][3:5]), today)
             if moment is not None and now >= moment:
-                dedup_key = f"task-daily:{item['id']}:{today}"
+                dedup_key = f"task-remind:{item['id']}:{today}"
                 if dedup_key not in existing:
                     existing.add(dedup_key)
-                    pending.append((item, item["space_id"], meta["remindDaily"].strip(), dedup_key))
-                continue
+                    pending.append((item, item["space_id"], rule, dedup_key))
             # 当天时刻未到：静默，不产生任何兜底通知。
             continue
         # 优先：任务设置了具体提醒时间（meta.remindAt，形如 2026-11-10T09:00）
@@ -444,12 +467,14 @@ def _persist_notifications(server, uid, pending, today):
             notification_id = uuid.uuid4().hex
             stamp = _stamp()
             title = item["title"]
-            if dedup_key.startswith("task-daily:"):
-                # 每日定时提醒：第三元是用户设置的 HH:MM 时刻。
-                body = f"任务「{title}」的每日提醒时间到了（{due}）。"
-                payload = {"title": title, "body": body, "itemId": item["id"], "spaceId": sid, "remindDaily": due}
+            if isinstance(due, dict):
+                # 定时规则提醒：第三元是归一化规则 dict，文案用中文规则描述。
+                text = schedule.describe_schedule(due) or "定时提醒"
+                body = f"任务「{title}」的定时提醒到了（{text}）。"
+                payload = {"title": title, "body": body, "itemId": item["id"],
+                           "spaceId": sid, "remindSchedule": due}
             elif dedup_key.startswith("task-remind:"):
-                # 定时提醒：提醒时间就是用户设置的那个时刻，更口语化
+                # 一次性定时提醒：提醒时间就是用户设置的那个时刻，更口语化
                 body = f"任务「{title}」的提醒时间到了（{due.replace('T', ' ')}）。"
                 payload = {"title": title, "body": body, "itemId": item["id"], "spaceId": sid, "remindAt": due}
             else:
