@@ -4258,7 +4258,14 @@ function showNew(opts = {}) {
       ],
       "normal",
     );
-    taskFields.append(labelField("计划日期", due), labelField("优先级", priority));
+    // 每日提醒：固定时刻每天重复，完成或删除待办后自动停止；留空即不启用。
+    const remindDaily = input("time", "", "");
+    remindDaily.setAttribute("aria-label", "每日提醒时间");
+    taskFields.append(
+      labelField("计划日期", due),
+      labelField("优先级", priority),
+      labelField("每日提醒（可选，每天到点）", remindDaily),
+    );
     taskFields.hidden = !asTask;
     toggle.addEventListener("change", () => {
       taskFields.hidden = !toggle.checked;
@@ -4296,13 +4303,18 @@ function showNew(opts = {}) {
       err.textContent = "";
       try {
         if (toggle.checked) {
+          const taskMeta = {
+            due: due.value || dailyDateString(),
+            priority: priority.value,
+          };
+          if (remindDaily.value) taskMeta.remindDaily = remindDaily.value;
           await saveItem({
             kind: "task",
             area: state.area,
             title: text.split(/[。！？\n]/)[0].slice(0, 200) || text.slice(0, 200),
             body: text,
             status: "active",
-            meta: { due: due.value || dailyDateString(), priority: priority.value },
+            meta: taskMeta,
           });
         } else {
           await saveItem({

@@ -211,6 +211,24 @@ def checks(base):
         page.locator("#modal").get_by_role("button", name="取消", exact=True).click()
         report("每日提醒时刻在任务编辑器中正确回显且无横向溢出")
 
+        # 快速「记一笔」弹窗：勾选设为待办后，每日提醒字段出现、可保存。
+        page.locator("#mobile-capture").click()
+        expect(page.locator("#modal")).to_be_visible()
+        page.locator(".capture-note").fill("快速弹窗里的每日提醒")
+        page.locator(".capture-toggle input").check()
+        quick_daily = page.locator(".capture-task-fields").get_by_label("每日提醒时间")
+        expect(quick_daily).to_be_visible()
+        assert quick_daily.get_attribute("type") == "time"
+        quick_daily.fill("21:05")
+        no_overflow(page)
+        page.locator("#modal").get_by_role("button", name="保存", exact=True).click()
+        expect(page.locator("#modal")).not_to_be_visible()
+        quick_saved = page.evaluate(
+            "() => state.items.find(i => i.title === '快速弹窗里的每日提醒')"
+        )
+        assert quick_saved and quick_saved["meta"].get("remindDaily") == "21:05", quick_saved
+        report("320px 窄屏快速记一笔可设置并真实保存每日提醒")
+
         for width, height in [(320, 720), (360, 780), (390, 844), (430, 932), (844, 390)]:
             page.set_viewport_size({"width": width, "height": height})
             page.wait_for_timeout(280)

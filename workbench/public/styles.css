@@ -6358,7 +6358,7 @@ form label + label {
    这里必须显式归零，日期与优先级才会在同一条基线上。 */
 .capture-task-fields {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
   align-items: start;
   margin: 8px 0;
