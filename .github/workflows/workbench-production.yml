@@ -11,6 +11,10 @@ on:
         description: '已通过 Workbench CI 且属于 main 的完整 40 位提交 SHA'
         required: true
         type: string
+      public_ip:
+        description: '可选：临时切换到此公网 IPv4，使用 HTTPS 自签证书'
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -37,15 +41,24 @@ jobs:
       DEPLOY_SHA: ${{ github.event.workflow_run.head_sha || inputs.commit }}
       REPOSITORY: ${{ github.repository }}
       DEPLOY_EVENT: ${{ github.event_name }}
+      ACCESS_IP: ${{ inputs.public_ip || '' }}
     steps:
       - name: Verify exact commit has successful CI
         id: source
         run: |
           python3 - <<'PY'
-          import json, os, re, subprocess
+          import ipaddress, json, os, re, subprocess
           sha = os.environ['DEPLOY_SHA']
           if not re.fullmatch(r'[a-f0-9]{40}', sha):
               raise SystemExit('完整 40 位 SHA 无效；未部署')
+          access_ip = os.environ.get('ACCESS_IP', '').strip()
+          if access_ip:
+              try:
+                  parsed_ip = ipaddress.IPv4Address(access_ip)
+              except ipaddress.AddressValueError:
+                  raise SystemExit('临时访问地址必须是有效 IPv4；未部署')
+              if not parsed_ip.is_global:
+                  raise SystemExit('临时访问地址必须是公网 IPv4；未部署')
           repo = os.environ['REPOSITORY']
           result = subprocess.check_output(['gh', 'api', f'repos/{repo}/actions/workflows/workbench-ci.yml/runs?head_sha={sha}&status=completed&per_page=100'])
           runs = json.loads(result)['workflow_runs']
@@ -117,10 +130,11 @@ jobs:
           ssh_opts=(-i "$RUNNER_TEMP/workbench-ssh/key" -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$RUNNER_TEMP/workbench-ssh/known_hosts" -o ConnectTimeout=15)
           ssh "${ssh_opts[@]}" -p "${SSH_PORT:-22}" "$SSH_USER@$SSH_HOST" 'umask 077; mkdir -p /srv/zhixu/incoming /srv/zhixu/releases; test -f /srv/zhixu/shared/.env'
           scp "${ssh_opts[@]}" -P "${SSH_PORT:-22}" "$archive" "$SSH_USER@$SSH_HOST:/srv/zhixu/incoming/$DEPLOY_SHA.tar.gz"
-          ssh "${ssh_opts[@]}" -p "${SSH_PORT:-22}" "$SSH_USER@$SSH_HOST" "bash -s -- $DEPLOY_SHA" <<'REMOTE'
+          ssh "${ssh_opts[@]}" -p "${SSH_PORT:-22}" "$SSH_USER@$SSH_HOST" "bash -s -- $DEPLOY_SHA '$ACCESS_IP'" <<'REMOTE'
           set -euo pipefail
           umask 077
           source_sha=$1
+          access_ip=${2:-}
           [[ "$source_sha" =~ ^[a-f0-9]{40}$ ]]
           deploy_root=/srv/zhixu
           release_dir="$deploy_root/releases/$source_sha"
@@ -133,6 +147,59 @@ jobs:
             trap - EXIT
           fi
           [[ -f "$release_dir/SOURCE_SHA" && $(cat "$release_dir/SOURCE_SHA") == "$source_sha" ]]
+          if [[ -n "$access_ip" ]]; then
+            python3 - "$deploy_root/shared/.env" "$access_ip" "$deploy_root/state/domain-access.env" <<'PY'
+          import ipaddress, os, sys, tempfile
+          from pathlib import Path
+          env_path, raw_ip, backup_path = Path(sys.argv[1]), sys.argv[2], Path(sys.argv[3])
+          ip = str(ipaddress.IPv4Address(raw_ip))
+          original = env_path.read_bytes()
+          backup_path.parent.mkdir(parents=True, exist_ok=True)
+          try:
+              backup_fd = os.open(backup_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+          except FileExistsError:
+              pass
+          else:
+              with os.fdopen(backup_fd, 'wb') as backup_file:
+                  backup_file.write(original)
+          replacements = {
+              'WORKSPACE_DOMAIN': ip,
+              'WORKSPACE_SITE_ADDRESS': f'https://{ip}',
+              'CADDY_EXTRA_GLOBAL': f'"local_certs\\ndefault_sni {ip}"',
+          }
+          output, seen = [], set()
+          lines = original.decode().splitlines(keepends=True)
+          index = 0
+          while index < len(lines):
+              line = lines[index]
+              key = next((name for name in replacements if line.startswith(name + '=')), None)
+              if key is None:
+                  output.append(line)
+                  index += 1
+                  continue
+              output.append(f'{key}={replacements[key]}\n')
+              seen.add(key)
+              value = line.partition('=')[2].strip()
+              multiline = key == 'CADDY_EXTRA_GLOBAL' and value.startswith('"') and not value.endswith('"')
+              index += 1
+              while multiline and index < len(lines):
+                  multiline = not lines[index].rstrip().endswith('"')
+                  index += 1
+          for key, value in replacements.items():
+              if key not in seen:
+                  output.append(f'{key}={value}\n')
+          mode = env_path.stat().st_mode & 0o777
+          fd, temporary = tempfile.mkstemp(dir=env_path.parent, prefix='.env.', text=True)
+          try:
+              with os.fdopen(fd, 'w') as env_file:
+                  env_file.write(''.join(output))
+              os.chmod(temporary, mode)
+              os.replace(temporary, env_path)
+          finally:
+              if os.path.exists(temporary):
+                  os.unlink(temporary)
+          PY
+          fi
           export PIP_INDEX_URL=https://mirrors.aliyun.com/pypi/simple/
           bash "$release_dir/scripts/deploy.sh" --root "$deploy_root" --sha "$source_sha"
           rm -f -- "$deploy_root/incoming/$source_sha.tar.gz"

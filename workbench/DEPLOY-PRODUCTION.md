@@ -15,9 +15,9 @@
 正式方案仍建议使用完成解析与备案手续的域名。临时用 IP 验证时，在 `shared/.env` 增加两行，让 Caddy 用内置 CA 签发自签证书（浏览器首次访问会提示不受信任，需手动继续；信任后即为安全上下文，相机、麦克风与密码箱可用）：
 
 ```text
+WORKSPACE_DOMAIN=<服务器公网 IP>
 WORKSPACE_SITE_ADDRESS=https://<服务器公网 IP>
-CADDY_EXTRA_GLOBAL="local_certs
-default_sni <服务器公网 IP>"
+CADDY_EXTRA_GLOBAL="local_certs\ndefault_sni <服务器公网 IP>"
 ```
 
 `default_sni` 不可省略：部分客户端（例如默认配置的 curl）对 IP 字面量不发送 SNI，没有该指令时 Caddy 无法选择证书并返回 internal error 告警。`deploy.sh` 检测到 `WORKSPACE_DOMAIN` 为 IPv4 时，会让只读健康检查跳过证书链校验（响应体、生产配置与安全响应头仍逐项核对）。此模式下 80 端口仍由 Caddy 自动 308 跳转到 HTTPS，请直接使用 `https://<IP>` 访问；拿到域名后删掉这两个变量、恢复 `WORKSPACE_DOMAIN` 即可切回公开 HTTPS。
