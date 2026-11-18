@@ -70,6 +70,12 @@ services:
       # WORKSPACE_SITE_ADDRESS=https://<ip> together with CADDY_EXTRA_GLOBAL=local_certs.
       WORKSPACE_SITE_ADDRESS: ${WORKSPACE_SITE_ADDRESS:-${WORKSPACE_DOMAIN}}
       CADDY_EXTRA_GLOBAL: ${CADDY_EXTRA_GLOBAL:-}
+      # ICP 备案期间的纯 HTTP(80) 入口：设为 :80 即对公网启用 IP 直连 HTTP；
+      # 默认回环 80，即不对公网暴露 HTTP。
+      CADDY_SITE_BIND: ${CADDY_SITE_BIND:-127.0.0.1:80}
+      # 正式 HTTPS 站点地址；纯 HTTP 模式由部署流程显式改为回环 443 对公网关闭。
+      # 缺省时不透传，由 Caddyfile 回退到 WORKSPACE_SITE_ADDRESS/WORKSPACE_DOMAIN。
+      CADDY_HTTPS_SITE: ${CADDY_HTTPS_SITE:-}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data

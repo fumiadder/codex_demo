@@ -12,7 +12,21 @@
 
 ### 只有公网 IP、暂时没有域名
 
-正式方案仍建议使用完成解析与备案手续的域名。临时用 IP 验证时，在 `shared/.env` 增加两行，让 Caddy 用内置 CA 签发自签证书（浏览器首次访问会提示不受信任，需手动继续；信任后即为安全上下文，相机、麦克风与密码箱可用）：
+正式方案仍建议使用完成解析与备案手续的域名。临时用 IP 验证有两种模式：
+
+**备案等待期推荐：纯 HTTP（80 端口，无证书告警）。** 在 `shared/.env` 写入下列变量，用户直接访问 `http://<服务器公网 IP>`，浏览器不会提示证书不受信任：
+
+```text
+WORKSPACE_DOMAIN=<服务器公网 IP>
+WORKSPACE_SITE_ADDRESS=http://<服务器公网 IP>
+CADDY_EXTRA_GLOBAL=
+CADDY_SITE_BIND=:80
+CADDY_HTTPS_SITE=127.0.0.1:443
+```
+
+此时自签 HTTPS 站点退到回环 443、对公网关闭，也不会触发公网 ACME 申请。注意 HTTP 不是安全上下文：密码箱（依赖 `crypto.subtle`）会提示需通过 HTTPS 打开，Service Worker 与相机/麦克风等能力同样受限；普通待办、笔记、上传等功能不受影响。生产部署工作流已提供 `protocol` 输入（`http`/`https`，默认 `http`）自动写入上述变量。
+
+**需要安全上下文时：自签 HTTPS。** 在 `shared/.env` 增加两行，让 Caddy 用内置 CA 签发自签证书（浏览器首次访问会提示不受信任，需手动继续；信任后即为安全上下文，相机、麦克风与密码箱可用）：
 
 ```text
 WORKSPACE_DOMAIN=<服务器公网 IP>
@@ -20,7 +34,7 @@ WORKSPACE_SITE_ADDRESS=https://<服务器公网 IP>
 CADDY_EXTRA_GLOBAL="local_certs\ndefault_sni <服务器公网 IP>"
 ```
 
-`default_sni` 不可省略：部分客户端（例如默认配置的 curl）对 IP 字面量不发送 SNI，没有该指令时 Caddy 无法选择证书并返回 internal error 告警。`deploy.sh` 检测到 `WORKSPACE_DOMAIN` 为 IPv4 时，会让只读健康检查跳过证书链校验（响应体、生产配置与安全响应头仍逐项核对）。此模式下 80 端口仍由 Caddy 自动 308 跳转到 HTTPS，请直接使用 `https://<IP>` 访问；拿到域名后删掉这两个变量、恢复 `WORKSPACE_DOMAIN` 即可切回公开 HTTPS。
+`default_sni` 不可省略：部分客户端（例如默认配置的 curl）对 IP 字面量不发送 SNI，没有该指令时 Caddy 无法选择证书并返回 internal error 告警。`deploy.sh` 检测到 `WORKSPACE_DOMAIN` 为 IPv4 时，会让只读健康检查跳过证书链校验（响应体、生产配置与安全响应头仍逐项核对）。此模式下 80 端口仍由 Caddy 自动 308 跳转到 HTTPS，请直接使用 `https://<IP>` 访问；拿到域名后把 `WORKSPACE_SITE_ADDRESS`、`CADDY_*` 恢复默认、改回 `WORKSPACE_DOMAIN` 即可切回公开 HTTPS。
 
 Docker 构建通过 `PIP_INDEX_URL` 构建参数选择 PyPI 来源，默认使用官方源；GitHub 正式发布工作流为国内服务器使用 `https://mirrors.aliyun.com/pypi/simple/`。手动部署可在执行 `deploy.sh` 前设置同名环境变量。版本标签参数位于依赖安装之后，仅更新源码不会使已缓存的依赖层失效。Docker Hub 则可通过 `/etc/docker/daemon.json` 的 `registry-mirrors` 配置加速。
 

@@ -1,10 +1,28 @@
 {
 	# Empty by default for domain deployments. Set CADDY_EXTRA_GLOBAL=local_certs
-	# for an IP-only server so Caddy issues its own internal self-signed certificate
-	# instead of attempting the public ACME flow.
+	# for an IP-only HTTPS server so Caddy issues its own internal self-signed
+	# certificate instead of attempting the public ACME flow.
 	{$CADDY_EXTRA_GLOBAL:}
 }
-{$WORKSPACE_SITE_ADDRESS} {
+
+# Shared routing for every front door. The app only speaks plain HTTP inside
+# the compose network; TLS (when used) terminates here at the gateway.
+(zhixu_app) {
 	encode zstd gzip
 	reverse_proxy app:8000
+}
+
+# ICP 备案期间的临时纯 HTTP 入口（80 端口，IP 直连，无 TLS）。
+# 纯 HTTP 模式由部署流程把 CADDY_SITE_BIND 设为 :80；备案完成恢复域名
+# HTTPS 后该变量回退为回环地址，本块即不对公网暴露。
+{$CADDY_SITE_BIND:127.0.0.1:80} {
+	import zhixu_app
+}
+
+# 域名 / IP-HTTPS 正式入口。默认跟随 WORKSPACE_SITE_ADDRESS（compose 已保证它
+# 在缺省域名场景回退为 WORKSPACE_DOMAIN）。纯 HTTP 模式下部署流程把
+# CADDY_HTTPS_SITE 显式指到回环 443（对公网不可达，等同关闭 HTTPS），此时
+# CADDY_EXTRA_GLOBAL 为空且地址是回环主机，Caddy 不会触发公网 ACME 申请。
+{$CADDY_HTTPS_SITE:{$WORKSPACE_SITE_ADDRESS}} {
+	import zhixu_app
 }

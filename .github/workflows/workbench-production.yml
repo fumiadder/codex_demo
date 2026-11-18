@@ -12,9 +12,17 @@ on:
         required: true
         type: string
       public_ip:
-        description: '可选：临时切换到此公网 IPv4，使用 HTTPS 自签证书'
+        description: '可选：临时切换到此公网 IPv4 访问（默认 8.136.157.178）'
         required: false
         type: string
+      protocol:
+        description: '临时访问协议：备案期间用 http（IP 直连 80 端口，无证书告警）；备案后切回 https'
+        required: false
+        type: choice
+        default: http
+        options:
+          - http
+          - https
 
 permissions:
   contents: read
@@ -43,6 +51,8 @@ jobs:
       DEPLOY_EVENT: ${{ github.event_name }}
       # 备案期间临时使用公网 IP；备案后恢复为空字符串，并从服务器备份恢复原域名配置。
       ACCESS_IP: ${{ inputs.public_ip || '8.136.157.178' }}
+      # 备案未完成期间默认纯 HTTP（80 端口），避免自签证书告警；备案后手动选 https。
+      ACCESS_PROTOCOL: ${{ inputs.protocol || 'http' }}
     steps:
       - name: Verify exact commit has successful CI
         id: source
@@ -131,12 +141,14 @@ jobs:
           ssh_opts=(-i "$RUNNER_TEMP/workbench-ssh/key" -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$RUNNER_TEMP/workbench-ssh/known_hosts" -o ConnectTimeout=15)
           ssh "${ssh_opts[@]}" -p "${SSH_PORT:-22}" "$SSH_USER@$SSH_HOST" 'umask 077; mkdir -p /srv/zhixu/incoming /srv/zhixu/releases; test -f /srv/zhixu/shared/.env'
           scp "${ssh_opts[@]}" -P "${SSH_PORT:-22}" "$archive" "$SSH_USER@$SSH_HOST:/srv/zhixu/incoming/$DEPLOY_SHA.tar.gz"
-          ssh "${ssh_opts[@]}" -p "${SSH_PORT:-22}" "$SSH_USER@$SSH_HOST" "bash -s -- $DEPLOY_SHA '$ACCESS_IP'" <<'REMOTE'
+          ssh "${ssh_opts[@]}" -p "${SSH_PORT:-22}" "$SSH_USER@$SSH_HOST" "bash -s -- $DEPLOY_SHA '$ACCESS_IP' '$ACCESS_PROTOCOL'" <<'REMOTE'
           set -euo pipefail
           umask 077
           source_sha=$1
           access_ip=${2:-}
+          access_protocol=${3:-http}
           [[ "$source_sha" =~ ^[a-f0-9]{40}$ ]]
+          [[ "$access_protocol" =~ ^(http|https)$ ]]
           deploy_root=/srv/zhixu
           release_dir="$deploy_root/releases/$source_sha"
           if [[ ! -d "$release_dir" ]]; then
@@ -149,10 +161,12 @@ jobs:
           fi
           [[ -f "$release_dir/SOURCE_SHA" && $(cat "$release_dir/SOURCE_SHA") == "$source_sha" ]]
           if [[ -n "$access_ip" ]]; then
-            python3 - "$deploy_root/shared/.env" "$access_ip" "$deploy_root/state/domain-access.env" <<'PY'
+            python3 - "$deploy_root/shared/.env" "$access_ip" "$access_protocol" "$deploy_root/state/domain-access.env" <<'PY'
           import ipaddress, os, sys, tempfile
           from pathlib import Path
-          env_path, raw_ip, backup_path = Path(sys.argv[1]), sys.argv[2], Path(sys.argv[3])
+          env_path, raw_ip, protocol, backup_path = Path(sys.argv[1]), sys.argv[2], sys.argv[3], Path(sys.argv[4])
+          if protocol not in ('http', 'https'):
+              raise SystemExit('access protocol must be http or https')
           ip = str(ipaddress.IPv4Address(raw_ip))
           original = env_path.read_bytes()
           backup_path.parent.mkdir(parents=True, exist_ok=True)
@@ -163,11 +177,25 @@ jobs:
           else:
               with os.fdopen(backup_fd, 'wb') as backup_file:
                   backup_file.write(original)
-          replacements = {
-              'WORKSPACE_DOMAIN': ip,
-              'WORKSPACE_SITE_ADDRESS': f'https://{ip}',
-              'CADDY_EXTRA_GLOBAL': f'"local_certs\\ndefault_sni {ip}"',
-          }
+          if protocol == 'https':
+              # 备案完成后切回：自签 IP-HTTPS（local_certs + default_sni）。
+              replacements = {
+                  'WORKSPACE_DOMAIN': ip,
+                  'WORKSPACE_SITE_ADDRESS': f'https://{ip}',
+                  'CADDY_EXTRA_GLOBAL': f'"local_certs\\ndefault_sni {ip}"',
+                  'CADDY_SITE_BIND': '127.0.0.1:80',
+                  'CADDY_HTTPS_SITE': f'https://{ip}',
+              }
+          else:
+              # 备案期间：纯 HTTP 80 端口直连；HTTPS 站点退到回环 443 对公网关闭，
+              # 浏览器访问 http://IP 无证书告警，也不会触发公网 ACME 申请。
+              replacements = {
+                  'WORKSPACE_DOMAIN': ip,
+                  'WORKSPACE_SITE_ADDRESS': f'http://{ip}',
+                  'CADDY_EXTRA_GLOBAL': '',
+                  'CADDY_SITE_BIND': ':80',
+                  'CADDY_HTTPS_SITE': '127.0.0.1:443',
+              }
           output, seen = [], set()
           lines = original.decode().splitlines(keepends=True)
           index = 0
@@ -206,7 +234,7 @@ jobs:
           rm -f -- "$deploy_root/incoming/$source_sha.tar.gz"
           REMOTE
           echo '### 已部署' >> "$GITHUB_STEP_SUMMARY"
-          echo '已验证提交完成生产更新、备份和 HTTPS 健康检查；数据卷保持不变。' >> "$GITHUB_STEP_SUMMARY"
+          echo "已验证提交完成生产更新、备份和 ${ACCESS_PROTOCOL^^} 健康检查；数据卷保持不变。" >> "$GITHUB_STEP_SUMMARY"
       - name: Remove temporary SSH credentials
         if: always()
         run: rm -rf -- "$RUNNER_TEMP/workbench-ssh"
