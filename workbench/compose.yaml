@@ -74,8 +74,9 @@ services:
       # 默认回环 80，即不对公网暴露 HTTP。
       CADDY_SITE_BIND: ${CADDY_SITE_BIND:-127.0.0.1:80}
       # 正式 HTTPS 站点地址；纯 HTTP 模式由部署流程显式改为回环 443 对公网关闭。
-      # 缺省时不透传，由 Caddyfile 回退到 WORKSPACE_SITE_ADDRESS/WORKSPACE_DOMAIN。
-      CADDY_HTTPS_SITE: ${CADDY_HTTPS_SITE:-}
+      # 缺省回退 WORKSPACE_SITE_ADDRESS（其本身又回退 WORKSPACE_DOMAIN），保证容器
+      # 拿到的永远是具体地址——Caddyfile 占位 {$CADDY_HTTPS_SITE} 不支持嵌套默认值。
+      CADDY_HTTPS_SITE: ${CADDY_HTTPS_SITE:-${WORKSPACE_SITE_ADDRESS}}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
